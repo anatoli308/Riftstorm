@@ -1,0 +1,30 @@
+{
+    "name": "Riftstorm.Game",
+    "rootNamespace": "Riftstorm.Game",
+    "references": [
+        "Riftstorm.Core",
+        "Riftstorm.Shared",
+        "Riftstorm.Management",
+        "Riftstorm.Gameplay",
+        "Riftstorm.AI",
+        "Riftstorm.Networking",
+        "Riftstorm.UI",
+        "Unity.Entities",
+        "Unity.NetCode",
+        "Unity.Transport",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Transforms",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

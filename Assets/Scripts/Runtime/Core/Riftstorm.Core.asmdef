@@ -1,0 +1,16 @@
+{
+    "name": "Riftstorm.Core",
+    "rootNamespace": "Riftstorm.Core",
+    "references": [
+        "Riftstorm.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,33 @@
+{
+    "name": "Riftstorm.ApplicationLifecycle",
+    "rootNamespace": "Riftstorm.ApplicationLifecycle",
+    "references": [
+        "Riftstorm.Core",
+        "Riftstorm.Shared",
+        "Riftstorm.Management",
+        "Riftstorm.Gameplay",
+        "Riftstorm.AI",
+        "Riftstorm.Networking",
+        "Riftstorm.UI",
+        "Riftstorm.Metagame",
+        "Riftstorm.Game",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.Entities",
+        "Unity.NetCode",
+        "Unity.Transport",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

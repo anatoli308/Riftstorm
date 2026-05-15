@@ -1,4 +1,6 @@
 ﻿<Solution>
+  <Project Path="Riftstorm.Core.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Riftstorm.ApplicationLifecycle.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
 </Solution>

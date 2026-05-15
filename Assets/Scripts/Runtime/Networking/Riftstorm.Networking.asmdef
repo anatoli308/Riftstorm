@@ -1,0 +1,25 @@
+{
+    "name": "Riftstorm.Networking",
+    "rootNamespace": "Riftstorm.Networking",
+    "references": [
+        "Riftstorm.Core",
+        "Riftstorm.Shared",
+        "Riftstorm.Gameplay",
+        "Unity.Entities",
+        "Unity.NetCode",
+        "Unity.Transport",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Transforms"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

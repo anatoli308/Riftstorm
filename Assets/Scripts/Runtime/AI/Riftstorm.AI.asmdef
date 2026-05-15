@@ -1,0 +1,23 @@
+{
+    "name": "Riftstorm.AI",
+    "rootNamespace": "Riftstorm.AI",
+    "references": [
+        "Riftstorm.Shared",
+        "Riftstorm.Gameplay",
+        "Unity.Entities",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Jobs",
+        "Unity.Transforms"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Riftstorm.Metagame",
+    "rootNamespace": "Riftstorm.Metagame",
+    "references": [
+        "Riftstorm.Core",
+        "Riftstorm.Shared",
+        "Riftstorm.Management",
+        "Riftstorm.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
