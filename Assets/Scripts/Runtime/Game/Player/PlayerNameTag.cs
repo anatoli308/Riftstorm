@@ -218,7 +218,17 @@ namespace Riftstorm.Game.Player
                     fontStyle = FontStyle.Bold,
                 };
             }
+            // m_Color für alle Button-States setzen, damit GUI.Button beim Hover/Click
+            // NICHT auf die weiße Skin-Hover-Farbe umschaltet. Source-treu: der Nametag
+            // hat keine Hover-Aufhellung — die übernimmt der Sprite via HoverHighlight.
             m_Style.normal.textColor = m_Color;
+            m_Style.hover.textColor = m_Color;
+            m_Style.active.textColor = m_Color;
+            m_Style.focused.textColor = m_Color;
+            m_Style.onNormal.textColor = m_Color;
+            m_Style.onHover.textColor = m_Color;
+            m_Style.onActive.textColor = m_Color;
+            m_Style.onFocused.textColor = m_Color;
 
             const float width = 220f;
             const float height = 22f;
@@ -231,7 +241,48 @@ namespace Riftstorm.Game.Player
             m_Style.normal.textColor = Color.black;
             GUI.Label(new Rect(rect.x + 1f, rect.y + 1f, rect.width, rect.height), m_CachedName, m_Style);
             m_Style.normal.textColor = prev;
-            GUI.Label(rect, m_CachedName, m_Style);
+
+            // Klick auf das Label selektiert die Einheit (source-aequivalent zum
+            // Overhead-Klick im SoF-Client). Wir nutzen GUI.Button mit dem gleichen
+            // Label-Style (kein Hintergrund) — visuell identisch zum vorherigen GUI.Label,
+            // aber klickbar. Klick aufs eigene Nametag ist ein No-Op.
+            if (GUI.Button(rect, m_CachedName, m_Style))
+            {
+                HandleNameTagClicked();
+            }
+        }
+
+        /// <summary>
+        /// Sendet einen Lock-Wunsch fuer DIESE Einheit an den Server. Lookup des
+        /// lokalen <see cref="Riftstorm.Game.Combat.TargetSelection"/> erfolgt
+        /// statisch (Owner registriert sich beim NetworkSpawn), kein FindObject.
+        /// </summary>
+        private void HandleNameTagClicked()
+        {
+            if (m_Identity == null)
+            {
+                return;
+            }
+            Unity.Netcode.NetworkObject myNo = m_Identity.GetComponent<Unity.Netcode.NetworkObject>();
+            if (myNo == null)
+            {
+                myNo = m_Identity.GetComponentInParent<Unity.Netcode.NetworkObject>();
+            }
+            if (myNo == null || !myNo.IsSpawned)
+            {
+                return;
+            }
+            Riftstorm.Game.Combat.TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
+            if (localTs == null)
+            {
+                return;
+            }
+            // Eigenes Nametag klicken = No-Op (kein Selbst-Lock).
+            if (localTs.NetworkObjectId == myNo.NetworkObjectId)
+            {
+                return;
+            }
+            localTs.RequestSelectTargetServerRpc(myNo.NetworkObjectId);
         }
     }
 }

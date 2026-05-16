@@ -41,6 +41,15 @@ namespace Riftstorm.Game.Combat
         /// </summary>
         public event Action<ulong, ulong> CurrentTargetIdChanged;
 
+        /// <summary>
+        /// Statischer Zugriff auf die <see cref="TargetSelection"/> des lokalen Owner-Spielers.
+        /// Wird in <see cref="OnNetworkSpawn"/> nur fuer den Owner gesetzt und in
+        /// <see cref="OnNetworkDespawn"/> wieder geloescht. Erlaubt UI-Komponenten
+        /// (z. B. das Nametag-Label eines anderen Spielers) den Local-Player ohne
+        /// teure FindObject-Suche zu erreichen, um per ServerRpc ein Lock zu setzen.
+        /// </summary>
+        public static TargetSelection Local { get; private set; }
+
         // -------------------------------------------------------------------------
         // Lifecycle
         // -------------------------------------------------------------------------
@@ -50,6 +59,10 @@ namespace Riftstorm.Game.Combat
         {
             base.OnNetworkSpawn();
             m_CurrentTargetId.OnValueChanged += OnTargetIdChangedInternal;
+            if (IsOwner)
+            {
+                Local = this;
+            }
             // Initialen Wert einmal feuern, damit Listener (UI) korrekt initialisieren.
             CurrentTargetIdChanged?.Invoke(NoTarget, m_CurrentTargetId.Value);
         }
@@ -58,6 +71,10 @@ namespace Riftstorm.Game.Combat
         public override void OnNetworkDespawn()
         {
             m_CurrentTargetId.OnValueChanged -= OnTargetIdChangedInternal;
+            if (Local == this)
+            {
+                Local = null;
+            }
             base.OnNetworkDespawn();
         }
 

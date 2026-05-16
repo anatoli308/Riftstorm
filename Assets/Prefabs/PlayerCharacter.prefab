@@ -115,6 +115,7 @@ MonoBehaviour:
   m_AttackAction: Attack
   m_NextTargetAction: NextTarget
   m_ClearTargetAction: ClearTarget
+  m_AttackRangeIndicatorAction: AttackrangeIndicator
 --- !u!114 &5172720370931407651
 MonoBehaviour:
   m_ObjectHideFlags: 0

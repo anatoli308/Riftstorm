@@ -19,11 +19,15 @@ namespace Riftstorm.Game.Input
         [SerializeField] private string m_AttackAction = "Attack";
         [SerializeField] private string m_NextTargetAction = "NextTarget";
         [SerializeField] private string m_ClearTargetAction = "ClearTarget";
+        [Tooltip("InputAction-Name für den Attack-Range-Indicator-Toggle. Muss exakt dem " +
+                 "Eintrag im InputSystem-Asset entsprechen (Default: 'AttackrangeIndicator').")]
+        [SerializeField] private string m_AttackRangeIndicatorAction = "AttackrangeIndicator";
 
         private InputAction m_Move;
         private InputAction m_Attack;
         private InputAction m_NextTarget;
         private InputAction m_ClearTarget;
+        private InputAction m_AttackRangeIndicator;
 
         /// <summary>Aktueller normalisierter Bewegungsvektor (x = rechts, y = oben).</summary>
         public Vector2 MoveDirection { get; private set; }
@@ -51,6 +55,13 @@ namespace Riftstorm.Game.Input
         /// Lock-Target wieder freizugeben.
         /// </summary>
         public event Action ClearTargetPressed;
+
+        /// <summary>
+        /// Wird einmal pro Tastendruck der <c>AttackrangeIndicator</c>-Action gefeuert.
+        /// Konsument ist <see cref="Riftstorm.Game.Combat.AttackRangeIndicator"/>, der die
+        /// Sichtbarkeit des Ground-Range-Kreises togglet (LoL-Style).
+        /// </summary>
+        public event Action AttackRangeIndicatorPressed;
 
         private void OnEnable()
         {
@@ -80,6 +91,15 @@ namespace Riftstorm.Game.Input
             {
                 Debug.LogWarning($"[PlayerInputController] ClearTarget-Action '{m_ClearTargetAction}' nicht im Asset gefunden. Asset reimporten?");
             }
+            m_AttackRangeIndicator = map.FindAction(m_AttackRangeIndicatorAction, false);
+            if (m_AttackRangeIndicator != null)
+            {
+                m_AttackRangeIndicator.performed += OnAttackRangeIndicatorPerformed;
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerInputController] AttackRangeIndicator-Action '{m_AttackRangeIndicatorAction}' nicht im Asset gefunden. Asset reimporten?");
+            }
             map.Enable();
         }
 
@@ -106,6 +126,11 @@ namespace Riftstorm.Game.Input
                 m_ClearTarget.performed -= OnClearTargetPerformed;
                 m_ClearTarget = null;
             }
+            if (m_AttackRangeIndicator != null)
+            {
+                m_AttackRangeIndicator.performed -= OnAttackRangeIndicatorPerformed;
+                m_AttackRangeIndicator = null;
+            }
         }
 
         private void OnAttackPerformed(InputAction.CallbackContext _)
@@ -121,6 +146,11 @@ namespace Riftstorm.Game.Input
         private void OnClearTargetPerformed(InputAction.CallbackContext _)
         {
             ClearTargetPressed?.Invoke();
+        }
+
+        private void OnAttackRangeIndicatorPerformed(InputAction.CallbackContext _)
+        {
+            AttackRangeIndicatorPressed?.Invoke();
         }
 
         private void Update()

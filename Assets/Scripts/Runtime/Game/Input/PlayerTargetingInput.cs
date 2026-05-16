@@ -13,10 +13,10 @@ namespace Riftstorm.Game.Input
     /// (server-autoritativ in <see cref="TargetSelection"/>):
     ///
     /// <list type="bullet">
-    /// <item><b>Hover</b> — pro Frame Maus-Ray gegen Welt. Liefert nur
-    /// <see cref="CurrentHoveredTargetId"/>, die <see cref="PlayerCombat"/> bei
-    /// einem Angriffsklick als Wunschziel an den Server schickt. <b>Erzeugt kein
-    /// Visual</b> und ueberschreibt das Lock nicht.</item>
+    /// <item><b>Hover</b> — pro Frame Maus-Ray gegen Welt. Liefert
+    /// <see cref="CurrentHoveredTargetId"/> und schaltet auf der ueberfahrenen
+    /// Einheit ein <see cref="HoverHighlight"/> ein (roter Sprite-Tint, lokal).
+    /// Aendert das server-autoritative Lock NICHT.</item>
     /// <item><b>Lock</b> — vom Server in <see cref="TargetSelection.CurrentTargetId"/>
     /// gehalten. Tab-Cycle und Klick gehen ueber ServerRpc. Der lokale Owner
     /// hoert auf <see cref="TargetSelection.CurrentTargetIdChanged"/> und schaltet
@@ -25,9 +25,8 @@ namespace Riftstorm.Game.Input
     ///
     /// <para>
     /// Diese Trennung entspricht dem SoF/SpellCaster-Quellcode: der Caster haelt
-    /// einen <c>Entity* target</c>; ein "Hover" gibt es im Source-Code nicht —
-    /// das ist reine Engine-Ergonomie und bleibt strikt client-lokal ohne
-    /// sichtbares Feedback.
+    /// einen <c>Entity* target</c>; der Hover-Visual-Effekt entspricht dem
+    /// <c>brightenPct</c>-Boost in <c>ClientGameObj.cpp</c> bei <c>isMousedOver()</c>.
     /// </para>
     /// <para>Kein Polling-Cooldown, keine Coroutines — alles event- bzw. ray-getrieben.</para>
     /// </summary>
@@ -59,10 +58,16 @@ namespace Riftstorm.Game.Input
         private ulong m_VisualLockedId = TargetSelection.NoTarget;
         private HitboxIndicator m_VisualLockedIndicator;
 
+        // Hover-Visual: rot eingefaerbter Sprite-Tint auf der gerade ueberfahrenen Einheit.
+        // Wird beim Wechsel CurrentHoveredTargetId -> Neuer Wert pro Frame umgeschaltet.
+        // Source-Aequivalent zu ClientGameObj.cpp:82-86 (brightenPct on isMousedOver).
+        private HoverHighlight m_HoverVisual;
+
         /// <summary>
-        /// NetworkObject-Id des aktuell ueberfahrenen Ziels (0 = keins). Reine
-        /// Maus-Vorschau ohne Visual — der <see cref="PlayerCombat"/> sendet das
-        /// beim Angriffsklick als Wunschziel an den Server.
+        /// NetworkObject-Id des aktuell ueberfahrenen Ziels (0 = keins). Wird
+        /// pro Frame aus dem Maus-Raycast bestimmt und treibt sowohl das lokale
+        /// <see cref="HoverHighlight"/>-Visual als auch die Klick-zum-Selektieren-
+        /// Logik in <see cref="OnAttackPressed"/>.
         /// </summary>
         public ulong CurrentHoveredTargetId { get; private set; } = TargetSelection.NoTarget;
 
@@ -123,6 +128,7 @@ namespace Riftstorm.Game.Input
             }
             ClearLockVisual();
             CurrentHoveredTargetId = TargetSelection.NoTarget;
+            ApplyHover(null);
         }
 
         private void OnDestroy() => ClearLockVisual();
@@ -135,7 +141,7 @@ namespace Riftstorm.Game.Input
         {
             if (m_OwnerNetworkObject == null || !m_OwnerNetworkObject.IsOwner)
             {
-                CurrentHoveredTargetId = TargetSelection.NoTarget;
+                ClearHover();
                 return;
             }
             if (m_Camera == null)
@@ -149,7 +155,7 @@ namespace Riftstorm.Game.Input
             Mouse mouse = Mouse.current;
             if (mouse == null)
             {
-                CurrentHoveredTargetId = TargetSelection.NoTarget;
+                ClearHover();
                 return;
             }
 
@@ -158,14 +164,14 @@ namespace Riftstorm.Game.Input
 
             if (!Physics.Raycast(ray, out RaycastHit hit, m_MaxRayDistance, m_TargetMask, QueryTriggerInteraction.Collide))
             {
-                CurrentHoveredTargetId = TargetSelection.NoTarget;
+                ClearHover();
                 return;
             }
 
             NetworkObject hitNo = hit.collider.GetComponentInParent<NetworkObject>();
             if (hitNo == null || hitNo == m_OwnerNetworkObject)
             {
-                CurrentHoveredTargetId = TargetSelection.NoTarget;
+                ClearHover();
                 return;
             }
 
@@ -176,11 +182,46 @@ namespace Riftstorm.Game.Input
             }
             if (hitStats == null || hitStats.IsDead)
             {
-                CurrentHoveredTargetId = TargetSelection.NoTarget;
+                ClearHover();
                 return;
             }
 
             CurrentHoveredTargetId = hitNo.NetworkObjectId;
+            HoverHighlight nextHover = hitNo.GetComponent<HoverHighlight>();
+            if (nextHover == null)
+            {
+                nextHover = hitNo.GetComponentInChildren<HoverHighlight>();
+            }
+            ApplyHover(nextHover);
+        }
+
+        /// <summary>Setzt Hover-Id und -Visual in einem Schritt zurueck.</summary>
+        private void ClearHover()
+        {
+            CurrentHoveredTargetId = TargetSelection.NoTarget;
+            ApplyHover(null);
+        }
+
+        /// <summary>
+        /// Schaltet das Hover-Highlight idempotent auf <paramref name="next"/> um.
+        /// Wenn sich nichts aendert, passiert nichts. Sonst wird der alte HoverHighlight
+        /// abgeschaltet und der neue eingeschaltet — ein roter Tint zieht ueber den Sprite.
+        /// </summary>
+        private void ApplyHover(HoverHighlight next)
+        {
+            if (ReferenceEquals(m_HoverVisual, next))
+            {
+                return;
+            }
+            if (m_HoverVisual != null)
+            {
+                m_HoverVisual.SetHovered(false);
+            }
+            m_HoverVisual = next;
+            if (m_HoverVisual != null)
+            {
+                m_HoverVisual.SetHovered(true);
+            }
         }
 
         // -------------------------------------------------------------------------

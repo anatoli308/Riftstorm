@@ -113,6 +113,24 @@ namespace Riftstorm.Game.Bootstrap
             {
                 EnsureCamera(transform);
             }
+
+            // HoverHighlight liegt auf JEDEM Spieler (auch Remotes), weil jeder Client jeden
+            // anderen anhovern können muss. Auto-add hier, damit das Prefab nicht händisch
+            // gepflegt werden muss. RefreshRenderers() ist Pflicht — der HoverHighlight-Awake
+            // hat oben (vor BuildVisualsAsync) gefeuert, da gab es die SpriteRenderer noch nicht.
+            HoverHighlight hover = GetComponent<HoverHighlight>();
+            if (hover == null)
+            {
+                hover = gameObject.AddComponent<HoverHighlight>();
+            }
+            hover.RefreshRenderers();
+
+            // AttackRangeIndicator nur für den Owner — Remotes sehen den eigenen Range-Kreis
+            // sowieso nicht und müssen ihn auch nicht togglen können.
+            if (IsOwner && GetComponent<AttackRangeIndicator>() == null)
+            {
+                gameObject.AddComponent<AttackRangeIndicator>();
+            }
         }
 
         private FlareAtlasLoader BuildLoader()

@@ -367,10 +367,25 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            // Owner liest den aktuell &#252;berfahrenen Mauszielkandidaten und reicht ihn mit der
-            // Attack-Anfrage durch — der Server validiert anschlie&#223;end Existenz, Lebendigkeit
-            // und Reichweite (analog zum SoF-Server, der target-id + range pr&#252;ft).
             ulong hovered = m_Targeting != null ? m_Targeting.CurrentHoveredTargetId : TargetSelection.NoTarget;
+            ulong currentLock = m_TargetSelection != null ? m_TargetSelection.CurrentTargetId : TargetSelection.NoTarget;
+
+            // Klick auf ein NEUES Ziel (hover != aktuelles Lock) ist reine Selektion.
+            // Der Lock-Wechsel wird parallel von PlayerTargetingInput.OnAttackPressed
+            // per ServerRpc gesendet — hier kein Attack-Trigger. Der Spieler muss erneut
+            // klicken (auf das jetzt gelockte Ziel) oder einen separaten Attack-Hotkey
+            // benutzen, um anzugreifen. Entspricht Source-Verhalten: erst select, dann attack.
+            if (hovered != TargetSelection.NoTarget && hovered != currentLock)
+            {
+                return;
+            }
+
+            // Klick auf gelocktes Ziel ODER ins Leere -> Angriff gegen aktuelles Lock.
+            // Ohne Lock kein Angriff (verhindert "Klick ins Nichts feuert eine Animation").
+            if (currentLock == TargetSelection.NoTarget)
+            {
+                return;
+            }
 
             // Lokale Movement-Vorhersage aktivieren: ab JETZT clampt der Owner-Tick
             // seinen Move-Input auf 0 (siehe PlayerMovement.TickOwner). Das ClientRpc
@@ -378,11 +393,11 @@ namespace Riftstorm.Game.Combat
             // (und damit PlayerCombatVisuals.IsBusy) eintrifft.
             m_OwnerPredictedAttackUntil = Time.unscaledTime + k_OwnerAttackPredictionWindow;
 
-            RequestAttackServerRpc(hovered);
+            RequestAttackServerRpc();
         }
 
         [ServerRpc]
-        private void RequestAttackServerRpc(ulong requestedTargetId, ServerRpcParams _ = default)
+        private void RequestAttackServerRpc(ServerRpcParams _ = default)
         {
             WeaponDefinition weapon = ResolveCurrentWeapon();
             if (weapon == null)
@@ -390,14 +405,9 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            // Ziel-Update vom Client &#252;bernehmen (0 = nichts &#252;berfahren &#8594; bestehendes Ziel behalten,
-            // damit ein verfehlter Klick nicht das gelockte Ziel l&#246;scht). Validierung erfolgt
-            // anschlie&#223;end im Hit-Resolve.
-            if (m_TargetSelection != null && requestedTargetId != TargetSelection.NoTarget)
-            {
-                m_TargetSelection.ServerSetTarget(requestedTargetId);
-            }
-
+            // Kein Auto-Set des Ziels mehr — der Server nutzt ausschliesslich das bereits
+            // per RequestSelectTargetServerRpc gelockte Ziel. Klick-zum-Selektieren laeuft
+            // jetzt ueber PlayerTargetingInput, nicht ueber den Attack-Pfad.
             m_CurrentState.OnAttackRequested(weapon);
         }
 
@@ -601,6 +611,20 @@ namespace Riftstorm.Game.Combat
                 return null;
             }
             return catalog.Get(m_CurrentWeaponId.Value.ToString());
+        }
+
+        /// <summary>
+        /// Range (Unity-Worldunits) der aktuell ausgerüsteten Waffe; 0, wenn keine Waffe gesetzt
+        /// ist oder der Katalog noch nicht geladen wurde. Wird vom lokalen
+        /// <see cref="AttackRangeIndicator"/> für die Ground-Kreis-Darstellung gelesen.
+        /// </summary>
+        public float CurrentWeaponRange
+        {
+            get
+            {
+                WeaponDefinition weapon = ResolveCurrentWeapon();
+                return weapon != null ? weapon.Range : 0f;
+            }
         }
     }
 }
