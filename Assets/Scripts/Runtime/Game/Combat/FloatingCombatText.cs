@@ -69,7 +69,7 @@ namespace Riftstorm.Game.Combat
 
         private readonly List<Entry> m_Active = new(16);
         private GUIStyle m_Style;
-        private float m_AutoHeight;
+        private Renderer[] m_CachedRenderers;
         private System.Random m_Rng;
 
         // -------------------------------------------------------------------------
@@ -83,19 +83,27 @@ namespace Riftstorm.Game.Combat
                 m_Stats = GetComponent<UnitStats>();
             }
             m_Rng = new(GetInstanceID());
+            RefreshRenderersIfNeeded();
+        }
 
-            if (m_Anchor == null)
+        /// <summary>
+        /// Cache der Renderer verwerfen, z. B. nach einem Skin-Swap. Wird in
+        /// <see cref="OnGUI"/> bei Bedarf neu befüllt.
+        /// </summary>
+        public void InvalidateRendererCache()
+        {
+            m_CachedRenderers = null;
+        }
+
+        private void RefreshRenderersIfNeeded()
+        {
+            if (m_Anchor != null)
             {
-                Renderer[] renderers = GetComponentsInChildren<Renderer>(includeInactive: false);
-                if (renderers.Length > 0)
-                {
-                    Bounds combined = renderers[0].bounds;
-                    for (int i = 1; i < renderers.Length; i++)
-                    {
-                        combined.Encapsulate(renderers[i].bounds);
-                    }
-                    m_AutoHeight = combined.max.y - transform.position.y;
-                }
+                return;
+            }
+            if (Player.PlayerNameTag.IsCacheStale(m_CachedRenderers))
+            {
+                m_CachedRenderers = GetComponentsInChildren<Renderer>(includeInactive: false);
             }
         }
 
@@ -166,9 +174,23 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            Vector3 baseWorld = (m_Anchor != null)
-                ? m_Anchor.position + m_WorldOffset
-                : transform.position + new Vector3(m_WorldOffset.x, m_AutoHeight + m_WorldOffset.y, m_WorldOffset.z);
+            Vector3 baseWorld;
+            if (m_Anchor != null)
+            {
+                baseWorld = m_Anchor.position + m_WorldOffset;
+            }
+            else
+            {
+                RefreshRenderersIfNeeded();
+                if (Player.PlayerNameTag.TryComputeWorldTop(m_CachedRenderers, cam, out Vector3 top))
+                {
+                    baseWorld = top + m_WorldOffset;
+                }
+                else
+                {
+                    baseWorld = transform.position + m_WorldOffset;
+                }
+            }
 
             if (m_Style == null)
             {

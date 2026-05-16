@@ -45,8 +45,13 @@ namespace Riftstorm.Game.Movement
         [Tooltip("Abweichung Prediction vs. Server in Metern, ab der reconciled wird.")]
         [SerializeField] private float m_ReconciliationThreshold = 0.05f;
 
-        [Tooltip("Lerp-Geschwindigkeit fuer Remote-Clients (m_ServerPosition → transform).")]
+        [Tooltip("Lerp-Geschwindigkeit fuer Remote-Clients (m_ServerPosition → transform). LEGACY — wird nur noch als Fallback genutzt, falls SmoothDamp deaktiviert ist.")]
         [SerializeField] private float m_RemoteInterpolationSpeed = 15f;
+        [Tooltip("Smooth-Time (Sekunden) fuer Vector3.SmoothDamp auf Remote-Clients. " +
+                 "Sollte etwa dem Server-Tick-Intervall entsprechen (~0.08–0.12s bei 10–15 Hz NetworkVariable-Tick). " +
+                 "Glaettet die Schritte zwischen sporadischen NetworkVariable-Updates zu echten Frames — " +
+                 "behebt 'Stepping'-Ruckler von Remote-Spielern im Editor.")]
+        [SerializeField] private float m_RemoteSmoothTime = 0.1f;
 
         // -------------------------------------------------------------------------
         // Konstanten
@@ -83,6 +88,9 @@ namespace Riftstorm.Game.Movement
 
         private int m_LastDirection = k_DefaultDirection;
         private Vector3 m_LastObservedPosition;
+        // SmoothDamp-State fuer Remote-Interpolation. Wird auf 0 zurueckgesetzt nach
+        // harten Teleports, damit kein "Schwung" aus dem alten Pfad uebrigbleibt.
+        private Vector3 m_RemoteSmoothVelocity;
 
         // -------------------------------------------------------------------------
         // Lifecycle
@@ -164,11 +172,17 @@ namespace Riftstorm.Game.Movement
             bool isMoving = m_Input != null && m_Input.IsMoving;
             Vector2 input = isMoving ? ClampInput(rawInput) : Vector2.zero;
 
-            // Owner-seitiger Movement-Lock: solange die Combat-Visuals einen Action-State
-            // halten (Swing/Shoot/Cast/Hit/Die), wird der Owner-Predict-Input genullt.
-            // Server clampt zusätzlich autoritativ (siehe SubmitCommandServerRpc) und
-            // korrigiert via Reconciliation, falls der Client dem Lock entkommt.
-            if (m_CombatVisuals != null && m_CombatVisuals.IsBusy)
+            // Owner-seitiger Movement-Lock. Zwei Quellen:
+            //  1) PlayerCombatVisuals.IsBusy   — gesetzt, sobald die Attack-Anim
+            //     vom Server per ClientRpc eingespielt wurde (Swing/Shoot/Cast/Hit/Die).
+            //  2) PlayerCombat.IsOwnerPredictingAttack — gesetzt SOFORT beim lokalen
+            //     Attack-Input, bevor das ClientRpc zurückkommt. Schließt das ~1 RTT
+            //     große Fenster, in dem der Owner sonst weiterpredictet, während der
+            //     Server bereits clampt → Reconciliation-Ruckler.
+            // Server clampt zusätzlich autoritativ (siehe SubmitCommandServerRpc).
+            bool busy = (m_CombatVisuals != null && m_CombatVisuals.IsBusy)
+                        || (m_Combat != null && m_Combat.IsOwnerPredictingAttack);
+            if (busy)
             {
                 input = Vector2.zero;
             }
@@ -198,14 +212,32 @@ namespace Riftstorm.Game.Movement
 
         /// <summary>
         /// Remote-Client: keine Simulation, nur sanfte Interpolation zur autoritativen Position.
+        /// Verwendet <see cref="Vector3.SmoothDamp(Vector3, Vector3, ref Vector3, float)"/>:
+        /// die Smooth-Time absorbiert die Luecke zwischen seltenen NetworkVariable-Ticks und
+        /// echten Render-Frames, sodass Remote-Spieler nicht 'steppen', wenn die Render-Rate
+        /// (z. B. 200 FPS im Editor) deutlich hoeher liegt als der Server-Tick.
         /// </summary>
         private void TickRemoteClient()
         {
             Vector3 target = m_ServerPosition.Value;
-            transform.position = Vector3.Lerp(
-                transform.position,
-                target,
-                m_RemoteInterpolationSpeed * Time.deltaTime);
+            if (m_RemoteSmoothTime > 0f)
+            {
+                transform.position = Vector3.SmoothDamp(
+                    transform.position,
+                    target,
+                    ref m_RemoteSmoothVelocity,
+                    m_RemoteSmoothTime,
+                    maxSpeed: Mathf.Infinity,
+                    deltaTime: Time.deltaTime);
+            }
+            else
+            {
+                // Fallback (Smooth-Time auf 0 gesetzt): altes exponentielles Lerp.
+                transform.position = Vector3.Lerp(
+                    transform.position,
+                    target,
+                    m_RemoteInterpolationSpeed * Time.deltaTime);
+            }
         }
 
         // -------------------------------------------------------------------------
@@ -240,6 +272,9 @@ namespace Riftstorm.Game.Movement
             }
             transform.position = position;
             m_LastObservedPosition = position;
+            // Remote-Interp-Schwung wegwerfen, sonst gleitet der Spieler aus alter
+            // Richtung in die neue Teleport-Pose.
+            m_RemoteSmoothVelocity = Vector3.zero;
             if (IsOwner)
             {
                 // Reconciliation aus dem Prediction-Buffer würde sonst beim nächsten Ack

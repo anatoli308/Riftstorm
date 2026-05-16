@@ -20,18 +20,28 @@ namespace Riftstorm.Game.Player
         [SerializeField] private PlayerIdentity m_Identity;
         [Tooltip("Optional. Wenn gesetzt, wird die Position dieses Transforms direkt als Welt-Anker f\u00fcr " +
                  "das Nametag-Label verwendet (\u00fcblicherweise ein leeres Child 'NameTagAnchor' \u00fcber dem Kopf). " +
-                 "Wenn leer, wird die Anker-H\u00f6he einmalig aus den Renderer-Bounds des Players abgeleitet.")]
+                 "Wenn leer, wird der Anker fest aus Root-Transform + HeadHeight gebildet.")]
         [SerializeField] private Transform m_Anchor;
-        [Tooltip("Zus\u00e4tzlicher Offset (Welt-Koordinaten) auf den Anker. Bei Renderer-Bounds-Fallback wird Y " +
-                 "automatisch auf die Bounding-Box-Oberkante geschoben und nur dieser Offset addiert.")]
-        [SerializeField] private Vector3 m_WorldOffset = new(0f, 0.25f, 0f);
+        [Tooltip("Welt-H\u00f6he in Metern \u00fcber der Root-Transform, an der das Label sitzen soll, wenn kein " +
+                 "expliziter Anker gesetzt ist. Bewusst KEIN Renderer-Bounds-Lookup, weil FLARE-Sprite-Layer " +
+                 "flach auf der XZ-Ebene liegen und ihre Bounds pro Animationsframe wandern " +
+                 "(Waffe/Buckler ragen mal raus). Im Inspector pro Charaktergr\u00f6\u00dfe tunbar.")]
+        [SerializeField] private float m_HeadHeight = 1.2f;
+        [Tooltip("Zusätzlicher Offset (Welt-Koordinaten) auf den Anker. " +
+                 "Wird zur Laufzeit IGNORIERT — wir nutzen überall den festen Offset (0, -2, 0.8), " +
+                 "damit alte Prefab-Werte den Default nicht mehr überschreiben können.")]
+        [SerializeField] private Vector3 m_WorldOffset = new(0f, -2f, 0.8f);
+
+        /// <summary>Fester Offset für alle Nametags. Bewusst NICHT serialisiert, damit
+        /// Anpassungen in Code nicht von alten Prefab-Werten überschrieben werden.</summary>
+        private static readonly Vector3 s_FixedWorldOffset = new(0f, -2f, 0.8f);
         [SerializeField] private Color m_Color = Color.white;
         [SerializeField] private int m_FontSize = 14;
         [SerializeField] private float m_MaxDistance = 50f;
 
         private string m_CachedName = string.Empty;
         private GUIStyle m_Style;
-        private float m_AutoHeight; // Renderer-Bounds-H\u00f6he, falls m_Anchor leer ist.
+        private Renderer[] m_CachedRenderers;
 
         private void Awake()
         {
@@ -43,19 +53,50 @@ namespace Riftstorm.Game.Player
             // Wenn kein expliziter Anker zugewiesen ist, leiten wir die Kopf-H\u00f6he aus den
             // Renderer-Bounds ab. Das funktioniert sowohl f\u00fcr 2D-Sprites (FLARE) als auch
             // f\u00fcr 3D-Meshes, ohne dass der Designer einen Anker setzen muss.
-            if (m_Anchor == null)
+            RefreshRenderersIfNeeded();
+        }
+
+        /// <summary>
+        /// Soll aufgerufen werden, wenn sich die Renderer-Hierarchie aendert (z.B.
+        /// nach einem Skin-Apply). Der Cache wird bei Bedarf in OnGUI erneuert,
+        /// falls er leer wurde.
+        /// </summary>
+        public void InvalidateRendererCache()
+        {
+            m_CachedRenderers = null;
+        }
+
+        private void RefreshRenderersIfNeeded()
+        {
+            if (m_Anchor != null)
             {
-                Renderer[] renderers = GetComponentsInChildren<Renderer>(includeInactive: false);
-                if (renderers.Length > 0)
+                return;
+            }
+            if (IsCacheStale(m_CachedRenderers))
+            {
+                m_CachedRenderers = GetComponentsInChildren<Renderer>(includeInactive: false);
+            }
+        }
+
+        /// <summary>
+        /// Cache gilt als veraltet, wenn er leer ist oder mindestens ein Eintrag
+        /// zerstoert wurde (z. B. durch einen Skin-Swap, der die Renderer-Hierarchie
+        /// austauscht). Unity's '==' meldet zerstoerte Objekte als null.
+        /// </summary>
+        internal static bool IsCacheStale(Renderer[] cache)
+        {
+            if (cache == null || cache.Length == 0)
+            {
+                return true;
+            }
+            for (int i = 0; i < cache.Length; i++)
+            {
+                if (cache[i] == null)
                 {
-                    Bounds combined = renderers[0].bounds;
-                    for (int i = 1; i < renderers.Length; i++)
-                    {
-                        combined.Encapsulate(renderers[i].bounds);
-                    }
-                    m_AutoHeight = combined.max.y - transform.position.y;
+                    return true;
                 }
             }
+            return false;
         }
 
         private void OnEnable()
@@ -77,6 +118,60 @@ namespace Riftstorm.Game.Player
 
         private void OnNameChanged(string newName) => m_CachedName = newName;
 
+        /// <summary>
+        /// Liefert die Welt-Position des Renderer-Bounds-Eckpunkts, der unter der
+        /// gegebenen Kamera am weitesten OBEN am Bildschirm landet. Funktioniert
+        /// fuer aufrechte 3D-Meshes ebenso wie fuer FLARE-Sprite-Layer, die um 90 Grad
+        /// auf die XZ-Ebene gekippt sind (dort liegt der visuelle Kopf nicht bei
+        /// bounds.max.y, sondern bei bounds.max.z). Es werden alle 8 AABB-Ecken
+        /// jedes aktiven Renderers ausgewertet und der mit dem groessten screen.y
+        /// gewinnt. Liefert <c>false</c>, wenn kein gueltiger Eckpunkt vor der
+        /// Kamera liegt.
+        /// </summary>
+        internal static bool TryComputeWorldTop(Renderer[] renderers, Camera cam, out Vector3 worldTop)
+        {
+            worldTop = default;
+            if (renderers == null || cam == null)
+            {
+                return false;
+            }
+            bool hasAny = false;
+            float bestScreenY = float.NegativeInfinity;
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Renderer r = renderers[i];
+                if (r == null || !r.enabled || !r.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+                Bounds b = r.bounds;
+                Vector3 c = b.center;
+                Vector3 e = b.extents;
+                for (int sx = -1; sx <= 1; sx += 2)
+                {
+                    for (int sy = -1; sy <= 1; sy += 2)
+                    {
+                        for (int sz = -1; sz <= 1; sz += 2)
+                        {
+                            Vector3 corner = new(c.x + sx * e.x, c.y + sy * e.y, c.z + sz * e.z);
+                            Vector3 screen = cam.WorldToScreenPoint(corner);
+                            if (screen.z <= 0f)
+                            {
+                                continue;
+                            }
+                            if (!hasAny || screen.y > bestScreenY)
+                            {
+                                bestScreenY = screen.y;
+                                worldTop = corner;
+                                hasAny = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return hasAny;
+        }
+
         private void OnGUI()
         {
             if (string.IsNullOrEmpty(m_CachedName))
@@ -89,14 +184,20 @@ namespace Riftstorm.Game.Player
                 return;
             }
 
+            // Fester Offset \u2014 ignoriert serialisierte Prefab-Werte (siehe s_FixedWorldOffset).
             Vector3 worldPos;
             if (m_Anchor != null)
             {
-                worldPos = m_Anchor.position + m_WorldOffset;
+                worldPos = m_Anchor.position + s_FixedWorldOffset;
             }
             else
             {
-                worldPos = transform.position + new Vector3(m_WorldOffset.x, m_AutoHeight + m_WorldOffset.y, m_WorldOffset.z);
+                // Fester Welt-Y-Offset über der Root-Transform. Bewusst KEIN
+                // Renderer-Bounds-Lookup: FLARE-Layer liegen flach auf der XZ-Ebene
+                // und ihre Bounds wandern pro Animationsframe.
+                worldPos = transform.position
+                           + (Vector3.up * m_HeadHeight)
+                           + s_FixedWorldOffset;
             }
             Vector3 screen = cam.WorldToScreenPoint(worldPos);
             if (screen.z <= 0f)

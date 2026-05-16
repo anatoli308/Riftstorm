@@ -196,6 +196,23 @@ namespace Riftstorm.Game.Combat
         public bool IsServerMovementLocked =>
             IsServer && (m_CurrentState == AttackingState || m_CurrentState == DeadState);
 
+        /// <summary>
+        /// Owner-Vorhersage: <c>true</c> zwischen dem lokalen Attack-Input und dem
+        /// Eintreffen des <see cref="PlayAttackClientRpc"/> vom Server. Verhindert das
+        /// charakteristische Reconciliation-Ruckeln, wenn der Owner während des einen
+        /// Roundtrips weiterpredictet, der Server aber bereits clampt. Wird vom
+        /// <see cref="Movement.PlayerMovement"/> zusätzlich zu
+        /// <see cref="PlayerCombatVisuals.IsBusy"/> konsultiert. Hartes Sicherheits-Timeout
+        /// für den Fall, dass der Server die Attack verwirft (kein Ziel/Waffe) und gar
+        /// kein ClientRpc folgt.
+        /// </summary>
+        public bool IsOwnerPredictingAttack => Time.unscaledTime < m_OwnerPredictedAttackUntil;
+
+        private float m_OwnerPredictedAttackUntil;
+
+        /// <summary>Maximales Vorhersagefenster (Sekunden), wenn keine Server-Antwort kommt.</summary>
+        private const float k_OwnerAttackPredictionWindow = 0.5f;
+
         // -------------------------------------------------------------------------
         // Server-Death-Pipeline
         // -------------------------------------------------------------------------
@@ -354,6 +371,13 @@ namespace Riftstorm.Game.Combat
             // Attack-Anfrage durch — der Server validiert anschlie&#223;end Existenz, Lebendigkeit
             // und Reichweite (analog zum SoF-Server, der target-id + range pr&#252;ft).
             ulong hovered = m_Targeting != null ? m_Targeting.CurrentHoveredTargetId : TargetSelection.NoTarget;
+
+            // Lokale Movement-Vorhersage aktivieren: ab JETZT clampt der Owner-Tick
+            // seinen Move-Input auf 0 (siehe PlayerMovement.TickOwner). Das ClientRpc
+            // des Servers löst die Vorhersage wieder, sobald die echte Attack-Anim
+            // (und damit PlayerCombatVisuals.IsBusy) eintrifft.
+            m_OwnerPredictedAttackUntil = Time.unscaledTime + k_OwnerAttackPredictionWindow;
+
             RequestAttackServerRpc(hovered);
         }
 
@@ -397,7 +421,10 @@ namespace Riftstorm.Game.Combat
             FaceCurrentTarget();
 
             // 1) An alle Clients (inkl. Host) zum Visual-Trigger fan-out.
-            PlayAttackClientRpc(weapon.AttackAnim);
+            //    Cooldown mitsenden, damit der Owner seinen Movement-Lock für
+            //    exakt die gleiche Dauer wie der Server hält (kein Reconciliation-Snap,
+            //    wenn die visuelle Anim kürzer ist als der Cooldown).
+            PlayAttackClientRpc(weapon.AttackAnim, weapon.AttackCooldown);
 
             // 2) Cooldown-State konfigurieren und Transition.
             AttackingState.ConfigureFromWeapon(weapon);
@@ -424,8 +451,17 @@ namespace Riftstorm.Game.Combat
         // -------------------------------------------------------------------------
 
         [ClientRpc]
-        private void PlayAttackClientRpc(CombatAnim anim, ClientRpcParams _ = default)
+        private void PlayAttackClientRpc(CombatAnim anim, float cooldown, ClientRpcParams _ = default)
         {
+            // Server hat die Attack bestätigt: Owner-Vorhersage exakt auf den Server-
+            // Cooldown verlängern. Damit ist der Owner-Movement-Lock und der
+            // Server-Movement-Lock (IsServerMovementLocked) deckungsgleich —
+            // egal wie lang/kurz die visuelle Attack-Anim ist.
+            if (IsOwner)
+            {
+                m_OwnerPredictedAttackUntil = Time.unscaledTime + Mathf.Max(0.05f, cooldown);
+            }
+
             if (m_Visuals == null)
             {
                 return;
