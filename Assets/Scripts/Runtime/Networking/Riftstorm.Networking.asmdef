@@ -4,14 +4,7 @@
     "references": [
         "Riftstorm.Core",
         "Riftstorm.Shared",
-        "Riftstorm.Gameplay",
-        "Unity.Entities",
-        "Unity.NetCode",
-        "Unity.Transport",
-        "Unity.Burst",
-        "Unity.Collections",
-        "Unity.Mathematics",
-        "Unity.Transforms"
+        "Riftstorm.Gameplay"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

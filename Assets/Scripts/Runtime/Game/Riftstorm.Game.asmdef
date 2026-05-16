@@ -9,13 +9,6 @@
         "Riftstorm.AI",
         "Riftstorm.Networking",
         "Riftstorm.UI",
-        "Unity.Entities",
-        "Unity.NetCode",
-        "Unity.Transport",
-        "Unity.Burst",
-        "Unity.Collections",
-        "Unity.Mathematics",
-        "Unity.Transforms",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

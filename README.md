@@ -43,29 +43,36 @@ Spawn → Farm Horden → Skill leveln → Evolution freischalten
 | Bereich | Wahl | Warum |
 |---|---|---|
 | Engine | **Unity 6 + URP** | Topdown-tauglich, große Toolchain, performant |
-| Gameplay-Sim | **ECS / DOTS + Burst + Jobs** | Tausende Entities, cachefreundlich |
-| Networking | **Netcode for GameObjects** (Dedicated Server) | Server-authoritative, Unity-nativ |
+| Gameplay | **Klassische MonoBehaviours** + Object Pooling | Schnelle Iteration, ausreichend für 10–15 Spieler / hunderte Enemies |
+| Networking | **Netcode for GameObjects (NGO)** + Dedicated Server | Server-authoritative, Unity-nativ, Server-/Client-Build-Split |
 | Input | **Unity Input System** | bereits eingebunden |
 | Assets | **Addressables** | Cache-first Loading via `PrefabManager` |
-| Architektur | **MVC + State Machines + EventManager + ServiceLocator** | aus *RemakeSoF* portiert |
+| Architektur | **MVC + State Machines + EventManager + ServiceLocator** | 1:1 aus *RemakeSoF* portiert |
 
-> ⚠️ DOTS, NGO und Addressables stehen in der Architektur-Doku, sind aktuell aber **noch nicht** in `Packages/manifest.json`. Das ist der erste konkrete Setup-Schritt.
+> Aktuell installiert: `com.unity.netcode.gameobjects 2.11.2`, `com.unity.dedicated-server 2.0.2`, `com.unity.addressables`, `com.unity.inputsystem`, URP 17.3.0. ECS/DOTS wurde bewusst entfernt.
 
 ---
 
 ## Architektur (aus RemakeSoF portiert)
 
 ```
-Assets/Scripts/Runtime/
-├── ApplicationLifecycle/   # ApplicationEntryPoint + ServiceLocator
-├── Core/                   # MVC Base (Element, Model, View, Controller, BaseApplication)
-│                           # State Machine Base (StateMachine<T>, State<T>)
-│                           # EventManager (typsichere Events)
-├── Management/             # MonoBehaviour Manager (Connection, Auth, Console, ...)
-├── AI/                     # Enemy AI, Boss-Logik
-├── Game/                   # GameApplication (Match-Scene, Netcode-Integration)
-├── Metagame/               # MetagameApplication (Lobby, Hero-Auswahl, Loadout)
-└── Shared/                 # Cross-Scene Daten / DTOs
+Assets/Scripts/
+├── Editor/                       # BuildHelpers, BuildProcessor, SceneBootstrapper
+└── Runtime/
+    ├── ApplicationLifecycle/     # ApplicationEntryPoint, ServiceLocator, ServerCommandListener
+    ├── Core/                     # MVC Base (BaseApplication, Element, Model, View, Controller)
+    │                             # State Machine Base (StateMachine<T,S>, State<T>)
+    │                             # EventManager (typsichere Events)
+    ├── Management/               # MonoBehaviour Manager (Connection, Auth, Console, PlayerSkin, ...)
+    ├── AI/                       # Enemy AI, Boss-Logik (GOAP optional)
+    ├── Game/                     # GameApplication (Match-Scene, NGO-Integration)
+    │   ├── Bootstrap/            # GamePlayerBootstrap
+    │   ├── Characters/           # Player + Enemy Prefabs (NetworkBehaviour)
+    │   ├── Controllers/          # Input, Movement, Camera Controller
+    │   ├── Networked/            # NetworkBehaviours, ServerRpc/ClientRpc, NetworkVariables
+    │   ├── Models/  Views/       # MVC innerhalb Game-Scene
+    ├── Metagame/                 # MetagameApplication (Lobby, Hero-Auswahl, Loadout)
+    └── Shared/                   # Cross-Scene Daten / DTOs, AvatarActions
 ```
 
 **Patterns:**
@@ -81,8 +88,8 @@ Assets/Scripts/Runtime/
 
 | Metrik | Ziel |
 |---|---|
-| Spieler pro Match | 10 |
-| Gleichzeitige Enemies | 300–500 |
+| Spieler pro Match | 10–15 (5v5 oder FFA) |
+| Gleichzeitige Enemies | 200–400 |
 | Frame Rate | >60 FPS stabil |
 | Server Tickrate | 20–30 Hz |
 | Bandwidth pro Client | < 64 kbit/s |

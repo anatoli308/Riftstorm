@@ -3,17 +3,6 @@
     "rootNamespace": "Riftstorm.Gameplay",
     "references": [
         "Riftstorm.Shared",
-        "Unity.Entities",
-        "Unity.Entities.Hybrid",
-        "Unity.Burst",
-        "Unity.Collections",
-        "Unity.Mathematics",
-        "Unity.Jobs",
-        "Unity.Transforms",
-        "Unity.Physics",
-        "Unity.NetCode",
-        "Unity.Transport",
-        "Unity.Entities.Graphics",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.InputSystem"
     ],

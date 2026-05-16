@@ -1,18 +1,18 @@
 # Riftstorm — Architektur- & Setup-Kontext
 
-> **Stand**: Initialer Architektur-Sweep nach Port aus RemakeSoF.
-> Dieses Dokument ist der **kondensierte Referenz-Kontext** aus der Setup-Session.
-> Zweck: Bei späteren Claude/Copilot-Sessions als Anhang einfügen oder selbst nachlesen.
+> **Stand**: Nach ECS-Cut. Riftstorm läuft jetzt **NGO-only** mit klassischen MonoBehaviours.
+> Setup ist 1:1 an *RemakeSoF* (Soldier-of-Fortune-Remake) angelehnt.
+> Zweck dieses Dokuments: Kondensierter Referenz-Kontext für spätere Copilot/Claude-Sessions.
 
 ---
 
 ## 1. Vision
 
-**Riftstorm** = Multiplayer Vampire-Survivors-MOBA im League-of-Legends-Stil.
+**Riftstorm** = Multiplayer Vampire-Survivors-MOBA im League-of-Legends-Stil mit ARPG-Elementen.
 
-- **Genre**: Top-down PvPvE Action
-- **Spielerzahl**: 10 Spieler pro Match
-- **Enemy-Scale**: 300–500 Enemies gleichzeitig
+- **Genre**: Top-down PvPvE Action (Survivor-MOBA-Hybrid)
+- **Spielerzahl**: 10–15 pro Match (5v5 oder FFA)
+- **Enemy-Scale**: 200–400 Enemies gleichzeitig
 - **Performance-Target**: 60 FPS Client
 - **Netcode-Tickrate**: 20–30 Hz Server-Authoritative
 - **Engine**: Unity 6 + URP 17.3.0
@@ -25,127 +25,140 @@
 
 | Package | Version | Zweck |
 |---|---|---|
-| `com.unity.feature.ecs` | 1.0.0 | DOTS Feature (Entities, Burst, Collections, Mathematics, Jobs, Transforms, Physics) |
-| `com.unity.netcode` | 1.10.0 | **Netcode for Entities** (NfE) — Server-Authoritative Multiplayer mit Ghosts & Prediction |
-| `com.unity.addressables` | 2.8.1 | Asset-Loading (Cache-first via PrefabManager) |
+| `com.unity.netcode.gameobjects` | 2.11.2 | **NGO** — Server-Authoritative Multiplayer (NetworkBehaviour, NetworkVariable, RPCs) |
+| `com.unity.dedicated-server` | 2.0.2 | `MultiplayerRolesManager` für Build-Time Server/Client-Split |
+| `com.unity.addressables` | aktuell | Asset-Loading (Cache-first via `PrefabManager`) |
 | `com.unity.render-pipelines.universal` | 17.3.0 | URP |
-| `com.unity.inputsystem` | 1.18.0 | Input System |
-| `com.unity.ai.navigation` | 2.0.10 | NavMesh (für MonoBehaviour-Bosses) |
-| `com.unity.multiplayer.center` | 1.0.1 | Multiplayer Center UI |
-| `com.unity.multiplayer.playmode` | 2.0.2 | **MPPM** — Virtual Players im Editor |
-| `com.unity.multiplayer.tools` | 2.2.8 | Network Profiler / Debugger |
-| `com.crashkonijn.goap` | 3.1.2 | GOAP für Boss-AI (MonoBehaviour-Welt) |
-| `com.unity.services.multiplayer` | 2.2.2 | UGS (drin, aber **erstmal nicht genutzt**) |
-| `com.unity.ugui` | 2.0.0 | Legacy UGUI (Pflicht von Unity) |
+| `com.unity.inputsystem` | aktuell | Input System |
+| `com.unity.ai.navigation` | aktuell | NavMesh (für Bosses/Enemies) |
+| `com.unity.multiplayer.center` | aktuell | Multiplayer Center UI |
+| `com.unity.multiplayer.playmode` | aktuell | **MPPM** — Virtual Players im Editor |
+| `com.unity.multiplayer.tools` | aktuell | Network Profiler / Debugger |
 
-### Bewusst entfernt / nicht genutzt
-- ❌ `com.unity.netcode.gameobjects` (NGO) — durch NfE ersetzt
-- ❌ UGS-Services (Lobby, Relay, Matchmaking) — später, erst Direct IP / LAN / Steam P2P
+### Bewusst entfernt
+- ❌ `com.unity.feature.ecs` (DOTS Meta-Feature) — vollständig gecuttet
+- ❌ `com.unity.netcode` (Netcode for Entities / NfE) — gegen NGO ersetzt
+- ❌ Burst, Jobs, Collections, Mathematics, Transforms, Physics (ECS-Physik), Entities.Graphics
 
-### Noch zu evaluieren
-- `com.unity.dedicated-server` für `MultiplayerRolesManager` — wahrscheinlich noch nicht im manifest, muss rein für Build-Time Role-Stripping.
+### Noch offen
+- UGS (Lobby/Relay/Matchmaking) — erstmal **nicht** genutzt. Direct IP / LAN / Steam P2P reicht für MVP.
+- Anti-Cheat (EAC, BattlEye) — später.
 
 ---
 
-## 3. Drei-Schichten-Architektur
+## 3. Zwei-Schichten-Architektur (NGO-only)
 
-### Layer 1: Simulation (DOTS-pur)
-- **Wo**: `Runtime/Gameplay/`, `Runtime/AI/`, `Runtime/Networking/`
-- **Was**: Movement, Combat, AI für Trash/Elite, Skills, Health/Damage, Netcode-Ghosts
+### Layer 1: Game Simulation (Server-Authoritative MonoBehaviour)
+- **Wo**: `Runtime/Game/Networked/`, `Runtime/Game/Characters/`, `Runtime/Game/Controllers/`, `Runtime/AI/`
+- **Was**: Player-Movement (Server-Validation), Combat, Enemy-AI, Skills, Health/Damage
 - **Regeln**:
-  - Reine `IComponentData` Structs + `ISystem`
-  - `[BurstCompile]` Pflicht für jeden Hot-Path-System
-  - Keine MonoBehaviour-Referenzen
-  - Keine `class`-Komponenten (außer Managed-Components für Sonderfälle)
-  - Server-Authoritative via `[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]`
-  - Client-Prediction via `PredictedSimulationSystemGroup`
+  - Authoritative State liegt **immer** auf dem Server
+  - `NetworkBehaviour` + `NetworkVariable<T>` + `ServerRpc` / `ClientRpc`
+  - Clients senden nur Inputs, Server simuliert, Clients interpolieren
+  - Fixed Tick (20–30 Hz) für Simulation, getrennt von Render-FPS
+  - Object Pooling für Projektile/Enemies/FX
 
-### Layer 2: Presentation (MonoBehaviour)
-- **Wo**: `Runtime/UI/`, `Runtime/Core/`, `Runtime/Metagame/`, `Runtime/Game/`
-- **Was**: UI Toolkit Screens, Audio, VFX, Camera, Input-Reading, Scene-Management
+### Layer 2: Presentation + Bridge (MonoBehaviour + MVC)
+- **Wo**: `Runtime/Core/`, `Runtime/Game/Views/`, `Runtime/Game/Models/`, `Runtime/Metagame/`, `Runtime/UI/`
+- **Was**: UI Toolkit Screens, Audio, VFX, Camera, Input-Reading, Scene-Management, Lobby
 - **Regeln**:
-  - MVC-Pattern (BaseApplication, Model, View, Controller, Element)
+  - MVC-Pattern (`BaseApplication`, `Model`, `View`, `Controller`, `Element`)
   - UI Toolkit für Screens (kein UGUI für neue UI)
-  - Keine Gameplay-Logik — nur Darstellung + User-Input-Capture
-  - Kommuniziert mit Sim via Bridge
+  - Keine Gameplay-Logik in Views — nur Darstellung + Input-Capture
+  - State-Manager halten Single Source of Truth, Events triggern nur
 
-### Layer 3: Infrastructure & Bridge
-- **Wo**: `Runtime/Management/`, `Runtime/ApplicationLifecycle/`, `Runtime/Gameplay/Bridge/`
-- **Was**: ServiceLocator, PrefabManager, TextureManager, DataManager, Bootstrap, MB↔DOTS-Bridge
+### Layer 3: Infrastructure
+- **Wo**: `Runtime/ApplicationLifecycle/`, `Runtime/Management/`, `Runtime/Shared/`
+- **Was**: ServiceLocator, PrefabManager, TextureManager, DataManager, ConnectionManager, AuthenticationManager, ConsoleManager
 - **Regeln**:
-  - Pure Services (keine MonoBehaviours) via ServiceLocator
+  - Pure Services (keine MonoBehaviours) via `ServiceLocator.Register<T>()` / `Get<T>()`
+  - MonoBehaviour-Manager als serialisierte Felder im `ApplicationEntryPoint`
   - Cache-first für alle Assets
-  - Bridge übersetzt MB-Events → DOTS-Components und umgekehrt
 
 ---
 
-## 4. Asmdef-Graph (azyklisch)
+## 4. Ordnerstruktur (Spiegel von RemakeSoF)
+
+```
+Assets/Scripts/
+├── Editor/
+│   ├── BuildHelpers.cs            # Editor-Build-Utilities
+│   ├── BuildProcessor.cs          # IPreprocessBuildWithReport (Server/Client-Stripping)
+│   ├── CloudBuildHelpers.cs       # optional, falls Unity Cloud Build
+│   └── SceneBootstrapper.cs       # Auto-Load Boot-Scene im Editor
+└── Runtime/
+    ├── AssemblyInfo.cs            # InternalsVisibleTo etc.
+    ├── ApplicationLifecycle/
+    │   ├── ApplicationEntryPoint.cs       # Singleton, DontDestroyOnLoad, Bootstrap
+    │   ├── ServiceLocator.cs              # Pure-Service Container
+    │   ├── ServerCommandListener.cs       # Dedicated-Server stdin Konsole
+    │   └── NetworkStatsMonitorInitializer.cs
+    ├── Core/
+    │   ├── BaseApplication.cs             # Root für Scene-Scripts, EventManager-Owner
+    │   ├── Element.cs                     # Gemeinsame MVC-Basis
+    │   ├── Model.cs / Model<T>            # Datenhaltung
+    │   ├── View.cs / View<T>              # UI-Darstellung (MonoBehaviour, UIToolkit)
+    │   ├── Controller.cs / Controller<T>  # MVC-Bridge, EventManager-Listener
+    │   ├── EventManager.cs                # Typ-sichere Events
+    │   ├── State.cs / State<TManager>     # State-Machine-State
+    │   └── StateMachine.cs                # StateMachine<TState, TSelf> (CRTP)
+    ├── Management/
+    │   ├── ConnectionManager.cs           # NGO NetworkManager Wrapper, StateMachine
+    │   ├── AuthenticationManager.cs       # StateMachine, Token-Refresh
+    │   ├── ConsoleManager.cs              # In-Game Konsole, StateMachine
+    │   └── PlayerSkinManager.cs           # StateMachine + Loader/Applier
+    ├── AI/
+    │   ├── AIBotController.cs             # Top-Level Bot-Logik
+    │   ├── Audio/  EANN/  GOAP/  Personality/  Sensors/
+    ├── Game/                              # Match-Scene
+    │   ├── GameApplication.cs             # BaseApplication<GameModel, GameView, GameController>
+    │   ├── GameEvents.cs                  # Event-Typen
+    │   ├── Bootstrap/                     # GamePlayerBootstrap.cs (Layer-Atlases)
+    │   ├── Camera/                        # TopdownCameraFollow
+    │   ├── Characters/                    # Player + Enemy NetworkBehaviour-Prefabs
+    │   ├── Controllers/                   # PlayerInputController, PlayerMovement
+    │   ├── Effects/                       # VFX-Spawner (client-side)
+    │   ├── Environment/                   # Map-spezifische Logik
+    │   ├── MapLoader/                     # Map-Streaming
+    │   ├── Models/                        # GameModel + Sub-Models
+    │   ├── Networked/                     # NetworkBehaviours, RPCs, NetworkVariables
+    │   ├── Projectiles/                   # Server-authoritative Projectile Pool
+    │   ├── Sprites/                       # FlareAtlas, FlareLayerAnimator, FlareCharacter
+    │   ├── Views/                         # GameView + Sub-Views (HUD, Death-Screen, etc.)
+    │   └── WeaponLoader/                  # Weapon-Definition-Loader
+    ├── Metagame/                          # Login, Hero-Select, Lobby
+    │   ├── MetagameApplication.cs
+    │   ├── Models/  Views/  Controllers/
+    └── Shared/                            # Cross-Scene DTOs, AvatarActions, Konstanten
+```
+
+---
+
+## 5. Asmdef-Graph (azyklisch, NGO-only)
 
 ```
 Shared (no deps)
   ↑
 Core (Shared + UI Toolkit)
   ↑
-Management (Core + Shared + Addressables)
+Management (Core + Shared + Addressables + Unity.Netcode)
   ↑
-Gameplay (Shared + DOTS-Packages, allowUnsafeCode)
+Gameplay (Shared + URP + InputSystem)           # ggf. mit Game verschmolzen
   ↑
-AI (Shared + Gameplay + DOTS, allowUnsafeCode, + CrashKonijn.Goap)
+AI (Shared + Gameplay)
   ↑
-Networking (Shared + Gameplay + NetCode + Transport + DOTS)
+Networking (Core + Shared + Gameplay + Unity.Netcode)   # ggf. in Game/Networked/ aufgelöst
   ↑
 UI (Core + Shared)
   ↑
 Metagame (Core + Shared + Management + UI + InputSystem)
-Game     (Core + Shared + Management + Gameplay + AI + Networking + UI + DOTS + InputSystem)
+Game     (Core + Shared + Management + Gameplay + AI + Networking + UI + InputSystem + Unity.Netcode)
   ↑
-ApplicationLifecycle (alle obigen + Addressables + DOTS + Collections + Burst + Mathematics)
+ApplicationLifecycle (alle obigen + Addressables + InputSystem)
 ```
 
-**Status**: 10 Asmdefs angelegt, Referenzen sauber, zyklusfrei.
-
----
-
-## 5. Ordnerstruktur
-
-```
-Assets/
-├── Art/                          Models, Textures, Materials, VFX, Audio
-│   └── Animations/               (Animator Controllers + Clips hierhin)
-├── Data/                         ScriptableObjects (Heroes, Enemies, Skills, Waves)
-├── Prefabs/                      Entity-Prefabs + MonoBehaviour-Prefabs
-├── Scenes/
-│   ├── Boot.unity                ApplicationEntryPoint
-│   ├── Metagame.unity            Login, Hero-Select, Lobby
-│   └── Game.unity                Match-Scene mit SubScenes
-├── Settings/                     URP, Input Actions, Quality
-├── StreamingAssets/
-│   └── Data/                     JSON Source-of-Truth (Heroes, Enemies, Skills)
-└── Scripts/
-    └── Runtime/
-        ├── Shared/               Constants, Interfaces, Utilities
-        ├── Core/                 MVC Base-Klassen + UI Toolkit Helper
-        ├── Management/           ServiceLocator + Pure Services (Prefab/Texture/Data)
-        ├── Gameplay/
-        │   ├── Authoring/        MonoBehaviour-Authoring + Baker
-        │   ├── Bridge/           MB ↔ DOTS Bridge
-        │   └── Sim/              IComponentData + ISystem (DOTS-pur)
-        ├── AI/
-        │   ├── Brains/           GOAP-Brains für Bosse
-        │   ├── Bosses/           MonoBehaviour-Boss-Logik
-        │   ├── Components/       DOTS AI-Components
-        │   └── Systems/          DOTS AI-Systems
-        ├── Networking/           NfE Bootstrap + Custom RPCs + Ghost-Setup
-        ├── UI/                   UI Toolkit Views/Controls (scene-unabhängig)
-        ├── Metagame/             Login, Hero-Select-Scene-Logik
-        ├── Game/                 Match-Scene-Logik + MB↔DOTS-Bridge
-        └── ApplicationLifecycle/ Bootstrap + ServiceLocator-Init
-```
-
-### Cleanup-TODOs
-- [ ] `Assets/DefaultNetworkPrefabs.asset` löschen (NGO-Leftover, NfE nutzt es nicht)
-- [ ] `Assets/Animator/` → `Assets/Art/Animations/` verschieben
-- [ ] UGS-Entscheidung treffen: drin lassen oder raus
+> **NGO-Assembly heißt `Unity.Netcode`** (lowercase „c"), **nicht** `Unity.NetCode` (das wäre NfE).
+> Diese Referenz muss in `Riftstorm.Management.asmdef`, `Riftstorm.Networking.asmdef` und `Riftstorm.Game.asmdef`, sobald `NetworkBehaviour`-Code geschrieben wird.
 
 ---
 
@@ -153,9 +166,9 @@ Assets/
 
 | System | Layer | Steuert |
 |---|---|---|
-| **`MultiplayerRolesManager`** | **Build-Time** | Was wird in den Build gepackt? Server-Build vs. Client-Build (Code/Asset-Stripping) |
+| **`MultiplayerRolesManager`** (`com.unity.dedicated-server`) | **Build-Time** | Was wird in den Build gepackt? Server-Build vs. Client-Build (Code/Asset-Stripping) |
 | **MPPM (Multiplayer Play Mode)** | **Editor-PlayMode** | Virtuelle Player-Instanzen im Editor, Player-Tags, Rollen-Dropdown |
-| **NfE `ClientServerBootstrap`** | **Runtime** | Welche World wird erstellt? `ClientWorld`, `ServerWorld`, `ClientAndServer`, `ThinClient` |
+| **NGO `NetworkManager`** | **Runtime** | StartHost / StartServer / StartClient, Connection Approval, Scene Sync |
 
 ### MPPM Player Tags
 - Werden **NICHT** im `TagManager.asset` angelegt
@@ -164,131 +177,146 @@ Assets/
 
 ### MPPM Rolle (Server/Client/ClientAndServer)
 - Im MPPM-Window pro Virtual Player im **Role-Dropdown** wählbar
-- NfE liest das automatisch via `MultiplayerPlayModePreferences.RequestedPlayType`
+- `ApplicationEntryPoint` liest die Rolle und ruft `StartServer()` oder `StartClient()` am `NetworkManager`
 
 ---
 
-## 7. Datenfluss-Pipeline
+## 7. Dedicated-Server-Build (Server-Only / Client-Only)
 
-```
-StreamingAssets/Data/heroes/hero_01.json   (Source of Truth, editierbar)
-        │
-        ▼
-DataManager liest JSON beim Bootstrap
-        │
-        ▼
-ScriptableObject (HeroDefinition) im Memory-Cache
-        │
-        ▼
-Authoring-MonoBehaviour referenziert ScriptableObject
-        │
-        ▼
-Baker übersetzt → IComponentData (Burst-kompatibel, BlobAsset wenn nötig)
-        │
-        ▼
-DOTS-Systems lesen Components im Hot-Path
+### Konfiguration
+- Build Profile: **"Windows Server"** (`Assets/Settings/Build Profiles/Windows Server.asset`)
+- Subtarget: `Server` (Dedicated Server, Headless, kein Rendering)
+- Scripting Define: `UNITY_SERVER` (automatisch gesetzt)
+
+### Code-Pattern für Role-Stripping
+```csharp
+#if UNITY_SERVER
+    networkManager.StartServer();
+    SceneManager.LoadScene("Game");
+#else
+    networkManager.StartClient();
+    SceneManager.LoadScene("Metagame");
+#endif
 ```
 
-**Wichtig**: JSON wird **NIE** in DOTS-Hot-Path geparst.
+Oder runtime-basiert über `MultiplayerRolesManager.ServerRoleEnabled`.
+
+### CommandLineArgumentsParser
+- Liest `--port <int>` (Default 7777)
+- Liest `--target-framerate <int>` (Default 30 für Server)
+- Triggert beim Server-Start: `Application.targetFrameRate`, `QualitySettings.vSyncCount = 0`, `NetworkManager.StartServer()`
 
 ---
 
-## 8. Build-Order (Bottom-Up)
+## 8. Datenfluss-Pipeline
 
-### Phase 0: Fundament
-1. `ApplicationEntryPoint` minimal (MultiplayerRolesManager-Switch + ServiceLocator + Scene-Load)
+```
+StreamingAssets/Data/*.json        (Source of Truth, editierbar)
+        │
+        ▼
+DataManager (Pure Service) liest JSON beim Bootstrap
+        │
+        ▼
+ScriptableObject / DTO im Memory-Cache
+        │
+        ▼
+Prefab / NetworkBehaviour referenziert Daten via ServiceLocator
+        │
+        ▼
+Server-Logic liest Stats, Client interpoliert + rendert
+```
+
+JSON wird **NIE** in Gameplay-Hot-Path geparst. Immer beim Bootstrap einmal laden.
+
+---
+
+## 9. Build-Order (Bottom-Up)
+
+### Phase 0: Fundament ✅ (teils erledigt)
+1. `ApplicationEntryPoint` mit MultiplayerRoles-Switch + ServiceLocator + Scene-Load
 2. 3 leere Scenes: Boot, Metagame, Game
 3. Build Settings: Scenes in Reihenfolge
 
-### Phase 1: DOTS + NfE-Host gleichzeitig ← **OPTIMIERTER WEG**
-1. `RiftstormBootstrap : ClientServerBootstrap` mit `ClientAndServer` Default
-2. SubScene in Game.unity mit Test-Cube
-3. `MoveSpeedComponent` + `LocalTransform` + `[GhostField]`
-4. `MovementSystem` mit `[BurstCompile]` + `[WorldSystemFilter(ServerSimulation)]` + ProfilerMarker
-5. Stresstest-Scene mit 1000 Dummy-Entities → FPS-Baseline
+### Phase 1: NGO-Bootstrap
+1. `ConnectionManager` (StateMachine: Disconnected / Connecting / Connected / Failed)
+2. `NetworkManager` Prefab mit Unity Transport
+3. `StartServer()` auf Dedicated-Build, `StartClient()` mit Direct-IP-Connect auf Client
 
-### Phase 2: Player Input + Prediction
-1. `PlayerInputCommand : ICommandData`
-2. `PredictedSimulationSystemGroup` für Player-Movement
-3. `[GhostComponent(PrefabType = AllPredicted)]` am Player
+### Phase 2: Player Spawning + Server-Authoritative Movement
+1. `Player.prefab` mit `NetworkObject` + `PlayerNetworked : NetworkBehaviour`
+2. Client sendet Input via `ServerRpc(InputCommand input)`
+3. Server simuliert Movement, sendet Position via `NetworkVariable<Vector3>` oder ClientRpc
+4. Client-Prediction + Reconciliation (manuell, da NGO das nicht out-of-the-box hat)
+5. `TopdownCameraFollow` client-side am lokalen Player
 
-### Phase 3: Daten-getriebenes Authoring
-1. `HeroDefinition` ScriptableObject mit allen Stats
-2. `HeroAuthoring : MonoBehaviour` + Baker liest aus Definition
-3. JSON→ScriptableObject Pipeline via DataManager
+### Phase 3: Combat + Skills
+1. `WeaponNetworked` mit Server-authoritativem Fire-Cooldown
+2. Hit-Detection server-side (Raycast/Overlap)
+3. Damage über `NetworkVariable<int> Health` mit OnValueChanged → Client-VFX
+4. Skills als Composition (`DamageEffect`, `KnockbackEffect`, `SlowEffect`)
 
 ### Phase 4: Enemies + AI
-1. `EnemyDefinition` ScriptableObject
-2. `EnemySpawnSystem` Server-only, liest aus `WaveDefinition`
-3. AI als DOTS-State-Machine (Enum-Component + System-pro-State)
-4. Boss-AI: MonoBehaviour + GOAP via Bridge
+1. `EnemyNetworked` Object Pool (Server spawnt, Clients sehen via NetworkObject)
+2. Server-side AI mit NavMeshAgent + State Machine
+3. Boss-AI optional via GOAP (`com.crashkonijn.goap` falls eingebunden)
 
-### Phase 5: Skills via Composition
-1. `AbilityComponent`, `CooldownComponent`
-2. Skill-Definition = Liste von Effects (`DamageEffect`, `KnockbackEffect`, `SlowEffect`, …)
-3. `AbilitySystem` instanziiert Effects als Entity-Components
-4. **Kein** Monolithic-Skill-Klassen-Pattern
+### Phase 5: Daten-getriebene Content-Pipeline
+1. `HeroDefinition`, `EnemyDefinition`, `WeaponDefinition` als ScriptableObject + JSON
+2. `DataManager` lädt JSON → SO im Bootstrap
+3. Prefabs referenzieren SOs, keine Hardcoded-Stats
 
 ---
 
-## 9. AAA-Standard-Abgleich
+## 10. AAA-Standard-Abgleich
 
 ### Was AAA-Standard ist (und du machst)
 - ✅ Bottom-up Vertical Slice
 - ✅ Server-Authoritative von Tag 1
-- ✅ Data-Oriented Design (DOTS/ECS) — wie Overwatch, Diablo IV, Destiny 2
-- ✅ Strikte Trennung Sim / Presentation
-- ✅ Authoring + Baking Pipeline
-- ✅ Build-Time Role-Stripping
+- ✅ Strikte Trennung Sim / Presentation (MVC + NetworkBehaviour-Layer)
+- ✅ Build-Time Role-Stripping (Dedicated Server Subtarget)
 - ✅ Fixed Tick Simulation getrennt von Render-FPS
+- ✅ Data-Driven (JSON + ScriptableObjects, keine Hardcoded-Balance)
 
 ### Was AAA hat (und du erstmal nicht brauchst)
-- ⚠️ Custom Engine (Riot, Frostbite, Source 2) — du: Unity DOTS (best-in-class für Indie)
-- ⚠️ Server-Rewind Lag-Compensation — NfE macht's nicht out-of-the-box
-- ⚠️ Anti-Cheat (BattlEye, EAC, Vanguard)
-- ⚠️ Backend-Services (Matchmaking, Ranked, Telemetrie) als Microservices
-- ⚠️ Audio-Middleware (Wwise/FMOD)
-- ⚠️ Deterministic Lockstep für Esports-Replays
+- ⚠️ Custom Engine — du nutzt Unity (good enough für Indie/AA)
+- ⚠️ Server-Rewind Lag-Compensation — NGO macht's nicht out-of-the-box, nachrüstbar
+- ⚠️ Anti-Cheat (BattlEye, EAC, Vanguard) — später
+- ⚠️ Backend-Microservices (Matchmaking, Ranked, Telemetrie) — UGS optional später
+- ⚠️ Audio-Middleware (Wwise/FMOD) — Unity Audio reicht für MVP
+- ⚠️ Deterministic Lockstep für Esports-Replays — nicht für Survivor-MOBA-Tier nötig
 
 ### Realistische Zielsetzung
-**Indie/AA-Tier mit AAA-Patterns** — wie Hades, Risk of Rain 2, Deep Rock Galactic.
-Nicht: Riot-Tier Esport-Titel. Solo/Small-Team mit Unity erreicht das nicht.
+**Indie/AA-Tier mit AAA-Patterns** — wie Hades, Risk of Rain 2, Deep Rock Galactic, MegaBonk.
+Nicht Riot-Tier Esport-Titel.
 
 ---
 
-## 10. Anti-Patterns (NICHT machen)
+## 11. Anti-Patterns (NICHT machen)
 
-- ❌ MonoBehaviour-Components für DOTS-Entities mischen (außer explizit als Hybrid mit Begründung)
-- ❌ JSON in DOTS-Hot-Path parsen
 - ❌ Coroutines für Gameplay-Flow (stattdessen State Machines)
 - ❌ `Update()` mit Polling-Checks (stattdessen Events)
-- ❌ Singleton-Zugriffe über `ApplicationEntryPoint.Singleton` (stattdessen ServiceLocator)
+- ❌ Singleton-Zugriffe über `ApplicationEntryPoint.Singleton` für Services (stattdessen `ServiceLocator.Get<T>()`)
 - ❌ Magic Numbers / Strings (stattdessen Konstanten/ScriptableObjects)
 - ❌ Monolithische Skill-Klassen (stattdessen Effect-Composition)
 - ❌ Client-Side Damage/Hit-Detection (immer Server-Authoritative)
 - ❌ LINQ in Gameplay-Hot-Paths
-- ❌ Per-Frame Heap-Allocations in Gameplay-Loops
-- ❌ Reflection in Runtime-Systems
+- ❌ Per-Frame Heap-Allocations in Gameplay-Loops (Object Pools!)
+- ❌ Reflection in Runtime-Gameplay-Systems
+- ❌ Jede Kugel / jedes Partikel als `NetworkObject` synchronisieren — nur Events/Seeds senden
+- ❌ NGO-RPCs für hochfrequente Streams (NetworkVariables oder Custom Snapshot-System nutzen)
 
 ---
 
-## 11. Burst Compiler — Erinnerung
+## 12. Offene TODOs (nach ECS-Cut)
 
-- **Im Editor abschaltbar** via `Jobs` → `Burst` → `Enable Compilation` (Toggle, **per Session**, nicht im Projekt gespeichert)
-- **Empfehlung**: An lassen. Burst-Disable nur für temporäre Debug-Sessions mit Breakpoints in BurstCompile-Code
-- **In Builds**: Über `BurstAotSettings` per Platform konfigurierbar (Project Settings → Burst AOT Settings)
-
----
-
-## 12. Offene Entscheidungen / TODOs
-
-- [ ] `com.unity.dedicated-server` ins manifest aufnehmen (für `MultiplayerRolesManager`)
-- [ ] UGS entfernen oder behalten (aktuell drin, ungenutzt)
-- [ ] `DefaultNetworkPrefabs.asset` löschen
-- [ ] `Animator/` → `Art/Animations/` verschieben
-- [ ] Erste SubScene in `Game.unity` anlegen
-- [ ] `RiftstormBootstrap` schreiben
-- [ ] Erste DOTS Components + System (Movement)
-- [ ] Stresstest-Scene mit 1000 Dummy-Entities
-- [ ] JSON→ScriptableObject Baking Pipeline
-- [ ] Vertical Slice: 1 Hero, 1 Map, 1 Boss, server-authoritativ
+- [x] ECS-Code gelöscht (RiftstormBootstrap, MovementAuthoring, Move*Component, MovementSystem)
+- [x] ECS-Refs aus 5 Asmdefs entfernt
+- [x] `com.unity.feature.ecs` aus manifest.json entfernt
+- [ ] `DefaultNetworkPrefabs.asset` Inhalt prüfen (NGO nutzt das tatsächlich)
+- [ ] `ConnectionManager` schreiben (NGO `NetworkManager` Wrapper als StateMachine)
+- [ ] `ApplicationEntryPoint`-Skelett (ServiceLocator + Dedicated-Server-Switch)
+- [ ] `Player.prefab` mit `NetworkObject` + `PlayerNetworked`
+- [ ] Server-Authoritative Movement implementieren
+- [ ] Erste Vertical Slice: 1 Hero, 1 Map, 1 Boss, 4 Spieler, server-authoritativ
+- [ ] `backup_old/` Ordner aufräumen
+- [ ] Leere `Game/Ecs/` Ordner-Reste löschen

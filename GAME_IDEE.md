@@ -41,10 +41,12 @@ Chain-Lightning
 Knockbacks
 
 Das ist heavy.
-Deshalb brauchst du vermutlich:
-ECS / Data-Oriented Design
+Deshalb brauchst du:
 
-Das ist EXTREM passend für dein Spiel.
+- Server-authoritative Architektur (NGO + Dedicated Server)
+- aggressives Object Pooling
+- Tickrate-getrennte Simulation (20–30 Hz Server, 60 FPS Render)
+- realistische Scale-Targets: 10–15 Spieler, 200–400 Enemies (nicht tausende)
 
 Gute Engine-Optionen
 Unity
@@ -52,29 +54,30 @@ Unity
 Sehr sinnvoll.
 
 Mit:
-Netcode for GameObjects
-Burst Compiler
-GPU Instancing
+- Netcode for GameObjects (NGO)
+- Dedicated Server Subtarget
+- GPU Instancing
+- Object Pools für Projektile / Enemies / FX
 
-Kann tausende Entities stemmen.
+Reicht für 10–15 Spieler + ein paar hundert Enemies.
 
-Das wäre wahrscheinlich die pragmatischste Wahl.
+Das ist die pragmatischste Wahl.
 
 Was ich empfehlen würde
 MVP Architektur
 Client:
-Unity 3D
-Topdown
-ECS für Gameplay
+- Unity 6 + URP
+- Topdown
+- klassische MonoBehaviours + NGO `NetworkBehaviour`
 Server:
-Dedicated Headless Server
-authoritative
-ECS Simulation
+- Dedicated Headless Server (Unity Server-Subtarget)
+- authoritative Simulation
+- Fixed Tick Loop (20–30 Hz)
 Netzwerk:
-UDP
-Snapshot/Delta Updates
-Client Prediction
-Interpolation
+- NGO (UDP unter der Haube via Unity Transport)
+- Snapshot/Delta Updates über NetworkVariables
+- Client Prediction + Reconciliation (manuell)
+- Interpolation
 
 Besser:
 Der Server sendet:
@@ -569,11 +572,11 @@ Denn du willst:
 
 Das schreit nach:
 
-* ECS
-* Data-Oriented Design
-* GPU Instancing
-* Object Pooling
-* Dedicated Server
+* Server-authoritativer Architektur (NGO + Dedicated Server)
+* aggressivem Object Pooling (Projektile / Enemies / FX)
+* GPU Instancing für viele gleichartige Renderer
+* Tickrate-getrennter Simulation (Sim vs. Render)
+* realistischen Scale-Targets (200–400 Enemies, nicht tausende)
 
 ---
 
@@ -781,14 +784,14 @@ und:
 
 ### Empfehlung:
 
-Unity + URP + ECS/DOTS
+Unity 6 + URP + NGO (Netcode for GameObjects) + Dedicated Server
 
 Warum:
 
-* viele Entities
-* gute Multiplayer-Optionen
-* schnelle Entwicklung
-* performant
+* server-authoritatives Multiplayer-Setup nativ in Unity
+* Build-Time Server/Client-Split via `com.unity.dedicated-server`
+* schnelle Iteration mit MonoBehaviours
+* performant genug für 10–15 Spieler + ein paar hundert Enemies
 * perfekt für Topdown PvPvE
 
 ---
@@ -877,18 +880,20 @@ Deshalb brauchst du:
 
 ---
 
-## ECS / Data-Oriented Design
+## Pragmatische Performance (statt ECS)
 
 Nicht:
 
-* tausende MonoBehaviours
+* tausende ungepoolte MonoBehaviours
+* jede Kugel als `NetworkObject` synchronisieren
+* LINQ / Allocations im Hot-Path
 
 Sondern:
 
-* cachefreundliche Datenstrukturen
-* Batch Processing
-* Jobsysteme
-* Burst Compiler
+* Object Pools für Projektile / Enemies / FX
+* GPU Instancing für gleichartige Renderer
+* Server-Events + Seeds statt jedes Detail syncen (Client simuliert FX lokal)
+* Fixed Tick Simulation (20–30 Hz) getrennt von Render-FPS
 
 ---
 

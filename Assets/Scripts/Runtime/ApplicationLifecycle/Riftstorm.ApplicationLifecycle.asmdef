@@ -13,12 +13,6 @@
         "Riftstorm.Game",
         "Unity.Addressables",
         "Unity.ResourceManager",
-        "Unity.Entities",
-        "Unity.NetCode",
-        "Unity.Transport",
-        "Unity.Collections",
-        "Unity.Burst",
-        "Unity.Mathematics",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

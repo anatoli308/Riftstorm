@@ -60,7 +60,7 @@ This file contains the coding standards, architectural principles, and design pa
 
 ## Performance First Philosophy
 
-- Every gameplay system must scale to hundreds or thousands of entities.
+- Gameplay systems must scale to 10–15 players and a few hundred enemies (not thousands).
 - Avoid hidden allocations in gameplay-critical code paths.
 - Avoid LINQ in hot paths.
 - Avoid reflection in runtime gameplay systems.
@@ -164,16 +164,15 @@ This file contains the coding standards, architectural principles, and design pa
 - Prefer .json data assets for gameplay configuration.
 - Avoid hardcoded balance values.
 
-## ECS / DOTS Guidelines 
+## High-Frequency Gameplay Performance
 
-- High-frequency gameplay systems must use ECS/DOTS where appropriate. 
-- MonoBehaviours should only orchestrate presentation and integration layers. 
-- Avoid hybrid ECS unless necessary. 
-- Keep ECS systems data-oriented and cache-friendly. 
-- Prefer IComponentData structs for gameplay state. 
-- Systems must process entities in batches whenever possible. 
-- Avoid structural changes during hot gameplay loops. 
-- Use EntityCommandBuffer for deferred structural changes.
+- Use Object Pooling for projectiles, enemies, VFX, and floating texts.
+- Use GPU Instancing for many identical renderers.
+- Keep server simulation on a fixed tick (20–30 Hz), separate from render FPS.
+- Avoid per-frame allocations in gameplay hot paths.
+- Avoid LINQ, reflection, and boxing in hot paths.
+- Sync server events / seeds for visual effects, not every detail.
+- Never sync each projectile / particle as its own `NetworkObject`.
 
 ## Scene Architecture
 - **Metagame Scene**: Nutzt MVC-Pattern mit generischem `MetagameApplication<MetagameModel, MetagameView, MetagameController>`. Ist die Hub-Scene für Spieler vor dem Joinen eines Games (Login, Skin-Auswahl, etc.).
