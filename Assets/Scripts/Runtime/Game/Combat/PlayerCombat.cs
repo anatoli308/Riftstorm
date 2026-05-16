@@ -425,6 +425,60 @@ namespace Riftstorm.Game.Combat
         }
 
         // -------------------------------------------------------------------------
+        // Attack-Cancel (LoL-Style "Move-cancels-Attack")
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Einstieg zum Abbrechen einer laufenden Attacke. Wird vom
+        /// <see cref="MobaCommandController"/> bei jedem neuen RMB-Move-Command
+        /// aufgerufen, damit der Spieler — wie in League of Legends — während
+        /// des Auto-Attack-Windups oder -Recovers durch Klicken irgendwo hin
+        /// die Attacke abbricht und sich sofort bewegen kann. Lokal wird die
+        /// Owner-Prediction-Sperre sofort gelöst, damit das Movement keinen
+        /// Frame Verzögerung hat; der Server hebt parallel den
+        /// <see cref="IsServerMovementLocked"/>-Lock auf und verhindert den
+        /// Damage-Resolve, falls der noch nicht stattgefunden hat.
+        /// Idempotent: ohne aktive Attacke ist es ein No-Op.
+        /// </summary>
+        public void RequestCancelAttack()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+            // Owner-lokal: Movement-Prediction sofort freigeben, damit MoveDirection
+            // schon im selben Frame greift, ohne auf das Server-ClientRpc zu warten.
+            m_OwnerPredictedAttackUntil = 0f;
+            RequestCancelAttackServerRpc();
+        }
+
+        [ServerRpc]
+        private void RequestCancelAttackServerRpc(ServerRpcParams _ = default)
+        {
+            if (m_CurrentState != AttackingState)
+            {
+                return;
+            }
+            // ChangeState → Exit() canceled das CTS im AttackingState, damit der
+            // noch nicht aufgelöste Hit nicht mehr landet (sauberer Cancel im Windup)
+            // bzw. der Recovery-Teil sofort endet (sauberer Cancel im Wind-down).
+            ChangeState(IdleState);
+            // Visual-Fanout: Owner-Prediction überall zurücksetzen, falls noch
+            // restliche ClientRpc-Latenz hängt. Anim selbst läuft kurz aus —
+            // das ist okay (LoL macht es genauso: Anim klingt aus, Gameplay frei).
+            NotifyAttackCanceledClientRpc();
+        }
+
+        [ClientRpc]
+        private void NotifyAttackCanceledClientRpc(ClientRpcParams _ = default)
+        {
+            if (IsOwner)
+            {
+                m_OwnerPredictedAttackUntil = 0f;
+            }
+        }
+
+        // -------------------------------------------------------------------------
         // Server → States
         // -------------------------------------------------------------------------
 
@@ -546,6 +600,11 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
+
+            // Vor dem FrontArc-Check noch einmal Richtung Ziel drehen: das Ziel
+            // konnte sich w&#228;hrend Windup bewegen, sonst l&#228;uft der Treffer ggf.
+            // ins Leere obwohl der Spieler "auf" dem Ziel war.
+            FaceCurrentTarget();
 
             // 2D-Distanzprüfung (XZ) — identisch zum SoF-Quellcode (sqrt(dx²+dy²)),
             // erweitert um den HitRadius des Opfers: Treffer landet, sobald die Waffen-

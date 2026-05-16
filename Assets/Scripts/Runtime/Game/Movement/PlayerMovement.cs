@@ -33,6 +33,7 @@ namespace Riftstorm.Game.Movement
         [SerializeField] private FlareCharacter m_Character;
         [SerializeField] private PlayerCombatVisuals m_CombatVisuals;
         [SerializeField] private PlayerCombat m_Combat;
+        [SerializeField] private TargetSelection m_TargetSelection;
 
         [Header("Bewegung")]
         [SerializeField] private float m_Speed = 4f;
@@ -117,6 +118,10 @@ namespace Riftstorm.Game.Movement
             if (m_CombatVisuals == null)
             {
                 m_CombatVisuals = GetComponent<PlayerCombatVisuals>();
+            }
+            if (m_TargetSelection == null)
+            {
+                m_TargetSelection = GetComponent<TargetSelection>();
             }
 
             // Input nur auf dem Owner-Client. Server-Build und Remote-Clients duerfen
@@ -439,6 +444,21 @@ namespace Riftstorm.Game.Movement
             if (!combatBusy)
             {
                 m_Character.Play(moving ? m_RunAnimation : m_IdleAnimation);
+            }
+            else if (m_TargetSelection != null
+                && m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetNo, out _))
+            {
+                // W&#228;hrend Combat (LoL-Style Auto-Attack): jeden Frame Richtung
+                // gelocktem Ziel drehen, damit die FLARE-Sprite-Richtung dem Ziel
+                // folgt, auch wenn das Ziel l&#228;uft. Replizierte CurrentTargetId →
+                // jeder Peer berechnet die Drehung selbst aus seinen lokalen Positionen.
+                Vector3 toTarget = targetNo.transform.position - currentPos;
+                // FLARE-Spiegelung wie bei Bewegung: z invertieren.
+                Vector2 targetDir = new(toTarget.x, -toTarget.z);
+                if (targetDir.sqrMagnitude > 1e-6f)
+                {
+                    m_LastDirection = ComputeFlareDirection(targetDir.normalized);
+                }
             }
             m_Character.SetDirection(m_LastDirection);
         }

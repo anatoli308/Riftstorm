@@ -331,8 +331,9 @@ namespace Riftstorm.Game.Input
         /// <summary>
         /// Reagiert auf den linken Maus-Klick (Attack-Action). Liegt unter dem
         /// Cursor ein gültiges anderes Ziel → wird es per ServerRpc gelockt.
-        /// Klick ins Leere oder auf das bereits gelockte Ziel ändert das Lock
-        /// NICHT — gecleart wird ausschliesslich über ESC (siehe
+        /// Klick ins Leere (kein Hover-Target) released das aktuelle Lock —
+        /// LoL-Verhalten: LMB-Klick auf Boden/leeren Bereich = Deselect.
+        /// ESC bleibt der dedizierte Shortcut (siehe
         /// <see cref="OnClearTargetPressed"/>). Der eigentliche Angriff wird
         /// parallel von <see cref="PlayerCombat"/> ausgelöst (gleiche
         /// AttackPressed-Quelle); beide Hörer arbeiten unabhängig.
@@ -348,9 +349,13 @@ namespace Riftstorm.Game.Input
                 return;
             }
 
-            // Klick ins Leere: Lock bleibt unverändert (kein Auto-Clear).
+            // Klick ins Leere: Lock freigeben (LoL-Style Deselect).
             if (CurrentHoveredTargetId == TargetSelection.NoTarget)
             {
+                if (m_TargetSelection.CurrentTargetId != TargetSelection.NoTarget)
+                {
+                    m_TargetSelection.RequestSelectTargetServerRpc(TargetSelection.NoTarget);
+                }
                 return;
             }
 

@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Character: {fileID: 0}
   m_CombatVisuals: {fileID: -2700015800232922021}
   m_Combat: {fileID: -525944449724255899}
+  m_TargetSelection: {fileID: 0}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run

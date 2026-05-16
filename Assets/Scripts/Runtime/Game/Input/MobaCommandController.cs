@@ -159,6 +159,10 @@ namespace Riftstorm.Game.Input
             {
                 return;
             }
+            // LoL-Style Attack-Cancel wird unten ZIELABHAENGIG gefeuert:
+            //  - RMB auf Boden / neues Ziel  -> Cancel (Spieler will weg/wechseln)
+            //  - RMB auf bereits gelocktes Ziel -> KEIN Cancel (Auto-Attack laeuft
+            //    weiter, Spam resettet den Windup nicht).
             if (m_Camera == null)
             {
                 m_Camera = Camera.main;
@@ -208,8 +212,17 @@ namespace Riftstorm.Game.Input
                 NetworkObject targetNet = bestStats.GetComponentInParent<NetworkObject>();
                 if (targetNet != null)
                 {
+                    ulong newFollowId = targetNet.NetworkObjectId;
+                    // LoL: nur cancel, wenn das Ziel WIRKLICH wechselt. Spamklicks auf
+                    // dasselbe bereits gelockte Ziel duerfen den Windup nicht resetten.
+                    bool sameLockedTarget = m_TargetSelection != null
+                        && m_TargetSelection.CurrentTargetId == newFollowId;
+                    if (!sameLockedTarget && m_Combat != null)
+                    {
+                        m_Combat.RequestCancelAttack();
+                    }
                     m_Intent = CommandIntent.FollowTarget;
-                    m_FollowTargetId = targetNet.NetworkObjectId;
+                    m_FollowTargetId = newFollowId;
                     // LoL-Verhalten: RMB-auf-Gegner acquired auch den Lock visuell.
                     if (m_TargetSelection != null && m_TargetSelection.CurrentTargetId != m_FollowTargetId)
                     {
@@ -238,6 +251,12 @@ namespace Riftstorm.Game.Input
                 destination = ray.GetPoint(enter);
             }
 
+            // Klick ins Leere -> Move-Befehl. JETZT cancelt der RMB die Attacke,
+            // damit der Spieler nicht im Auto-Attack festklebt.
+            if (m_Combat != null)
+            {
+                m_Combat.RequestCancelAttack();
+            }
             m_Intent = CommandIntent.MoveToPoint;
             m_FollowTargetId = TargetSelection.NoTarget;
             // Y festhalten — die Bewegung laeuft auf der XZ-Ebene des Owners.
