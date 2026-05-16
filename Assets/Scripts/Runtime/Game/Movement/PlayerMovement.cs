@@ -45,10 +45,6 @@ namespace Riftstorm.Game.Movement
         [Tooltip("Lerp-Geschwindigkeit fuer Remote-Clients (m_ServerPosition → transform).")]
         [SerializeField] private float m_RemoteInterpolationSpeed = 15f;
 
-        [Header("Debug")]
-        [Tooltip("Schreibt Diagnose-Logs (Input gefunden, ServerRpc raus, Ack rein, ...).")]
-        [SerializeField] private bool m_LogDiagnostics = true;
-
         // -------------------------------------------------------------------------
         // Konstanten
         // -------------------------------------------------------------------------
@@ -308,7 +304,9 @@ namespace Riftstorm.Game.Movement
             Vector3 diff = currentPos - m_LastObservedPosition;
             m_LastObservedPosition = currentPos;
 
-            Vector2 visualDir = new(diff.x, diff.z);
+            // FLARE-Atlas: Nord/Süd sind gegenüber Unity-+Z gespiegelt -> diff.z invertieren,
+            // damit W (Bewegung in +Z) als Nord-Sprite erscheint und S als Süd.
+            Vector2 visualDir = new(diff.x, -diff.z);
             bool moving = visualDir.sqrMagnitude > 1e-6f;
 
             if (moving)
