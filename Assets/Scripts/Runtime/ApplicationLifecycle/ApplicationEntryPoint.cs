@@ -1,3 +1,4 @@
+using Riftstorm.Gameplay.Combat;
 using Tolik.Riftstorm.Runtime.ConnectionManagement;
 using Unity.Multiplayer;
 using Unity.Netcode;
@@ -40,6 +41,8 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             Singleton = this;
             DontDestroyOnLoad(gameObject);
 
+            RegisterPureServices();
+
             if (m_ConnectionManager == null)
             {
                 Debug.LogError("[ApplicationEntryPoint] ConnectionManager reference is missing in the Boot scene.");
@@ -69,6 +72,22 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             }
 
             Singleton.InitializeNetworkLogic();
+        }
+
+        /// <summary>
+        /// Registers pure services (no MonoBehaviour) in the <see cref="ServiceLocator"/>.
+        /// Kicks off async preloads (data-driven catalogs from <c>StreamingAssets</c>) without
+        /// blocking <c>Awake</c>; first consumers will await the same <c>LoadAsync</c> task.
+        /// </summary>
+        void RegisterPureServices()
+        {
+            WeaponCatalogLoader weaponLoader = new();
+            ServiceLocator.Register(weaponLoader);
+            _ = weaponLoader.LoadAsync();
+
+            OffhandCatalogLoader offhandLoader = new();
+            ServiceLocator.Register(offhandLoader);
+            _ = offhandLoader.LoadAsync();
         }
 
         /// <summary>

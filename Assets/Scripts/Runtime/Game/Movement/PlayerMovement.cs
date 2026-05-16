@@ -1,3 +1,4 @@
+using Riftstorm.Game.Combat;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Sprites;
 using Unity.Netcode;
@@ -30,6 +31,7 @@ namespace Riftstorm.Game.Movement
 
         [SerializeField] private PlayerInputController m_Input;
         [SerializeField] private FlareCharacter m_Character;
+        [SerializeField] private PlayerCombatVisuals m_CombatVisuals;
 
         [Header("Bewegung")]
         [SerializeField] private float m_Speed = 4f;
@@ -114,6 +116,14 @@ namespace Riftstorm.Game.Movement
         /// </summary>
         public void BindVisuals(FlareCharacter character)
         {
+            if (m_CombatVisuals == null)
+            {
+                m_CombatVisuals = GetComponent<PlayerCombatVisuals>();
+            }
+            if (m_CombatVisuals != null)
+            {
+                m_CombatVisuals.BindCharacter(character);
+            }
             m_Character = character;
         }
 
@@ -312,19 +322,23 @@ namespace Riftstorm.Game.Movement
             if (moving)
             {
                 m_LastDirection = ComputeFlareDirection(visualDir.normalized);
-                if (m_Character != null)
-                {
-                    m_Character.Play(m_RunAnimation);
-                    m_Character.SetDirection(m_LastDirection);
-                }
+            }
+
+            if (m_Character == null)
+            {
                 return;
             }
 
-            if (m_Character != null)
+            // Combat-Visuals haben Priorität: solange Swing/Shoot/Cast/Hit/Block/Die
+            // läuft, darf die Bewegungs-Schicht keine Stance/Run-Anim erzwingen.
+            // Richtung wird trotzdem aktualisiert, damit Combat-Anims in die richtige
+            // Himmelsrichtung schauen.
+            bool combatBusy = m_CombatVisuals != null && m_CombatVisuals.IsBusy;
+            if (!combatBusy)
             {
-                m_Character.Play(m_IdleAnimation);
-                m_Character.SetDirection(m_LastDirection);
+                m_Character.Play(moving ? m_RunAnimation : m_IdleAnimation);
             }
+            m_Character.SetDirection(m_LastDirection);
         }
 
         /// <summary>

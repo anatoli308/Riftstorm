@@ -20,6 +20,37 @@ namespace Riftstorm.Game.Sprites
         /// <summary>Aktuelle FLARE-Richtung (0..7).</summary>
         public int CurrentDirection => m_CurrentDirection;
 
+        /// <summary>
+        /// <c>true</c>, wenn aktuell eine <see cref="FlareAnimationType.PlayOnce"/>-Animation
+        /// läuft und alle Schichten mit dieser Animation ihren letzten Frame erreicht haben.
+        /// Für gelooopte Animationen (Stance/Run/Block) immer <c>false</c>.
+        /// </summary>
+        public bool IsPlayOnceFinished
+        {
+            get
+            {
+                bool sawPlayOnce = false;
+                for (int i = 0; i < m_Layers.Count; i++)
+                {
+                    FlareLayerAnimator layer = m_Layers[i];
+                    if (layer == null || layer.Current == null)
+                    {
+                        continue;
+                    }
+                    if (layer.Current.Type != FlareAnimationType.PlayOnce)
+                    {
+                        continue;
+                    }
+                    sawPlayOnce = true;
+                    if (!layer.IsFinished)
+                    {
+                        return false;
+                    }
+                }
+                return sawPlayOnce;
+            }
+        }
+
         /// <summary>Fügt eine Schicht zur Komposition hinzu.</summary>
         public void RegisterLayer(FlareLayerAnimator layer)
         {

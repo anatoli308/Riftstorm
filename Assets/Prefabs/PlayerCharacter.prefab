@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 8659381886785244674}
   - component: {fileID: 3229784933833492351}
   - component: {fileID: 5172720370931407651}
+  - component: {fileID: -525944449724255899}
+  - component: {fileID: -2700015800232922021}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -73,8 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Bootstrap.GamePlayerBootstrap
   ShowTopMostFoldoutHeaderGroup: 1
-  m_StreamingSubFolder: player_female
-  m_TextureSubFolder: Art/player_female
+  m_StreamingSubFolder: player_male
+  m_TextureSubFolder: Art/player_male
   m_LayerAtlases:
   - default_legs
   - default_feet
@@ -100,6 +102,7 @@ MonoBehaviour:
   m_InputAsset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_ActionMap: Player
   m_MoveAction: Move
+  m_AttackAction: Attack
 --- !u!114 &5172720370931407651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,8 +118,44 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_Input: {fileID: 3229784933833492351}
   m_Character: {fileID: 0}
+  m_CombatVisuals: {fileID: 0}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run
   m_ReconciliationThreshold: 0.05
   m_RemoteInterpolationSpeed: 15
+--- !u!114 &-525944449724255899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c23a02ddfb7cd1e42aceb6a529c04465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.PlayerCombat
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_Visuals: {fileID: -2700015800232922021}
+  m_Input: {fileID: 3229784933833492351}
+  m_DefaultWeaponId: longsword
+--- !u!114 &-2700015800232922021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789dc295f21ebf94ab605c9f3dda8afb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.PlayerCombatVisuals
+  m_Character: {fileID: 0}
+  m_AnimSwing: swing
+  m_AnimShoot: shoot
+  m_AnimCast: cast
+  m_AnimBlock: block
+  m_AnimHit: hit
+  m_AnimDie: die

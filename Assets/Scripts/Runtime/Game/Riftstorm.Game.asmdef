@@ -9,9 +9,11 @@
         "Riftstorm.AI",
         "Riftstorm.Networking",
         "Riftstorm.UI",
+        "Riftstorm.ApplicationLifecycle",
         "Unity.InputSystem",
         "Unity.Netcode.Runtime",
-        "Unity.Netcode.Components"
+        "Unity.Netcode.Components",
+        "Unity.Collections"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

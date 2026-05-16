@@ -2,7 +2,8 @@
     "name": "Riftstorm.Core",
     "rootNamespace": "Riftstorm.Core",
     "references": [
-        "Riftstorm.Shared"
+        "Riftstorm.Shared",
+        "Unity.Netcode.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

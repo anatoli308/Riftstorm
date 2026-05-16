@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "offhand_items": [
+        {
+            "id": "buckler",
+            "type": "Buckler",
+            "block_damage_reduction": 0.30,
+            "block_move_speed_multiplier": 0.70,
+            "block_cooldown": 0.4
+        },
+        {
+            "id": "iron_buckler",
+            "type": "Buckler",
+            "block_damage_reduction": 0.40,
+            "block_move_speed_multiplier": 0.65,
+            "block_cooldown": 0.5
+        },
+        {
+            "id": "shield",
+            "type": "Shield",
+            "block_damage_reduction": 0.60,
+            "block_move_speed_multiplier": 0.45,
+            "block_cooldown": 0.7
+        }
+    ]
+}

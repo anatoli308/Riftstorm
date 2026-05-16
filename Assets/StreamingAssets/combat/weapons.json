@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "weapons": [
+    {
+      "id": "unarmed",
+      "type": "Fist",
+      "attack_cooldown": 0.6,
+      "range": 1.2,
+      "base_damage": 4,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "shortsword",
+      "type": "Sword",
+      "attack_cooldown": 0.7,
+      "range": 1.4,
+      "base_damage": 9,
+      "hit_resolve_progress": 0.45
+    },
+    {
+      "id": "longsword",
+      "type": "Sword",
+      "attack_cooldown": 1.1,
+      "range": 1.8,
+      "base_damage": 16,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "greatsword",
+      "type": "Sword",
+      "attack_cooldown": 1.4,
+      "range": 2.0,
+      "base_damage": 22,
+      "hit_resolve_progress": 0.60
+    },
+    {
+      "id": "zweihander",
+      "type": "Sword",
+      "attack_cooldown": 1.6,
+      "range": 2.2,
+      "base_damage": 26,
+      "hit_resolve_progress": 0.60
+    },
+    {
+      "id": "hand_axe",
+      "type": "Axe",
+      "attack_cooldown": 0.8,
+      "range": 1.3,
+      "base_damage": 10,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "battle_axe",
+      "type": "Axe",
+      "attack_cooldown": 1.2,
+      "range": 1.7,
+      "base_damage": 18,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "infantry_axe",
+      "type": "Axe",
+      "attack_cooldown": 1.3,
+      "range": 1.9,
+      "base_damage": 20,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "dagger",
+      "type": "Dagger",
+      "attack_cooldown": 0.50,
+      "range": 1.2,
+      "base_damage": 7,
+      "hit_resolve_progress": 0.45
+    },
+    {
+      "id": "dagger_red",
+      "type": "Dagger",
+      "attack_cooldown": 0.55,
+      "range": 1.2,
+      "base_damage": 9,
+      "hit_resolve_progress": 0.45
+    },
+    {
+      "id": "club",
+      "type": "Mace",
+      "attack_cooldown": 0.9,
+      "range": 1.4,
+      "base_damage": 8,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "reinforced_club",
+      "type": "Mace",
+      "attack_cooldown": 1.0,
+      "range": 1.5,
+      "base_damage": 11,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "mace",
+      "type": "Mace",
+      "attack_cooldown": 1.0,
+      "range": 1.5,
+      "base_damage": 14,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "smith_hammer",
+      "type": "Mace",
+      "attack_cooldown": 1.1,
+      "range": 1.5,
+      "base_damage": 15,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "war_hammer",
+      "type": "Mace",
+      "attack_cooldown": 1.3,
+      "range": 1.6,
+      "base_damage": 20,
+      "hit_resolve_progress": 0.60
+    },
+    {
+      "id": "maul",
+      "type": "Mace",
+      "attack_cooldown": 1.6,
+      "range": 1.8,
+      "base_damage": 26,
+      "hit_resolve_progress": 0.60
+    },
+    {
+      "id": "staff",
+      "type": "Staff",
+      "attack_cooldown": 1.0,
+      "range": 1.8,
+      "base_damage": 9,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "staff_grey",
+      "type": "Staff",
+      "attack_cooldown": 1.0,
+      "range": 1.8,
+      "base_damage": 10,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "greatstaff",
+      "type": "Staff",
+      "attack_cooldown": 1.2,
+      "range": 2.0,
+      "base_damage": 13,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "greatstaff_purple",
+      "type": "Staff",
+      "attack_cooldown": 1.2,
+      "range": 2.0,
+      "base_damage": 14,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "greatstaff_red",
+      "type": "Staff",
+      "attack_cooldown": 1.2,
+      "range": 2.0,
+      "base_damage": 15,
+      "hit_resolve_progress": 0.55
+    },
+    {
+      "id": "wand",
+      "type": "Wand",
+      "attack_cooldown": 0.8,
+      "range": 2.0,
+      "base_damage": 8,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "rod",
+      "type": "Wand",
+      "attack_cooldown": 0.9,
+      "range": 2.0,
+      "base_damage": 9,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "rod_blue",
+      "type": "Wand",
+      "attack_cooldown": 0.9,
+      "range": 2.0,
+      "base_damage": 10,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "rod_purple",
+      "type": "Wand",
+      "attack_cooldown": 0.9,
+      "range": 2.0,
+      "base_damage": 11,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "rod_red",
+      "type": "Wand",
+      "attack_cooldown": 0.9,
+      "range": 2.0,
+      "base_damage": 12,
+      "hit_resolve_progress": 0.50
+    },
+    {
+      "id": "shortbow",
+      "type": "Bow",
+      "attack_cooldown": 0.9,
+      "range": 12.0,
+      "base_damage": 9,
+      "hit_resolve_progress": 0.70
+    },
+    {
+      "id": "longbow",
+      "type": "Bow",
+      "attack_cooldown": 1.2,
+      "range": 16.0,
+      "base_damage": 14,
+      "hit_resolve_progress": 0.70
+    },
+    {
+      "id": "greatbow",
+      "type": "Bow",
+      "attack_cooldown": 1.5,
+      "range": 18.0,
+      "base_damage": 20,
+      "hit_resolve_progress": 0.70
+    },
+    {
+      "id": "greatbow_orange",
+      "type": "Bow",
+      "attack_cooldown": 1.5,
+      "range": 18.0,
+      "base_damage": 22,
+      "hit_resolve_progress": 0.70
+    },
+    {
+      "id": "slingshot",
+      "type": "Bow",
+      "attack_cooldown": 0.7,
+      "range": 10.0,
+      "base_damage": 5,
+      "hit_resolve_progress": 0.60
+    }
+  ]
+}

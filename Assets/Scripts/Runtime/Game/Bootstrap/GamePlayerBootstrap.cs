@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using Riftstorm.Game.CameraRig;
+using Riftstorm.Game.Combat;
+using Riftstorm.Game.Input;
 using Riftstorm.Game.Movement;
 using Riftstorm.Game.Sprites;
 using Unity.Netcode;
@@ -72,6 +74,38 @@ namespace Riftstorm.Game.Bootstrap
             else
             {
                 Debug.LogError("[GamePlayerBootstrap] Kein PlayerMovement am Root gefunden — bitte am PlayerCharacter-Prefab hinzufügen.", this);
+            }
+
+            // Combat-Visuals (lokal pro Client) + autoritativer Combat-State (NetworkBehaviour)
+            // sind beide am Root. Visuals an die FLARE-Layer binden, Manager die Visuals + Input
+            // injizieren. Beide Komponenten MÜSSEN auf dem PlayerCharacter-Prefab liegen, weil
+            // NetworkBehaviours nicht zur Laufzeit nach OnNetworkSpawn hinzugefügt werden können.
+            PlayerCombatVisuals combatVisuals = GetComponent<PlayerCombatVisuals>();
+            if (combatVisuals != null)
+            {
+                combatVisuals.BindCharacter(character);
+            }
+            else
+            {
+                Debug.LogWarning("[GamePlayerBootstrap] PlayerCombatVisuals nicht am Root — Combat-Animationen werden nicht abgespielt.", this);
+            }
+
+            PlayerCombat combat = GetComponent<PlayerCombat>();
+            if (combat != null)
+            {
+                if (combatVisuals != null)
+                {
+                    combat.BindVisuals(combatVisuals);
+                }
+                PlayerInputController input = GetComponent<PlayerInputController>();
+                if (input != null)
+                {
+                    combat.BindInput(input);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[GamePlayerBootstrap] PlayerCombat nicht am Root — Attack-Input wird ignoriert.", this);
             }
 
             // Kamera nur für den lokalen Spieler. Remote-Clients sollen den Owner nicht hijacken.

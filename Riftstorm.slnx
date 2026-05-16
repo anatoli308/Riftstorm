@@ -1,4 +1,5 @@
 ﻿<Solution>
+  <Project Path="Riftstorm.Gameplay.csproj" />
   <Project Path="Riftstorm.Management.csproj" />
   <Project Path="Riftstorm.ApplicationLifecycle.csproj" />
   <Project Path="Riftstorm.Core.csproj" />
