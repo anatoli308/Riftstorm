@@ -156,6 +156,15 @@ namespace Riftstorm.Game.Combat
                 m_Stats.OnServerDied += OnServerDied;
             }
 
+            // Jeder Peer (Server + Clients) abonniert das Damage-Fanout-Event, um die
+            // Hit-Reaction-Anim lokal zu spielen — UnitStats sendet das via ClientRpc
+            // auf allen Maschinen, der Filter auf 'amount > 0' verhindert, dass
+            // Miss/Dodge/Parry/Resist/Immune/Absorb eine Treffer-Anim auslösen.
+            if (m_Stats != null)
+            {
+                m_Stats.ClientDamageReceived += OnClientDamageReceived;
+            }
+
             // Server merkt sich den initialen Spawn-Punkt für späteren Respawn-Teleport.
             if (IsServer)
             {
@@ -173,6 +182,10 @@ namespace Riftstorm.Game.Combat
             if (IsServer && m_Stats != null)
             {
                 m_Stats.OnServerDied -= OnServerDied;
+            }
+            if (m_Stats != null)
+            {
+                m_Stats.ClientDamageReceived -= OnClientDamageReceived;
             }
             if (m_RespawnCts != null)
             {
@@ -249,6 +262,25 @@ namespace Riftstorm.Game.Combat
             if (m_Visuals != null)
             {
                 m_Visuals.PlayDie();
+            }
+        }
+
+        /// <summary>
+        /// Client-side handler für das <see cref="UnitStats.ClientDamageReceived"/>-Event.
+        /// Wird auf jedem Peer (Server + alle Clients) aufgerufen, sobald UnitStats den
+        /// Damage-Fanout für diesen Spieler auslöst. Spielt nur dann eine Hit-Reaction,
+        /// wenn tatsächlich Schaden geflossen ist — Misses/Dodges/Resists triggern keine
+        /// Anim (dafür wäre ein separates Reaction-Event vorgesehen).
+        /// </summary>
+        private void OnClientDamageReceived(int amount, HitResult result)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+            if (m_Visuals != null)
+            {
+                m_Visuals.PlayHit();
             }
         }
 

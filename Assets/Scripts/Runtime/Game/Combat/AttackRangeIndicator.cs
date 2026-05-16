@@ -27,7 +27,7 @@ namespace Riftstorm.Game.Combat
         [Header("Darstellung")]
         [Tooltip("Farbe des Kreises. Default = LoL-typisches Cyan.")]
         [SerializeField] private Color m_Color = new(0.25f, 0.85f, 1f, 0.9f);
-        [SerializeField, Min(0.005f)] private float m_LineWidth = 0.06f;
+        [SerializeField, Min(0.005f)] private float m_LineWidth = 0.025f;
         [SerializeField, Range(16, 256)] private int m_Segments = 64;
         [Tooltip("Hoehe ueber dem Boden, in der der Kreis gezeichnet wird (verhindert Z-Fighting).")]
         [SerializeField] private float m_GroundOffset = 0.03f;
@@ -49,6 +49,14 @@ namespace Riftstorm.Game.Combat
             if (m_Input == null)
             {
                 m_Input = GetComponentInParent<PlayerInputController>();
+            }
+            if (m_Input == null)
+            {
+                Debug.LogWarning("[AttackRangeIndicator] Kein PlayerInputController gefunden — Toggle wird nicht funktionieren.", this);
+            }
+            if (m_Combat == null)
+            {
+                Debug.LogWarning("[AttackRangeIndicator] Kein PlayerCombat gefunden — Range fällt auf Fallback zurück.", this);
             }
         }
 
@@ -92,7 +100,9 @@ namespace Riftstorm.Game.Combat
             {
                 EnsureLine();
                 float radius = ResolveRadius();
-                if (!Mathf.Approximately(radius, m_LastRenderedRadius))
+                // Immer neu bauen wenn aktuell nichts gezeichnet ist (positionCount=0 nach Awake)
+                // oder wenn sich der Radius geaendert hat (Waffenwechsel).
+                if (m_Line.positionCount == 0 || !Mathf.Approximately(radius, m_LastRenderedRadius))
                 {
                     BuildCircle(radius);
                     m_LastRenderedRadius = radius;
@@ -159,15 +169,20 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
+            // Die LineRenderer-Width extrudiert symmetrisch um die Sample-Position. Damit die
+            // sichtbare AUSSENKANTE des Rings exakt der Server-Range entspricht (statt halb
+            // ausserhalb zu liegen), ziehen wir den Sample-Radius um die halbe Linienbreite
+            // nach innen. Mathematisch: outerEdge = sampleRadius + width/2 == weapon.Range.
+            float sampleRadius = Mathf.Max(0.01f, radius - m_LineWidth * 0.5f);
             m_Line.positionCount = m_Segments;
             var positions = new Vector3[m_Segments];
             for (int i = 0; i < m_Segments; i++)
             {
                 float angle = (i / (float)m_Segments) * Mathf.PI * 2f;
                 positions[i] = new Vector3(
-                    Mathf.Cos(angle) * radius,
+                    Mathf.Cos(angle) * sampleRadius,
                     m_GroundOffset,
-                    Mathf.Sin(angle) * radius);
+                    Mathf.Sin(angle) * sampleRadius);
             }
             m_Line.SetPositions(positions);
         }
