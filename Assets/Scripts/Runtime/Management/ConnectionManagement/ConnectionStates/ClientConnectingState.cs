@@ -1,3 +1,4 @@
+using System.Text;
 using UnityEngine;
 
 namespace Tolik.Riftstorm.Runtime.ConnectionManagement
@@ -10,6 +11,12 @@ namespace Tolik.Riftstorm.Runtime.ConnectionManagement
     {
         public override void Enter()
         {
+            // Player-Name als Approval-Payload an den Server &#252;bertragen. NetworkConfig.ConnectionData
+            // ist der NGO-Standardkanal f&#252;r solche Pre-Connect-Metadaten und wird in der
+            // ApprovalCheck-Callback des Servers als request.Payload geliefert.
+            string name = string.IsNullOrWhiteSpace(Manager.PendingPlayerName) ? "Player" : Manager.PendingPlayerName;
+            Manager.NetworkManager.NetworkConfig.ConnectionData = Encoding.UTF8.GetBytes(name);
+
             bool started = Manager.NetworkManager.StartClient();
             if (!started)
             {

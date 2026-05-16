@@ -28,6 +28,15 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>Reichweite in Unity-Weltunits (Melee ≈ 1.5, Ranged 10+).</summary>
         [JsonProperty("range")] public float Range = 1.5f;
 
+        /// <summary>
+        /// Front-Arc in Grad, in dem der Angriff zugelassen wird (gemessen um
+        /// die Forward-Achse des Angreifers). 360 = kein Constraint, 180 =
+        /// vorderer Halbkreis, 60 = enger Schusskegel. Server prüft das
+        /// via Dot-Produkt zwischen <c>transform.forward</c> und der 2D-
+        /// Richtung zum Ziel.
+        /// </summary>
+        [JsonProperty("front_arc_deg")] public float FrontArcDeg = 180f;
+
         /// <summary>Basis-Schaden pro Treffer (server-seitig).</summary>
         [JsonProperty("base_damage")] public int BaseDamage = 10;
 

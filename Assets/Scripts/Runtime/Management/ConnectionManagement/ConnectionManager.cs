@@ -27,6 +27,37 @@ namespace Tolik.Riftstorm.Runtime.ConnectionManagement
         /// </summary>
         public string PendingPlayerName { get; internal set; } = "Player";
 
+        /// <summary>
+        /// Maximalwert in Zeichen, den ein Spielername w&#228;hrend der Approval-Phase passieren darf.
+        /// Schutz vor &#252;berlangen Payloads (FixedString32 fasst ~29 sichtbare ASCII-Zeichen).
+        /// </summary>
+        public const int MaxPlayerNameLength = 24;
+
+        /// <summary>Server-seitiges Mapping ClientId &#8594; vom Client gesendeter Anzeigename (Approval-Payload).</summary>
+        private readonly Dictionary<ulong, string> m_ApprovedPlayerNames = new();
+
+        /// <summary>
+        /// Server-only: Speichert den vom Client w&#228;hrend des Approval-Schritts &#252;bertragenen Namen.
+        /// Leerwerte werden auf "Player" gemappt, &#252;berlange Namen werden gek&#252;rzt.
+        /// </summary>
+        internal void SetApprovedName(ulong clientId, string name)
+        {
+            string sanitized = string.IsNullOrWhiteSpace(name) ? "Player" : name.Trim();
+            if (sanitized.Length > MaxPlayerNameLength)
+            {
+                sanitized = sanitized.Substring(0, MaxPlayerNameLength);
+            }
+            m_ApprovedPlayerNames[clientId] = sanitized;
+        }
+
+        /// <summary>Server-only: Liefert den vom Client &#252;bertragenen Namen, falls Approval ihn gespeichert hat.</summary>
+        public bool TryGetApprovedName(ulong clientId, out string name)
+            => m_ApprovedPlayerNames.TryGetValue(clientId, out name);
+
+        /// <summary>Server-only: Eintrag entfernen (z. B. nach Disconnect).</summary>
+        internal void RemoveApprovedName(ulong clientId)
+            => m_ApprovedPlayerNames.Remove(clientId);
+
         internal readonly OfflineState m_Offline = new();
         internal readonly ClientConnectingState m_ClientConnecting = new();
         internal readonly ClientConnectedState m_ClientConnected = new();

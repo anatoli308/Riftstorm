@@ -1,3 +1,4 @@
+using System.Text;
 using UnityEngine;
 
 namespace Tolik.Riftstorm.Runtime.ConnectionManagement
@@ -24,6 +25,21 @@ namespace Tolik.Riftstorm.Runtime.ConnectionManagement
                 return;
             }
 
+            // Vom Client &#252;bertragenen Anzeigenamen aus dem Approval-Payload lesen.
+            string playerName = "Player";
+            if (request.Payload != null && request.Payload.Length > 0)
+            {
+                try
+                {
+                    playerName = Encoding.UTF8.GetString(request.Payload);
+                }
+                catch
+                {
+                    playerName = "Player";
+                }
+            }
+            Manager.SetApprovedName(request.ClientNetworkId, playerName);
+
             response.Approved = true;
             response.CreatePlayerObject = true;
         }
@@ -35,6 +51,7 @@ namespace Tolik.Riftstorm.Runtime.ConnectionManagement
 
         public override void OnClientDisconnect(ulong clientId)
         {
+            Manager.RemoveApprovedName(clientId);
             Debug.Log($"[ServerListeningState] Client {clientId} disconnected. Total={Manager.NetworkManager.ConnectedClientsIds.Count}");
         }
 

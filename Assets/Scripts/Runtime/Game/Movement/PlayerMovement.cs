@@ -32,6 +32,7 @@ namespace Riftstorm.Game.Movement
         [SerializeField] private PlayerInputController m_Input;
         [SerializeField] private FlareCharacter m_Character;
         [SerializeField] private PlayerCombatVisuals m_CombatVisuals;
+        [SerializeField] private PlayerCombat m_Combat;
 
         [Header("Bewegung")]
         [SerializeField] private float m_Speed = 4f;
@@ -101,6 +102,14 @@ namespace Riftstorm.Game.Movement
             {
                 m_Input = GetComponent<PlayerInputController>();
             }
+            if (m_Combat == null)
+            {
+                m_Combat = GetComponent<PlayerCombat>();
+            }
+            if (m_CombatVisuals == null)
+            {
+                m_CombatVisuals = GetComponent<PlayerCombatVisuals>();
+            }
 
             // Input nur auf dem Owner-Client. Server-Build und Remote-Clients duerfen
             // nicht sampeln.
@@ -155,6 +164,15 @@ namespace Riftstorm.Game.Movement
             bool isMoving = m_Input != null && m_Input.IsMoving;
             Vector2 input = isMoving ? ClampInput(rawInput) : Vector2.zero;
 
+            // Owner-seitiger Movement-Lock: solange die Combat-Visuals einen Action-State
+            // halten (Swing/Shoot/Cast/Hit/Die), wird der Owner-Predict-Input genullt.
+            // Server clampt zusätzlich autoritativ (siehe SubmitCommandServerRpc) und
+            // korrigiert via Reconciliation, falls der Client dem Lock entkommt.
+            if (m_CombatVisuals != null && m_CombatVisuals.IsBusy)
+            {
+                input = Vector2.zero;
+            }
+
             float dt = Time.deltaTime;
 
             PlayerCommand cmd = new()
@@ -191,6 +209,48 @@ namespace Riftstorm.Game.Movement
         }
 
         // -------------------------------------------------------------------------
+        // Server-Teleport (Respawn / Cinematic / Knockback)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Server-only: harte Reposition des Spielers. Setzt sowohl die Transform-Position
+        /// als auch <see cref="m_ServerPosition"/> und fan't einen <see cref="TeleportClientRpc"/>
+        /// an alle Peers, damit der Owner seinen Prediction-Ringbuffer invalidiert und
+        /// Remote-Clients nicht sanft interpolieren, sondern direkt snappen.
+        /// </summary>
+        public void ServerTeleportTo(Vector3 position)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            transform.position = position;
+            m_LastObservedPosition = position;
+            m_ServerPosition.Value = position;
+            TeleportClientRpc(position);
+        }
+
+        [ClientRpc]
+        private void TeleportClientRpc(Vector3 position, ClientRpcParams _ = default)
+        {
+            // Host-Server hat die Position bereits direkt gesetzt.
+            if (IsServer)
+            {
+                return;
+            }
+            transform.position = position;
+            m_LastObservedPosition = position;
+            if (IsOwner)
+            {
+                // Reconciliation aus dem Prediction-Buffer würde sonst beim nächsten Ack
+                // den Spieler zurück an die alte Position snappen. Wir markieren alle
+                // bisherigen Sequenzen als acknowledged → spätere out-of-order Acks werden
+                // ignoriert.
+                m_LastAcknowledgedSequence = m_NextSequenceNumber;
+            }
+        }
+
+        // -------------------------------------------------------------------------
         // Server-Seite: Command verarbeiten und Ack zurueckschicken
         // -------------------------------------------------------------------------
 
@@ -200,6 +260,13 @@ namespace Riftstorm.Game.Movement
             // Hardening: Input clampen, DeltaTime auf vernuenftiges Fenster.
             cmd.MoveInput = ClampInput(cmd.MoveInput);
             cmd.DeltaTime = Mathf.Clamp(cmd.DeltaTime, 0f, 0.1f);
+
+            // Server-autoritativer Movement-Lock: während Attacking/Dead darf sich
+            // der Spieler nicht bewegen (anti-cheat gegen Move-while-Attacking).
+            if (m_Combat != null && m_Combat.IsServerMovementLocked)
+            {
+                cmd.MoveInput = Vector2.zero;
+            }
 
             // Authoritative Simulation mit identischer Formel.
             Vector3 pos = transform.position;

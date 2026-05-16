@@ -17,9 +17,13 @@ namespace Riftstorm.Game.Input
         [SerializeField] private string m_ActionMap = "Player";
         [SerializeField] private string m_MoveAction = "Move";
         [SerializeField] private string m_AttackAction = "Attack";
+        [SerializeField] private string m_NextTargetAction = "NextTarget";
+        [SerializeField] private string m_ClearTargetAction = "ClearTarget";
 
         private InputAction m_Move;
         private InputAction m_Attack;
+        private InputAction m_NextTarget;
+        private InputAction m_ClearTarget;
 
         /// <summary>Aktueller normalisierter Bewegungsvektor (x = rechts, y = oben).</summary>
         public Vector2 MoveDirection { get; private set; }
@@ -34,6 +38,20 @@ namespace Riftstorm.Game.Input
         /// </summary>
         public event Action AttackPressed;
 
+        /// <summary>
+        /// Wird einmal pro Tastendruck der <c>NextTarget</c>-Action (Default: Tab)
+        /// gefeuert. Wird vom <c>PlayerTargetingInput</c> zum MMO-typischen
+        /// Target-Cycling konsumiert.
+        /// </summary>
+        public event Action NextTargetPressed;
+
+        /// <summary>
+        /// Wird einmal pro Tastendruck der <c>ClearTarget</c>-Action (Default: Escape)
+        /// gefeuert. <c>PlayerTargetingInput</c> nutzt das Event, um das aktuelle
+        /// Lock-Target wieder freizugeben.
+        /// </summary>
+        public event Action ClearTargetPressed;
+
         private void OnEnable()
         {
             if (m_InputAsset == null)
@@ -47,6 +65,20 @@ namespace Riftstorm.Game.Input
             if (m_Attack != null)
             {
                 m_Attack.performed += OnAttackPerformed;
+            }
+            m_NextTarget = map.FindAction(m_NextTargetAction, false);
+            if (m_NextTarget != null)
+            {
+                m_NextTarget.performed += OnNextTargetPerformed;
+            }
+            m_ClearTarget = map.FindAction(m_ClearTargetAction, false);
+            if (m_ClearTarget != null)
+            {
+                m_ClearTarget.performed += OnClearTargetPerformed;
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerInputController] ClearTarget-Action '{m_ClearTargetAction}' nicht im Asset gefunden. Asset reimporten?");
             }
             map.Enable();
         }
@@ -64,11 +96,31 @@ namespace Riftstorm.Game.Input
                 m_Attack.performed -= OnAttackPerformed;
                 m_Attack = null;
             }
+            if (m_NextTarget != null)
+            {
+                m_NextTarget.performed -= OnNextTargetPerformed;
+                m_NextTarget = null;
+            }
+            if (m_ClearTarget != null)
+            {
+                m_ClearTarget.performed -= OnClearTargetPerformed;
+                m_ClearTarget = null;
+            }
         }
 
         private void OnAttackPerformed(InputAction.CallbackContext _)
         {
             AttackPressed?.Invoke();
+        }
+
+        private void OnNextTargetPerformed(InputAction.CallbackContext _)
+        {
+            NextTargetPressed?.Invoke();
+        }
+
+        private void OnClearTargetPerformed(InputAction.CallbackContext _)
+        {
+            ClearTargetPressed?.Invoke();
         }
 
         private void Update()

@@ -5,30 +5,35 @@ using UnityEngine;
 namespace Riftstorm.Game.Combat.CombatStates
 {
     /// <summary>
-    /// Server-autoritativer Cooldown-State. Wird vom Manager mit der aktuellen
-    /// Waffe konfiguriert; läuft <c>WeaponDefinition.AttackCooldown</c> ab, ohne
-    /// per-Frame-Polling — der Übergang zurück in den Idle-State erfolgt über
-    /// ein einmaliges <see cref="Awaitable.WaitForSecondsAsync"/>.
+    /// Server-autoritativer Cooldown-State. Zweistufige Awaitable-Sequenz pro
+    /// Attacke: warten bis <c>HitResolveProgress * AttackCooldown</c> → Server-
+    /// Schadensauflösung — dann warten bis zum Ende des Cooldowns → Idle.
+    /// Kein per-Frame-Polling (Projektregel).
     /// </summary>
     public sealed class PlayerCombatAttackingState : PlayerCombatState
     {
         private CancellationTokenSource m_Cts;
         private float m_PendingCooldown;
+        private float m_PendingHitResolveProgress;
+        private WeaponDefinition m_PendingWeapon;
 
         /// <summary>
         /// Wird vom <see cref="PlayerCombat.BeginAttack"/> vor <see cref="ChangeState"/>
-        /// aufgerufen, damit <see cref="Enter"/> weiß, wie lange er warten soll.
+        /// aufgerufen, damit <see cref="Enter"/> weiß, wie lange er warten soll
+        /// und welche Waffe für die Schadensberechnung relevant ist.
         /// </summary>
         internal void ConfigureFromWeapon(WeaponDefinition weapon)
         {
+            m_PendingWeapon = weapon;
             m_PendingCooldown = Mathf.Max(0.05f, weapon.AttackCooldown);
+            m_PendingHitResolveProgress = Mathf.Clamp01(weapon.HitResolveProgress);
         }
 
         /// <inheritdoc/>
         public override void Enter()
         {
             m_Cts = new CancellationTokenSource();
-            _ = ScheduleEndAsync(m_PendingCooldown, m_Cts.Token);
+            _ = RunAttackCycleAsync(m_PendingWeapon, m_PendingCooldown, m_PendingHitResolveProgress, m_Cts.Token);
         }
 
         /// <inheritdoc/>
@@ -52,24 +57,61 @@ namespace Riftstorm.Game.Combat.CombatStates
         // Eine laufende Attacke kann nicht durch eine neue ersetzt werden — Anfrage wird verworfen.
         // (Combo/Queue kommt in einer späteren Phase.)
 
-        private async Awaitable ScheduleEndAsync(float seconds, CancellationToken token)
+        private async Awaitable RunAttackCycleAsync(WeaponDefinition weapon, float cooldown, float hitResolveProgress, CancellationToken token)
         {
+            float resolveAt = cooldown * hitResolveProgress;
+            float remaining = Mathf.Max(0f, cooldown - resolveAt);
+
+            // ---- Phase A: Windup bis zum Hit-Frame ----
             try
             {
-                await Awaitable.WaitForSecondsAsync(seconds, token);
+                if (resolveAt > 0f)
+                {
+                    await Awaitable.WaitForSecondsAsync(resolveAt, token);
+                }
             }
             catch (System.OperationCanceledException)
             {
                 return;
             }
 
-            // Manager könnte währenddessen zerstört worden sein (Despawn / Scene-Wechsel).
             if (Manager == null || !Manager.IsSpawned)
             {
                 return;
             }
 
-            // Doppelten Auto-Transition vermeiden: nur reagieren, wenn wir noch der aktive State sind.
+            // ---- Hit-Resolve (server-only, nur wenn wir noch der aktive State sind) ----
+            if (Manager.IsServer && Manager.IsCurrentState(this))
+            {
+                // Roadmap 5: vor dem Resolve nochmal prüfen, ob das Ziel
+                // überhaupt noch gültig ist (Tod, Despawn, Wegrennen, Clear).
+                // Falls nicht → Attacke abbrechen statt Cooldown weiterzuhalten.
+                if (!Manager.ServerIsTargetStillValid(weapon))
+                {
+                    Manager.ChangeState(Manager.IdleState);
+                    return;
+                }
+                Manager.ServerResolveMeleeHit(weapon);
+            }
+
+            // ---- Phase B: Recover bis Ende des Cooldowns ----
+            try
+            {
+                if (remaining > 0f)
+                {
+                    await Awaitable.WaitForSecondsAsync(remaining, token);
+                }
+            }
+            catch (System.OperationCanceledException)
+            {
+                return;
+            }
+
+            if (Manager == null || !Manager.IsSpawned)
+            {
+                return;
+            }
+
             if (Manager.IsCurrentState(this))
             {
                 Manager.ChangeState(Manager.IdleState);

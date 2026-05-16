@@ -15,6 +15,15 @@ GameObject:
   - component: {fileID: 5172720370931407651}
   - component: {fileID: -525944449724255899}
   - component: {fileID: -2700015800232922021}
+  - component: {fileID: 5708302143726135351}
+  - component: {fileID: 8967929917568848527}
+  - component: {fileID: 6273741711409788343}
+  - component: {fileID: 4317724205577696828}
+  - component: {fileID: 1186222734823470071}
+  - component: {fileID: 6514675505499219949}
+  - component: {fileID: 2073408902820077138}
+  - component: {fileID: 7442777768799961031}
+  - component: {fileID: 2695336093515043885}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -103,6 +112,8 @@ MonoBehaviour:
   m_ActionMap: Player
   m_MoveAction: Move
   m_AttackAction: Attack
+  m_NextTargetAction: NextTarget
+  m_ClearTargetAction: ClearTarget
 --- !u!114 &5172720370931407651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +129,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_Input: {fileID: 3229784933833492351}
   m_Character: {fileID: 0}
-  m_CombatVisuals: {fileID: 0}
+  m_CombatVisuals: {fileID: -2700015800232922021}
+  m_Combat: {fileID: -525944449724255899}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run
@@ -139,7 +151,12 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_Visuals: {fileID: -2700015800232922021}
   m_Input: {fileID: 3229784933833492351}
+  m_Targeting: {fileID: 2073408902820077138}
+  m_TargetSelection: {fileID: 4317724205577696828}
+  m_Stats: {fileID: 5708302143726135351}
+  m_Movement: {fileID: 5172720370931407651}
   m_DefaultWeaponId: longsword
+  m_RespawnDelaySeconds: 5
 --- !u!114 &-2700015800232922021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,3 +176,301 @@ MonoBehaviour:
   m_AnimBlock: block
   m_AnimHit: hit
   m_AnimDie: die
+--- !u!114 &5708302143726135351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82fdc0d34989ca4b8c197c6f343627e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.UnitStats
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_MaxHp: 100
+  m_MaxMana: 0
+  m_Strength: 5
+  m_Armor: 0
+  m_Level: 1
+--- !u!120 &8967929917568848527
+LineRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Positions:
+  - {x: 0.5, y: 0.02, z: 0}
+  - {x: 0.49572244, y: 0.02, z: 0.0652631}
+  - {x: 0.4829629, y: 0.02, z: 0.12940952}
+  - {x: 0.46193975, y: 0.02, z: 0.19134173}
+  - {x: 0.4330127, y: 0.02, z: 0.25}
+  - {x: 0.39667666, y: 0.02, z: 0.3043807}
+  - {x: 0.35355338, y: 0.02, z: 0.35355338}
+  - {x: 0.30438069, y: 0.02, z: 0.3966767}
+  - {x: 0.24999999, y: 0.02, z: 0.43301272}
+  - {x: 0.19134171, y: 0.02, z: 0.46193975}
+  - {x: 0.12940954, y: 0.02, z: 0.4829629}
+  - {x: 0.06526306, y: 0.02, z: 0.49572244}
+  - {x: -0.000000021855694, y: 0.02, z: 0.5}
+  - {x: -0.06526311, y: 0.02, z: 0.49572244}
+  - {x: -0.12940958, y: 0.02, z: 0.4829629}
+  - {x: -0.19134176, y: 0.02, z: 0.46193975}
+  - {x: -0.25000003, y: 0.02, z: 0.4330127}
+  - {x: -0.3043807, y: 0.02, z: 0.39667666}
+  - {x: -0.35355338, y: 0.02, z: 0.35355338}
+  - {x: -0.39667666, y: 0.02, z: 0.3043807}
+  - {x: -0.4330127, y: 0.02, z: 0.25000003}
+  - {x: -0.4619398, y: 0.02, z: 0.19134164}
+  - {x: -0.48296294, y: 0.02, z: 0.12940946}
+  - {x: -0.49572244, y: 0.02, z: 0.06526304}
+  - {x: -0.5, y: 0.02, z: -0.00000004371139}
+  - {x: -0.4957224, y: 0.02, z: -0.06526313}
+  - {x: -0.4829629, y: 0.02, z: -0.12940954}
+  - {x: -0.46193975, y: 0.02, z: -0.19134171}
+  - {x: -0.43301263, y: 0.02, z: -0.2500001}
+  - {x: -0.3966766, y: 0.02, z: -0.3043808}
+  - {x: -0.35355332, y: 0.02, z: -0.35355344}
+  - {x: -0.30438074, y: 0.02, z: -0.39667663}
+  - {x: -0.24999996, y: 0.02, z: -0.43301272}
+  - {x: -0.19134156, y: 0.02, z: -0.46193984}
+  - {x: -0.12940949, y: 0.02, z: -0.48296294}
+  - {x: -0.06526296, y: 0.02, z: -0.49572244}
+  - {x: 0.0000000059624403, y: 0.02, z: -0.5}
+  - {x: 0.065263204, y: 0.02, z: -0.4957224}
+  - {x: 0.1294095, y: 0.02, z: -0.4829629}
+  - {x: 0.1913418, y: 0.02, z: -0.46193972}
+  - {x: 0.24999996, y: 0.02, z: -0.43301272}
+  - {x: 0.30438077, y: 0.02, z: -0.39667663}
+  - {x: 0.3535535, y: 0.02, z: -0.35355327}
+  - {x: 0.3966767, y: 0.02, z: -0.30438069}
+  - {x: 0.43301278, y: 0.02, z: -0.24999988}
+  - {x: 0.46193978, y: 0.02, z: -0.19134171}
+  - {x: 0.48296294, y: 0.02, z: -0.12940942}
+  - {x: 0.49572244, y: 0.02, z: -0.065263115}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 0.05
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 0.2509804, g: 1, b: 0.4509804, a: 0.9490196}
+      key1: {r: 0.2509804, g: 1, b: 0.4509804, a: 0.9490196}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: -1
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_UseWorldSpace: 0
+  m_Loop: 1
+  m_ApplyActiveColorSpace: 1
+--- !u!114 &6273741711409788343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e28f5af0a487634c869ac1ce4c50594, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Gameplay::Tolik.Riftstorm.Runtime.Gameplay.Combat.HitboxIndicator
+  m_MatchCollider: {fileID: 0}
+  m_Radius: 0.5
+  m_Segments: 48
+  m_GroundOffset: 0.02
+  m_Color: {r: 0.25, g: 1, b: 0.45, a: 0.95}
+  m_Width: 0.05
+  m_AlwaysVisible: 0
+--- !u!114 &4317724205577696828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2cda398a776e64cad37355a9a5a3aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.TargetSelection
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &1186222734823470071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fde05a140a71aea4aa53356275ade48c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerIdentity
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6514675505499219949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 127a9437cd842c54990000c1466bf513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerNameTag
+  m_Identity: {fileID: 1186222734823470071}
+  m_Anchor: {fileID: 3690958180083129231}
+  m_WorldOffset: {x: 0, y: 2.2, z: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FontSize: 14
+  m_MaxDistance: 50
+--- !u!114 &2073408902820077138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7777b73c8fe1f743aaf8bcf7003d8fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.PlayerTargetingInput
+  m_OwnerNetworkObject: {fileID: 4052496314153085164}
+  m_Input: {fileID: 3229784933833492351}
+  m_TargetSelection: {fileID: 4317724205577696828}
+  m_Camera: {fileID: 0}
+  m_MaxRayDistance: 200
+  m_TargetMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_TabTargetRange: 30
+--- !u!114 &7442777768799961031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14adc6ca51ad11646b3bfe01d65ae0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Gameplay::Tolik.Riftstorm.Runtime.Gameplay.Combat.TargetingHitbox
+  m_Radius: 0.4
+  m_Height: 1.8
+  m_Center: {x: 0, y: 0.9, z: 0}
+  m_IsTrigger: 1
+--- !u!114 &2695336093515043885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd1cca1a2dee99348be270adb12b9a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.FloatingCombatText
+  m_Stats: {fileID: 5708302143726135351}
+  m_Anchor: {fileID: 3690958180083129231}
+  m_WorldOffset: {x: 0, y: 0.5, z: 0}
+  m_LifetimeSeconds: 1.1
+  m_RiseSpeed: 1.4
+  m_HorizontalJitter: 22
+  m_MaxActive: 16
+  m_FontSize: 18
+  m_MaxDistance: 50
+  m_HitColor: {r: 1, g: 0.92, b: 0.4, a: 1}
+  m_CritColor: {r: 1, g: 0.45, b: 0.2, a: 1}
+  m_MitigatedColor: {r: 0.8, g: 0.8, b: 0.85, a: 1}
