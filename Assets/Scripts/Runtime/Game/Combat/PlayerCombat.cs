@@ -566,11 +566,16 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            // 2D-Distanzpr&#252;fung (XZ) — identisch zum SoF-Quellcode (sqrt(dx²+dy²)).
+            // 2D-Distanzprüfung (XZ) — identisch zum SoF-Quellcode (sqrt(dx²+dy²)),
+            // erweitert um den HitRadius des Opfers: Treffer landet, sobald die Waffen-
+            // reichweite die Körperhülle des Ziels erreicht (nicht erst dessen Mittelpunkt).
+            // Damit deckt der Owner-lokale AttackRangeIndicator die echte Reichweite ab,
+            // ohne dass der Spieler "in den Gegner hineinlaufen" muss.
             Vector3 d = targetObject.transform.position - transform.position;
             d.y = 0f;
             float distSqr = d.sqrMagnitude;
-            if (distSqr > weapon.Range * weapon.Range)
+            float reach = weapon.Range + victimStats.HitRadius;
+            if (distSqr > reach * reach)
             {
                 return;
             }

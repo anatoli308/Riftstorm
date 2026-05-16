@@ -37,6 +37,13 @@ namespace Riftstorm.Game.Combat
         [SerializeField, Min(0)] private int m_Armor = 0;
         [SerializeField, Min(1)] private int m_Level = 1;
 
+        [Header("Hitbox")]
+        [Tooltip("Radius der Einheits-Hitbox in Metern. Wird vom Server-seitigen Hit-Resolve " +
+                 "als 'Reichweiten-Erweiterung' benutzt: distance(angreifer, opfer) <= " +
+                 "weapon.Range + opfer.HitRadius. Damit fühlt sich der LoL-Style Range-Indicator " +
+                 "konsistent an — sobald der Ring die Körperhülle des Ziels touchiert, landet der Schlag.")]
+        [SerializeField, Min(0f)] private float m_HitRadius = 0.5f;
+
         // -------------------------------------------------------------------------
         // Netzwerk-State
         // -------------------------------------------------------------------------
@@ -78,6 +85,12 @@ namespace Riftstorm.Game.Combat
 
         /// <inheritdoc/>
         public int Level => m_Level;
+
+        /// <summary>
+        /// Radius der Körper-Hitbox in Metern. Wird vom Server-Hit-Resolve als
+        /// Reichweiten-Bonus addiert (siehe <see cref="m_HitRadius"/>).
+        /// </summary>
+        public float HitRadius => m_HitRadius;
 
         // -------------------------------------------------------------------------
         // IDamageable

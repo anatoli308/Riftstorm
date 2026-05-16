@@ -137,7 +137,8 @@ namespace Riftstorm.Game.UI
         {
             frame.style.position = Position.Absolute;
             frame.style.top = 16f;
-            frame.style.left = 16f;
+            // Direkt rechts neben dem Player-Frame (links 16 + Breite ~ 300 + Luecke).
+            frame.style.left = 332f;
             frame.style.minWidth = 280f;
             frame.style.paddingTop = 8f;
             frame.style.paddingBottom = 8f;
