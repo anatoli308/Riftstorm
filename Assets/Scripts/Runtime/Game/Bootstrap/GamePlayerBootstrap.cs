@@ -1,20 +1,22 @@
 using System.Threading.Tasks;
 using Riftstorm.Game.CameraRig;
-using Riftstorm.Game.Input;
 using Riftstorm.Game.Movement;
 using Riftstorm.Game.Sprites;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Riftstorm.Game.Bootstrap
 {
     /// <summary>
-    /// Minimaler Spielstart: spawnt einen FLARE-Spieler mit den vier Standard-Layern
-    /// (legs, feet, chest, hands), verdrahtet Input + Movement + Topdown-Kamera.
-    /// Dient als Stub bis der vollwertige MVC-<c>GameApplication</c> existiert.
+    /// Baut die FLARE-Visuals als Child-Hierarchie unter dem
+    /// <c>PlayerCharacter</c>-NetworkObject auf und verdrahtet sie mit dem
+    /// <see cref="PlayerMovement"/>, das selbst direkt am Prefab-Root sitzt.
+    /// Auf einem reinen Dedicated Server werden weder Sprites noch Kamera erzeugt,
+    /// auf Remote-Clients zwar Sprites (damit man andere Spieler sieht), aber
+    /// keine Kamera. Nur der Owner-Client bekommt die Topdown-Kamera angehängt.
     /// </summary>
     [DefaultExecutionOrder(-100)]
-    public sealed class GamePlayerBootstrap : MonoBehaviour
+    public sealed class GamePlayerBootstrap : NetworkBehaviour
     {
         [Header("FLARE Atlas")]
         [Tooltip("Unterordner unter Application.streamingAssetsPath mit den JSON-Atlanten.")]
@@ -24,40 +26,29 @@ namespace Riftstorm.Game.Bootstrap
         [SerializeField] private string[] m_LayerAtlases = { "default_legs", "default_feet", "default_chest", "default_hands", "head_short", "longsword", "buckler" };
         [SerializeField] private string m_InitialAnimation = "stance";
 
-        [Header("Input")]
-        [SerializeField] private InputActionAsset m_InputAsset;
-
         [Header("Welt")]
-        [SerializeField] private Vector3 m_SpawnPosition = Vector3.zero;
         [SerializeField] private bool m_AutoCreateCamera = true;
 
-        private GameObject m_Player;
-
-        private async void Start()
+        public override void OnNetworkSpawn()
         {
-            await BuildPlayerAsync();
+            // Auf einem Dedicated Server haben wir keinen Renderer — Sprites/Kamera
+            // wären reine Verschwendung. Pure-Server-Branch früh verlassen.
+            if (NetworkManager.Singleton != null
+                && NetworkManager.Singleton.IsServer
+                && !NetworkManager.Singleton.IsClient)
+            {
+                return;
+            }
+
+            _ = BuildVisualsAsync();
         }
 
-        private async Task BuildPlayerAsync()
+        private async Task BuildVisualsAsync()
         {
-            ResolveInputAssetFallback();
-
-            // Wurzel-Objekt mit Input + Movement.
-            m_Player = new GameObject("Player");
-            m_Player.transform.position = m_SpawnPosition;
-
-            // Deaktivieren, damit AddComponent OnEnable nicht vor der Asset-Zuweisung auslöst.
-            m_Player.SetActive(false);
-            PlayerInputController input = m_Player.AddComponent<PlayerInputController>();
-            if (m_InputAsset != null)
-            {
-                SetInputAsset(input, m_InputAsset);
-            }
-            m_Player.SetActive(true);
-
-            // Layered Visuals als Kind-Hierarchie.
+            // Visuals direkt unter dem NetworkObject-Root erzeugen, damit die
+            // server-authoritative Transform-Bewegung sie automatisch mitnimmt.
             GameObject visualsRoot = new("Visuals");
-            visualsRoot.transform.SetParent(m_Player.transform, false);
+            visualsRoot.transform.SetParent(transform, false);
             FlareCharacter character = visualsRoot.AddComponent<FlareCharacter>();
 
             FlareAtlasLoader loader = BuildLoader();
@@ -72,34 +63,22 @@ namespace Riftstorm.Game.Bootstrap
             character.Play(m_InitialAnimation, true);
             character.SetDirection(2); // FLARE 2 = Süd, Standard-Blickrichtung Topdown.
 
-            // Movement an den fertigen Charakter koppeln.
-            PlayerMovement movement = m_Player.AddComponent<PlayerMovement>();
-            BindMovement(movement, input, character);
+            // PlayerMovement liegt direkt am Root (NetworkBehaviour-Host). Visuals injizieren.
+            PlayerMovement movement = GetComponent<PlayerMovement>();
+            if (movement != null)
+            {
+                movement.BindVisuals(character);
+            }
+            else
+            {
+                Debug.LogError("[GamePlayerBootstrap] Kein PlayerMovement am Root gefunden — bitte am PlayerCharacter-Prefab hinzufügen.", this);
+            }
 
-            if (m_AutoCreateCamera)
+            // Kamera nur für den lokalen Spieler. Remote-Clients sollen den Owner nicht hijacken.
+            if (m_AutoCreateCamera && IsOwner)
             {
-                EnsureCamera(m_Player.transform);
+                EnsureCamera(transform);
             }
-        }
-
-        private void ResolveInputAssetFallback()
-        {
-            if (m_InputAsset != null)
-            {
-                return;
-            }
-#if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:InputActionAsset");
-            if (guids.Length > 0)
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-                m_InputAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<InputActionAsset>(path);
-                if (m_InputAsset != null)
-                {
-                    Debug.Log($"[GamePlayerBootstrap] InputActionAsset automatisch geladen: {path}");
-                }
-            }
-#endif
         }
 
         private FlareAtlasLoader BuildLoader()
@@ -145,23 +124,6 @@ namespace Riftstorm.Game.Bootstrap
                 follow = camGo.AddComponent<TopdownCameraFollow>();
             }
             follow.SetTarget(target);
-        }
-
-        private static void SetInputAsset(PlayerInputController controller, InputActionAsset asset)
-        {
-            // Direktes Setzen über das serialisierte Feld via SerializedObject ist nur im Editor verfügbar.
-            // Zur Laufzeit nutzen wir Reflection nur für dieses Bootstrap-Stub — bewusst zentral und nicht in Hot Paths.
-            System.Reflection.FieldInfo field = typeof(PlayerInputController).GetField(
-                "m_InputAsset",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            field?.SetValue(controller, asset);
-        }
-
-        private static void BindMovement(PlayerMovement movement, PlayerInputController input, FlareCharacter character)
-        {
-            System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
-            typeof(PlayerMovement).GetField("m_Input", flags)?.SetValue(movement, input);
-            typeof(PlayerMovement).GetField("m_Character", flags)?.SetValue(movement, character);
         }
     }
 }

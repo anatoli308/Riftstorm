@@ -105,6 +105,33 @@ Assets/Scripts/
 
 ---
 
+## Scene-Flow (Boot → Metagame → Game)
+
+```
+Boot.unity                    Metagame.unity                    Game.unity
+─────────────                 ───────────────                   ──────────
+NetworkManager        ─┐      MetagameApplication               GameApplication
+ + UnityTransport      │       + MetagameModel                    + GameModel
+ApplicationEntryPoint  │       + MetagameView                     + GameView
+ + ConnectionManager   │       + MetagameController               + GameController
+DontDestroyOnLoad ─────┘             │                                 ▲
+                                     ▼                                 │
+                          ConnectionManager.StartClient(ip,port)       │
+                                     │                                 │
+                                     ▼                                 │
+                            NGO StartClient → Approval ───────────────►│
+                                                  (NGO SceneManager
+                                                   syncs Client into Game)
+```
+
+- **Server-Build** (`UNITY_SERVER`) → `ApplicationEntryPoint` ruft `ConnectionManager.StartServer(0.0.0.0, --port)`, lädt nach `OnServerStarted` via `NetworkManager.Singleton.SceneManager.LoadScene("Game")`.
+- **Client-Build** → lädt `Metagame`, User triggert Connect, `ConnectionManager.StartClient(...)`, NGO synced Client automatisch in `Game`.
+- **Disconnect / Server-Down** → Client kehrt automatisch zurück nach `Metagame`.
+
+Einrichtung im Editor: siehe [`referenzen/02-scene-setup.md`](referenzen/02-scene-setup.md).
+
+---
+
 ## Repo-Konventionen
 
 Siehe [`.github/copilot-instructions.md`](.github/copilot-instructions.md) für vollständige Coding-, Architektur- und Networking-Standards.

@@ -42,7 +42,7 @@ namespace Tolik.Riftstorm.Runtime
         /// </summary>
         /// <param name="eventID">The name of the event to notify</param>
         /// <param name="data">The parameters to pass to the listening controllers</param>
-        internal void Broadcast(AppEvent evt)
+        public void Broadcast(AppEvent evt)
         {
             App.Broadcast(evt);
         }

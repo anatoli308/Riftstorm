@@ -383,7 +383,7 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &1909482901
+--- !u!1 &1433596097
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -391,64 +391,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1909482904}
-  - component: {fileID: 1909482903}
-  - component: {fileID: 1909482902}
+  - component: {fileID: 1433596099}
+  - component: {fileID: 1433596098}
   m_Layer: 0
-  m_Name: PlayerCharacter
+  m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1909482902
+--- !u!114 &1433596098
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1909482901}
+  m_GameObject: {fileID: 1433596097}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76ed6a74abfdd71419315d319d8af03f, type: 3}
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.PlayerInputController
-  m_InputAsset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionMap: Player
-  m_MoveAction: Move
---- !u!114 &1909482903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1909482901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ab7e191156d8c547913e257beb62728, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Bootstrap.GamePlayerBootstrap
-  m_StreamingSubFolder: player_male
-  m_TextureSubFolder: Art/player_male
-  m_LayerAtlases:
-  - default_legs
-  - default_feet
-  - default_chest
-  - default_hands
-  - head_short
-  - longsword
-  - buckler
-  m_InitialAnimation: stance
-  m_InputAsset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_SpawnPosition: {x: 0, y: 0, z: 0}
-  m_AutoCreateCamera: 1
---- !u!4 &1909482904
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 10fc4df2da32a41aaa32d77bc913491c, type: 2}
+--- !u!4 &1433596099
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1909482901}
+  m_GameObject: {fileID: 1433596097}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -457,10 +432,94 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1436808949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1436808953}
+  - component: {fileID: 1436808954}
+  - component: {fileID: 1436808952}
+  - component: {fileID: 1436808951}
+  - component: {fileID: 1436808950}
+  m_Layer: 0
+  m_Name: GameApplication
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1436808950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436808949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54385f5ea88a03d4dabb655b49a24ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Tolik.Riftstorm.Runtime.Game.GameController
+--- !u!114 &1436808951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436808949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369ea82c2c012dd42bec275b34efc863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Tolik.Riftstorm.Runtime.Game.GameView
+--- !u!114 &1436808952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436808949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4fbda14b21615743b131493aa91704c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Tolik.Riftstorm.Runtime.Game.GameModel
+--- !u!4 &1436808953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436808949}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1436808954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436808949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2faae95986714844b45d5c7c0ffe496, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Tolik.Riftstorm.Runtime.Game.GameApplication
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1267822409}
   - {fileID: 197329019}
-  - {fileID: 1909482904}
+  - {fileID: 1436808953}
+  - {fileID: 1433596099}

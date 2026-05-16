@@ -1,0 +1,28 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Metagame/ConnectScreen.uss?fileID=7433441132597879392&amp;guid=00000000000000000000000000000000&amp;type=3#ConnectScreen" />
+    <ui:VisualElement name="root" class="root">
+        <ui:VisualElement name="panel" class="panel">
+            <ui:Label text="RIFTSTORM" name="title" class="title" />
+            <ui:Label text="Connect to a dedicated server" name="subtitle" class="subtitle" />
+
+            <ui:VisualElement class="field-row">
+                <ui:Label text="Server Address" class="field-label" />
+                <ui:TextField name="address-field" value="127.0.0.1" class="field-input" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="field-row">
+                <ui:Label text="Port" class="field-label" />
+                <ui:TextField name="port-field" value="7777" class="field-input" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="field-row">
+                <ui:Label text="Player Name" class="field-label" />
+                <ui:TextField name="name-field" value="Player" class="field-input" />
+            </ui:VisualElement>
+
+            <ui:Button text="CONNECT" name="connect-button" class="primary-button" />
+
+            <ui:Label text="" name="status-label" class="status-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

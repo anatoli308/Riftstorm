@@ -5,7 +5,10 @@
         "Riftstorm.Core",
         "Riftstorm.Shared",
         "Unity.Addressables",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
+        "Unity.DedicatedServer.MultiplayerRoles"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

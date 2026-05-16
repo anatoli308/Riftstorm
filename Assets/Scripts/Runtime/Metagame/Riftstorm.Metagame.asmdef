@@ -5,6 +5,7 @@
         "Riftstorm.Core",
         "Riftstorm.Shared",
         "Riftstorm.Management",
+        "Riftstorm.ApplicationLifecycle",
         "Riftstorm.UI",
         "Unity.InputSystem"
     ],

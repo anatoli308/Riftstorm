@@ -46,7 +46,7 @@ namespace Tolik.Riftstorm.Runtime.Core
         /// <summary>
         /// Change the current state to <paramref name="nextState"/> invoking Exit/Enter accordingly.
         /// </summary>
-        internal void ChangeState(TState nextState)
+        public void ChangeState(TState nextState)
         {
             Debug.Log($"{name}: Changed state from {m_CurrentState?.GetType().Name} to {nextState.GetType().Name}.");
 

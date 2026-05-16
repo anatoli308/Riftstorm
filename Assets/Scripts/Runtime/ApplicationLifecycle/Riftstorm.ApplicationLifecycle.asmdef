@@ -9,11 +9,12 @@
         "Riftstorm.AI",
         "Riftstorm.Networking",
         "Riftstorm.UI",
-        "Riftstorm.Metagame",
-        "Riftstorm.Game",
         "Unity.Addressables",
         "Unity.ResourceManager",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
+        "Unity.DedicatedServer.MultiplayerRoles"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

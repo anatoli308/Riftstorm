@@ -36,24 +36,24 @@
     {
         internal BaseApplication Instance { get; private set; }
 
-        internal EventManager EventManager;
+        public EventManager EventManager;
 
         /// <summary>
         /// Fetches the root Model instance.
         /// </summary>
-        internal Model Model => m_model = Find<Model>(m_model);
+        public Model Model => m_model = Find<Model>(m_model);
         Model m_model;
 
         /// <summary>
         /// Fetches the root View instance.
         /// </summary>
-        internal View View => m_view = Find<View>(m_view);
+        public View View => m_view = Find<View>(m_view);
         View m_view;
 
         /// <summary>
         /// Fetches the root Controller instance.
         /// </summary>
-        internal Controller Controller => m_controller = Find<Controller>(m_controller);
+        public Controller Controller => m_controller = Find<Controller>(m_controller);
         Controller m_controller;
 
         /// <summary>
@@ -79,7 +79,7 @@
         /// Notifies an event to the component's of the app
         /// </summary>
         /// <param name="evt"></param>
-        new internal void Broadcast(AppEvent evt)
+        new public void Broadcast(AppEvent evt)
         {
             EventManager.Broadcast(evt);
         }

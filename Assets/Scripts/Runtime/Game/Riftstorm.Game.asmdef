@@ -9,7 +9,9 @@
         "Riftstorm.AI",
         "Riftstorm.Networking",
         "Riftstorm.UI",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Netcode.Runtime",
+        "Unity.Netcode.Components"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

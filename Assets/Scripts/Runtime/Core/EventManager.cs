@@ -13,7 +13,7 @@ namespace Tolik.Riftstorm.Runtime
         readonly Dictionary<Type, Action<AppEvent>> m_Events = new();
         readonly Dictionary<Delegate, Action<AppEvent>> m_EventLookups = new();
 
-        internal void AddListener<T>(Action<T> evt) where T : AppEvent
+        public void AddListener<T>(Action<T> evt) where T : AppEvent
         {
             if (m_EventLookups.ContainsKey(evt))
             {
@@ -33,7 +33,7 @@ namespace Tolik.Riftstorm.Runtime
             }
         }
 
-        internal void RemoveListener<T>(Action<T> evt) where T : AppEvent
+        public void RemoveListener<T>(Action<T> evt) where T : AppEvent
         {
             if (!m_EventLookups.TryGetValue(evt, out var action))
             {
@@ -56,7 +56,7 @@ namespace Tolik.Riftstorm.Runtime
             m_EventLookups.Remove(evt);
         }
 
-        internal void Broadcast(AppEvent evt)
+        public void Broadcast(AppEvent evt)
         {
             if (m_Events.TryGetValue(evt.GetType(), out var action))
             {
@@ -64,7 +64,7 @@ namespace Tolik.Riftstorm.Runtime
             }
         }
 
-        internal void Clear()
+        public void Clear()
         {
             m_Events.Clear();
             m_EventLookups.Clear();
