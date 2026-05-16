@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 2073408902820077138}
   - component: {fileID: 7442777768799961031}
   - component: {fileID: 2695336093515043885}
+  - component: {fileID: -6858420798198050943}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -59,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3418860212
+  GlobalObjectIdHash: 1072012832
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -111,11 +112,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.PlayerInputController
   m_InputAsset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_ActionMap: Player
-  m_MoveAction: Move
   m_AttackAction: Attack
   m_NextTargetAction: NextTarget
   m_ClearTargetAction: ClearTarget
   m_AttackRangeIndicatorAction: AttackrangeIndicator
+  m_MoveCommandAction: MoveCommand
 --- !u!114 &5172720370931407651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Movement.PlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Input: {fileID: 3229784933833492351}
+  m_MoveSource: {fileID: 0}
   m_Character: {fileID: 0}
   m_CombatVisuals: {fileID: -2700015800232922021}
   m_Combat: {fileID: -525944449724255899}
@@ -298,7 +299,7 @@ LineRenderer:
   - {x: 0.49572244, y: 0.02, z: -0.065263115}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.05
+    widthMultiplier: 0.01
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -371,7 +372,7 @@ MonoBehaviour:
   m_Segments: 48
   m_GroundOffset: 0.02
   m_Color: {r: 0.25, g: 1, b: 0.45, a: 0.95}
-  m_Width: 0.05
+  m_Width: 0.01
   m_AlwaysVisible: 0
 --- !u!114 &4317724205577696828
 MonoBehaviour:
@@ -479,6 +480,30 @@ MonoBehaviour:
   m_HitColor: {r: 1, g: 0.92, b: 0.4, a: 1}
   m_CritColor: {r: 1, g: 0.45, b: 0.2, a: 1}
   m_MitigatedColor: {r: 0.8, g: 0.8, b: 0.85, a: 1}
+--- !u!114 &-6858420798198050943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 026722005a8181d4782ac7f46c818846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.MobaCommandController
+  m_OwnerNetworkObject: {fileID: 4052496314153085164}
+  m_Input: {fileID: 3229784933833492351}
+  m_TargetSelection: {fileID: 4317724205577696828}
+  m_SelfStats: {fileID: 5708302143726135351}
+  m_Combat: {fileID: 0}
+  m_Camera: {fileID: 0}
+  m_MaxRayDistance: 200
+  m_RaycastMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ArrivalRadius: 0.15
+  m_FollowStopRadius: 1.5
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

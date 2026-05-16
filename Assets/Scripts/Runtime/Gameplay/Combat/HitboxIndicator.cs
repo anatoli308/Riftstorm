@@ -24,7 +24,7 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
 
         [Header("Darstellung")]
         [SerializeField] private Color m_Color = new(0.25f, 1f, 0.45f, 0.95f);
-        [SerializeField, Min(0.005f)] private float m_Width = 0.05f;
+        [SerializeField, Min(0.005f)] private float m_Width = 0.01f;
         [SerializeField] private bool m_AlwaysVisible = false;
 
         private LineRenderer m_Line;

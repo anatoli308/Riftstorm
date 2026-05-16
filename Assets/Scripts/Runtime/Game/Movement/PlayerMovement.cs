@@ -10,7 +10,7 @@ namespace Riftstorm.Game.Movement
     /// Server-authoritative Topdown-Bewegung im SoF2/Quake3-Stil mit Client Prediction
     /// und Reconciliation. Drei Rollen teilen sich eine Komponente:
     ///
-    /// - <b>Owner-Client</b>: liest WASD, simuliert lokal sofort (Prediction), legt
+    /// - <b>Owner-Client</b>: liest LoL-Style RMB-Klick via <see cref="Riftstorm.Game.Input.MobaCommandController"/>, simuliert lokal sofort (Prediction), legt
     ///   jeden Command in einen Ringbuffer und schickt ihn via
     ///   <see cref="SubmitCommandServerRpc"/> an den Server. Auf Ack vergleicht er die
     ///   gespeicherte Vorhersage mit der autoritativen Position und re-simuliert alle
@@ -29,7 +29,7 @@ namespace Riftstorm.Game.Movement
         // Inspector
         // -------------------------------------------------------------------------
 
-        [SerializeField] private PlayerInputController m_Input;
+        [SerializeField] private MobaCommandController m_MoveSource;
         [SerializeField] private FlareCharacter m_Character;
         [SerializeField] private PlayerCombatVisuals m_CombatVisuals;
         [SerializeField] private PlayerCombat m_Combat;
@@ -106,9 +106,9 @@ namespace Riftstorm.Game.Movement
             }
 
             // Falls die Inspector-Referenz verloren ging, am gleichen GameObject nachschauen.
-            if (m_Input == null)
+            if (m_MoveSource == null)
             {
-                m_Input = GetComponent<PlayerInputController>();
+                m_MoveSource = GetComponent<MobaCommandController>();
             }
             if (m_Combat == null)
             {
@@ -121,9 +121,9 @@ namespace Riftstorm.Game.Movement
 
             // Input nur auf dem Owner-Client. Server-Build und Remote-Clients duerfen
             // nicht sampeln.
-            if (m_Input != null)
+            if (m_MoveSource != null)
             {
-                m_Input.enabled = IsOwner;
+                m_MoveSource.enabled = IsOwner;
             }
         }
 
@@ -168,8 +168,8 @@ namespace Riftstorm.Game.Movement
         /// </summary>
         private void TickOwner()
         {
-            Vector2 rawInput = m_Input != null ? m_Input.MoveDirection : Vector2.zero;
-            bool isMoving = m_Input != null && m_Input.IsMoving;
+            Vector2 rawInput = m_MoveSource != null ? m_MoveSource.MoveDirection : Vector2.zero;
+            bool isMoving = m_MoveSource != null && m_MoveSource.IsMoving;
             Vector2 input = isMoving ? ClampInput(rawInput) : Vector2.zero;
 
             // Owner-seitiger Movement-Lock. Zwei Quellen:

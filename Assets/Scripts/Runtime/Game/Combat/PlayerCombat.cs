@@ -15,9 +15,11 @@ namespace Riftstorm.Game.Combat
     /// Autoritative Combat-Statemachine pro Spieler.
     ///
     /// <para>
-    /// Owner-Client: hört auf <see cref="PlayerInputController.AttackPressed"/> und
-    /// schickt eine <see cref="RequestAttackServerRpc"/> an den Server. Es wird
-    /// keinerlei lokale Animationslogik gestartet — alles läuft über den Server.
+    /// Owner-Client: hat KEIN eigenes Attack-Binding mehr. Angriffe werden
+    /// ausschliesslich vom <see cref="MobaCommandController"/> via
+    /// <see cref="TryRequestAutoAttack"/> ausgeloest (LoL-Style: RMB auf Gegner
+    /// laeuft in Waffenreichweite und greift dort automatisch an). LMB ist reine
+    /// Selektion und wird von <see cref="PlayerTargetingInput"/> abgewickelt.
     /// </para>
     /// <para>
     /// Server: validiert (Waffe vorhanden, State akzeptiert Anfrage), startet den
@@ -137,11 +139,8 @@ namespace Riftstorm.Game.Combat
         {
             base.OnNetworkSpawn();
 
-            // Owner-Client koppelt seinen Input an die Attack-ServerRpc.
-            if (IsOwner && m_Input != null)
-            {
-                m_Input.AttackPressed += OnLocalAttackPressed;
-            }
+            // Owner-Client hat KEIN eigenes Attack-Binding (LoL-Style): Angriffe
+            // kommen ausschliesslich aus MobaCommandController.TryRequestAutoAttack.
 
             // Server bestimmt die initiale Waffe (Loadout kommt später).
             if (IsServer && m_CurrentWeaponId.Value.Length == 0 && !string.IsNullOrEmpty(m_DefaultWeaponId))
@@ -175,10 +174,6 @@ namespace Riftstorm.Game.Combat
         /// <inheritdoc/>
         public override void OnNetworkDespawn()
         {
-            if (m_Input != null)
-            {
-                m_Input.AttackPressed -= OnLocalAttackPressed;
-            }
             if (IsServer && m_Stats != null)
             {
                 m_Stats.OnServerDied -= OnServerDied;
@@ -370,61 +365,47 @@ namespace Riftstorm.Game.Combat
         /// <summary>Vom Bootstrap aufgerufen, sobald der Input-Controller verfügbar ist.</summary>
         public void BindInput(PlayerInputController input)
         {
-            // Falls OnNetworkSpawn bereits gelaufen ist und wir Owner sind, jetzt nachhängen.
-            if (m_Input == input)
-            {
-                return;
-            }
-
-            if (IsSpawned && IsOwner && m_Input != null)
-            {
-                m_Input.AttackPressed -= OnLocalAttackPressed;
-            }
-
+            // Combat selbst horcht nicht mehr auf den Input — wir merken uns die Referenz
+            // nur, weil andere Komponenten ggf. ueber Combat darauf zugreifen.
             m_Input = input;
-
-            if (IsSpawned && IsOwner && m_Input != null)
-            {
-                m_Input.AttackPressed += OnLocalAttackPressed;
-            }
         }
 
         // -------------------------------------------------------------------------
         // Owner-Input → Server
         // -------------------------------------------------------------------------
 
-        private void OnLocalAttackPressed()
+        /// <summary>
+        /// LoL-Style Auto-Attack-Einstieg fuer den <see cref="MobaCommandController"/>.
+        /// Wird per Frame aus dem Follow-Update aufgerufen, sobald der Spieler in
+        /// Waffenreichweite zum gelockten Ziel steht. Idempotent gegenueber dem
+        /// Prediction-Window — solange der Owner einen Angriff vorhersagt, wird
+        /// kein weiterer RPC abgeschickt. Cooldown-Gating und Ziel-/Waffenvalidierung
+        /// laufen auf dem Server in <see cref="RequestAttackServerRpc"/> + State-Machine.
+        /// </summary>
+        public void TryRequestAutoAttack()
         {
-            if (!IsSpawned)
+            if (!IsSpawned || !IsOwner)
             {
                 return;
             }
-            ulong hovered = m_Targeting != null ? m_Targeting.CurrentHoveredTargetId : TargetSelection.NoTarget;
-            ulong currentLock = m_TargetSelection != null ? m_TargetSelection.CurrentTargetId : TargetSelection.NoTarget;
-
-            // Klick auf ein NEUES Ziel (hover != aktuelles Lock) ist reine Selektion.
-            // Der Lock-Wechsel wird parallel von PlayerTargetingInput.OnAttackPressed
-            // per ServerRpc gesendet — hier kein Attack-Trigger. Der Spieler muss erneut
-            // klicken (auf das jetzt gelockte Ziel) oder einen separaten Attack-Hotkey
-            // benutzen, um anzugreifen. Entspricht Source-Verhalten: erst select, dann attack.
-            if (hovered != TargetSelection.NoTarget && hovered != currentLock)
+            if (m_Stats != null && m_Stats.IsDead)
             {
                 return;
             }
-
-            // Klick auf gelocktes Ziel ODER ins Leere -> Angriff gegen aktuelles Lock.
-            // Ohne Lock kein Angriff (verhindert "Klick ins Nichts feuert eine Animation").
-            if (currentLock == TargetSelection.NoTarget)
+            if (m_TargetSelection == null || m_TargetSelection.CurrentTargetId == TargetSelection.NoTarget)
+            {
+                return;
+            }
+            // Bereits ein Attack-RPC unterwegs? Dann nichts tun — das verhindert RPC-Spam
+            // pro Frame im Follow-Update und ueberlaesst die naechste Anfrage dem Ablauf
+            // des Vorhersagefensters (deckt sich mit dem Waffen-Cooldown auf dem Server).
+            if (IsOwnerPredictingAttack)
             {
                 return;
             }
 
-            // Lokale Movement-Vorhersage aktivieren: ab JETZT clampt der Owner-Tick
-            // seinen Move-Input auf 0 (siehe PlayerMovement.TickOwner). Das ClientRpc
-            // des Servers löst die Vorhersage wieder, sobald die echte Attack-Anim
-            // (und damit PlayerCombatVisuals.IsBusy) eintrifft.
+            // Lokale Movement-Vorhersage aktivieren (siehe PlayerMovement.TickOwner).
             m_OwnerPredictedAttackUntil = Time.unscaledTime + k_OwnerAttackPredictionWindow;
-
             RequestAttackServerRpc();
         }
 
@@ -631,7 +612,11 @@ namespace Riftstorm.Game.Combat
             }
             Vector3 d = targetObject.transform.position - transform.position;
             d.y = 0f;
-            return d.sqrMagnitude <= weapon.Range * weapon.Range;
+            // Range-Check muss EXAKT zu ServerResolveMeleeHit passen (weapon.Range + HitRadius),
+            // sonst cancelt der AttackingState den Cooldown waehrend das Resolve-Frame noch
+            // einen Hit landen wuerde.
+            float reach = weapon.Range + victimStats.HitRadius;
+            return d.sqrMagnitude <= reach * reach;
         }
 
         private WeaponDefinition ResolveCurrentWeapon()
