@@ -109,3 +109,8 @@ InitTestScene*.unity*
 *.lscache
 
 [Aa]rt
+
+SceneDependencyCache
+__pycache__
+venv
+.venv

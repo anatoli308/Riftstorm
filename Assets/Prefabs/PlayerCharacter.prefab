@@ -73,8 +73,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Bootstrap.GamePlayerBootstrap
   ShowTopMostFoldoutHeaderGroup: 1
-  m_StreamingSubFolder: player_male
-  m_TextureSubFolder: Art/player_male
+  m_StreamingSubFolder: player_female
+  m_TextureSubFolder: Art/player_female
   m_LayerAtlases:
   - default_legs
   - default_feet
