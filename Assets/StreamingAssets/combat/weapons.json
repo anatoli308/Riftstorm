@@ -21,7 +21,7 @@
       "id": "longsword",
       "type": "Sword",
       "attack_cooldown": 0.55,
-      "range": 1.2,
+      "range": 0.7,
       "base_damage": 9,
       "hit_resolve_progress": 0.55
     },

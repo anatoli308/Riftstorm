@@ -44,6 +44,11 @@ namespace Riftstorm.Game.Combat
                  "konsistent an — sobald der Ring die Körperhülle des Ziels touchiert, landet der Schlag.")]
         [SerializeField, Min(0f)] private float m_HitRadius = 0.2f;
 
+        [Tooltip("Radius des Maus-Pick-Volumens in Metern (LoL-'selectionRadius'). Sollte etwas " +
+                 "größer als HitRadius sein, damit Hovern/Anklicken klickfreundlich ist, ohne dass " +
+                 "Skillshots am Modellrand vorbei zischen. <=0 ⇒ Fallback HitRadius * 1.2.")]
+        [SerializeField, Min(0f)] private float m_SelectionRadius = 0f;
+
         // -------------------------------------------------------------------------
         // Netzwerk-State
         // -------------------------------------------------------------------------
@@ -91,6 +96,15 @@ namespace Riftstorm.Game.Combat
         /// Reichweiten-Bonus addiert (siehe <see cref="m_HitRadius"/>).
         /// </summary>
         public float HitRadius => m_HitRadius;
+
+        /// <summary>
+        /// Effektiver Maus-Pick-Radius in Metern (LoL-„selectionRadius“). Liegt
+        /// per Konvention leicht über <see cref="HitRadius"/>, damit Hovern und
+        /// Anklicken klickfreundlich bleiben, ohne dass Skillshots am Modellrand
+        /// vorbei zischen. Fällt auf <c>HitRadius * 1.2</c> zurück, wenn der
+        /// Inspector-Wert ≤ 0 ist.
+        /// </summary>
+        public float SelectionRadius => m_SelectionRadius > 0f ? m_SelectionRadius : m_HitRadius * 1.2f;
 
         // -------------------------------------------------------------------------
         // IDamageable

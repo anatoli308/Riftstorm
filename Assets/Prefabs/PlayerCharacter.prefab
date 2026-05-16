@@ -46,6 +46,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5634081016197058092}
+  - {fileID: 8562255069969653052}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4052496314153085164
@@ -160,7 +161,7 @@ MonoBehaviour:
   m_Stats: {fileID: 5708302143726135351}
   m_Movement: {fileID: 5172720370931407651}
   m_DefaultWeaponId: longsword
-  m_RespawnDelaySeconds: 5
+  m_RespawnDelaySeconds: 3
 --- !u!114 &-2700015800232922021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,7 @@ MonoBehaviour:
   m_Armor: 0
   m_Level: 1
   m_HitRadius: 0.2
+  m_SelectionRadius: 0
 --- !u!120 &8967929917568848527
 LineRenderer:
   serializedVersion: 3
@@ -533,3 +535,69 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3690958180083129231}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3153977573134754754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8562255069969653052}
+  - component: {fileID: 6230382906803308275}
+  - component: {fileID: 753316626033607580}
+  m_Layer: 0
+  m_Name: SelectionVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8562255069969653052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3153977573134754754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3690958180083129231}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &6230382906803308275
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3153977573134754754}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.24000001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &753316626033607580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3153977573134754754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a526f20aefefe1d44852e678a086fcc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.SelectionVolume
