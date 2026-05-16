@@ -42,7 +42,7 @@ namespace Riftstorm.Game.Combat
                  "als 'Reichweiten-Erweiterung' benutzt: distance(angreifer, opfer) <= " +
                  "weapon.Range + opfer.HitRadius. Damit fühlt sich der LoL-Style Range-Indicator " +
                  "konsistent an — sobald der Ring die Körperhülle des Ziels touchiert, landet der Schlag.")]
-        [SerializeField, Min(0f)] private float m_HitRadius = 0.5f;
+        [SerializeField, Min(0f)] private float m_HitRadius = 0.2f;
 
         // -------------------------------------------------------------------------
         // Netzwerk-State

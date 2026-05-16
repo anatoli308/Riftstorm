@@ -21,5 +21,12 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>Charakter-Level (skaliert Hit-Chance, Crit, Resist).</summary>
         int Level { get; }
+
+        /// <summary>
+        /// XZ-Radius der Trefferhuelle in Worldunits. Wird vom Server zur
+        /// Range-Pruefung addiert (<c>weapon.Range + HitRadius</c>) und vom
+        /// owner-seitigen Selection-Ring als visuelle Hitbox uebernommen.
+        /// </summary>
+        float HitRadius { get; }
     }
 }

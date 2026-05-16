@@ -1,24 +1,29 @@
+using Riftstorm.Gameplay.Combat;
 using UnityEngine;
 
 namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
 {
     /// <summary>
-    /// Zeichnet einen Kreis am Boden um eine Einheit (League-of-Legends-Style Hitbox-Anzeige).
-    /// Rein visuell, lokal pro Client. Kein Netcode, keine Server-Autorit&#228;t n&#246;tig.
-    /// Sichtbarkeit wird extern per <see cref="Show"/> / <see cref="Hide"/> geschaltet
-    /// — typischerweise vom Owner-Client als Reaktion auf das LOCK-Target
-    /// (<c>TargetSelection.CurrentTargetIdChanged</c>). Kein Hover-Auto-Toggle mehr.
+    /// Zeichnet einen Kreis am Boden um eine Einheit (League-of-Legends-Style
+    /// Selection-Ring). Rein visuell, lokal pro Client. Kein Netcode, keine
+    /// Server-Autoritaet noetig. Sichtbarkeit wird extern per <see cref="Show"/>
+    /// / <see cref="Hide"/> geschaltet — typischerweise vom Owner-Client als
+    /// Reaktion auf das LOCK-Target
+    /// (<c>TargetSelection.CurrentTargetIdChanged</c>).
+    ///
+    /// <para>
+    /// Der Radius kommt ausschliesslich aus <see cref="IUnitStats.HitRadius"/>
+    /// des Parent-<c>UnitStats</c> — derselbe Wert, gegen den der Server in
+    /// <c>ServerResolveMeleeHit</c> prueft. Dadurch ist der Ring optisch
+    /// 1:1 die echte Server-Hitbox; einen separaten Indicator-Radius gibt es
+    /// bewusst nicht (Single Source of Truth).
+    /// </para>
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(LineRenderer))]
     public sealed class HitboxIndicator : MonoBehaviour
     {
         [Header("Geometrie")]
-        [Tooltip("Wenn gesetzt, wird der Radius automatisch aus diesem CapsuleCollider gelesen " +
-                 "(inkl. lossyScale). Bleibt das Feld leer, sucht der Indicator beim Awake im Parent " +
-                 "nach einem CapsuleCollider. Greift keiner, wird m_Radius verwendet.")]
-        [SerializeField] private CapsuleCollider m_MatchCollider;
-        [SerializeField, Min(0.05f)] private float m_Radius = 0.5f;
         [SerializeField, Range(8, 128)] private int m_Segments = 48;
         [SerializeField] private float m_GroundOffset = 0.02f;
 
@@ -29,33 +34,31 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
 
         private LineRenderer m_Line;
         private Material m_RuntimeMaterial;
+        private IUnitStats m_MatchStats;
+        private float m_Radius = 0.5f;
 
         private void Awake()
         {
             m_Line = GetComponent<LineRenderer>();
-            if (m_MatchCollider == null)
-            {
-                m_MatchCollider = GetComponentInParent<CapsuleCollider>();
-            }
-            SyncRadiusFromCollider();
+            m_MatchStats = GetComponentInParent<IUnitStats>();
+            SyncRadius();
             ConfigureLineRenderer();
             RebuildCircle();
             m_Line.enabled = m_AlwaysVisible;
         }
 
         /// <summary>
-        /// Uebernimmt den Radius vom referenzierten <see cref="CapsuleCollider"/>
-        /// (inkl. world-space Scale). Ohne Collider bleibt <c>m_Radius</c> erhalten.
+        /// Uebernimmt den Radius aus <see cref="IUnitStats.HitRadius"/> des
+        /// Parent-<c>UnitStats</c>. Ohne <c>UnitStats</c> bleibt der zuletzt
+        /// gueltige Default stehen — der Ring sitzt aber per Design immer an
+        /// einer Einheit, daher ist dieser Fallback nur Editor-Sicherheitsnetz.
         /// </summary>
-        private void SyncRadiusFromCollider()
+        private void SyncRadius()
         {
-            if (m_MatchCollider == null)
+            if (m_MatchStats != null && m_MatchStats.HitRadius > 0.05f)
             {
-                return;
+                m_Radius = m_MatchStats.HitRadius;
             }
-            Vector3 scale = m_MatchCollider.transform.lossyScale;
-            float scaleXZ = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
-            m_Radius = Mathf.Max(0.05f, m_MatchCollider.radius * scaleXZ);
         }
 
         private void OnDestroy()
@@ -130,11 +133,11 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
             {
                 m_Line = GetComponent<LineRenderer>();
             }
-            if (m_MatchCollider == null)
+            if (m_MatchStats == null)
             {
-                m_MatchCollider = GetComponentInParent<CapsuleCollider>();
+                m_MatchStats = GetComponentInParent<IUnitStats>();
             }
-            SyncRadiusFromCollider();
+            SyncRadius();
             if (m_Line != null && m_Line.positionCount > 0)
             {
                 ConfigureLineRenderer();

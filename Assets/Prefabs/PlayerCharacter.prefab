@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1072012832
+  GlobalObjectIdHash: 3418860212
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Strength: 5
   m_Armor: 0
   m_Level: 1
-  m_HitRadius: 0.5
+  m_HitRadius: 0.2
 --- !u!120 &8967929917568848527
 LineRenderer:
   serializedVersion: 3
@@ -367,8 +367,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e28f5af0a487634c869ac1ce4c50594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Gameplay::Tolik.Riftstorm.Runtime.Gameplay.Combat.HitboxIndicator
-  m_MatchCollider: {fileID: 0}
-  m_Radius: 0.5
   m_Segments: 48
   m_GroundOffset: 0.02
   m_Color: {r: 0.25, g: 1, b: 0.45, a: 0.95}
