@@ -1,0 +1,80 @@
+{
+  "image": "npc_peddler_goblin.png",
+  "animations": {
+    "stance": {
+      "frames_count": 4,
+      "duration_ms": 850,
+      "type": "back_forth",
+      "frames": [
+        [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 39,
+            "h": 41,
+            "ox": 8,
+            "oy": 48
+          },
+          {
+            "x": 39,
+            "y": 0,
+            "w": 37,
+            "h": 41,
+            "ox": 5,
+            "oy": 47
+          },
+          {
+            "x": 76,
+            "y": 0,
+            "w": 37,
+            "h": 41,
+            "ox": 6,
+            "oy": 46
+          },
+          {
+            "x": 113,
+            "y": 0,
+            "w": 35,
+            "h": 41,
+            "ox": 6,
+            "oy": 45
+          },
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  }
+}

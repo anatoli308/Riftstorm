@@ -1,0 +1,188 @@
+{
+  "image": "npc_guild_man2.png",
+  "animations": {
+    "stance": {
+      "frames_count": 12,
+      "duration_ms": 6400,
+      "type": "looped",
+      "frames": [
+        [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 29,
+            "h": 56,
+            "ox": 9,
+            "oy": 52
+          },
+          {
+            "x": 29,
+            "y": 0,
+            "w": 29,
+            "h": 56,
+            "ox": 9,
+            "oy": 52
+          },
+          {
+            "x": 87,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          },
+          {
+            "x": 115,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          },
+          {
+            "x": 143,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          },
+          {
+            "x": 171,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          },
+          {
+            "x": 87,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          },
+          {
+            "x": 199,
+            "y": 0,
+            "w": 28,
+            "h": 56,
+            "ox": 8,
+            "oy": 52
+          }
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  }
+}

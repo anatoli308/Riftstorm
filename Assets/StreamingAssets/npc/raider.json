@@ -1,0 +1,29 @@
+{
+  "image": "npc_raider.png",
+  "animations": {
+    "stance": {
+      "frames_count": 1,
+      "duration_ms": 0,
+      "type": "looped",
+      "frames": [
+        [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 22,
+            "h": 53,
+            "ox": 12,
+            "oy": 48
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  }
+}

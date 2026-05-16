@@ -1,0 +1,114 @@
+{
+  "image": "npc_wandering_trader2.png",
+  "animations": {
+    "stance": {
+      "frames_count": 6,
+      "duration_ms": 2000,
+      "type": "looped",
+      "frames": [
+        [
+          {
+            "x": 26,
+            "y": 0,
+            "w": 27,
+            "h": 56,
+            "ox": 11,
+            "oy": 44
+          },
+          {
+            "x": 0,
+            "y": 58,
+            "w": 27,
+            "h": 56,
+            "ox": 11,
+            "oy": 44
+          },
+          {
+            "x": 27,
+            "y": 56,
+            "w": 26,
+            "h": 57,
+            "ox": 10,
+            "oy": 44
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "w": 26,
+            "h": 58,
+            "ox": 10,
+            "oy": 44
+          },
+          {
+            "x": 27,
+            "y": 56,
+            "w": 26,
+            "h": 57,
+            "ox": 10,
+            "oy": 44
+          },
+          {
+            "x": 0,
+            "y": 58,
+            "w": 27,
+            "h": 56,
+            "ox": 11,
+            "oy": 44
+          },
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  }
+}
