@@ -25,6 +25,49 @@ namespace Riftstorm.Game.UI
     [RequireComponent(typeof(UIDocument))]
     public sealed class PlayerFrameUI : MonoBehaviour
     {
+        // Skin-Texturen (Assets/Art/interface/unit_frame*.png).
+        [Header("Skin (Assets/Art/interface)")]
+        [SerializeField] private Texture2D m_FrameBackground;
+        [SerializeField] private Texture2D m_HpFillTexture;
+        [SerializeField] private Texture2D m_ManaFillTexture;
+        [SerializeField] private Texture2D m_LevelBadgeBackground;
+
+        [Header("Layout")]
+        [Tooltip("Gesamtbreite des Frame-Sprites in Pixeln.")]
+        [SerializeField] private float m_FrameWidth = 360f;
+        [Tooltip("Gesamthoehe des Frame-Sprites in Pixeln.")]
+        [SerializeField] private float m_FrameHeight = 96f;
+        [Tooltip("Durchmesser des runden Portraits.")]
+        [SerializeField] private float m_PortraitSize = 84f;
+        [Tooltip("Abstand des Portraits vom linken Frame-Rand.")]
+        [SerializeField] private float m_PortraitLeft = 6f;
+        [Tooltip("Abstand des Portraits vom oberen Frame-Rand.")]
+        [SerializeField] private float m_PortraitTop = 6f;
+        [Tooltip("Durchmesser der Level-Badge.")]
+        [SerializeField] private float m_LevelBadgeSize = 28f;
+        [Tooltip("Linker Beginn der HP-Bar im Frame.")]
+        [SerializeField] private float m_BarLeft = 92f;
+        [Tooltip("Breite der HP-Bar.")]
+        [SerializeField] private float m_BarWidth = 256f;
+        [Tooltip("Linker Beginn der Mana-Bar im Frame (typisch leicht eingerueckt).")]
+        [SerializeField] private float m_ManaBarLeft = 100f;
+        [Tooltip("Breite der Mana-Bar (typisch etwas schmaler als HP).")]
+        [SerializeField] private float m_ManaBarWidth = 240f;
+        [Tooltip("Hoehe der HP-Bar (etwas hoeher als die Mana-Bar).")]
+        [SerializeField] private float m_HpBarHeight = 20f;
+        [Tooltip("Hoehe der Mana-Bar.")]
+        [SerializeField] private float m_ManaBarHeight = 16f;
+        [Tooltip("Oberer Beginn der HP-Bar.")]
+        [SerializeField] private float m_HpTop = 38f;
+        [Tooltip("Oberer Beginn der Mana-Bar.")]
+        [SerializeField] private float m_ManaTop = 62f;
+        [Tooltip("Oberer Beginn des Name-Labels. 0 = automatisch (HpTop - 16).")]
+        [SerializeField] private float m_NameTop = 18f;
+
+        [Header("Anchor")]
+        [SerializeField] private float m_AnchorTop = 16f;
+        [SerializeField] private float m_AnchorLeft = 16f;
+
         private UIDocument m_Document;
 
         // Visual-Tree
@@ -45,11 +88,62 @@ namespace Riftstorm.Game.UI
         private void Awake()
         {
             m_Document = GetComponent<UIDocument>();
+            ApplyConfigOverrides();
         }
 
         private void OnEnable()
         {
             BuildVisualTree();
+        }
+
+        /// <summary>
+        /// Liest <c>StreamingAssets/interface/hud_config.json</c> und ueberschreibt
+        /// die SerializeField-Defaults, falls dort Werte gesetzt sind. So koennen
+        /// Layout und Texturen extern getweakt werden, ohne das Component zu touchen.
+        /// </summary>
+        private void ApplyConfigOverrides()
+        {
+            HudConfig cfg = HudConfigLoader.LoadOrNull();
+            if (cfg == null)
+            {
+                return;
+            }
+            if (cfg.frameWidth > 0f) m_FrameWidth = cfg.frameWidth;
+            if (cfg.frameHeight > 0f) m_FrameHeight = cfg.frameHeight;
+            if (cfg.portraitSize > 0f) m_PortraitSize = cfg.portraitSize;
+            if (cfg.portraitInset > 0f) m_PortraitLeft = cfg.portraitInset;
+            if (cfg.portraitTop > 0f) m_PortraitTop = cfg.portraitTop;
+            if (cfg.levelBadgeSize > 0f) m_LevelBadgeSize = cfg.levelBadgeSize;
+            if (cfg.barInset > 0f)
+            {
+                m_BarLeft = cfg.barInset;
+                m_ManaBarLeft = cfg.barInset;
+            }
+            if (cfg.barWidth > 0f)
+            {
+                m_BarWidth = cfg.barWidth;
+                m_ManaBarWidth = cfg.barWidth;
+            }
+            if (cfg.hpBarInset > 0f) m_BarLeft = cfg.hpBarInset;
+            if (cfg.hpBarWidth > 0f) m_BarWidth = cfg.hpBarWidth;
+            if (cfg.manaBarInset > 0f) m_ManaBarLeft = cfg.manaBarInset;
+            if (cfg.manaBarWidth > 0f) m_ManaBarWidth = cfg.manaBarWidth;
+            if (cfg.hpBarHeight > 0f) m_HpBarHeight = cfg.hpBarHeight;
+            if (cfg.manaBarHeight > 0f) m_ManaBarHeight = cfg.manaBarHeight;
+            if (cfg.hpTop > 0f) m_HpTop = cfg.hpTop;
+            if (cfg.manaTop > 0f) m_ManaTop = cfg.manaTop;
+            if (cfg.nameTop.HasValue) m_NameTop = cfg.nameTop.Value;
+            if (cfg.anchorTop > 0f) m_AnchorTop = cfg.anchorTop;
+            if (cfg.playerAnchorLeft > 0f) m_AnchorLeft = cfg.playerAnchorLeft;
+
+            Texture2D frameTex = HudConfigLoader.LoadTextureOrNull(cfg.frameTexture);
+            if (frameTex != null) m_FrameBackground = frameTex;
+            Texture2D hpTex = HudConfigLoader.LoadTextureOrNull(cfg.hpFillTexture);
+            if (hpTex != null) m_HpFillTexture = hpTex;
+            Texture2D manaTex = HudConfigLoader.LoadTextureOrNull(cfg.manaFillTexture);
+            if (manaTex != null) m_ManaFillTexture = manaTex;
+            Texture2D badgeTex = HudConfigLoader.LoadTextureOrNull(cfg.levelBadgeTexture);
+            if (badgeTex != null) m_LevelBadgeBackground = badgeTex;
         }
 
         private void OnDisable()
@@ -80,72 +174,60 @@ namespace Riftstorm.Game.UI
             m_Root.Clear();
             m_Root.pickingMode = PickingMode.Ignore;
 
-            m_Frame = new VisualElement { name = "player-frame" };
-            HudStyle.ApplyFramePanel(m_Frame);
+            // Frame-Hintergrund (gemaltes Sprite: Portrait-Kreis links + brushy Bar rechts).
+            m_Frame = HudStyle.BuildTexturedFrame(m_FrameBackground, m_FrameWidth, m_FrameHeight);
             m_Frame.style.position = Position.Absolute;
-            m_Frame.style.top = 16f;
-            m_Frame.style.left = 16f;
-            m_Frame.style.minWidth = 280f;
+            m_Frame.style.top = m_AnchorTop;
+            m_Frame.style.left = m_AnchorLeft;
 
-            // Header: Portrait + (Name/Level)
-            VisualElement header = new() { name = "player-frame-header" };
-            header.style.flexDirection = FlexDirection.Row;
-            header.style.alignItems = Align.Center;
-            header.style.marginBottom = 4f;
+            // Portrait-Kreis (Platzhalter, kann spaeter durch 3D-/Sprite-Render ersetzt werden).
+            VisualElement portrait = HudStyle.BuildPortraitCircle(m_PortraitSize);
+            portrait.style.left = m_PortraitLeft;
+            portrait.style.top = m_PortraitTop;
+            m_Frame.Add(portrait);
 
-            VisualElement portrait = new() { name = "player-frame-portrait" };
-            portrait.style.width = 56f;
-            portrait.style.height = 56f;
-            portrait.style.marginRight = 8f;
-            portrait.style.backgroundColor = new StyleColor(new Color(0.08f, 0.08f, 0.10f, 1f));
-            HudStyle.ApplyBorder(portrait, HudStyle.AccentGold, 2f);
+            // Level-Badge unten LINKS am Portrait-Kreis: horizontal 15% nach aussen, vertikal
+            // 50% ueberlappt (Badge-Mitte sitzt auf Portrait-Unterkante — "haengt" sichtbar nach unten).
+            VisualElement levelBadge = HudStyle.BuildLevelBadge(m_LevelBadgeBackground, m_LevelBadgeSize, out m_LevelLabel);
+            levelBadge.style.left = m_PortraitLeft - m_LevelBadgeSize * 0.15f;
+            levelBadge.style.top = m_PortraitTop + m_PortraitSize - m_LevelBadgeSize * 0.5f;
+            m_Frame.Add(levelBadge);
 
-            // Level-Badge in der Portrait-Ecke (WoW-Style)
-            m_LevelLabel = new Label("1") { name = "player-frame-level" };
-            m_LevelLabel.style.position = Position.Absolute;
-            m_LevelLabel.style.bottom = -2f;
-            m_LevelLabel.style.right = -2f;
-            m_LevelLabel.style.paddingLeft = 4f;
-            m_LevelLabel.style.paddingRight = 4f;
-            m_LevelLabel.style.paddingTop = 1f;
-            m_LevelLabel.style.paddingBottom = 1f;
-            m_LevelLabel.style.fontSize = 12f;
-            m_LevelLabel.style.color = Color.white;
-            m_LevelLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            m_LevelLabel.style.backgroundColor = new StyleColor(new Color(0.04f, 0.04f, 0.06f, 0.95f));
-            HudStyle.ApplyBorder(m_LevelLabel, HudStyle.AccentGold, 1f);
-            portrait.Add(m_LevelLabel);
-
-            header.Add(portrait);
-
-            VisualElement nameCol = new();
-            nameCol.style.flexGrow = 1f;
-            nameCol.style.flexDirection = FlexDirection.Column;
-
+            // Name-Label oberhalb der HP-Bar.
             m_NameLabel = new Label("\u2014") { name = "player-frame-name" };
+            m_NameLabel.style.position = Position.Absolute;
+            m_NameLabel.style.left = m_BarLeft;
+            m_NameLabel.style.top = m_NameTop;
+            m_NameLabel.style.width = m_BarWidth;
             m_NameLabel.style.color = Color.white;
-            m_NameLabel.style.fontSize = 16f;
+            m_NameLabel.style.fontSize = 13f;
             m_NameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            nameCol.Add(m_NameLabel);
+            m_Frame.Add(m_NameLabel);
 
-            header.Add(nameCol);
-            m_Frame.Add(header);
-
-            // HP
-            VisualElement hpRow = HudStyle.BuildBarRow(
+            // HP-Bar (linksbuendig).
+            VisualElement hpRow = HudStyle.BuildTexturedBar(
                 "player-frame-hp",
-                new Color(0.65f, 0.10f, 0.10f, 1f),
+                m_HpFillTexture,
+                m_BarWidth,
+                m_HpBarHeight,
+                fillFromRight: false,
                 out m_HpFill,
                 out m_HpValueLabel);
+            hpRow.style.left = m_BarLeft;
+            hpRow.style.top = m_HpTop;
             m_Frame.Add(hpRow);
 
-            // Mana
-            m_ManaRow = HudStyle.BuildBarRow(
+            // Mana-Bar (linksbuendig).
+            m_ManaRow = HudStyle.BuildTexturedBar(
                 "player-frame-mana",
-                new Color(0.15f, 0.40f, 0.85f, 1f),
+                m_ManaFillTexture,
+                m_ManaBarWidth,
+                m_ManaBarHeight,
+                fillFromRight: false,
                 out m_ManaFill,
                 out m_ManaValueLabel);
-            m_ManaRow.style.marginTop = 4f;
+            m_ManaRow.style.left = m_ManaBarLeft;
+            m_ManaRow.style.top = m_ManaTop;
             m_Frame.Add(m_ManaRow);
 
             m_Root.Add(m_Frame);

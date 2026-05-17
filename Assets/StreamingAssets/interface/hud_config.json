@@ -1,0 +1,32 @@
+{
+  "frameWidth": 360,
+  "frameHeight": 96,
+  "portraitSize": 84,
+  "portraitInset": 6,
+  "portraitTop": 6,
+  "levelBadgeSize": 28,
+
+  "hpBarInset": 80,
+  "hpBarWidth": 280,
+  "manaBarInset": 90,
+  "manaBarWidth": 250,
+  "hpBarHeight": 26,
+  "manaBarHeight": 20,
+  "hpTop": 30,
+  "manaTop": 60,
+
+  "nameTop": -15,
+
+  "anchorTop": 16,
+  "playerAnchorLeft": 16,
+  "targetAnchorLeft": 388,
+
+  "frameTexture": "interface/unit_frame",
+  "frameTextureReverse": "interface/unit_frame_reverse",
+  "hpFillTexture": "interface/unit_frame_hp",
+  "hpFillTextureReverse": "interface/unit_frame_hp_reverse",
+  "manaFillTexture": "interface/unit_frame_mp",
+  "manaFillTextureReverse": "interface/unit_frame_mp_reverse",
+  "levelBadgeTexture": "interface/unit_frame_level_bg",
+  "targetBorderTexture": "interface/unit_frame_elite"
+}

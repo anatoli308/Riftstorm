@@ -76,6 +76,139 @@ namespace Riftstorm.Game.UI
             return row;
         }
 
+        // -------------------------------------------------------------------
+        // Textured Unit-Frame Helpers (LoL/WoW-Style mit gemalten Sprites)
+        // -------------------------------------------------------------------
+
+        /// <summary>
+        /// Erzeugt das Wurzel-Element eines Unit-Frames mit einer
+        /// gemalten Hintergrund-Textur (z. B. <c>unit_frame.png</c> oder
+        /// <c>unit_frame_reverse.png</c>). Kein Panel-Hintergrund, kein
+        /// Border \u2014 die Optik kommt komplett aus dem Sprite.
+        /// </summary>
+        public static VisualElement BuildTexturedFrame(Texture2D background, float width, float height)
+        {
+            VisualElement frame = new() { name = "unit-frame-root" };
+            frame.style.width = width;
+            frame.style.height = height;
+            if (background != null)
+            {
+                frame.style.backgroundImage = new StyleBackground(background);
+            }
+            return frame;
+        }
+
+        /// <summary>
+        /// Erzeugt ein Portrait-Rund: dunkler Kreis als Platzhalter, ueber
+        /// dem spaeter ein 3D-/Sprite-Portrait gerendert werden kann.
+        /// Border-Radius = size/2 \u2014 die Maske wird so kreisrund.
+        /// </summary>
+        public static VisualElement BuildPortraitCircle(float size)
+        {
+            VisualElement portrait = new() { name = "unit-frame-portrait" };
+            portrait.style.position = Position.Absolute;
+            portrait.style.width = size;
+            portrait.style.height = size;
+            // Kein Platzhalter-Fill: der Frame-Sprite zeichnet den Portrait-Sockel
+            // bereits selbst. Border-Radius + Overflow bleiben, damit ein spaeter
+            // hinzugefuegtes Portrait-Bild kreisfoermig maskiert wird.
+            float r = size * 0.5f;
+            portrait.style.borderTopLeftRadius = r;
+            portrait.style.borderTopRightRadius = r;
+            portrait.style.borderBottomLeftRadius = r;
+            portrait.style.borderBottomRightRadius = r;
+            portrait.style.overflow = Overflow.Hidden;
+            return portrait;
+        }
+
+        /// <summary>
+        /// Erzeugt eine Level-Badge auf Basis von <c>unit_frame_level_bg.png</c>.
+        /// Positionierung muss vom Caller via <c>style.left/right/top/bottom</c>
+        /// erfolgen \u2014 die Badge selbst ist Position.Absolute.
+        /// </summary>
+        public static VisualElement BuildLevelBadge(Texture2D background, float size, out Label levelLabel)
+        {
+            VisualElement badge = new() { name = "unit-frame-level-badge" };
+            badge.style.position = Position.Absolute;
+            badge.style.width = size;
+            badge.style.height = size;
+            if (background != null)
+            {
+                badge.style.backgroundImage = new StyleBackground(background);
+            }
+
+            levelLabel = new Label("1") { name = "unit-frame-level" };
+            levelLabel.style.position = Position.Absolute;
+            levelLabel.style.left = 0f;
+            levelLabel.style.right = 0f;
+            levelLabel.style.top = 0f;
+            levelLabel.style.bottom = 0f;
+            levelLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            levelLabel.style.color = new StyleColor(new Color(0.95f, 0.92f, 0.70f, 1f));
+            levelLabel.style.fontSize = Mathf.Max(10f, size * 0.55f);
+            levelLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            badge.Add(levelLabel);
+
+            return badge;
+        }
+
+        /// <summary>
+        /// Erzeugt eine gemalte HP-/Mana-Bar auf Basis einer Fill-Textur
+        /// (z. B. <c>unit_frame_hp.png</c>). Die Bar ist Position.Absolute
+        /// und muss vom Caller via <c>style.left/right/top</c> ueber dem
+        /// passenden Bereich des Frame-Hintergrunds platziert werden.
+        /// Wenn <paramref name="fillFromRight"/> true ist, schrumpft die
+        /// Fuellung nach links \u2014 fuer das gespiegelte Target-Frame.
+        /// </summary>
+        public static VisualElement BuildTexturedBar(
+            string baseName,
+            Texture2D fillTexture,
+            float width,
+            float height,
+            bool fillFromRight,
+            out VisualElement fill,
+            out Label valueLabel)
+        {
+            VisualElement track = new() { name = baseName };
+            track.style.position = Position.Absolute;
+            track.style.width = width;
+            track.style.height = height;
+            track.style.overflow = Overflow.Hidden;
+
+            fill = new VisualElement { name = baseName + "-fill" };
+            fill.style.position = Position.Absolute;
+            fill.style.top = 0f;
+            fill.style.bottom = 0f;
+            if (fillFromRight)
+            {
+                fill.style.right = 0f;
+            }
+            else
+            {
+                fill.style.left = 0f;
+            }
+            fill.style.width = new StyleLength(new Length(100f, LengthUnit.Percent));
+            if (fillTexture != null)
+            {
+                fill.style.backgroundImage = new StyleBackground(fillTexture);
+            }
+            track.Add(fill);
+
+            valueLabel = new Label("0 / 0") { name = baseName + "-value" };
+            valueLabel.style.position = Position.Absolute;
+            valueLabel.style.left = 0f;
+            valueLabel.style.right = 0f;
+            valueLabel.style.top = 0f;
+            valueLabel.style.bottom = 0f;
+            valueLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            valueLabel.style.color = Color.white;
+            valueLabel.style.fontSize = Mathf.Max(10f, height * 0.7f);
+            valueLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            track.Add(valueLabel);
+
+            return track;
+        }
+
         /// <summary>
         /// Erzeugt einen leeren Action-Bar-Slot (dunkles Quadrat mit
         /// Tastatur-Binding-Label oben rechts). Inhalt (Icon, Cooldown) wird

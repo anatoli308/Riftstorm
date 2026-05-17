@@ -1,4 +1,5 @@
 using Riftstorm.Gameplay.Combat;
+using Riftstorm.Management.TextureManagement;
 using Tolik.Riftstorm.Runtime.ConnectionManagement;
 using Unity.Multiplayer;
 using Unity.Netcode;
@@ -88,6 +89,12 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             OffhandCatalogLoader offhandLoader = new();
             ServiceLocator.Register(offhandLoader);
             _ = offhandLoader.LoadAsync();
+
+            // Scant Application.dataPath/Art rekursiv und indexiert alle Bilddateien
+            // mit Keys ohne Extension (z. B. "interface/unit_frame"). Texturen werden
+            // erst beim ersten GetTexture(key) lazy geladen.
+            TextureManager textureManager = new();
+            ServiceLocator.Register(textureManager);
         }
 
         /// <summary>

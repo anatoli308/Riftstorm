@@ -32,7 +32,7 @@ namespace Riftstorm.Game.Combat
         [SerializeField, Min(1)] private int m_MaxHp = 100;
         [Tooltip("Maximale Mana. 0 = Einheit hat keine Mana-Ressource (z. B. reine Melee-Mobs); " +
                  "die Mana-Bar im Target-Frame wird dann ausgeblendet.")]
-        [SerializeField, Min(0)] private int m_MaxMana = 0;
+        [SerializeField, Min(0)] private int m_MaxMana = 100;
         [SerializeField, Min(0)] private int m_Strength = 5;
         [SerializeField, Min(0)] private int m_Armor = 0;
         [SerializeField, Min(1)] private int m_Level = 1;

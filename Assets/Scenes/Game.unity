@@ -149,6 +149,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68feb6cdedd1034f9450ac20fbd8808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.UI.TargetFrameUI
+  m_FrameBackground: {fileID: 0}
+  m_HpFillTexture: {fileID: 0}
+  m_ManaFillTexture: {fileID: 0}
+  m_LevelBadgeBackground: {fileID: 0}
+  m_FrameWidth: 360
+  m_FrameHeight: 96
+  m_PortraitSize: 84
+  m_PortraitRight: 6
+  m_PortraitTop: 6
+  m_LevelBadgeSize: 28
+  m_BarRight: 92
+  m_BarWidth: 256
+  m_HpBarHeight: 20
+  m_ManaBarHeight: 16
+  m_HpTop: 38
+  m_ManaTop: 62
+  m_AnchorTop: 16
+  m_AnchorLeft: 388
 --- !u!114 &4572483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -661,7 +679,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2008393128}
   - component: {fileID: 2008393127}
-  - component: {fileID: 2008393126}
+  - component: {fileID: 2008393129}
   m_Layer: 0
   m_Name: PlayerFrameHUD
   m_TagString: Untagged
@@ -669,18 +687,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2008393126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2008393125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf38c20511ae7434eb767c9d7241155d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.UI.PlayerFrameUI
 --- !u!114 &2008393127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -719,6 +725,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2008393129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008393125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38c20511ae7434eb767c9d7241155d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.UI.PlayerFrameUI
+  m_FrameBackground: {fileID: 0}
+  m_HpFillTexture: {fileID: 0}
+  m_ManaFillTexture: {fileID: 0}
+  m_LevelBadgeBackground: {fileID: 0}
+  m_FrameWidth: 360
+  m_FrameHeight: 96
+  m_PortraitSize: 84
+  m_PortraitLeft: 6
+  m_PortraitTop: 6
+  m_LevelBadgeSize: 28
+  m_BarLeft: 92
+  m_BarWidth: 256
+  m_HpBarHeight: 20
+  m_ManaBarHeight: 16
+  m_HpTop: 38
+  m_ManaTop: 62
+  m_AnchorTop: 16
+  m_AnchorLeft: 16
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
