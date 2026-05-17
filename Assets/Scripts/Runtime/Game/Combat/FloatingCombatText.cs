@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Gameplay.Combat;
 using UnityEngine;
 
@@ -200,6 +201,11 @@ namespace Riftstorm.Game.Combat
                     fontSize = m_FontSize,
                     fontStyle = FontStyle.Bold,
                 };
+                Font font = UIFonts.Numeric;
+                if (font != null)
+                {
+                    m_Style.font = font;
+                }
             }
 
             const float width = 120f;

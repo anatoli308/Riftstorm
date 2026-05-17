@@ -113,6 +113,222 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar1",
+                    "type": "Button",
+                    "id": "f52ca369-c612-4195-b79f-171bd7240d7b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar2",
+                    "type": "Button",
+                    "id": "8e7a3b01-53c3-467e-b0e4-5fa7d6ee61a9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar3",
+                    "type": "Button",
+                    "id": "9ab8710a-05e1-42d9-8ec6-c3688f8eb122",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar4",
+                    "type": "Button",
+                    "id": "b67b3fd5-c869-471e-92ec-8389fcfe9364",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar5",
+                    "type": "Button",
+                    "id": "574fa3cb-3871-4c71-a163-135a265ca1a2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar6",
+                    "type": "Button",
+                    "id": "7f82027a-400e-42e9-a1d4-cb0b47cf7af8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar7",
+                    "type": "Button",
+                    "id": "937b95ea-bfbc-407a-88b4-52c4ec8e8b98",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar8",
+                    "type": "Button",
+                    "id": "c9abbfb7-9602-485d-8289-c4ce87a9354e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar9",
+                    "type": "Button",
+                    "id": "9061e606-74cf-4184-944d-6eb0baf42de3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar10",
+                    "type": "Button",
+                    "id": "2e95451a-213b-45b9-8406-9dc8dba72fe1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar11",
+                    "type": "Button",
+                    "id": "a95073ec-eaaf-4667-8a56-88cee18c5b76",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BottomHotbar12",
+                    "type": "Button",
+                    "id": "2f50eac8-715b-497f-a0e6-bc5fcf49ac33",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar1",
+                    "type": "Button",
+                    "id": "9c02aa8b-5d14-43b9-b57e-a1c2ef980c82",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar2",
+                    "type": "Button",
+                    "id": "60d9e228-b06c-40f8-8e27-7f25a55f5fca",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar3",
+                    "type": "Button",
+                    "id": "3320d72c-b5bb-40e4-ad2f-437a2190478b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar4",
+                    "type": "Button",
+                    "id": "e8dc56ea-9b86-4c46-a900-bb92f1cb448d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar5",
+                    "type": "Button",
+                    "id": "b3c0052e-cefe-4ef9-aed0-def39e003494",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar6",
+                    "type": "Button",
+                    "id": "750675d3-f67c-4239-be1c-f780e5985b08",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar7",
+                    "type": "Button",
+                    "id": "aac0f276-1539-4346-bcf1-0ea4ee4812e6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar8",
+                    "type": "Button",
+                    "id": "cf26b948-f0bf-48b6-bb66-b1629dd62b5d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar9",
+                    "type": "Button",
+                    "id": "f9fdb15d-de49-4283-88e1-837f4700bee2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar10",
+                    "type": "Button",
+                    "id": "42ad153b-751a-4083-b137-f5ca728d06d2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar11",
+                    "type": "Button",
+                    "id": "84b55c6b-6eef-4f40-aa40-272bb2c58b7c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightHotbar12",
+                    "type": "Button",
+                    "id": "f0504889-5f39-4ef7-9884-5af3d2e9e3af",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -410,6 +626,270 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "MoveCommand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5249c29-7da4-44b6-8e56-d0fd22f38380",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "554aacc3-42ac-4710-8404-af7e2afe9921",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "16ff2300-3b59-450b-9b11-86035e141e07",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8dcbf41f-cdfd-4e27-9a09-72db6dec5a8e",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "36964bcd-a736-455b-a3ad-d4e94e20c7d5",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3807d995-fb30-44fe-acad-0b5c1182f442",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4967a4f5-bc5f-49df-8ff8-c6f99249e921",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b963cda3-e0b4-4b69-af01-7ce5d72bd670",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar8",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e2525dc7-e70e-4b10-9dac-31ac5f089520",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar9",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3dd1936e-e69a-4529-9386-4b2c92d5a4ca",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar10",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e37bd4f-09cc-401a-a796-837342898cf0",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar11",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ce83b0e3-90d3-4c65-a264-4fb728e95fb2",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "BottomHotbar12",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f35085cd-f651-431a-85d0-52ce31e0d971",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "be25690f-eb4b-4cca-9d72-3d1dfd150dd2",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29af4448-7ce1-4df6-aaf7-0bba63cd0cd1",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1b3d4bde-18a3-450e-9a6c-46806904b069",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64f5f5c3-79f1-4264-bb33-8e6ad404e056",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "92b57e92-6d6d-4cd5-b955-d4a7a89edaf2",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "860e5ee0-d407-4f90-a8fb-068d7981e984",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e6cb26c-2b81-4220-b24e-1d8f1b5d4fcb",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar8",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8bac9145-35ca-4a9c-9347-f2fffb702d89",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar9",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb32ebc3-349b-475c-a449-2771b65ba4ea",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar10",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7dcdc2c-ea70-4f68-aa14-202452382bfa",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar11",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ef8983e7-d7b0-4158-9a6f-824b003f244c",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHotbar12",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

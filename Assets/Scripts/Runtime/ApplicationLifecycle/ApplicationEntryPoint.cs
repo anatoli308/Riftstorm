@@ -1,3 +1,4 @@
+using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Gameplay.Combat;
 using Riftstorm.Management.TextureManagement;
 using Tolik.Riftstorm.Runtime.ConnectionManagement;
@@ -30,6 +31,11 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
         [SerializeField]
         ConnectionManager m_ConnectionManager;
         public ConnectionManager ConnectionManager => m_ConnectionManager;
+
+        [Header("UI Fonts")]
+        [Tooltip("Alle Font-Assets, die UI/HUD per Rolle nutzen darf. Die Zuordnung Rolle\u2192Name kommt aus StreamingAssets/interface/ui_fonts.json.")]
+        [SerializeField]
+        Font[] m_UIFonts;
 
         void Awake()
         {
@@ -95,6 +101,13 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             // erst beim ersten GetTexture(key) lazy geladen.
             TextureManager textureManager = new();
             ServiceLocator.Register(textureManager);
+
+            // UI-Fonts: Inspector-zugewiesene Font-Assets in eine Name->Font-Map packen.
+            // Die Rolle->Name-Zuordnung kommt zur Laufzeit aus
+            // StreamingAssets/interface/ui_fonts.json (UIFontConfigLoader).
+            FontRegistry fontRegistry = new(m_UIFonts);
+            ServiceLocator.Register(fontRegistry);
+            Debug.Log($"[ApplicationEntryPoint] FontRegistry mit {fontRegistry.Count} Font-Asset(s) registriert.");
         }
 
         /// <summary>

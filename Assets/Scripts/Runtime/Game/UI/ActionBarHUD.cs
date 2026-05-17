@@ -1,3 +1,4 @@
+using Riftstorm.ApplicationLifecycle.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -119,6 +120,7 @@ namespace Riftstorm.Game.UI
             // schmalen Balken passt.
             xpValue.text = "0%";
             xpValue.style.fontSize = Mathf.Max(9f, xpHeight * 0.85f);
+            UIFonts.Apply(xpValue, UIFonts.Numeric);
             bar.Add(xpRow);
 
             // Slot-Reihe als Container, absolut ueber den eingebrannten Wells.

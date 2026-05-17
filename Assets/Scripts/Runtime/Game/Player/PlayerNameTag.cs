@@ -1,3 +1,4 @@
+using Riftstorm.ApplicationLifecycle.UI;
 using UnityEngine;
 
 namespace Riftstorm.Game.Player
@@ -217,6 +218,11 @@ namespace Riftstorm.Game.Player
                     fontSize = m_FontSize,
                     fontStyle = FontStyle.Bold,
                 };
+                Font font = UIFonts.Small;
+                if (font != null)
+                {
+                    m_Style.font = font;
+                }
             }
             // m_Color für alle Button-States setzen, damit GUI.Button beim Hover/Click
             // NICHT auf die weiße Skin-Hover-Farbe umschaltet. Source-treu: der Nametag

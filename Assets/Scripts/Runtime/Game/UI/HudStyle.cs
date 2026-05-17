@@ -1,3 +1,4 @@
+using Riftstorm.ApplicationLifecycle.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -60,6 +61,7 @@ namespace Riftstorm.Game.UI
             valueLabel.style.color = Color.white;
             valueLabel.style.fontSize = 12f;
             valueLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            UIFonts.Apply(valueLabel, UIFonts.Numeric);
             row.Add(valueLabel);
 
             return row;
@@ -136,6 +138,7 @@ namespace Riftstorm.Game.UI
             levelLabel.style.color = new StyleColor(new Color(0.95f, 0.92f, 0.70f, 1f));
             levelLabel.style.fontSize = Mathf.Max(10f, size * 0.55f);
             levelLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            UIFonts.Apply(levelLabel, UIFonts.Numeric);
             badge.Add(levelLabel);
 
             return badge;
@@ -193,6 +196,7 @@ namespace Riftstorm.Game.UI
             valueLabel.style.color = Color.white;
             valueLabel.style.fontSize = Mathf.Max(10f, height * 0.7f);
             valueLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            UIFonts.Apply(valueLabel, UIFonts.Numeric);
             track.Add(valueLabel);
 
             return track;
@@ -224,6 +228,7 @@ namespace Riftstorm.Game.UI
                 bind.style.fontSize = 10f;
                 bind.style.color = new StyleColor(new Color(0.95f, 0.92f, 0.70f, 0.9f));
                 bind.style.unityFontStyleAndWeight = FontStyle.Bold;
+                UIFonts.Apply(bind, UIFonts.Keybind);
                 slot.Add(bind);
             }
             return slot;
@@ -289,6 +294,7 @@ namespace Riftstorm.Game.UI
                 bind.style.fontSize = 11f;
                 bind.style.color = new StyleColor(new Color(0.95f, 0.92f, 0.70f, 0.95f));
                 bind.style.unityFontStyleAndWeight = FontStyle.Bold;
+                UIFonts.Apply(bind, UIFonts.Keybind);
                 slot.Add(bind);
             }
             return slot;

@@ -1,4 +1,5 @@
 using System;
+using Riftstorm.ApplicationLifecycle.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,11 @@ namespace Tolik.Riftstorm.Runtime.Metagame
     [RequireComponent(typeof(UIDocument))]
     public class MetagameView : View<MetagameApplication>
     {
+        /// <summary>
+        /// Maximum number of characters allowed in the player name input.
+        /// </summary>
+        public const int MaxPlayerNameLength = 20;
+
         /// <summary>
         /// Raised when the user clicks the Connect button.
         /// </summary>
@@ -37,10 +43,37 @@ namespace Tolik.Riftstorm.Runtime.Metagame
             m_ConnectButton = root.Q<Button>("connect-button");
             m_StatusLabel = root.Q<Label>("status-label");
 
+            if (m_NameField != null)
+            {
+                // Hard cap via UI Toolkit, damit der Nutzer gar nicht mehr
+                // tippen kann. GetPlayerName() clamped zusaetzlich als Safety
+                // Net, falls die UXML einen abweichenden Wert vorgibt.
+                m_NameField.maxLength = MaxPlayerNameLength;
+            }
+
             if (m_ConnectButton != null)
             {
                 m_ConnectButton.clicked += OnConnectButtonClicked;
             }
+
+            ApplyFonts(root);
+        }
+
+        /// <summary>
+        /// Wendet die ueber <c>StreamingAssets/interface/ui_fonts.json</c>
+        /// konfigurierten Fonts auf die statisch in der UXML/USS definierten
+        /// Elemente des Login-Screens an. USS kann das JSON nicht lesen,
+        /// deshalb erfolgt das Binding hier per Code anhand der USS-Klassen.
+        /// </summary>
+        void ApplyFonts(VisualElement root)
+        {
+            UIFonts.Apply(root.Q<Label>(className: "title"), UIFonts.Title);
+            UIFonts.Apply(root.Q<Label>(className: "subtitle"), UIFonts.Small);
+            UIFonts.Apply(m_ConnectButton, UIFonts.Heading);
+            UIFonts.Apply(m_StatusLabel, UIFonts.Small);
+
+            root.Query<Label>(className: "field-label").ForEach(label => UIFonts.Apply(label, UIFonts.Small));
+            root.Query<TextField>().ForEach(field => UIFonts.Apply(field, UIFonts.Body));
         }
 
         void OnDisable()
@@ -58,14 +91,23 @@ namespace Tolik.Riftstorm.Runtime.Metagame
         {
             m_AddressField?.SetValueWithoutNotify(serverAddress);
             m_PortField?.SetValueWithoutNotify(serverPort.ToString());
-            m_NameField?.SetValueWithoutNotify(playerName);
+            m_NameField?.SetValueWithoutNotify(ClampName(playerName));
         }
 
         public string GetServerAddress() => m_AddressField?.value ?? string.Empty;
 
         public bool TryGetServerPort(out ushort port) => ushort.TryParse(m_PortField?.value, out port);
 
-        public string GetPlayerName() => m_NameField?.value ?? string.Empty;
+        public string GetPlayerName() => ClampName(m_NameField?.value);
+
+        static string ClampName(string raw)
+        {
+            if (string.IsNullOrEmpty(raw))
+            {
+                return string.Empty;
+            }
+            return raw.Length > MaxPlayerNameLength ? raw[..MaxPlayerNameLength] : raw;
+        }
 
         /// <summary>
         /// Updates the status line beneath the connect button.

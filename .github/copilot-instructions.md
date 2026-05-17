@@ -15,6 +15,8 @@ This file contains the coding standards, architectural principles, and design pa
 - Always follow the established project architecture and design patterns as outlined below.
 - No Polling, No Coroutines: Vermeide Update-Methoden mit Polling-Logik; keine Coroutines für asynchrone Abläufe; stattdessen Events, Callbacks oder Async/Await verwenden.
 - No Timer, No Flag Checks: Vermeide Timer- oder Flag-Checks für Ablaufsteuerung; nutze stattdessen State Machines, Event-Driven Logic oder Callback-Mechanismen.
+- **JSON over ScriptableObject**: Konfigurations- und Daten-Assets gehören als JSON unter `Assets/StreamingAssets/` (z. B. `interface/`, `combat/`, `npc/`). Keine neuen ScriptableObjects für Daten anlegen — sie umgehen das Loader/Cache/Service-Pattern. Geladen wird synchron per `Newtonsoft.Json.JsonConvert.DeserializeObject<T>` + `File.ReadAllText(Application.streamingAssetsPath + …)` mit Lazy-Static-Cache und Fallback auf Defaults. Referenz-Implementierung: `HudConfigLoader` / `UIFontConfigLoader`.
+- **No Resources Folder**: Der `Resources/`-Ordner ist verboten. Alle laufzeit-konfigurierbaren Daten leben unter `Assets/StreamingAssets/`. Unity-Assets, die zwingend Projekt-Assets bleiben müssen (Fonts, Prefabs, Materials, AnimatorController), werden per `[SerializeField]` auf einem MonoBehaviour-Manager (typisch `ApplicationEntryPoint`) referenziert oder via Addressables (`PrefabManager`) geladen — niemals via `Resources.Load`.
 
 ## Clean Coding Standards
 - **KISS (Keep It Simple, Stupid)**: Bevorzuge einfache, klare Lösungen gegenüber komplexen; vermeide Over-Engineering; jede Klasse/Methode sollte eine klare, verständliche Aufgabe haben.

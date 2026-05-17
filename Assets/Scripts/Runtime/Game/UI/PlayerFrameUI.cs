@@ -1,4 +1,5 @@
 using System;
+using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Player;
 using Unity.Netcode;
@@ -133,6 +134,7 @@ namespace Riftstorm.Game.UI
             m_NameLabel.style.color = Color.white;
             m_NameLabel.style.fontSize = c.nameFontSize;
             m_NameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            UIFonts.Apply(m_NameLabel, UIFonts.Heading);
             m_Frame.Add(m_NameLabel);
 
             // HP-Bar (linksbuendig).
