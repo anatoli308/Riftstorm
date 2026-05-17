@@ -1,17 +1,16 @@
 # Riftstorm — Architektur- & Setup-Kontext
 
 > **Stand**: Nach ECS-Cut. Riftstorm läuft jetzt **NGO-only** mit klassischen MonoBehaviours.
-> Setup ist 1:1 an *RemakeSoF* (Soldier-of-Fortune-Remake) angelehnt.
 > Zweck dieses Dokuments: Kondensierter Referenz-Kontext für spätere Copilot/Claude-Sessions.
 
 ---
 
 ## 1. Vision
 
-**Riftstorm** = Multiplayer Vampire-Survivors-MOBA im League-of-Legends-Stil mit ARPG-Elementen.
+**Riftstorm** = Multiplayer Dark-Fantasy Survivor-MOBA/MMO im LoL/WoW-Stil mit ARPG-Elementen — Vampire-Survivors-/Megabonk-Loop für PvE, MOBA-Pacing fürs PvP.
 
-- **Genre**: Top-down PvPvE Action (Survivor-MOBA-Hybrid)
-- **Spielerzahl**: 10–15 pro Match (5v5 oder FFA)
+- **Genre**: Top-down PvPvE Action (Survivor-MOBA/MMO-Hybrid)
+- **Spielerzahl**: ~15 pro Match (skalierbar nach oben/unten)
 - **Enemy-Scale**: 200–400 Enemies gleichzeitig
 - **Performance-Target**: 60 FPS Client
 - **Netcode-Tickrate**: 20–30 Hz Server-Authoritative
@@ -77,7 +76,7 @@
 
 ---
 
-## 4. Ordnerstruktur (Spiegel von RemakeSoF)
+## 4. Ordnerstruktur
 
 ```
 Assets/Scripts/

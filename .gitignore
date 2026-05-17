@@ -114,3 +114,5 @@ SceneDependencyCache
 __pycache__
 venv
 .venv
+mugen_data
+out

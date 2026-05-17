@@ -18,7 +18,6 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
     ///   <item><b>Server build</b> → StartServer, on success NetworkManager.SceneManager loads <c>Game</c>.</item>
     ///   <item><b>Client build</b> → load <c>Metagame</c>, wait for user to connect; NGO scene sync hands the client over to <c>Game</c>.</item>
     /// </list>
-    /// Mirrors the RemakeSoF ApplicationEntryPoint pattern stripped down to NGO essentials.
     /// </summary>
     [MultiplayerRoleRestricted]
     public class ApplicationEntryPoint : MonoBehaviour

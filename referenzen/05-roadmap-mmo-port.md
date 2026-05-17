@@ -1,18 +1,19 @@
-# 05 – Roadmap: source_client / source_server → Riftstorm (Unity-Port)
+# 05 – Roadmap: Gameplay-Systeme für Riftstorm
 
-Status-Snapshot und Phasenplan für den Port des MMO-Codes (`source_client` / `source_server`, C++) in das Unity-Projekt Riftstorm.
+Status-Snapshot und Phasenplan für den Aufbau der MMO/MOBA-Gameplay-Systeme (Combat, Stats, Spells, Items, AI, Quests, Persistenz) im Unity-Projekt Riftstorm. Die Vorlagen-Codebase ist ein eigenes vorheriges Multiplayer-Projekt in C++ — hier dient sie nur als Architektur-Referenz, nicht als 1:1-Port-Ziel.
+
 Dient als Erinnerungs-/Kontextdokument für spätere Sessions.
 
 ---
 
 ## 1. Stand der Basis-Systeme
 
-| System | Source-Datei (C++) | Riftstorm-Status |
+| System | Vorbild | Riftstorm-Status |
 |---|---|---|
 | Networking-Fundament | (eigene NetworkManager-Klassen) | ✅ NGO + [ConnectionManager](../Assets/Scripts/Runtime/Management/) StateMachine |
 | Auth/Login | `AccountDb`, Login-Pakete | ✅ [AuthenticationManager](../Assets/Scripts/Runtime/Management/) StateMachine |
 | Bewegung | (eigener Pred./Reconcile) | ✅ [PlayerMovement](../Assets/Scripts/Runtime/Game/) (CSP + Reconcile) |
-| Sprite/Anim | FLARE `.sa`-Scripts | ✅ FlareCharacter + PlayerSkinManager |
+| Sprite/Anim | FLARE `.sa`-Scripts | ✅ FlareCharacter |
 | Console | Chat-Befehle | ✅ ConsoleManager StateMachine |
 | Waffen-Daten (read-only) | `ItemTemplate.h` | ✅ [WeaponDefinition](../Assets/Scripts/Runtime/Gameplay/Combat/) + WeaponCatalog (JSON) |
 | Offhand/Shield | `ItemTemplate.h` (subtype) | ✅ OffhandCatalog (JSON) |
@@ -114,7 +115,7 @@ Jeweils data-driven via JSON in `StreamingAssets/` + StateMachine, wo passend.
 
 ## 4. Status der Map-/Welt-Systeme
 
-| System | Source-Datei (C++) | Riftstorm-Status |
+| System | Vorbild | Riftstorm-Status |
 |---|---|---|
 | Maps | `MapCellClient.cpp`, `MapEditor.cpp` | ⏳ Unity-Scenes vorhanden, kein Cell-System portiert |
 

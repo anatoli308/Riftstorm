@@ -51,9 +51,8 @@ namespace Riftstorm.Management.TextureManagement
     }
 
     /// <summary>
-    /// Factory fuer <see cref="TextureData"/> mit Validierung. Mirror der
-    /// RemakeSoF-Variante, jedoch ohne Material-Feld (Riftstorm baut keine
-    /// Materialien aus Skin-Definitionen).
+    /// Factory fuer <see cref="TextureData"/> mit Validierung. Ohne Material-Feld —
+    /// Riftstorm baut keine Materialien aus Skin-Definitionen.
     /// </summary>
     public static class TextureDataFactory
     {

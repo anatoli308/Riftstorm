@@ -12,9 +12,9 @@ namespace Riftstorm.Management.TextureManagement
     /// Keys sind relative Pfade ohne Extension (z. B. <c>"interface/unit_frame"</c>).
     /// </summary>
     /// <remarks>
-    /// Mirror des RemakeSoF-Patterns (TextureManager + TextureRegistry +
-    /// LazyTextureLoader), aber ohne Material-Pipeline – Riftstorm-Code baut
-    /// noch keine Materialien aus Skin-Definitionen.
+    /// Aufbau: TextureManager + TextureRegistry + LazyTextureLoader, aber ohne
+    /// Material-Pipeline — Riftstorm-Code baut noch keine Materialien aus
+    /// Skin-Definitionen.
     /// </remarks>
     public sealed class TextureManager
     {

@@ -178,5 +178,5 @@ python d:\Riftstorm\Tools\Scripts\flare_txt_to_json.py \
 
 ## 7. Offene Punkte (nicht erledigt)
 
-- **RemakeSoF-Parity-Refactor** für `PlayerMovement`: Quake3-/SoF2-Stil mit explizitem `pmove`-Frame, Step-Slide, Stairs-Snap. Aktuell läuft die simple Unity-Variante (CharacterController + manueller Gravity). Soll später durch deterministische Manual-Physics ersetzt werden — siehe Repo-Instruction "Manual Physics".
+- **Manual-Physics-Refactor** für `PlayerMovement`: deterministischer `pmove`-Frame, Step-Slide, Stairs-Snap. Aktuell läuft die simple Unity-Variante (CharacterController + manueller Gravity). Soll später durch deterministische Manual-Physics ersetzt werden — siehe Repo-Instruction "Manual Physics".
 - **Sprite-Loader** in Unity: die JSON-Dateien werden noch nicht von einem Sprite-Atlas-Importer in URP-Sprites umgesetzt. Pipeline: JSON → `SpriteAtlas`-Slicing über Editor-Tool (steht aus).

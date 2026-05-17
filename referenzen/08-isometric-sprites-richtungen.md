@@ -152,14 +152,12 @@ Bewegt sich das Asset?
 - **Flare Engine** (`https://github.com/flareteam/flare-engine`) — Open-Source-Iso-Engine,
   Asset-Konvention 1:1 übernommen
 - **Diablo II** — 8 Richtungen für Chars, 1–4 für Objekte
-- **Soldier of Fortune 2** — Ghoul2-Skeleton, aber visuell vergleichbare Iso-Anmutung
-  in der Render-Pipeline
 
 ---
 
 ## 9. Relevant für Riftstorm
 
-- Spieler-Skins (`PlayerSkinManager` + `PlayerSkinApplier`) erwarten 8 Richtungen
+- Spieler-Sprites erwarten 8 Richtungen (oder 1/4 je nach Kategorie aus Abschnitt 7)
 - `PrefabManager` lädt Sprite-Atlas-Prefabs via Addressables —
   Asset-Layout pro Atlas folgt Flare-Konvention
 - `Assets/Art/` strukturiert nach Asset-Typ; pro Asset eigenes Spritesheet mit

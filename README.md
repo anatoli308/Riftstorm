@@ -1,6 +1,6 @@
 # Riftstorm
 
-> **PvPvE Topdown-Action**, in dem die Build-Eskalation von *Vampire Survivors*, die Teamfights von *League of Legends* und die Synergie-Tiefe von *Path of Exile* zu einem chaotischen Survivor-MOBA-Hybrid verschmelzen.
+> **Multiplayer Dark-Fantasy PvPvE Topdown-Action**, in dem die Build-Eskalation von *Vampire Survivors* / *Megabonk*, die Teamfights & Pacing von *League of Legends* und die Synergie-Tiefe eines ARPGs (à la *Path of Exile* / *Diablo*) zu einem Survivor-MOBA/MMO-Hybriden im WoW-Look verschmelzen.
 
 **Kernidee in einem Satz:** *Das PvE erzeugt das PvP.*
 
@@ -8,11 +8,11 @@
 
 ## Vision
 
-Riftstorm ist kein weiterer MOBA-Klon und kein weiterer Survivor-Klon. Spieler farmen Horden, evolvieren Builds, kontrollieren Objectives — und treffen im Endgame mit voll eskalierten Synergie-Builds in massiven Teamfights aufeinander.
+Riftstorm ist kein weiterer MOBA-Klon und kein weiterer Survivor-Klon. Spieler farmen Horden, evolvieren Builds, kontrollieren Objectives — und treffen im Endgame mit voll eskalierten Synergie-Builds in chaotischen Teamfights aufeinander. Das Setting ist **Dark Fantasy** (Untote, Dämonen, Ritualmagie), die Welt fokussiert, die Sessions kurz und streamerfreundlich.
 
-- **Earlygame** → Farmen, Skill-Aufbau, kleine Objectives (wie Vampire Survivors)
-- **Midgame** → Map Control, Bosse, erste PvP-Skirmishes (wie LoL)
-- **Endgame** → Map schrumpft, Horden eskalieren, 5v5 Chaos mit komplett evolvierten Builds
+- **Earlygame** → Farmen, Skill-Aufbau, kleine Objectives (Vampire-Survivors / Megabonk-Auto-Combat)
+- **Midgame** → Map Control, Bosse, erste PvP-Skirmishes (LoL-Pacing)
+- **Endgame** → Map schrumpft, Horden eskalieren, voll evolvierte Builds clashen (ARPG-Synergie-Tiefe)
 
 Match-Länge: **15–25 Minuten**. Zugänglich, streamerfreundlich, build-tief.
 
@@ -43,17 +43,17 @@ Spawn → Farm Horden → Skill leveln → Evolution freischalten
 | Bereich | Wahl | Warum |
 |---|---|---|
 | Engine | **Unity 6 + URP** | Topdown-tauglich, große Toolchain, performant |
-| Gameplay | **Klassische MonoBehaviours** + Object Pooling | Schnelle Iteration, ausreichend für 10–15 Spieler / hunderte Enemies |
+| Gameplay | **Klassische MonoBehaviours** + Object Pooling | Schnelle Iteration, ausreichend für ~15 Spieler / hunderte Enemies |
 | Networking | **Netcode for GameObjects (NGO)** + Dedicated Server | Server-authoritative, Unity-nativ, Server-/Client-Build-Split |
 | Input | **Unity Input System** | bereits eingebunden |
 | Assets | **Addressables** | Cache-first Loading via `PrefabManager` |
-| Architektur | **MVC + State Machines + EventManager + ServiceLocator** | 1:1 aus *RemakeSoF* portiert |
+| Architektur | **MVC + State Machines + EventManager + ServiceLocator** | Modulare, datengetriebene In-House-Architektur |
 
 > Aktuell installiert: `com.unity.netcode.gameobjects 2.11.2`, `com.unity.dedicated-server 2.0.2`, `com.unity.addressables`, `com.unity.inputsystem`, URP 17.3.0. ECS/DOTS wurde bewusst entfernt.
 
 ---
 
-## Architektur (aus RemakeSoF portiert)
+## Architektur
 
 ```
 Assets/Scripts/
@@ -88,7 +88,7 @@ Assets/Scripts/
 
 | Metrik | Ziel |
 |---|---|
-| Spieler pro Match | 10–15 (5v5 oder FFA) |
+| Spieler pro Match | ~15 (Default-Target, skalierbar nach oben/unten) |
 | Gleichzeitige Enemies | 200–400 |
 | Frame Rate | >60 FPS stabil |
 | Server Tickrate | 20–30 Hz |

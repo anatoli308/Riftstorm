@@ -1,7 +1,7 @@
 # Copilot Instructions for Riftstorm
 
 ## Background Information
-This file contains the coding standards, architectural principles, and design patterns for the RemakeSoF project. It serves as a guideline for all developers contributing to the codebase to ensure consistency, maintainability, and clarity across the project. The instructions cover decision-making principles, important coding rules, clean coding standards, project architecture, scene architecture, application lifecycle, and patterns & conventions. Adhering to these guidelines will help maintain a high quality codebase and facilitate collaboration among developers. You always use the latest version of Unity and C# features where appropriate.
+Riftstorm is a **Multiplayer Dark-Fantasy PvPvE Topdown Survivor-MOBA/MMO**. The game blends Vampire-Survivors/Megabonk-style horde combat and build evolution with LoL/WoW-style teamfights, objectives and pacing, plus ARPG-style synergy depth. Target session length is 15–25 minutes, ~15 players per match (scalable), 200–400 concurrent enemies, dedicated server and server-authoritative simulation. This file contains the coding standards, architectural principles, and design patterns for the project to ensure consistency, maintainability, and clarity across the codebase. The instructions cover decision-making principles, coding rules, clean coding standards, project architecture, scene architecture, application lifecycle, and patterns & conventions. Always use the latest stable version of Unity 6 and modern C# features where appropriate.
 
 ## Decision-Making Principles
 - For background tasks or long decision tasks use Python and not PowerShell. PowerShell is only for short scripts and quick fixes, not for complex logic or data processing.
@@ -31,7 +31,7 @@ This file contains the coding standards, architectural principles, and design pa
 - **Immutability where possible**: Readonly Fields/Properties wo sinnvoll; private Setter für interne State-Änderungen; keine unerwarteten Side Effects.
 
 ## Project Architecture
-- **Core Movement**: Quake III/SoF2 Bewegung mit Unity-Anpassungen (manuelle Physik bevorzugt).
+- **Core Movement**: Server-authoritative Topdown-Bewegung mit Client Prediction & Reconciliation; manuelle Physik bevorzugt für deterministisches Verhalten.
 - **MVC Architecture (Runtime/Core)**:
   - **BaseApplication**: Root-Klasse für Scene-Scripts; verwaltet EventManager und findet Model/View/Controller-Instanzen per DFS; generisch typisierbar `BaseApplication<M,V,C>`.
   - **Model**: Basisklasse für Datenhaltung; `Model<T>` ermöglicht typsichere App-Referenzen.
@@ -48,21 +48,15 @@ This file contains the coding standards, architectural principles, and design pa
   - **TextureManager**: Baut Materialien aus Skin-Definitionen, nutzt `TextureRegistry`, zugreifbar via ServiceLocator, `ClearCache()` delegiert.
   - **TextureRegistry**: Cache + Custom Loader (Default Lazy Loader), kein Observer-Pattern, `ClearCache()` zerstört Texturen/Materialien.
 - **MonoBehaviour Manager / State Machines**:
-  - **PlayerSkinManager**: StateMachine (Idle/Loading/Applied/Error); orchestriert Skin-Laden & -Anwenden; lädt Daten via 4 interne Loader, übergibt konkrete Daten an `PlayerSkinApplier`; Input via `IPlayerSkinChangeHandler` je State; Output-Events zentral im Manager (`OnSkinApplied()`, `OnSkinLoadFailure()` via `EventManager`); nutzt `PrefabManager`, `TextureManager` via ServiceLocator.
-  - **SkinDefinitionLoader** (intern): Lädt Skin-Definitionen aus Resources; Methoden: `GetByName()`, `GetNextSkinName()`, `GetPreviousSkinName()`, `GetSkinsForModel()`, `GetAvailableModels()`.
-  - **SurfaceDefinitionLoader** (intern): Lädt NPC_definition.json; Methode: `GetByModelName()` liefert Surface-Definitionen.
-  - **CharacterTemplateLoader** (intern): Lädt SoF2_NPCs.json; Methoden: `GetBySkinName()`, `GetByName()`.
-  - **LegacyShaderLoader** (intern): Lädt .g2shader Files von Disk; Methode: `GetForModel()` liefert Shader-Definitionen.
-  - **PlayerSkinApplier** (intern): Reine Asset-Anwendung; bekommt nur konkrete Daten (keine Loader-Referenzen); Methoden: `ApplyAnimatorController()`, `ApplySurfaceDefinitions()`, `DisableAndEnableSurfaces()`; findet Renderer per Match-Logik, verwaltet Aktivierung.
   - **ConnectionManager**: StateMachine für NGO; leitet NetworkManager-Callbacks (OnConnectionEvent, OnServerStarted, ApprovalCheck, OnTransportFailure, OnServerStopped) an den aktuellen State weiter; Abos in `Awake`, Deregistrierung in `OnDestroy`.
-  - **AuthenticationManager**: StateMachine (Unauthenticated/Authenticating/Authenticated/SessionExpired); Input via `IAuthenticationHandler` je State; Output-Events zentral im Manager (`OnAuthenticationSuccess()`, `OnAuthenticationFailure()`, `OnSessionExpired()`); verwaltet Authentifizierungsverlauf und Token-Refresh.
-  - **ConsoleManager**: StateMachine (ConsoleInactive/ConsoleActive); leitet Kommandos und Aktivierungszustände an den aktuellen State; verwaltet Konsolen-UI und Befehlsausführung.
-  - **ApplicationEntryPoint**: Registriert Pure Services im `ServiceLocator` (z. B. TextureManager/PrefabManager) in `Awake`; hält serialisierte MonoBehaviour-Manager (Connection/Authentication/PlayerSkin/Console); ruft `ServiceLocator.ClearAll()` in `OnDestroy` auf.
+  - **AuthenticationManager**: StateMachine (Unauthenticated/Authenticating/Authenticated/SessionExpired); Input via `IAuthenticationHandler` je State; Output-Events zentral im Manager (`OnAuthenticationSuccess()`, `OnAuthenticationFailure()`, `OnSessionExpired()` via `EventManager`); verwaltet Authentifizierungsverlauf und Token-Refresh.
+  - **ConsoleManager**: StateMachine (ConsoleInactive/ConsoleActive); leitet Kommandos und Aktivierungszustand an den aktuellen State; verwaltet Konsolen-UI und Befehlsausführung.
+  - **ApplicationEntryPoint**: Registriert Pure Services im `ServiceLocator` (z. B. TextureManager/PrefabManager) in `Awake`; hält serialisierte MonoBehaviour-Manager (Connection/Authentication/Console); ruft `ServiceLocator.ClearAll()` in `OnDestroy` auf.
 - **Sonstiges**: `PrefabDataFactory` bleibt als Helper für PrefabManager.
 
 ## Performance First Philosophy
 
-- Gameplay systems must scale to 10–15 players and a few hundred enemies (not thousands).
+- Gameplay systems must scale to ~15 players and a few hundred enemies (not thousands).
 - Avoid hidden allocations in gameplay-critical code paths.
 - Avoid LINQ in hot paths.
 - Avoid reflection in runtime gameplay systems.

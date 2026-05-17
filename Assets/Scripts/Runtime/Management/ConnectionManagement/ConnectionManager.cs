@@ -7,9 +7,9 @@ using UnityEngine;
 namespace Tolik.Riftstorm.Runtime.ConnectionManagement
 {
     /// <summary>
-    /// State machine wrapper around <see cref="Unity.Netcode.NetworkManager"/> mirroring the
-    /// RemakeSoF ConnectionManager pattern. Forwards NetworkManager callbacks to the current
-    /// ConnectionState and exposes intent-style entry points (StartClient / StartServer).
+    /// State machine wrapper around <see cref="Unity.Netcode.NetworkManager"/>. Forwards
+    /// NetworkManager callbacks to the current ConnectionState and exposes intent-style
+    /// entry points (StartClient / StartServer).
     /// </summary>
     public class ConnectionManager : StateMachine<ConnectionState, ConnectionManager>
     {

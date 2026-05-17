@@ -7,8 +7,8 @@ using UnityEngine;
 namespace Riftstorm.Game.Movement
 {
     /// <summary>
-    /// Server-authoritative Topdown-Bewegung im SoF2/Quake3-Stil mit Client Prediction
-    /// und Reconciliation. Drei Rollen teilen sich eine Komponente:
+    /// Server-authoritative Topdown-Bewegung mit Client Prediction und Reconciliation.
+    /// Drei Rollen teilen sich eine Komponente:
     ///
     /// - <b>Owner-Client</b>: liest LoL-Style RMB-Klick via <see cref="Riftstorm.Game.Input.MobaCommandController"/>, simuliert lokal sofort (Prediction), legt
     ///   jeden Command in einen Ringbuffer und schickt ihn via

@@ -1,8 +1,7 @@
 namespace Tolik.Riftstorm.Runtime.ConnectionManagement
 {
     /// <summary>
-    /// Reasons / outcomes of a connection transition. Mirrors the RemakeSoF naming so existing
-    /// patterns translate 1:1.
+    /// Reasons / outcomes of a connection transition.
     /// </summary>
     public enum ConnectStatus
     {
