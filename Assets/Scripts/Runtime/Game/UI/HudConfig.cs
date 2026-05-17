@@ -82,5 +82,70 @@ namespace Riftstorm.Game.UI
         public float targetBorderScale = 1.35f;
         /// <summary>Vertikaler Pixel-Offset des Target-Border-Rings (positiv = nach unten).</summary>
         public float targetBorderYOffset = 6f;
+
+        // ---------------------------------------------------------------------
+        // Cursor (Hardware-Cursor, getauscht je nach Hover-Zustand)
+        // ---------------------------------------------------------------------
+
+        /// <summary>Default-Cursor-Textur (wenn kein Gegner unter der Maus).</summary>
+        public string defaultCursorTexture = "interface/cursor";
+        /// <summary>Attack-Cursor-Textur (wird gesetzt, sobald ein anderer Spieler / eine andere Einheit gehovert wird).</summary>
+        public string attackCursorTexture = "interface/cursor_attack";
+        /// <summary>Cursor-Hotspot X in Pixeln (relativ zur Cursor-Textur, 0 = links).</summary>
+        public float cursorHotspotX = 0f;
+        /// <summary>Cursor-Hotspot Y in Pixeln (relativ zur Cursor-Textur, 0 = oben).</summary>
+        public float cursorHotspotY = 0f;
+        /// <summary>Skalierungsfaktor der Cursor-Textur (1 = Originalgroesse, 0.5 = halbe Groesse). Hotspot wird automatisch mitskaliert.</summary>
+        public float cursorScale = 0.5f;
+
+        // ---------------------------------------------------------------------
+        // Selection-Indicator (Boden-Decal um die gelockte Einheit)
+        // ---------------------------------------------------------------------
+
+        /// <summary>Textur fuer den Selection-Indicator am Boden (League-of-Legends-Style Ring). Wird ueber dem alten LineRenderer-Kreis im <c>HitboxIndicator</c> als flaches Quad gerendert. Leerer String oder fehlende Textur \u2192 Fallback auf den Vektor-Ring.</summary>
+        public string selectionIndicatorTexture = "interface/unit_selected";
+        /// <summary>Skalierungsfaktor des Selection-Indicator-Quads relativ zum Durchmesser (2 * HitRadius). 1 = exakt am Hitradius, 1.2 = 20% groesser.</summary>
+        public float selectionIndicatorScale = 1f;
+
+        // ---------------------------------------------------------------------
+        // Action Bar (unten + rechte vertikale Bars)
+        // ---------------------------------------------------------------------
+
+        /// <summary>Hintergrund-Textur der Action-Bar (horizontal gezeichnete Holz-/Stein-Platte mit 12 eingebrannten Slot-Wells). Leer \u2192 Fallback auf prozedurale Slot-Tiles.</summary>
+        public string actionBarBaseTexture = "interface/actionbar_base";
+        /// <summary>Fuelltextur der XP-Bar unter der Action-Bar (horizontaler Streifen).</summary>
+        public string actionBarXpFillTexture = "interface/xp_bar";
+        /// <summary>Breite der unteren Action-Bar in Pixeln. Sollte dem Seitenverhaeltnis der <see cref="actionBarBaseTexture"/> entsprechen.</summary>
+        public float actionBarBottomWidth = 720f;
+        /// <summary>Hoehe der unteren Action-Bar in Pixeln.</summary>
+        public float actionBarBottomHeight = 80f;
+        /// <summary>Kantenlaenge eines Slot-Quadrats in der unteren Action-Bar.</summary>
+        public float actionBarBottomSlotSize = 44f;
+        /// <summary>Horizontaler Innen-Inset der Slot-Reihe zur Action-Bar-Basis (links + rechts). Entfernt die ausgefranste Pinsel-Kante aus dem Slot-Bereich.</summary>
+        public float actionBarBottomSlotInsetX = 36f;
+        /// <summary>Vertikaler Offset der Slot-Reihe zum oberen Rand der Action-Bar-Basis.</summary>
+        public float actionBarBottomSlotInsetY = 12f;
+        /// <summary>Hoehe der XP-Bar unter der Action-Bar.</summary>
+        public float actionBarBottomXpHeight = 12f;
+        /// <summary>Vertikaler Spalt zwischen Action-Bar-Unterkante und XP-Bar-Oberkante (negativ \u2192 XP-Bar ueberlappt die Basis). \u00DCberholt von <see cref="actionBarBottomXpInsetBottom"/> seit XP-Bar Overlay innerhalb der Basis ist; bleibt fuer Rueckwaertskompatibilitaet erhalten.</summary>
+        public float actionBarBottomXpGap = -2f;
+        /// <summary>Pixel-Abstand der XP-Bar-Unterkante zur Unterkante der Action-Bar-Basis (Overlay-Position INNERHALB der Basis-Textur).</summary>
+        public float actionBarBottomXpInsetBottom = 6f;
+        /// <summary>Pixel-Abstand der unteren Action-Bar zum unteren Bildschirmrand.</summary>
+        public float actionBarBottomMargin = 16f;
+        /// <summary>Breite einer rechten vertikalen Bar (kurze Achse \u2014 nach 90deg-Rotation der Basis-Textur).</summary>
+        public float actionBarRightWidth = 64f;
+        /// <summary>Hoehe einer rechten vertikalen Bar (lange Achse).</summary>
+        public float actionBarRightHeight = 560f;
+        /// <summary>Kantenlaenge eines Slot-Quadrats in der rechten Action-Bar.</summary>
+        public float actionBarRightSlotSize = 40f;
+        /// <summary>Pixel-Abstand der ersten rechten Action-Bar zum rechten Bildschirmrand.</summary>
+        public float actionBarRightMargin = 16f;
+        /// <summary>Horizontaler Spalt zwischen erster und zweiter rechter Action-Bar.</summary>
+        public float actionBarRightSpacing = 8f;
+        /// <summary>Anzahl der rechten vertikalen Action-Bars (1 oder 2).</summary>
+        public int actionBarRightCount = 1;
+        /// <summary>Rotationswinkel der Basis-Textur fuer rechte vertikale Action-Bars in Grad. -90 = oberes Textur-Ende zeigt nach unten, +90 = oberes Textur-Ende zeigt nach oben.</summary>
+        public float actionBarRightRotationDegrees = -90f;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Riftstorm.Game.Combat;
+using Riftstorm.Game.UI;
 using Tolik.Riftstorm.Runtime.Gameplay.Combat;
 using Unity.Netcode;
 using UnityEngine;
@@ -112,6 +113,10 @@ namespace Riftstorm.Game.Input
                     OnLockChanged(m_VisualLockedId, m_TargetSelection.CurrentTargetId);
                 }
             }
+            // Sofortiges Anzeigen des Default-Cursors beim Spielstart. Ohne
+            // diesen Aufruf wuerde der Cursor erst beim ersten Hover-Wechsel
+            // (ApplyHover) gesetzt \u2014 vorher zeigt Windows weiter den System-Cursor.
+            Riftstorm.Game.UI.CursorService.Reload();
         }
 
         private void OnDisable()
@@ -222,6 +227,11 @@ namespace Riftstorm.Game.Input
             {
                 m_HoverVisual.SetHovered(true);
             }
+            // Hardware-Cursor parallel zum Hover-Tint umschalten: Attack-Cursor,
+            // sobald eine gehoverte Einheit existiert, sonst Default. Nur fuer
+            // den Owner relevant — diese Methode wird ausschliesslich aus dem
+            // Owner-Update-Pfad heraus aufgerufen.
+            CursorService.SetAttack(m_HoverVisual != null);
         }
 
         // -------------------------------------------------------------------------

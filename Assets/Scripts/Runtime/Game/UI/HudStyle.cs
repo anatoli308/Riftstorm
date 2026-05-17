@@ -228,5 +228,33 @@ namespace Riftstorm.Game.UI
             }
             return slot;
         }
+
+        /// <summary>
+        /// Erzeugt einen Action-Bar-Slot, der auf einer gemalten Action-Bar-Textur
+        /// (mit eingebrannten Slot-Wells) sitzt. Anders als <see cref="BuildActionSlot"/>
+        /// traegt dieser Slot keinen eigenen Hintergrund und keinen Gold-Border \u2014
+        /// die Optik kommt komplett aus der darunterliegenden Bar-Textur. Nur das
+        /// Keybind-Label wird oben rechts platziert; Icon und Cooldown fuellt
+        /// spaeter das Skill-System ein.
+        /// </summary>
+        public static VisualElement BuildTexturedActionSlot(float size, string keyBind)
+        {
+            VisualElement slot = new() { name = "action-slot" };
+            slot.style.width = size;
+            slot.style.height = size;
+
+            if (!string.IsNullOrEmpty(keyBind))
+            {
+                Label bind = new(keyBind) { name = "action-slot-bind" };
+                bind.style.position = Position.Absolute;
+                bind.style.top = 2f;
+                bind.style.right = 4f;
+                bind.style.fontSize = 11f;
+                bind.style.color = new StyleColor(new Color(0.95f, 0.92f, 0.70f, 0.95f));
+                bind.style.unityFontStyleAndWeight = FontStyle.Bold;
+                slot.Add(bind);
+            }
+            return slot;
+        }
     }
 }

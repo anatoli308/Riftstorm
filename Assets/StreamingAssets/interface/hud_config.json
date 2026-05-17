@@ -35,5 +35,33 @@
   "manaFillTexture": "interface/unit_frame_mp",
   "manaFillTextureReverse": "interface/unit_frame_mp_reverse",
   "levelBadgeTexture": "interface/unit_frame_level_bg",
-  "targetBorderTexture": "interface/unit_frame_silver"
+  "targetBorderTexture": "interface/unit_frame_elite",
+
+  "defaultCursorTexture": "interface/cursor",
+  "attackCursorTexture": "interface/cursor_attack",
+  "cursorHotspotX": 0,
+  "cursorHotspotY": 0,
+  "cursorScale": 0.8,
+
+  "selectionIndicatorTexture": "interface/unit_selected",
+  "selectionIndicatorScale": 1.0,
+
+  "actionBarBaseTexture": "interface/actionbar_base",
+  "actionBarXpFillTexture": "interface/xp_bar",
+  "actionBarBottomWidth": 720,
+  "actionBarBottomHeight": 80,
+  "actionBarBottomSlotSize": 44,
+  "actionBarBottomSlotInsetX": 36,
+  "actionBarBottomSlotInsetY": 12,
+  "actionBarBottomXpHeight": 12,
+  "actionBarBottomXpGap": -2,
+  "actionBarBottomXpInsetBottom": 6,
+  "actionBarBottomMargin": 0,
+  "actionBarRightWidth": 64,
+  "actionBarRightHeight": 560,
+  "actionBarRightSlotSize": 40,
+  "actionBarRightMargin": 0,
+  "actionBarRightSpacing": 8,
+  "actionBarRightCount": 1,
+  "actionBarRightRotationDegrees": -90
 }
