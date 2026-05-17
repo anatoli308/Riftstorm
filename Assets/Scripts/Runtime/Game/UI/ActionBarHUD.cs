@@ -48,13 +48,16 @@ namespace Riftstorm.Game.UI
             HudConfig cfg = HudConfigLoader.Load();
             Texture2D baseTex = HudConfigLoader.LoadTextureOrNull(cfg.actionBarBaseTexture);
             Texture2D xpTex = HudConfigLoader.LoadTextureOrNull(cfg.actionBarXpFillTexture);
+            Texture2D slotIdleTex = HudConfigLoader.LoadTextureOrNull(cfg.actionSlotIconIdleTexture);
+            Texture2D slotHoverTex = HudConfigLoader.LoadTextureOrNull(cfg.actionSlotIconHoverTexture);
+            Texture2D slotPressTex = HudConfigLoader.LoadTextureOrNull(cfg.actionSlotIconPressTexture);
 
-            BuildBottomBar(m_Root, cfg, baseTex, xpTex);
+            BuildBottomBar(m_Root, cfg, baseTex, xpTex, slotIdleTex, slotHoverTex, slotPressTex);
 
             float rightOffset = cfg.actionBarRightMargin;
             for (int i = 0; i < cfg.actionBarRightCount; i++)
             {
-                BuildRightBar(m_Root, cfg, baseTex, rightOffset);
+                BuildRightBar(m_Root, cfg, baseTex, rightOffset, slotIdleTex, slotHoverTex, slotPressTex);
                 rightOffset += cfg.actionBarRightWidth + cfg.actionBarRightSpacing;
             }
         }
@@ -63,7 +66,8 @@ namespace Riftstorm.Game.UI
         // Bottom Bar (Action-Bar-Base-Textur + 12 Slots + XP-Bar darunter)
         // -------------------------------------------------------------------------
 
-        private static void BuildBottomBar(VisualElement root, HudConfig cfg, Texture2D baseTex, Texture2D xpTex)
+        private static void BuildBottomBar(VisualElement root, HudConfig cfg, Texture2D baseTex, Texture2D xpTex,
+            Texture2D slotIdleTex, Texture2D slotHoverTex, Texture2D slotPressTex)
         {
             float width = cfg.actionBarBottomWidth;
             float height = cfg.actionBarBottomHeight;
@@ -97,14 +101,13 @@ namespace Riftstorm.Game.UI
             VisualElement xpRow = HudStyle.BuildTexturedBar(
                 "action-bar-xp",
                 xpTex,
-                width,
+                width - 2f * cfg.actionBarBottomXpInsetX,
                 xpHeight,
                 fillFromRight: false,
                 out VisualElement xpFill,
                 out Label xpValue);
             xpRow.style.position = Position.Absolute;
-            xpRow.style.left = 0f;
-            xpRow.style.right = 0f;
+            xpRow.style.left = cfg.actionBarBottomXpInsetX;
             xpRow.style.bottom = cfg.actionBarBottomXpInsetBottom;
             // Track-Backdrop, damit der XP-Slot auch bei 0% Fuellung sichtbar
             // ist (xp_bar.png ist nur die Fuellung, keine Rinne). Dunkles
@@ -118,23 +121,39 @@ namespace Riftstorm.Game.UI
             xpValue.style.fontSize = Mathf.Max(9f, xpHeight * 0.85f);
             bar.Add(xpRow);
 
-            // Slot-Reihe, absolut ueber den eingebrannten Wells der Textur.
+            // Slot-Reihe als Container, absolut ueber den eingebrannten Wells.
+            // Slots werden INNERHALB der Reihe absolut positioniert (jede Position
+            // einzeln auf ganze Pixel gerundet), damit sich keine Subpixel-Fehler
+            // aufsummieren wie bei flex/marginLeft. Reihenbreite = N*slotSize +
+            // (N-1)*gap; die Reihe wird in der Bar horizontal zentriert.
+            float gap = cfg.actionBarBottomSlotGap;
+            float rowWidth = SlotCount * slotSize + (SlotCount - 1) * gap;
+            float rowLeft = Mathf.Round((width - rowWidth) * 0.5f + cfg.actionBarBottomSlotsRowOffsetX);
+
             VisualElement slotsRow = new() { name = "action-bar-bottom-slots" };
             slotsRow.style.position = Position.Absolute;
             slotsRow.style.top = cfg.actionBarBottomSlotInsetY;
-            slotsRow.style.left = cfg.actionBarBottomSlotInsetX;
-            slotsRow.style.right = cfg.actionBarBottomSlotInsetX;
+            slotsRow.style.left = rowLeft;
+            slotsRow.style.width = rowWidth;
             slotsRow.style.height = slotSize;
-            slotsRow.style.flexDirection = FlexDirection.Row;
-            slotsRow.style.justifyContent = Justify.SpaceBetween;
-            slotsRow.style.alignItems = Align.Center;
 
             for (int i = 0; i < SlotCount; i++)
             {
                 string bind = GetBottomKeyBind(i);
                 VisualElement slot = baseTex != null
-                    ? HudStyle.BuildTexturedActionSlot(slotSize, bind)
+                    ? HudStyle.BuildTexturedActionSlot(slotSize, bind, slotIdleTex, slotHoverTex, slotPressTex)
                     : HudStyle.BuildActionSlot((int)slotSize, bind);
+                slot.style.position = Position.Absolute;
+                slot.style.top = 0f;
+                // Jede Position unabhaengig runden -> Fehler bleibt <= 0.5px pro
+                // Slot statt sich linear aufzusummieren. Pro-Slot-Korrektur aus
+                // Config addieren, falls die eingebrannten Wells der PNG nicht
+                // exakt aequidistant sind.
+                float perSlotOffset = (cfg.actionBarBottomSlotOffsetsX != null
+                                       && i < cfg.actionBarBottomSlotOffsetsX.Length)
+                    ? cfg.actionBarBottomSlotOffsetsX[i]
+                    : 0f;
+                slot.style.left = Mathf.Round(i * (slotSize + gap) + perSlotOffset);
                 slotsRow.Add(slot);
             }
             bar.Add(slotsRow);
@@ -160,7 +179,8 @@ namespace Riftstorm.Game.UI
         // Right Vertical Bar (12 Slots, Basis-Textur 90deg rotiert)
         // -------------------------------------------------------------------------
 
-        private static void BuildRightBar(VisualElement root, HudConfig cfg, Texture2D baseTex, float rightOffset)
+        private static void BuildRightBar(VisualElement root, HudConfig cfg, Texture2D baseTex, float rightOffset,
+            Texture2D slotIdleTex, Texture2D slotHoverTex, Texture2D slotPressTex)
         {
             float w = cfg.actionBarRightWidth;
             float h = cfg.actionBarRightHeight;
@@ -199,26 +219,35 @@ namespace Riftstorm.Game.UI
                 container.Add(bg);
             }
 
-            // Aufrechte Slot-Spalte ueber der rotierten Basis.
+            // Aufrechte Slot-Spalte ueber der rotierten Basis. Slots werden
+            // einzeln absolut positioniert (jede Y-Position auf ganze Pixel
+            // gerundet), damit sich keine Subpixel-Fehler aufsummieren. Pro-Slot-
+            // Korrektur aus Config gleicht Asymmetrien in der gemalten Basis aus
+            // (analog zur unteren Bar).
+            float rightGap = cfg.actionBarRightSlotGap;
+            float colHeight = SlotCount * slotSize + (SlotCount - 1) * rightGap;
+            float colTop = Mathf.Round((h - colHeight) * 0.5f + cfg.actionBarRightSlotsColOffsetY);
+            float colLeft = Mathf.Round((w - slotSize) * 0.5f);
+
             VisualElement slotsCol = new() { name = "action-bar-right-slots" };
             slotsCol.style.position = Position.Absolute;
-            slotsCol.style.top = 0f;
-            slotsCol.style.bottom = 0f;
-            slotsCol.style.left = 0f;
-            slotsCol.style.right = 0f;
-            slotsCol.style.flexDirection = FlexDirection.Column;
-            slotsCol.style.justifyContent = Justify.SpaceBetween;
-            slotsCol.style.alignItems = Align.Center;
-            // Vertikales Padding entspricht dem horizontalen Inset der unteren Bar
-            // (nach 90deg-Rotation wird aus links/rechts oben/unten).
-            slotsCol.style.paddingTop = cfg.actionBarBottomSlotInsetX;
-            slotsCol.style.paddingBottom = cfg.actionBarBottomSlotInsetX;
+            slotsCol.style.top = colTop;
+            slotsCol.style.left = colLeft;
+            slotsCol.style.width = slotSize;
+            slotsCol.style.height = colHeight;
 
             for (int i = 0; i < SlotCount; i++)
             {
                 VisualElement slot = baseTex != null
-                    ? HudStyle.BuildTexturedActionSlot(slotSize, keyBind: null)
+                    ? HudStyle.BuildTexturedActionSlot(slotSize, keyBind: null, slotIdleTex, slotHoverTex, slotPressTex)
                     : HudStyle.BuildActionSlot((int)slotSize, keyBind: null);
+                slot.style.position = Position.Absolute;
+                slot.style.left = 0f;
+                float perSlotOffset = (cfg.actionBarRightSlotOffsetsY != null
+                                       && i < cfg.actionBarRightSlotOffsetsY.Length)
+                    ? cfg.actionBarRightSlotOffsetsY[i]
+                    : 0f;
+                slot.style.top = Mathf.Round(i * (slotSize + rightGap) + perSlotOffset);
                 slotsCol.Add(slot);
             }
             container.Add(slotsCol);

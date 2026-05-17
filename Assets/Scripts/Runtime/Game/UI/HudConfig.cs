@@ -123,6 +123,12 @@ namespace Riftstorm.Game.UI
         public float actionBarBottomSlotSize = 44f;
         /// <summary>Horizontaler Innen-Inset der Slot-Reihe zur Action-Bar-Basis (links + rechts). Entfernt die ausgefranste Pinsel-Kante aus dem Slot-Bereich.</summary>
         public float actionBarBottomSlotInsetX = 36f;
+        /// <summary>Fester Pixel-Abstand zwischen zwei Slots in der unteren Action-Bar. Wird statt <c>justify-content: space-between</c> verwendet, damit der Abstand unabhaengig von Bar-Breite und Slot-Anzahl gleich bleibt.</summary>
+        public float actionBarBottomSlotGap = 7f;
+        /// <summary>Horizontaler Feinjustage-Offset der gesamten Slot-Reihe (positiv → nach rechts). Wird zur zentrierten Position addiert, um leichte Asymmetrien in der eingebrannten Action-Bar-Basis-Textur auszugleichen.</summary>
+        public float actionBarBottomSlotsRowOffsetX = 0f;
+        /// <summary>Pro-Slot-Korrektur in Pixeln (X), wird zur berechneten Position des jeweiligen Slots addiert. Index 0 = erster Slot. Werte sind <b>kumulativ wirksam</b>, weil jeder Slot seine eigene Korrektur erhaelt: setzt man z.B. <c>[0, 0, 2, 4, 6, ...]</c>, schiebt jeder Folge-Slot um weitere 2px nach rechts. Nuetzlich wenn die eingebrannten Wells der Basis-Textur nicht exakt aequidistant sind. Array darf kuerzer als 12 sein; fehlende Eintraege = 0.</summary>
+        public float[] actionBarBottomSlotOffsetsX = System.Array.Empty<float>();
         /// <summary>Vertikaler Offset der Slot-Reihe zum oberen Rand der Action-Bar-Basis.</summary>
         public float actionBarBottomSlotInsetY = 12f;
         /// <summary>Hoehe der XP-Bar unter der Action-Bar.</summary>
@@ -131,6 +137,8 @@ namespace Riftstorm.Game.UI
         public float actionBarBottomXpGap = -2f;
         /// <summary>Pixel-Abstand der XP-Bar-Unterkante zur Unterkante der Action-Bar-Basis (Overlay-Position INNERHALB der Basis-Textur).</summary>
         public float actionBarBottomXpInsetBottom = 6f;
+        /// <summary>Horizontaler Innen-Inset der XP-Bar zur Action-Bar-Basis (links + rechts). Begrenzt den XP-Streifen auf den gemalten Innenbereich, damit er nicht ueber die ausgefranste Pinsel-Kante hinauslaeuft.</summary>
+        public float actionBarBottomXpInsetX = 90f;
         /// <summary>Pixel-Abstand der unteren Action-Bar zum unteren Bildschirmrand.</summary>
         public float actionBarBottomMargin = 16f;
         /// <summary>Breite einer rechten vertikalen Bar (kurze Achse \u2014 nach 90deg-Rotation der Basis-Textur).</summary>
@@ -147,5 +155,18 @@ namespace Riftstorm.Game.UI
         public int actionBarRightCount = 1;
         /// <summary>Rotationswinkel der Basis-Textur fuer rechte vertikale Action-Bars in Grad. -90 = oberes Textur-Ende zeigt nach unten, +90 = oberes Textur-Ende zeigt nach oben.</summary>
         public float actionBarRightRotationDegrees = -90f;
+        /// <summary>Fester Pixel-Abstand zwischen zwei Slots in einer rechten vertikalen Action-Bar (Analog zu <see cref="actionBarBottomSlotGap"/>).</summary>
+        public float actionBarRightSlotGap = 7f;
+        /// <summary>Vertikaler Feinjustage-Offset der gesamten Slot-Spalte (positiv \u2192 nach unten). Wird zur zentrierten Position addiert.</summary>
+        public float actionBarRightSlotsColOffsetY = 0f;
+        /// <summary>Pro-Slot-Korrektur in Pixeln (Y) fuer die rechte Action-Bar, wird zur berechneten Position des jeweiligen Slots addiert. Index 0 = oberster Slot. Werte sind absolut (bereits kumuliert), Array darf kuerzer als 12 sein.</summary>
+        public float[] actionBarRightSlotOffsetsY = System.Array.Empty<float>();
+
+        /// <summary>Slot-Icon-Cell im Idle-Zustand (gemalter 40px Rahmen fuer leere Slots). Leer \u2192 kein Icon-Cell-Overlay.</summary>
+        public string actionSlotIconIdleTexture = "interface/icons/gameicon40_idle";
+        /// <summary>Slot-Icon-Cell beim Hover (Maus ueber dem Slot).</summary>
+        public string actionSlotIconHoverTexture = "interface/icons/gameicon40_hover";
+        /// <summary>Slot-Icon-Cell beim Press (Maus-Down auf dem Slot).</summary>
+        public string actionSlotIconPressTexture = "interface/icons/gameicon40_press";
     }
 }

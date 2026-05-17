@@ -236,12 +236,49 @@ namespace Riftstorm.Game.UI
         /// die Optik kommt komplett aus der darunterliegenden Bar-Textur. Nur das
         /// Keybind-Label wird oben rechts platziert; Icon und Cooldown fuellt
         /// spaeter das Skill-System ein.
+        /// <para>
+        /// Optional kann eine Icon-Cell (idle/hover/press Texturen) als Overlay
+        /// gerendert werden \u2014 dann reagiert der Slot auf Maus-Events. Fehlt
+        /// idleTex, bleibt der Slot ein reiner Layout-Platzhalter (alte Optik).
+        /// </para>
         /// </summary>
-        public static VisualElement BuildTexturedActionSlot(float size, string keyBind)
+        public static VisualElement BuildTexturedActionSlot(
+            float size,
+            string keyBind,
+            Texture2D idleTex = null,
+            Texture2D hoverTex = null,
+            Texture2D pressTex = null)
         {
             VisualElement slot = new() { name = "action-slot" };
             slot.style.width = size;
             slot.style.height = size;
+
+            if (idleTex != null)
+            {
+                slot.style.backgroundImage = new StyleBackground(idleTex);
+                // Slot reagiert nur auf Maus-Events, wenn eine Icon-Cell vorhanden ist.
+                // Sonst bleibt pickingMode == Position (Default), wir lassen das aber
+                // bewusst stehen, weil das Skill-System spaeter Click-Handler anhaengt.
+                slot.RegisterCallback<PointerEnterEvent>(_ =>
+                {
+                    slot.style.backgroundImage = new StyleBackground(hoverTex != null ? hoverTex : idleTex);
+                });
+                slot.RegisterCallback<PointerLeaveEvent>(_ =>
+                {
+                    slot.style.backgroundImage = new StyleBackground(idleTex);
+                });
+                slot.RegisterCallback<PointerDownEvent>(_ =>
+                {
+                    slot.style.backgroundImage = new StyleBackground(pressTex != null ? pressTex : idleTex);
+                });
+                slot.RegisterCallback<PointerUpEvent>(_ =>
+                {
+                    // Nach dem Loslassen wieder Hover (Maus ist noch ueber dem Slot)
+                    // oder Idle (Pointer-Capture verloren). UI-Toolkit feuert nach
+                    // PointerUp KEIN automatisches PointerEnter, daher hier manuell.
+                    slot.style.backgroundImage = new StyleBackground(hoverTex != null ? hoverTex : idleTex);
+                });
+            }
 
             if (!string.IsNullOrEmpty(keyBind))
             {

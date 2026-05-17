@@ -41,27 +41,39 @@
   "attackCursorTexture": "interface/cursor_attack",
   "cursorHotspotX": 0,
   "cursorHotspotY": 0,
-  "cursorScale": 0.8,
+  "cursorScale": 1.0,
 
   "selectionIndicatorTexture": "interface/unit_selected",
   "selectionIndicatorScale": 1.0,
 
   "actionBarBaseTexture": "interface/actionbar_base",
   "actionBarXpFillTexture": "interface/xp_bar",
-  "actionBarBottomWidth": 720,
-  "actionBarBottomHeight": 80,
-  "actionBarBottomSlotSize": 44,
-  "actionBarBottomSlotInsetX": 36,
-  "actionBarBottomSlotInsetY": 12,
+  
+  "actionBarBottomWidth": 861,
+  "actionBarBottomHeight": 69,
+  "actionBarBottomSlotSize": 40,
+  "actionBarBottomSlotInsetX": 150,
+  "actionBarBottomSlotGap": 7,
+  "actionBarBottomSlotOffsetsX": [0, 0, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11],
+  "actionBarBottomSlotInsetY": 10,
   "actionBarBottomXpHeight": 12,
   "actionBarBottomXpGap": -2,
   "actionBarBottomXpInsetBottom": 6,
+  "actionBarBottomXpInsetX": 110,
   "actionBarBottomMargin": 0,
-  "actionBarRightWidth": 64,
-  "actionBarRightHeight": 560,
+
+  "actionBarRightWidth": 69,
+  "actionBarRightHeight": 861,
   "actionBarRightSlotSize": 40,
   "actionBarRightMargin": 0,
   "actionBarRightSpacing": 8,
   "actionBarRightCount": 1,
-  "actionBarRightRotationDegrees": -90
+  "actionBarRightRotationDegrees": -90,
+  "actionBarRightSlotGap": 7,
+  "actionBarRightSlotsColOffsetY": 0,
+  "actionBarRightSlotOffsetsY": [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 0, 0],
+
+  "actionSlotIconIdleTexture": "interface/icons/gameicon40_idle",
+  "actionSlotIconHoverTexture": "interface/icons/gameicon40_hover",
+  "actionSlotIconPressTexture": "interface/icons/gameicon40_press"
 }
