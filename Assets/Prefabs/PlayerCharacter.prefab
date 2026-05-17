@@ -19,11 +19,11 @@ GameObject:
   - component: {fileID: 6273741711409788343}
   - component: {fileID: 4317724205577696828}
   - component: {fileID: 1186222734823470071}
-  - component: {fileID: 6514675505499219949}
   - component: {fileID: 2073408902820077138}
   - component: {fileID: 7442777768799961031}
   - component: {fileID: 2695336093515043885}
   - component: {fileID: -6858420798198050943}
+  - component: {fileID: 2270049582356626853}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -241,25 +241,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerIdentity
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &6514675505499219949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2550141141547264444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 127a9437cd842c54990000c1466bf513, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerNameTag
-  m_Identity: {fileID: 1186222734823470071}
-  m_Anchor: {fileID: 5634081016197058092}
-  m_HeadHeight: 1.2
-  m_WorldOffset: {x: 0, y: 2.2, z: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FontSize: 14
-  m_MaxDistance: 50
 --- !u!114 &2073408902820077138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,6 +326,25 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_ArrivalRadius: 0.15
   m_FollowStopRadius: 1.5
+--- !u!114 &2270049582356626853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 127a9437cd842c54990000c1466bf513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerNameTag
+  m_Identity: {fileID: 1186222734823470071}
+  m_Anchor: {fileID: 5634081016197058092}
+  m_HeadHeight: 1.2
+  m_WorldOffset: {x: 0, y: -2, z: 0.8}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FontSize: 14
+  m_MaxDistance: 50
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

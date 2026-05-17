@@ -43,6 +43,16 @@ namespace Riftstorm.Game.Player
         private string m_CachedName = string.Empty;
         private GUIStyle m_Style;
         private Renderer[] m_CachedRenderers;
+        private Unity.Netcode.NetworkObject m_CachedNetworkObject;
+
+        // Lazy-resolved Hover-Plate-Texturen. Konfig kommt aus
+        // StreamingAssets/interface/nametag_config.json via NameTagConfigLoader,
+        // Textur-Aufloesung via TextureManager (Pure Service). Wir resolven
+        // einmalig beim ersten OnGUI-Pass, damit der TextureManager im
+        // ServiceLocator garantiert registriert ist (ApplicationEntryPoint.Awake).
+        private Texture2D m_HoverPlateTexture;
+        private Texture2D m_IdlePlateTexture;
+        private bool m_HoverPlateResolved;
 
         private void Awake()
         {
@@ -212,7 +222,12 @@ namespace Riftstorm.Game.Player
 
             if (m_Style == null)
             {
-                m_Style = new GUIStyle(GUI.skin.label)
+                // GUIStyle bewusst OHNE GUI.skin.label-Inheritance bauen. Sonst erbt
+                // m_Style die hover/active/focused/onNormal/... State-Slots aus dem
+                // aktiven EditorSkin — und GUI.Label rendert bei Mouse-Over dann den
+                // hover-State (anderer textColor, fettere Schrift). Genau das war der
+                // sichtbare "weiss + etwas fetter bei Hover"-Effekt.
+                m_Style = new GUIStyle
                 {
                     alignment = TextAnchor.MiddleCenter,
                     fontSize = m_FontSize,
@@ -224,17 +239,20 @@ namespace Riftstorm.Game.Player
                     m_Style.font = font;
                 }
             }
-            // m_Color für alle Button-States setzen, damit GUI.Button beim Hover/Click
-            // NICHT auf die weiße Skin-Hover-Farbe umschaltet. Source-treu: der Nametag
-            // hat keine Hover-Aufhellung — die übernimmt der Sprite via HoverHighlight.
+            // Alle acht State-Slots auf identische Werte zwingen, damit GUI.Label
+            // garantiert NIE auf hover/active/focused/onXxx umschaltet — weder
+            // Farbe, noch Background, noch Scaled-Backgrounds. Das ist die einzige
+            // zuverlaessige Methode, IMGUI-State-Switching am Label abzuschalten.
             m_Style.normal.textColor = m_Color;
-            m_Style.hover.textColor = m_Color;
-            m_Style.active.textColor = m_Color;
-            m_Style.focused.textColor = m_Color;
-            m_Style.onNormal.textColor = m_Color;
-            m_Style.onHover.textColor = m_Color;
-            m_Style.onActive.textColor = m_Color;
-            m_Style.onFocused.textColor = m_Color;
+            m_Style.normal.background = null;
+            m_Style.normal.scaledBackgrounds = System.Array.Empty<Texture2D>();
+            m_Style.hover = m_Style.normal;
+            m_Style.active = m_Style.normal;
+            m_Style.focused = m_Style.normal;
+            m_Style.onNormal = m_Style.normal;
+            m_Style.onHover = m_Style.normal;
+            m_Style.onActive = m_Style.normal;
+            m_Style.onFocused = m_Style.normal;
 
             const float width = 220f;
             const float height = 22f;
@@ -242,20 +260,150 @@ namespace Riftstorm.Game.Player
             float guiY = Screen.height - screen.y - height;
             Rect rect = new(screen.x - width * 0.5f, guiY, width, height);
 
-            // Schwarzer Shadow f&#252;r Lesbarkeit (Outline-Effekt).
-            Color prev = m_Style.normal.textColor;
-            m_Style.normal.textColor = Color.black;
-            GUI.Label(new Rect(rect.x + 1f, rect.y + 1f, rect.width, rect.height), m_CachedName, m_Style);
-            m_Style.normal.textColor = prev;
+            // Hover-Test: Event.current.mousePosition liegt in OnGUI bereits in
+            // GUI-Koordinaten (oben-links, identisches Space wie rect). Kein Y-Flip,
+            // keine Input-System-Abh\u00e4ngigkeit, kein DPI/Game-View-Scale-Risiko.
+            // Eigener Nametag wird nie als "hovered" gewertet \u2014 Selbst-Hover macht
+            // weder visuell noch gameplay-seitig Sinn (Klick ist bereits No-Op).
+            // Self-Detection \u00fcber IsOwner statt IsLocalPlayer, weil Letzteres nur
+            // greift, wenn die NetworkObject via NetworkManager PlayerObject markiert
+            // wurde (ConnectionApprovalResponse), w\u00e4hrend IsOwner f\u00fcr jeden
+            // Client-besessenen NetworkObject zuverl\u00e4ssig true ist.
+            bool isLocalPlayer = false;
+            Unity.Netcode.NetworkObject selfNo = GetCachedNetworkObject();
+            if (selfNo != null && selfNo.IsSpawned && selfNo.IsOwner)
+            {
+                isLocalPlayer = true;
+            }
+            // Hover erzeugt KEINE visuelle Aenderung am Nametag — Hover-Feedback
+            // laeuft ueber den Sprite (HoverHighlight). Outline gibt es ausschliesslich
+            // fuer das aktive Target-Lock UND niemals fuer das eigene Nametag (du
+            // kannst dich selbst nicht als Target locken, ein Self-Outline waere
+            // nur visueller Lärm).
+            bool drawOutline = !isLocalPlayer && IsCurrentlyTargeted();
+
+            // Hover-Plate (datengetrieben via nametag_config.json). Wird VOR dem
+            // Text gezeichnet, damit der Text obendrauf sitzt. Nur fuer fremde
+            // Nametags — das eigene bleibt nackt. Idle- und Hover-Texturen sind
+            // unabhaengig konfigurierbar; leere Keys = keine Plate fuer den jeweiligen Zustand.
+            if (!isLocalPlayer)
+            {
+                NameTagConfig cfg = NameTagConfigLoader.Load();
+                if (cfg.hoverPlateEnabled)
+                {
+                    if (!m_HoverPlateResolved)
+                    {
+                        m_HoverPlateTexture = NameTagConfigLoader.LoadTextureOrNull(cfg.hoverPlateTexture);
+                        m_IdlePlateTexture = NameTagConfigLoader.LoadTextureOrNull(cfg.idlePlateTexture);
+                        m_HoverPlateResolved = true;
+                    }
+                    bool mouseOver = rect.Contains(Event.current.mousePosition);
+                    Texture2D plate = mouseOver ? m_HoverPlateTexture : m_IdlePlateTexture;
+                    if (plate != null)
+                    {
+                        Rect plateRect = new(
+                            rect.x - cfg.platePaddingX,
+                            rect.y - cfg.platePaddingY,
+                            rect.width + cfg.platePaddingX * 2f,
+                            rect.height + cfg.platePaddingY * 2f);
+                        GUI.DrawTexture(plateRect, plate, ScaleMode.StretchToFill, alphaBlend: true);
+                    }
+                }
+            }
+
+            if (isLocalPlayer)
+            {
+                // Eigenes Nametag: ausschliesslich reiner Text, keine Extra-Passes
+                // (kein Drop-Shadow, keine Outline). So gibt es null wahrnehmbare
+                // Zustandsaenderung am eigenen Nametag — egal was die Maus tut.
+            }
+            else if (drawOutline)
+            {
+                // Schwarze Outline um den weissen Haupttext (nur fuer Target-Lock).
+                Color prev = m_Style.normal.textColor;
+                m_Style.normal.textColor = Color.black;
+                DrawOutline(rect, m_CachedName, m_Style);
+                m_Style.normal.textColor = prev;
+            }
+            else
+            {
+                // Klassischer 1px-Drop-Shadow als Lesbarkeits-Hilfe ohne Target-Lock.
+                Color prev = m_Style.normal.textColor;
+                m_Style.normal.textColor = Color.black;
+                GUI.Label(new Rect(rect.x + 1f, rect.y + 1f, rect.width, rect.height), m_CachedName, m_Style);
+                m_Style.normal.textColor = prev;
+            }
+            GUI.Label(rect, m_CachedName, m_Style);
 
             // Klick auf das Label selektiert die Einheit (source-aequivalent zum
-            // Overhead-Klick im SoF-Client). Wir nutzen GUI.Button mit dem gleichen
-            // Label-Style (kein Hintergrund) — visuell identisch zum vorherigen GUI.Label,
-            // aber klickbar. Klick aufs eigene Nametag ist ein No-Op.
-            if (GUI.Button(rect, m_CachedName, m_Style))
+            // Overhead-Klick im SoF-Client). Manueller MouseDown-Hit-Test — kein
+            // GUI.Button, das einen Hover-Repaint-Pass mit Bold-Strokes erzeugen
+            // wuerde. Klick auf eigenes Nametag = No-Op.
+            Event e = Event.current;
+            if (e.type == EventType.MouseDown && e.button == 0 && !isLocalPlayer && rect.Contains(e.mousePosition))
             {
                 HandleNameTagClicked();
+                e.Use();
             }
+        }
+
+        /// <summary>
+        /// Zeichnet das Label mehrfach versetzt in der aktuellen (schwarzen)
+        /// <c>textColor</c> des Styles. ±2px statt ±1px, weil <c>FontStyle.Bold</c>-
+        /// Strokes selbst etwa 1-2 Pixel breit sind und einen 1px-Outline-Offset
+        /// komplett unter dem Hauptzeichen verschwinden lassen würden. Bewusst kein
+        /// TextMeshPro — Outline-Effekt im IMGUI-Pfad.
+        /// </summary>
+        private static void DrawOutline(Rect rect, string text, GUIStyle style)
+        {
+            for (int dx = -2; dx <= 2; dx++)
+            {
+                for (int dy = -2; dy <= 2; dy++)
+                {
+                    if (dx == 0 && dy == 0)
+                    {
+                        continue;
+                    }
+                    GUI.Label(new Rect(rect.x + dx, rect.y + dy, rect.width, rect.height), text, style);
+                }
+            }
+        }
+
+        /// <summary>
+        /// True, wenn die lokale <see cref="Riftstorm.Game.Combat.TargetSelection"/>
+        /// genau diese Einheit anvisiert. Dauerhafter Outline für das Target‑Lock.
+        /// </summary>
+        private bool IsCurrentlyTargeted()
+        {
+            Riftstorm.Game.Combat.TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
+            if (localTs == null || !localTs.HasTarget)
+            {
+                return false;
+            }
+            Unity.Netcode.NetworkObject myNo = GetCachedNetworkObject();
+            if (myNo == null || !myNo.IsSpawned)
+            {
+                return false;
+            }
+            return localTs.CurrentTargetId == myNo.NetworkObjectId;
+        }
+
+        private Unity.Netcode.NetworkObject GetCachedNetworkObject()
+        {
+            if (m_CachedNetworkObject != null)
+            {
+                return m_CachedNetworkObject;
+            }
+            if (m_Identity == null)
+            {
+                return null;
+            }
+            m_CachedNetworkObject = m_Identity.GetComponent<Unity.Netcode.NetworkObject>();
+            if (m_CachedNetworkObject == null)
+            {
+                m_CachedNetworkObject = m_Identity.GetComponentInParent<Unity.Netcode.NetworkObject>();
+            }
+            return m_CachedNetworkObject;
         }
 
         /// <summary>
@@ -269,11 +417,7 @@ namespace Riftstorm.Game.Player
             {
                 return;
             }
-            Unity.Netcode.NetworkObject myNo = m_Identity.GetComponent<Unity.Netcode.NetworkObject>();
-            if (myNo == null)
-            {
-                myNo = m_Identity.GetComponentInParent<Unity.Netcode.NetworkObject>();
-            }
+            Unity.Netcode.NetworkObject myNo = GetCachedNetworkObject();
             if (myNo == null || !myNo.IsSpawned)
             {
                 return;
@@ -285,6 +429,11 @@ namespace Riftstorm.Game.Player
             }
             // Eigenes Nametag klicken = No-Op (kein Selbst-Lock).
             if (localTs.NetworkObjectId == myNo.NetworkObjectId)
+            {
+                return;
+            }
+            // Bereits selektiertes Target erneut anklicken = No-Op (kein redundanter RPC).
+            if (localTs.HasTarget && localTs.CurrentTargetId == myNo.NetworkObjectId)
             {
                 return;
             }

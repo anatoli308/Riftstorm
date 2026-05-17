@@ -149,6 +149,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.ApplicationLifecycle::Tolik.Riftstorm.Runtime.ApplicationLifecycle.ApplicationEntryPoint
   m_ConnectionManager: {fileID: 840653063}
+  m_UIFonts:
+  - {fileID: 12800000, guid: 3bed17669b3c5a14da4d8d4cd1a33e22, type: 3}
+  - {fileID: 12800000, guid: 5f351579dab8d604794cb678efef7ab3, type: 3}
+  - {fileID: 12800000, guid: 7c2c29c7440995046a24adec4e959829, type: 3}
+  - {fileID: 12800000, guid: 33c7ff902befebf489879ba5e60d63b7, type: 3}
+  - {fileID: 12800000, guid: e1a065dcd0fdc104e97990b0c5c32f40, type: 3}
+  - {fileID: 12800000, guid: 5416ba17ad594ab4db797d6d28728526, type: 3}
+  - {fileID: 12800000, guid: fafdaeb0c4457764cb2ea5649b4f4f19, type: 3}
+  - {fileID: 2230732570650464555, guid: b11446018a108ff4f824b0ef189a97b8, type: 3}
+  - {fileID: 12800000, guid: 01393b91b6ff66d44bb954ad75158ff1, type: 3}
+  - {fileID: 12800000, guid: ea4563e8b5d239d4ea987bce740f5c3b, type: 3}
+  - {fileID: 12800000, guid: bdb9b37795719324695e7a4fa7289af9, type: 3}
+  - {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &670913158
 Transform:
   m_ObjectHideFlags: 0

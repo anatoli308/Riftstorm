@@ -1,0 +1,7 @@
+{
+  "hoverPlateEnabled": true,
+  "idlePlateTexture": "interface/generic_highlight_idle",
+  "hoverPlateTexture": "interface/generic_highlight_hover",
+  "platePaddingX": 10.0,
+  "platePaddingY": 3.0
+}
