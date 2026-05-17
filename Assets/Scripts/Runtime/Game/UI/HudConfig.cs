@@ -4,10 +4,11 @@ namespace Riftstorm.Game.UI
 {
     /// <summary>
     /// Datengetriebene HUD-Konfiguration fuer Player- und Target-Frame.
-    /// Quelle: <c>StreamingAssets/interface/hud_config.json</c>. Werte koennen
-    /// zur Laufzeit per JSON-Edit getweakt werden, ohne die MonoBehaviour-Felder
-    /// im Inspector zu beruehren. Felder mit Wert <c>0</c> bzw. leerem String
-    /// gelten als "nicht gesetzt" und fallen auf die SerializeField-Defaults zurueck.
+    /// Quelle: <c>StreamingAssets/interface/hud_config.json</c>. Die Felder
+    /// tragen sinnvolle Defaults — fehlt das JSON oder einzelne Keys, gelten
+    /// diese Defaults. Es gibt keinen zweiten Default-Pfad mehr in den
+    /// MonoBehaviour-Komponenten; <c>HudConfig</c> ist die alleinige
+    /// Quelle der Wahrheit fuer Layout, Schrift und Texturen.
     /// </summary>
     [Serializable]
     public sealed class HudConfig
@@ -17,64 +18,69 @@ namespace Riftstorm.Game.UI
         // ---------------------------------------------------------------------
 
         /// <summary>Gesamtbreite des Frame-Sprites in Pixeln.</summary>
-        public float frameWidth;
+        public float frameWidth = 360f;
         /// <summary>Gesamthoehe des Frame-Sprites in Pixeln.</summary>
-        public float frameHeight;
+        public float frameHeight = 96f;
         /// <summary>Durchmesser des runden Portraits.</summary>
-        public float portraitSize;
+        public float portraitSize = 84f;
         /// <summary>Abstand des Portraits vom linken/rechten Frame-Rand.</summary>
-        public float portraitInset;
+        public float portraitInset = 6f;
         /// <summary>Abstand des Portraits vom oberen Frame-Rand.</summary>
-        public float portraitTop;
+        public float portraitTop = 6f;
         /// <summary>Durchmesser der Level-Badge.</summary>
-        public float levelBadgeSize;
-        /// <summary>Default-Bar-Inset (Fallback fuer HP+Mana).</summary>
-        public float barInset;
-        /// <summary>Default-Bar-Breite (Fallback fuer HP+Mana).</summary>
-        public float barWidth;
-        /// <summary>Inset der HP-Bar zum portraitseitigen Frame-Rand. Faellt auf <see cref="barInset"/> zurueck.</summary>
-        public float hpBarInset;
-        /// <summary>Breite der HP-Bar. Faellt auf <see cref="barWidth"/> zurueck.</summary>
-        public float hpBarWidth;
-        /// <summary>Inset der Mana-Bar zum portraitseitigen Frame-Rand. Faellt auf <see cref="barInset"/> zurueck.</summary>
-        public float manaBarInset;
-        /// <summary>Breite der Mana-Bar. Faellt auf <see cref="barWidth"/> zurueck.</summary>
-        public float manaBarWidth;
+        public float levelBadgeSize = 28f;
+        /// <summary>Horizontaler Versatz der Level-Badge vom Portrait-Rand, als Anteil der Badge-Groesse (0.15 = 15% nach aussen).</summary>
+        public float levelBadgeOffsetXRatio = 0.15f;
+        /// <summary>Vertikaler Versatz der Level-Badge ueber die Portrait-Unterkante hinaus, als Anteil der Badge-Groesse (0.5 = halb ueberlappt).</summary>
+        public float levelBadgeOffsetYRatio = 0.5f;
+        /// <summary>Inset der HP-Bar zum portraitseitigen Frame-Rand.</summary>
+        public float hpBarInset = 92f;
+        /// <summary>Breite der HP-Bar.</summary>
+        public float hpBarWidth = 256f;
+        /// <summary>Inset der Mana-Bar zum portraitseitigen Frame-Rand.</summary>
+        public float manaBarInset = 100f;
+        /// <summary>Breite der Mana-Bar.</summary>
+        public float manaBarWidth = 240f;
         /// <summary>Hoehe der HP-Bar.</summary>
-        public float hpBarHeight;
+        public float hpBarHeight = 20f;
         /// <summary>Hoehe der Mana-Bar.</summary>
-        public float manaBarHeight;
+        public float manaBarHeight = 16f;
         /// <summary>Oberer Beginn der HP-Bar.</summary>
-        public float hpTop;
+        public float hpTop = 38f;
         /// <summary>Oberer Beginn der Mana-Bar.</summary>
-        public float manaTop;
-        /// <summary>Oberer Beginn des Name-Labels (absolute Y). Darf negativ sein (Label oberhalb des Frames). Null/nicht gesetzt = SerializeField-Default.</summary>
-        public float? nameTop;
+        public float manaTop = 62f;
+        /// <summary>Oberer Beginn des Name-Labels (absolute Y). Darf negativ sein (Label oberhalb des Frames).</summary>
+        public float nameTop = 18f;
+        /// <summary>Schriftgroesse des Name-Labels in Pixeln.</summary>
+        public float nameFontSize = 13f;
 
         // ---------------------------------------------------------------------
         // Anchor (Screen-Position der Frames)
         // ---------------------------------------------------------------------
 
         /// <summary>Y-Position beider Frames vom oberen Bildschirmrand.</summary>
-        public float anchorTop;
+        public float anchorTop = 16f;
         /// <summary>X-Position des Player-Frames (vom linken Bildschirmrand).</summary>
-        public float playerAnchorLeft;
+        public float playerAnchorLeft = 16f;
         /// <summary>X-Position des Target-Frames (vom linken Bildschirmrand).</summary>
-        public float targetAnchorLeft;
+        public float targetAnchorLeft = 388f;
 
         // ---------------------------------------------------------------------
-        // Texturen (Pfade relativ zu Application.streamingAssetsPath).
-        // Leer = SerializeField-Referenz aus dem Inspector wird genutzt.
+        // Texturen (Pfade relativ zu Application.streamingAssetsPath)
         // ---------------------------------------------------------------------
 
-        public string frameTexture;
-        public string frameTextureReverse;
-        public string hpFillTexture;
-        public string hpFillTextureReverse;
-        public string manaFillTexture;
-        public string manaFillTextureReverse;
-        public string levelBadgeTexture;
-        /// <summary>Optionale Rahmen-/Border-Overlay-Textur (z. B. <c>interface/unit_frame_bronze</c>). Wird ausschliesslich beim Target-Frame ueber das gesamte Frame gelegt, um Mob-Rarity zu kennzeichnen.</summary>
-        public string targetBorderTexture;
+        public string frameTexture = "interface/unit_frame";
+        public string frameTextureReverse = "interface/unit_frame_reverse";
+        public string hpFillTexture = "interface/unit_frame_hp";
+        public string hpFillTextureReverse = "interface/unit_frame_hp_reverse";
+        public string manaFillTexture = "interface/unit_frame_mp";
+        public string manaFillTextureReverse = "interface/unit_frame_mp_reverse";
+        public string levelBadgeTexture = "interface/unit_frame_level_bg";
+        /// <summary>Optionale Rarity-Ring-Textur (z. B. <c>interface/unit_frame_bronze</c>). Wird beim Target-Frame ausschliesslich um den Portrait-Kreis gelegt (skalierter Overlay). Player-Frame ignoriert dieses Feld.</summary>
+        public string targetBorderTexture = "interface/unit_frame_bronze";
+        /// <summary>Skalierungsfaktor des Target-Border-Rings relativ zum Portrait-Durchmesser (1.35 = Ring ist 35% groesser).</summary>
+        public float targetBorderScale = 1.35f;
+        /// <summary>Vertikaler Pixel-Offset des Target-Border-Rings (positiv = nach unten).</summary>
+        public float targetBorderYOffset = 6f;
     }
 }

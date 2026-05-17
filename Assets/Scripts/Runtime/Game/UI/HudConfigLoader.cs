@@ -27,10 +27,12 @@ namespace Riftstorm.Game.UI
         private static bool s_LoadAttempted;
 
         /// <summary>
-        /// Liefert den geladenen Config oder <c>null</c>, wenn die Datei fehlt
-        /// bzw. das JSON kaputt ist (dann greifen die SerializeField-Defaults).
+        /// Liefert den geladenen Config, oder einen frischen <see cref="HudConfig"/>
+        /// mit Default-Werten, falls die Datei fehlt oder das JSON kaputt ist.
+        /// Der Rueckgabewert ist nie <c>null</c> — Komponenten muessen keinen
+        /// Fallback-Pfad mehr halten.
         /// </summary>
-        public static HudConfig LoadOrNull()
+        public static HudConfig Load()
         {
             if (s_LoadAttempted)
             {
@@ -41,24 +43,23 @@ namespace Riftstorm.Game.UI
             string path = Path.Combine(Application.streamingAssetsPath, DefaultSubFolder, DefaultFileName);
             if (!File.Exists(path))
             {
-                Debug.Log($"[HudConfigLoader] Kein HUD-Config gefunden ({path}) - Inspector-Defaults aktiv.");
-                return null;
+                Debug.Log($"[HudConfigLoader] Kein HUD-Config gefunden ({path}) - HudConfig-Defaults aktiv.");
+                s_Cached = new();
+                return s_Cached;
             }
 
             try
             {
                 string json = File.ReadAllText(path);
-                s_Cached = JsonConvert.DeserializeObject<HudConfig>(json);
-                if (s_Cached != null)
-                {
-                    Debug.Log($"[HudConfigLoader] HUD-Config geladen: {path}");
-                }
+                s_Cached = JsonConvert.DeserializeObject<HudConfig>(json) ?? new HudConfig();
+                Debug.Log($"[HudConfigLoader] HUD-Config geladen: {path}");
                 return s_Cached;
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"[HudConfigLoader] Fehler beim Laden von {path}: {ex.Message}");
-                return null;
+                s_Cached = new();
+                return s_Cached;
             }
         }
 

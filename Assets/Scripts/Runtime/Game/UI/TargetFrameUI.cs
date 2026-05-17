@@ -25,44 +25,16 @@ namespace Riftstorm.Game.UI
     [RequireComponent(typeof(UIDocument))]
     public sealed class TargetFrameUI : MonoBehaviour
     {
-        [Header("Skin (Assets/Art/interface, _reverse Varianten)")]
-        [SerializeField] private Texture2D m_FrameBackground;
-        [SerializeField] private Texture2D m_HpFillTexture;
-        [SerializeField] private Texture2D m_ManaFillTexture;
-        [SerializeField] private Texture2D m_LevelBadgeBackground;
-        [Tooltip("Optionale Border-Overlay-Textur (z. B. unit_frame_bronze), wird ueber das gesamte Target-Frame gelegt.")]
-        [SerializeField] private Texture2D m_BorderOverlay;
-
-        [Header("Layout")]
-        [SerializeField] private float m_FrameWidth = 360f;
-        [SerializeField] private float m_FrameHeight = 96f;
-        [SerializeField] private float m_PortraitSize = 84f;
-        [Tooltip("Abstand des Portraits vom rechten Frame-Rand.")]
-        [SerializeField] private float m_PortraitRight = 6f;
-        [SerializeField] private float m_PortraitTop = 6f;
-        [SerializeField] private float m_LevelBadgeSize = 28f;
-        [Tooltip("Rechter Beginn der HP-Bar im Frame.")]
-        [SerializeField] private float m_BarRight = 92f;
-        [SerializeField] private float m_BarWidth = 256f;
-        [Tooltip("Rechter Beginn der Mana-Bar im Frame (typisch leicht eingerueckt).")]
-        [SerializeField] private float m_ManaBarRight = 100f;
-        [Tooltip("Breite der Mana-Bar (typisch etwas schmaler als HP).")]
-        [SerializeField] private float m_ManaBarWidth = 240f;
-        [Tooltip("Hoehe der HP-Bar (etwas hoeher als die Mana-Bar).")]
-        [SerializeField] private float m_HpBarHeight = 20f;
-        [Tooltip("Hoehe der Mana-Bar.")]
-        [SerializeField] private float m_ManaBarHeight = 16f;
-        [SerializeField] private float m_HpTop = 38f;
-        [SerializeField] private float m_ManaTop = 62f;
-        [Tooltip("Oberer Beginn des Name-Labels. 0 = automatisch (HpTop - 16).")]
-        [SerializeField] private float m_NameTop = 18f;
-
-        [Header("Anchor")]
-        [SerializeField] private float m_AnchorTop = 16f;
-        [Tooltip("Abstand des Target-Frames vom linken Bildschirmrand. Default = Player-Anchor (16) + Player-Frame (360) + kleine Luecke.")]
-        [SerializeField] private float m_AnchorLeft = 388f;
-
         private UIDocument m_Document;
+
+        // Single Source of Truth: HudConfig + JSON. Target nutzt die _reverse-
+        // Texturen sowie den Rarity-Border.
+        private HudConfig m_Config;
+        private Texture2D m_FrameBackground;
+        private Texture2D m_HpFillTexture;
+        private Texture2D m_ManaFillTexture;
+        private Texture2D m_LevelBadgeBackground;
+        private Texture2D m_BorderOverlay;
 
         // Visual-Tree
         private VisualElement m_Root;
@@ -85,7 +57,8 @@ namespace Riftstorm.Game.UI
         private void Awake()
         {
             m_Document = GetComponent<UIDocument>();
-            ApplyConfigOverrides();
+            m_Config = HudConfigLoader.Load();
+            ResolveTextures();
         }
 
         private void OnEnable()
@@ -95,55 +68,17 @@ namespace Riftstorm.Game.UI
         }
 
         /// <summary>
-        /// Liest <c>StreamingAssets/interface/hud_config.json</c> und ueberschreibt
-        /// die SerializeField-Defaults. Target-Frame verwendet die gespiegelten
-        /// (_reverse) Texturpfade aus dem Config.
+        /// Resolved die HUD-Texturen ueber den <see cref="TextureManager"/>-
+        /// Pure-Service. Target nutzt die <c>_reverse</c>-Varianten plus den
+        /// optionalen Rarity-Ring.
         /// </summary>
-        private void ApplyConfigOverrides()
+        private void ResolveTextures()
         {
-            HudConfig cfg = HudConfigLoader.LoadOrNull();
-            if (cfg == null)
-            {
-                return;
-            }
-            if (cfg.frameWidth > 0f) m_FrameWidth = cfg.frameWidth;
-            if (cfg.frameHeight > 0f) m_FrameHeight = cfg.frameHeight;
-            if (cfg.portraitSize > 0f) m_PortraitSize = cfg.portraitSize;
-            if (cfg.portraitInset > 0f) m_PortraitRight = cfg.portraitInset;
-            if (cfg.portraitTop > 0f) m_PortraitTop = cfg.portraitTop;
-            if (cfg.levelBadgeSize > 0f) m_LevelBadgeSize = cfg.levelBadgeSize;
-            if (cfg.barInset > 0f)
-            {
-                m_BarRight = cfg.barInset;
-                m_ManaBarRight = cfg.barInset;
-            }
-            if (cfg.barWidth > 0f)
-            {
-                m_BarWidth = cfg.barWidth;
-                m_ManaBarWidth = cfg.barWidth;
-            }
-            if (cfg.hpBarInset > 0f) m_BarRight = cfg.hpBarInset;
-            if (cfg.hpBarWidth > 0f) m_BarWidth = cfg.hpBarWidth;
-            if (cfg.manaBarInset > 0f) m_ManaBarRight = cfg.manaBarInset;
-            if (cfg.manaBarWidth > 0f) m_ManaBarWidth = cfg.manaBarWidth;
-            if (cfg.hpBarHeight > 0f) m_HpBarHeight = cfg.hpBarHeight;
-            if (cfg.manaBarHeight > 0f) m_ManaBarHeight = cfg.manaBarHeight;
-            if (cfg.hpTop > 0f) m_HpTop = cfg.hpTop;
-            if (cfg.manaTop > 0f) m_ManaTop = cfg.manaTop;
-            if (cfg.nameTop.HasValue) m_NameTop = cfg.nameTop.Value;
-            if (cfg.anchorTop > 0f) m_AnchorTop = cfg.anchorTop;
-            if (cfg.targetAnchorLeft > 0f) m_AnchorLeft = cfg.targetAnchorLeft;
-
-            Texture2D frameTex = HudConfigLoader.LoadTextureOrNull(cfg.frameTextureReverse);
-            if (frameTex != null) m_FrameBackground = frameTex;
-            Texture2D hpTex = HudConfigLoader.LoadTextureOrNull(cfg.hpFillTextureReverse);
-            if (hpTex != null) m_HpFillTexture = hpTex;
-            Texture2D manaTex = HudConfigLoader.LoadTextureOrNull(cfg.manaFillTextureReverse);
-            if (manaTex != null) m_ManaFillTexture = manaTex;
-            Texture2D badgeTex = HudConfigLoader.LoadTextureOrNull(cfg.levelBadgeTexture);
-            if (badgeTex != null) m_LevelBadgeBackground = badgeTex;
-            Texture2D borderTex = HudConfigLoader.LoadTextureOrNull(cfg.targetBorderTexture);
-            if (borderTex != null) m_BorderOverlay = borderTex;
+            m_FrameBackground = HudConfigLoader.LoadTextureOrNull(m_Config.frameTextureReverse);
+            m_HpFillTexture = HudConfigLoader.LoadTextureOrNull(m_Config.hpFillTextureReverse);
+            m_ManaFillTexture = HudConfigLoader.LoadTextureOrNull(m_Config.manaFillTextureReverse);
+            m_LevelBadgeBackground = HudConfigLoader.LoadTextureOrNull(m_Config.levelBadgeTexture);
+            m_BorderOverlay = HudConfigLoader.LoadTextureOrNull(m_Config.targetBorderTexture);
         }
 
         private void OnDisable()
@@ -179,36 +114,38 @@ namespace Riftstorm.Game.UI
             // Target-Frame potenziell ein Root teilen koennen.
             m_Root.pickingMode = PickingMode.Ignore;
 
+            HudConfig c = m_Config;
+
             // Gespiegelter Frame-Hintergrund (Portrait rechts, brushy Bar links).
-            m_Frame = HudStyle.BuildTexturedFrame(m_FrameBackground, m_FrameWidth, m_FrameHeight);
+            m_Frame = HudStyle.BuildTexturedFrame(m_FrameBackground, c.frameWidth, c.frameHeight);
             m_Frame.name = "target-frame";
             m_Frame.style.position = Position.Absolute;
-            m_Frame.style.top = m_AnchorTop;
-            m_Frame.style.left = m_AnchorLeft;
+            m_Frame.style.top = c.anchorTop;
+            m_Frame.style.left = c.targetAnchorLeft;
 
             // Portrait-Kreis rechts.
-            VisualElement portrait = HudStyle.BuildPortraitCircle(m_PortraitSize);
-            portrait.style.right = m_PortraitRight;
-            portrait.style.top = m_PortraitTop;
+            VisualElement portrait = HudStyle.BuildPortraitCircle(c.portraitSize);
+            portrait.style.right = c.portraitInset;
+            portrait.style.top = c.portraitTop;
             m_Frame.Add(portrait);
 
-            // Level-Badge unten RECHTS am Portrait (gespiegelt zum Player-Frame): 15% nach aussen,
-            // 50% vertikal ueberlappt — Badge "haengt" sichtbar unter dem Portrait.
+            // Level-Badge unten RECHTS am Portrait (gespiegelt zum Player-Frame). Versatz
+            // konfigurierbar ueber levelBadgeOffsetXRatio / levelBadgeOffsetYRatio.
             // Wird ERST nach dem Border-Overlay angehaengt, damit das Badge vor
             // dem Rarity-Ring sitzt.
-            VisualElement levelBadge = HudStyle.BuildLevelBadge(m_LevelBadgeBackground, m_LevelBadgeSize, out m_LevelLabel);
-            levelBadge.style.right = m_PortraitRight - m_LevelBadgeSize * 0.15f;
-            levelBadge.style.top = m_PortraitTop + m_PortraitSize - m_LevelBadgeSize * 0.5f;
+            VisualElement levelBadge = HudStyle.BuildLevelBadge(m_LevelBadgeBackground, c.levelBadgeSize, out m_LevelLabel);
+            levelBadge.style.right = c.portraitInset - c.levelBadgeSize * c.levelBadgeOffsetXRatio;
+            levelBadge.style.top = c.portraitTop + c.portraitSize - c.levelBadgeSize * c.levelBadgeOffsetYRatio;
 
             // Name-Label oberhalb der HP-Bar, rechtsbuendig.
             m_NameLabel = new Label("\u2014") { name = "target-frame-name" };
             m_NameLabel.style.position = Position.Absolute;
-            m_NameLabel.style.right = m_BarRight;
-            m_NameLabel.style.top = m_NameTop;
-            m_NameLabel.style.width = m_BarWidth;
+            m_NameLabel.style.right = c.hpBarInset;
+            m_NameLabel.style.top = c.nameTop;
+            m_NameLabel.style.width = c.hpBarWidth;
             m_NameLabel.style.unityTextAlign = TextAnchor.MiddleRight;
             m_NameLabel.style.color = Color.white;
-            m_NameLabel.style.fontSize = 13f;
+            m_NameLabel.style.fontSize = c.nameFontSize;
             m_NameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             m_Frame.Add(m_NameLabel);
 
@@ -216,26 +153,26 @@ namespace Riftstorm.Game.UI
             VisualElement hpRow = HudStyle.BuildTexturedBar(
                 "target-frame-hp",
                 m_HpFillTexture,
-                m_BarWidth,
-                m_HpBarHeight,
+                c.hpBarWidth,
+                c.hpBarHeight,
                 fillFromRight: true,
                 out m_HpFill,
                 out m_HpValueLabel);
-            hpRow.style.right = m_BarRight;
-            hpRow.style.top = m_HpTop;
+            hpRow.style.right = c.hpBarInset;
+            hpRow.style.top = c.hpTop;
             m_Frame.Add(hpRow);
 
             // Mana-Bar (rechtsbuendig, fuellt von rechts).
             m_ManaRow = HudStyle.BuildTexturedBar(
                 "target-frame-mana",
                 m_ManaFillTexture,
-                m_ManaBarWidth,
-                m_ManaBarHeight,
+                c.manaBarWidth,
+                c.manaBarHeight,
                 fillFromRight: true,
                 out m_ManaFill,
                 out m_ManaValueLabel);
-            m_ManaRow.style.right = m_ManaBarRight;
-            m_ManaRow.style.top = m_ManaTop;
+            m_ManaRow.style.right = c.manaBarInset;
+            m_ManaRow.style.top = c.manaTop;
             m_Frame.Add(m_ManaRow);
 
             // Optionaler Border-Overlay (z. B. Bronze-Rarity-Rahmen). Liegt NUR
@@ -244,16 +181,14 @@ namespace Riftstorm.Game.UI
             // hinzugefuegt, damit es vor dem Ring sitzt.
             if (m_BorderOverlay != null)
             {
-                const float c_BorderScale = 1.35f;   // Border ist ~35% groesser als das Portrait
-                const float c_BorderYOffset = 6f;    // ein paar Pixel nach unten, damit Ring satt um den Kreis sitzt
-                float borderSize = m_PortraitSize * c_BorderScale;
-                float borderOffset = (borderSize - m_PortraitSize) * 0.5f;
+                float borderSize = c.portraitSize * c.targetBorderScale;
+                float borderOffset = (borderSize - c.portraitSize) * 0.5f;
 
                 VisualElement border = new() { name = "target-frame-border" };
                 border.pickingMode = PickingMode.Ignore;
                 border.style.position = Position.Absolute;
-                border.style.right = m_PortraitRight - borderOffset;
-                border.style.top = m_PortraitTop - borderOffset + c_BorderYOffset;
+                border.style.right = c.portraitInset - borderOffset;
+                border.style.top = c.portraitTop - borderOffset + c.targetBorderYOffset;
                 border.style.width = borderSize;
                 border.style.height = borderSize;
                 border.style.backgroundImage = new StyleBackground(m_BorderOverlay);

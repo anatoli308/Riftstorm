@@ -15,7 +15,14 @@
   "hpTop": 30,
   "manaTop": 60,
 
-  "nameTop": -15,
+  "nameTop": -2,
+  "nameFontSize": 18,
+
+  "levelBadgeOffsetXRatio": 0.15,
+  "levelBadgeOffsetYRatio": 0.5,
+
+  "targetBorderScale": 1.35,
+  "targetBorderYOffset": 6,
 
   "anchorTop": 16,
   "playerAnchorLeft": 16,
@@ -28,5 +35,5 @@
   "manaFillTexture": "interface/unit_frame_mp",
   "manaFillTextureReverse": "interface/unit_frame_mp_reverse",
   "levelBadgeTexture": "interface/unit_frame_level_bg",
-  "targetBorderTexture": "interface/unit_frame_elite"
+  "targetBorderTexture": "interface/unit_frame_silver"
 }

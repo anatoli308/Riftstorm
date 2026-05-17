@@ -16,17 +16,6 @@ namespace Riftstorm.Game.UI
         public static readonly Color BarTrack = new(0.10f, 0.10f, 0.12f, 1f);
         public static readonly Color SlotBackground = new(0.06f, 0.06f, 0.08f, 0.92f);
 
-        /// <summary>Wendet den dunklen Panel-Look mit gold-getoenter Border an.</summary>
-        public static void ApplyFramePanel(VisualElement frame)
-        {
-            frame.style.paddingTop = 8f;
-            frame.style.paddingBottom = 8f;
-            frame.style.paddingLeft = 10f;
-            frame.style.paddingRight = 10f;
-            frame.style.backgroundColor = new StyleColor(PanelBackground);
-            ApplyBorder(frame, AccentGold, 2f);
-        }
-
         /// <summary>Einheitliche Rahmenfarbe + -breite fuer alle vier Seiten.</summary>
         public static void ApplyBorder(VisualElement el, Color color, float width)
         {
