@@ -162,17 +162,18 @@ namespace Riftstorm.Game.UI
             root.Add(wrapper);
         }
 
+        private static readonly string[] BottomKeyBinds =
+        {
+            "Q", "W", "E", "R",
+            "1", "2", "3", "4",
+            "5", "6", "7", "8"
+        };
+
         private static string GetBottomKeyBind(int index)
         {
-            // 1,2,3,4,5,6,7,8,9,0,-,=  (WoW Default)
-            return index switch
-            {
-                < 9 => (index + 1).ToString(),
-                9 => "0",
-                10 => "-",
-                11 => "=",
-                _ => string.Empty,
-            };
+            return index >= 0 && index < BottomKeyBinds.Length
+                ? BottomKeyBinds[index]
+                : string.Empty;
         }
 
         // -------------------------------------------------------------------------

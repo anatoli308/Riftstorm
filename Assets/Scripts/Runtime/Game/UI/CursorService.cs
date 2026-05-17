@@ -94,19 +94,19 @@ namespace Riftstorm.Game.UI
         }
 
         /// <summary>
-        /// Erzeugt eine skalierte Kopie der Quell-Textur. Funktioniert ohne
-        /// <c>isReadable</c>, weil ueber einen RenderTexture-Blit kopiert wird.
-        /// Bei <paramref name="scale"/> = 1 wird die Original-Textur zurueckgegeben.
+        /// Liefert eine cursor-taugliche Kopie der Quell-Textur. Unity verlangt
+        /// fuer <see cref="CursorMode.ForceSoftware"/> zwingend RGBA32 +
+        /// readable + alphaIsTransparency + ohne Mip-Chain — Eigenschaften, die
+        /// importierte PNGs in der Regel nicht alle gleichzeitig erfuellen.
+        /// Deshalb wird die Textur immer ueber einen RenderTexture-Blit
+        /// normalisiert (auch bei <paramref name="scale"/> = 1), nie das
+        /// Original weitergereicht.
         /// </summary>
         private static Texture2D ResizeIfNeeded(Texture2D source, float scale)
         {
             if (source == null)
             {
                 return null;
-            }
-            if (Mathf.Approximately(scale, 1f))
-            {
-                return source;
             }
 
             int newWidth = Mathf.Max(1, Mathf.RoundToInt(source.width * scale));
@@ -123,7 +123,10 @@ namespace Riftstorm.Game.UI
                 {
                     filterMode = FilterMode.Bilinear,
                     wrapMode = TextureWrapMode.Clamp,
-                    name = source.name + "_Scaled"
+                    // Pflicht fuer CursorMode.ForceSoftware: Unity behandelt
+                    // sonst Alpha als regulaeren Kanal und warnt beim Apply.
+                    alphaIsTransparency = true,
+                    name = source.name + "_Cursor"
                 };
                 scaled.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
                 scaled.Apply(false, false);
