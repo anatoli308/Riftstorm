@@ -15,7 +15,7 @@ namespace Riftstorm.Game.Player
     /// f&#252;r Nametags / UI auswerten k&#246;nnen.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class PlayerIdentity : NetworkBehaviour
+    public sealed class PlayerIdentity : NetworkBehaviour, Riftstorm.Game.Combat.INameSource
     {
         private readonly NetworkVariable<FixedString32Bytes> m_DisplayName = new(
             value: default,

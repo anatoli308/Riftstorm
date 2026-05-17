@@ -47,6 +47,12 @@ class DirFrame:
     flip_v: bool
     blend: str
     fake: bool = False     # true when this direction is faked from the side view
+    # Per-frame collision boxes from the MUGEN .air file, in pixel coordinates
+    # relative to the sprite axis. Clsn1 = attack boxes, Clsn2 = hurt boxes.
+    # Each tuple is (x1, y1, x2, y2). For mirrored directions (W/NW/SW) the
+    # boxes are already x-flipped so consumers can use them as-is.
+    clsn1: list[tuple[int, int, int, int]] = field(default_factory=list)
+    clsn2: list[tuple[int, int, int, int]] = field(default_factory=list)
 
 
 @dataclass
@@ -159,6 +165,21 @@ def _build_direction(
         # pivot stays consistent.
         off_x = -f.x_off if extra_flip_h else f.x_off
 
+        # Mirror collision boxes horizontally for W/NW/SW so they line up with
+        # the mirrored sprite. (x1,y1,x2,y2) -> (-x2,y1,-x1,y2). Vertical mirror
+        # is defensive only; extra_flip_v is currently never true.
+        def _mirror(boxes: list[tuple[int, int, int, int]]) -> list[tuple[int, int, int, int]]:
+            if not boxes:
+                return []
+            result: list[tuple[int, int, int, int]] = []
+            for x1, y1, x2, y2 in boxes:
+                if extra_flip_h:
+                    x1, x2 = -x2, -x1
+                if extra_flip_v:
+                    y1, y2 = -y2, -y1
+                result.append((x1, y1, x2, y2))
+            return result
+
         out_frames.append(DirFrame(
             sprite_key=key,
             duration=duration,
@@ -168,6 +189,8 @@ def _build_direction(
             flip_v=f.flip_v ^ extra_flip_v,
             blend=f.blend,
             fake=fake,
+            clsn1=_mirror(list(f.clsn1)),
+            clsn2=_mirror(list(f.clsn2)),
         ))
 
     return DirAnimation(
@@ -205,6 +228,8 @@ def save_animations_json(
                                 "flipV": fr.flip_v,
                                 "blend": fr.blend,
                                 "fake": fr.fake,
+                                "attackBoxes": [list(b) for b in fr.clsn1],
+                                "hurtBoxes": [list(b) for b in fr.clsn2],
                             }
                             for fr in a.directions[d].frames
                         ],

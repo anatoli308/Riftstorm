@@ -162,7 +162,6 @@ MonoBehaviour:
   - {fileID: 12800000, guid: ea4563e8b5d239d4ea987bce740f5c3b, type: 3}
   - {fileID: 12800000, guid: bdb9b37795719324695e7a4fa7289af9, type: 3}
   - {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-  m_HoverHighlightShader: {fileID: 4800000, guid: becc516dc1f244c4a8d6fa881ba33835, type: 3}
 --- !u!4 &670913158
 Transform:
   m_ObjectHideFlags: 0

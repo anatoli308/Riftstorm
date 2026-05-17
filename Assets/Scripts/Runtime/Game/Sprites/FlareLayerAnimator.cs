@@ -24,6 +24,28 @@ namespace Riftstorm.Game.Sprites
         /// <summary>Aktuell abgespielte Animation (oder <c>null</c>).</summary>
         public FlareAnimation Current => m_Current;
 
+        /// <summary>
+        /// Der per <see cref="SetAtlas"/> zugewiesene Atlas. Read-only zugaenglich
+        /// fuer Tools/Test-Komponenten (z. B. <c>MugenAnimationShowcase</c>), die
+        /// alle verfuegbaren Animationsnamen enumerieren wollen, ohne die
+        /// MUGEN-Stats-JSON erneut zu parsen. Liefert <c>null</c>, bis
+        /// <see cref="SetAtlas"/> aufgerufen wurde.
+        /// </summary>
+        public FlareAtlas Atlas => m_Atlas;
+
+        /// <summary>
+        /// Aktuell sichtbarer Frame-Index der laufenden Animation (0..FramesCount-1).
+        /// Liefert <c>0</c>, wenn keine Animation läuft. Wird vom Combat-System
+        /// (<c>MugenHitboxRuntime</c>) gelesen, um die richtige Frame-Zelle für
+        /// Attack-/Hurt-Boxen zu finden.
+        /// </summary>
+        public int CurrentFrameIndex => m_Current != null ? ComputeFrameIndex() : 0;
+
+        /// <summary>
+        /// Aktuelle FLARE-Richtung (0..7), die zuletzt mit <see cref="SetDirection"/> gesetzt wurde.
+        /// </summary>
+        public int CurrentDirection => m_Direction;
+
         private void Awake()
         {
             m_Renderer = GetComponent<SpriteRenderer>();
@@ -118,6 +140,30 @@ namespace Riftstorm.Game.Sprites
             if (s != null && m_Renderer != null)
             {
                 m_Renderer.sprite = s;
+                // Per-Zelle Spiegelung: der Importer markiert W/NW/SW als flipH=true,
+                // damit der seitenansichts-MUGEN-Charakter nach links blickt.
+                bool flipX = false;
+                bool flipY = false;
+                bool[][] fh = m_Current.FlipH;
+                if (fh != null)
+                {
+                    bool[] fhRow = fh[frame];
+                    if (fhRow != null && m_Direction < fhRow.Length)
+                    {
+                        flipX = fhRow[m_Direction];
+                    }
+                }
+                bool[][] fv = m_Current.FlipV;
+                if (fv != null)
+                {
+                    bool[] fvRow = fv[frame];
+                    if (fvRow != null && m_Direction < fvRow.Length)
+                    {
+                        flipY = fvRow[m_Direction];
+                    }
+                }
+                m_Renderer.flipX = flipX;
+                m_Renderer.flipY = flipY;
             }
         }
 
@@ -128,37 +174,62 @@ namespace Riftstorm.Game.Sprites
             {
                 return 0;
             }
-            float t = m_Elapsed / m_Current.DurationSeconds;
+            float[] perFrame = m_Current.FrameDurations;
+            float total = m_Current.DurationSeconds;
             switch (m_Current.Type)
             {
                 case FlareAnimationType.Looped:
                 {
-                    float frac = t - Mathf.Floor(t);
-                    return Mathf.Clamp(Mathf.FloorToInt(frac * count), 0, count - 1);
+                    float local = m_Elapsed - Mathf.Floor(m_Elapsed / total) * total;
+                    return ResolveFrameByElapsed(local, perFrame, count, total);
                 }
                 case FlareAnimationType.PlayOnce:
                 {
-                    if (t >= 1f)
+                    if (m_Elapsed >= total)
                     {
                         m_Finished = true;
                         return count - 1;
                     }
-                    return Mathf.Clamp(Mathf.FloorToInt(t * count), 0, count - 1);
+                    return ResolveFrameByElapsed(m_Elapsed, perFrame, count, total);
                 }
                 case FlareAnimationType.BackForth:
                 default:
                 {
-                    // Hin und zurück: 2*(count-1) Schritte pro Zyklus.
-                    int span = (count - 1) * 2;
-                    if (span <= 0)
+                    // Hin und zurück: forward-Phase (total) + reverse-Phase (total) = 2*total.
+                    float cycle = 2f * total;
+                    float local = m_Elapsed - Mathf.Floor(m_Elapsed / cycle) * cycle;
+                    if (local <= total)
                     {
-                        return 0;
+                        return ResolveFrameByElapsed(local, perFrame, count, total);
                     }
-                    float cycle = t - Mathf.Floor(t);
-                    int idx = Mathf.FloorToInt(cycle * span);
-                    return idx < count ? idx : span - idx;
+                    int mirrored = ResolveFrameByElapsed(local - total, perFrame, count, total);
+                    return Mathf.Clamp(count - 1 - mirrored, 0, count - 1);
                 }
             }
+        }
+
+        /// <summary>
+        /// Findet den aktuellen Frame entweder per Per-Frame-Dauer (Prefix-Sum)
+        /// oder &#8212; falls keine Per-Frame-Daten vorliegen &#8212; per
+        /// gleichmäßiger Verteilung über die Gesamtdauer.
+        /// </summary>
+        private static int ResolveFrameByElapsed(float elapsed, float[] perFrame, int count, float total)
+        {
+            if (perFrame != null && perFrame.Length == count)
+            {
+                float acc = 0f;
+                for (int i = 0; i < count; i++)
+                {
+                    acc += perFrame[i];
+                    if (elapsed < acc)
+                    {
+                        return i;
+                    }
+                }
+                return count - 1;
+            }
+            float t = elapsed / total;
+            return Mathf.Clamp(Mathf.FloorToInt(t * count), 0, count - 1);
         }
     }
 }

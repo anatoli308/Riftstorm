@@ -102,7 +102,7 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            if (Player.PlayerNameTag.IsCacheStale(m_CachedRenderers))
+            if (Player.UnitNameTag.IsCacheStale(m_CachedRenderers))
             {
                 m_CachedRenderers = GetComponentsInChildren<Renderer>(includeInactive: false);
             }
@@ -183,7 +183,7 @@ namespace Riftstorm.Game.Combat
             else
             {
                 RefreshRenderersIfNeeded();
-                if (Player.PlayerNameTag.TryComputeWorldTop(m_CachedRenderers, cam, out Vector3 top))
+                if (Player.UnitNameTag.TryComputeWorldTop(m_CachedRenderers, cam, out Vector3 top))
                 {
                     baseWorld = top + m_WorldOffset;
                 }

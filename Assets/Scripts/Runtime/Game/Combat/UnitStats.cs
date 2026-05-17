@@ -49,6 +49,29 @@ namespace Riftstorm.Game.Combat
                  "Skillshots am Modellrand vorbei zischen. <=0 ⇒ Fallback HitRadius * 1.2.")]
         [SerializeField, Min(0f)] private float m_SelectionRadius = 0f;
 
+        [Header("Movement")]
+        [Tooltip("Geh-Geschwindigkeit in m/s. Wird vom AI/Movement-Layer als Default benutzt; " +
+                 "Status-Effekte (Slow/Haste) wirken multiplikativ darauf.")]
+        [SerializeField, Min(0f)] private float m_WalkSpeed = 0f;
+
+        [Tooltip("Lauf-Geschwindigkeit in m/s. 0 = Einheit kann nicht sprinten.")]
+        [SerializeField, Min(0f)] private float m_RunSpeed = 0f;
+
+        [Header("Reichweiten")]
+        [Tooltip("Melee-Reichweite in Metern (intrinsisch für diese Einheit, z. B. aus MUGEN " +
+                 "size.attack_dist). Waffen/Abilities können das pro Cast überschreiben.")]
+        [SerializeField, Min(0f)] private float m_AttackRange = 0f;
+
+        [Tooltip("Projektil-Reichweite in Metern (intrinsisch). 0 = die Einheit hat keine " +
+                 "Standard-Range-Attacke.")]
+        [SerializeField, Min(0f)] private float m_ProjectileRange = 0f;
+
+        [Header("Identität")]
+        [Tooltip("Anzeigename für Name-Tags, Target-Frame und Debug-Labels. Wird durch " +
+                 "ApplyBaseStats(..., displayName) überschrieben, sobald eine Datenquelle " +
+                 "(z. B. MUGEN <Atlas>.stats.json) etwas liefert.")]
+        [SerializeField] private string m_DisplayName = "";
+
         // -------------------------------------------------------------------------
         // Netzwerk-State
         // -------------------------------------------------------------------------
@@ -105,7 +128,22 @@ namespace Riftstorm.Game.Combat
         /// Inspector-Wert ≤ 0 ist.
         /// </summary>
         public float SelectionRadius => m_SelectionRadius > 0f ? m_SelectionRadius : m_HitRadius * 1.2f;
+        /// <summary>Geh-Geschwindigkeit dieser Einheit in m/s. Default 0 ⇒ stationär.</summary>
+        public float WalkSpeed => m_WalkSpeed;
 
+        /// <summary>Lauf-Geschwindigkeit dieser Einheit in m/s. Default 0 ⇒ kein Sprint.</summary>
+        public float RunSpeed => m_RunSpeed;
+
+        /// <summary>Intrinsische Melee-Reichweite in Metern. Waffen/Abilities können das überschreiben.</summary>
+        public float AttackRange => m_AttackRange;
+
+        /// <summary>Intrinsische Projektil-Reichweite in Metern. 0 ⇒ keine Standard-Range-Attacke.</summary>
+        public float ProjectileRange => m_ProjectileRange;
+
+        /// <summary>
+        /// Anzeigename für Name-Tags und UI. Nie <c>null</c> — leer wenn nicht gesetzt.
+        /// </summary>
+        public string DisplayName => m_DisplayName ?? "";
         // -------------------------------------------------------------------------
         // IDamageable
         // -------------------------------------------------------------------------
@@ -164,6 +202,78 @@ namespace Riftstorm.Game.Combat
                 {
                     Debug.LogException(ex, this);
                 }
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // Konfiguration (vor Netcode-Spawn)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Überschreibt die Base-Stats aus externen Daten (z. B. dem MUGEN-NPC-
+        /// Importer). Darf nur VOR <see cref="OnNetworkSpawn"/> aufgerufen
+        /// werden — danach wäre <see cref="m_CurrentHp"/> schon initialisiert
+        /// und die NetworkVariable würde inkonsistent zu <see cref="MaxHp"/>.
+        /// </summary>
+        /// <remarks>
+        /// Wird der Aufruf zu spät gemacht, wird er verworfen und geloggt.
+        /// Radius-, Speed- und Range-Parameter werden nur übernommen, wenn
+        /// &gt; 0 — so behalten Inspector-Defaults Vorrang, falls die Quelle
+        /// für ein Feld keinen Wert mitliefert. <paramref name="displayName"/>
+        /// wird nur gesetzt, wenn nicht-leer.
+        /// </remarks>
+        public void ApplyBaseStats(
+            int maxHp,
+            int maxMana,
+            int strength,
+            int armor,
+            float hitRadius,
+            float selectionRadius = 0f,
+            float walkSpeed = 0f,
+            float runSpeed = 0f,
+            float attackRange = 0f,
+            float projectileRange = 0f,
+            string displayName = null)
+        {
+            if (IsSpawned)
+            {
+                Debug.LogWarning(
+                    "[UnitStats] ApplyBaseStats nach OnNetworkSpawn ignoriert — " +
+                    "Stats müssen vor dem Netcode-Spawn gesetzt werden.", this);
+                return;
+            }
+
+            m_MaxHp = Mathf.Max(1, maxHp);
+            m_MaxMana = Mathf.Max(0, maxMana);
+            m_Strength = Mathf.Max(0, strength);
+            m_Armor = Mathf.Max(0, armor);
+            if (hitRadius > 0f)
+            {
+                m_HitRadius = hitRadius;
+            }
+            if (selectionRadius > 0f)
+            {
+                m_SelectionRadius = selectionRadius;
+            }
+            if (walkSpeed > 0f)
+            {
+                m_WalkSpeed = walkSpeed;
+            }
+            if (runSpeed > 0f)
+            {
+                m_RunSpeed = runSpeed;
+            }
+            if (attackRange > 0f)
+            {
+                m_AttackRange = attackRange;
+            }
+            if (projectileRange > 0f)
+            {
+                m_ProjectileRange = projectileRange;
+            }
+            if (!string.IsNullOrEmpty(displayName))
+            {
+                m_DisplayName = displayName;
             }
         }
 

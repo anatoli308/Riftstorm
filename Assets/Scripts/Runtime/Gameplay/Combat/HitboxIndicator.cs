@@ -45,7 +45,13 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
         private void Awake()
         {
             m_MatchStats = GetComponentInParent<IUnitStats>();
-            SyncRadius();
+            // SyncRadius bewusst NICHT hier &#8212; die Reihenfolge der Awakes auf
+            // demselben GameObject ist undefiniert. <see cref="MugenNpcSpawner.Awake"/>
+            // ueberschreibt <c>UnitStats.HitRadius</c> aus dem .stats.json-Sidecar;
+            // wenn HitboxIndicator zuerst Awakes, wuerde der Ring mit dem Prefab-
+            // Default-HitRadius gebaut. Deshalb lesen wir den Radius erst in
+            // <see cref="EnsureVisualBuilt"/> (in Start), wo garantiert alle
+            // Awakes durch sind.
         }
 
         private void Start()
@@ -55,6 +61,40 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
             // zwischen allen OnEnables und allen Starts).
             EnsureVisualBuilt();
             SetVisible(m_AlwaysVisible);
+        }
+
+        /// <summary>
+        /// Erlaubt es externen Systemen (Buffs, Stat-Reload, Skin-Wechsel), den
+        /// Indicator neu auf den aktuellen <c>UnitStats.HitRadius</c> auszurichten.
+        /// Zerstoert das alte Visual und baut es neu auf, damit der Sprite-
+        /// Durchmesser ueber <c>pixelsPerUnit</c> garantiert auf den neuen Radius
+        /// passt (eine reine Scale-Aenderung wuerde die Textur unscharf strecken).
+        /// </summary>
+        public void RefreshFromStats()
+        {
+            if (m_MatchStats == null)
+            {
+                m_MatchStats = GetComponentInParent<IUnitStats>();
+            }
+            float oldRadius = m_Radius;
+            SyncRadius();
+            if (!Mathf.Approximately(oldRadius, m_Radius) && m_QuadObject != null)
+            {
+                bool wasVisible = m_QuadObject.activeSelf;
+                if (m_QuadSprite != null)
+                {
+                    Destroy(m_QuadSprite);
+                    m_QuadSprite = null;
+                }
+                Destroy(m_QuadObject);
+                m_QuadObject = null;
+                m_QuadSpriteRenderer = null;
+                EnsureVisualBuilt();
+                if (m_QuadObject != null)
+                {
+                    m_QuadObject.SetActive(wasVisible);
+                }
+            }
         }
 
         /// <summary>
@@ -69,6 +109,10 @@ namespace Tolik.Riftstorm.Runtime.Gameplay.Combat
             {
                 return;
             }
+
+            // Radius spaet lesen, damit Stat-Overrides aus anderen Awakes
+            // (z. B. MugenNpcSpawner.ApplyBaseStats) bereits eingeflossen sind.
+            SyncRadius();
 
             Texture2D tex = SelectionIndicatorAssets.Texture;
             if (tex == null)

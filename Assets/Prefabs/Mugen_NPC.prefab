@@ -1,0 +1,369 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4202827403609520751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3519388808292282252}
+  - component: {fileID: 5698047555079004002}
+  - component: {fileID: 419060972265480556}
+  m_Layer: 6
+  m_Name: SelectionVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3519388808292282252
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4202827403609520751}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3309236812318278992}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &5698047555079004002
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4202827403609520751}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.24000001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &419060972265480556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4202827403609520751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a526f20aefefe1d44852e678a086fcc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.SelectionVolume
+--- !u!1 &4612604524881177412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6161049698072670990}
+  m_Layer: 6
+  m_Name: Nametag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6161049698072670990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4612604524881177412}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3309236812318278992}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8402131798557400275
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3309236812318278992}
+  - component: {fileID: 2715217544918991386}
+  - component: {fileID: 8017495681038946154}
+  - component: {fileID: 4497125842129984293}
+  - component: {fileID: 6693122788111950212}
+  - component: {fileID: 3360327736895923556}
+  - component: {fileID: 8717813752845166449}
+  - component: {fileID: -320519259901414207}
+  - component: {fileID: 3107836384333372714}
+  - component: {fileID: 1620231999163079171}
+  - component: {fileID: 529172793196704272}
+  - component: {fileID: 6830849283305998740}
+  m_Layer: 6
+  m_Name: Mugen_NPC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3309236812318278992
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3519388808292282252}
+  - {fileID: 6161049698072670990}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2715217544918991386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2225482905
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &8017495681038946154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82fdc0d34989ca4b8c197c6f343627e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.UnitStats
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_MaxHp: 100
+  m_MaxMana: 100
+  m_Strength: 5
+  m_Armor: 0
+  m_Level: 1
+  m_HitRadius: 0.2
+  m_SelectionRadius: 0
+  m_WalkSpeed: 0
+  m_RunSpeed: 0
+  m_AttackRange: 0
+  m_ProjectileRange: 0
+  m_DisplayName: 
+--- !u!114 &4497125842129984293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fbec907de02dfb4aaee84f7ddd01519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.MugenNpcSpawner
+  m_StreamingSubFolder: Custom_Characters/Mudpenis
+  m_AtlasName: Mudpenis
+  m_InitialAnimation: stance
+  m_InitialFlareDirection: 4
+  m_SortingOrder: 0
+  m_VisualEulerAngles: {x: 90, y: 0, z: 0}
+  m_ApplyStatsFromSidecar: 1
+--- !u!114 &6693122788111950212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14adc6ca51ad11646b3bfe01d65ae0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Gameplay::Tolik.Riftstorm.Runtime.Gameplay.Combat.TargetingHitbox
+  m_Radius: 0.4
+  m_Height: 1.8
+  m_Center: {x: 0, y: 0.9, z: 0}
+  m_IsTrigger: 1
+--- !u!114 &3360327736895923556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e28f5af0a487634c869ac1ce4c50594, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Gameplay::Tolik.Riftstorm.Runtime.Gameplay.Combat.HitboxIndicator
+  m_GroundOffset: 0.02
+  m_AlwaysVisible: 1
+--- !u!114 &8717813752845166449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd1cca1a2dee99348be270adb12b9a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.FloatingCombatText
+  m_Stats: {fileID: 8017495681038946154}
+  m_Anchor: {fileID: 3309236812318278992}
+  m_WorldOffset: {x: 0, y: 0.5, z: 0}
+  m_LifetimeSeconds: 1.1
+  m_RiseSpeed: 1.4
+  m_HorizontalJitter: 22
+  m_MaxActive: 16
+  m_FontSize: 18
+  m_MaxDistance: 50
+  m_HitColor: {r: 1, g: 0.92, b: 0.4, a: 1}
+  m_CritColor: {r: 1, g: 0.45, b: 0.2, a: 1}
+  m_MitigatedColor: {r: 0.8, g: 0.8, b: 0.85, a: 1}
+--- !u!114 &-320519259901414207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a78874b4979a54fbaea75c2f5c313f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcController
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_Stats: {fileID: 8017495681038946154}
+  m_Visuals: {fileID: 3107836384333372714}
+  m_Character: {fileID: 0}
+  m_HitboxRuntime: {fileID: 0}
+  m_AggroRadius: 8
+  m_DeaggroRadius: 12
+  m_TargetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_AttackCooldown: 1
+  m_AttackDamage: 5
+  m_RemoteSmoothTime: 0.1
+  m_AnimStance: stance
+  m_AnimRun: run
+  m_IncludeTriggers: 1
+  m_ShowGizmos: 1
+--- !u!114 &3107836384333372714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5472ab1e341c85a4abef67b03c86adb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.UnitCombatVisuals
+  m_Character: {fileID: 0}
+  m_AnimSwing: swing
+  m_AnimShoot: shoot
+  m_AnimCast: cast
+  m_AnimBlock: block
+  m_AnimHit: hit
+  m_AnimDie: die
+--- !u!114 &1620231999163079171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1c56cad9a48ab498fde89273e0b0d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcIdentity
+  m_Stats: {fileID: 8017495681038946154}
+--- !u!114 &529172793196704272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62dcd4d277115884db6f5c6399670be9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.UnitNameTag
+  m_IdentitySource: {fileID: 2715217544918991386}
+  m_Anchor: {fileID: 6161049698072670990}
+  m_HeadHeight: 1.2
+  m_WorldOffset: {x: 0, y: -2, z: 0.8}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FontSize: 14
+  m_MaxDistance: 50
+--- !u!114 &6830849283305998740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402131798557400275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68a158c52e3d21242856694f5bdc74d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcDebugVisualizer
+  m_Npc: {fileID: -320519259901414207}
+  m_VisibilityMaster: 1
+  m_ShowAggro: 1
+  m_ShowDeaggro: 1
+  m_ShowAttackRange: 1
+  m_Segments: 48
+  m_LineWidth: 0.04
+  m_GroundOffset: 0.02
+  m_AggroColor: {r: 0, g: 1, b: 0, a: 0.9}
+  m_DeaggroColor: {r: 1, g: 0.5, b: 0, a: 0.85}
+  m_AttackColor: {r: 1, g: 1, b: 0, a: 0.95}

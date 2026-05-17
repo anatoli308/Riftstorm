@@ -146,22 +146,88 @@ namespace Riftstorm.Game.Sprites
                     continue;
                 }
                 Sprite[][] sprites = new Sprite[ad.FramesCount][];
+                FlareCell[][] cells = new FlareCell[ad.FramesCount][];
+                bool[][] flipH = null;
+                bool[][] flipV = null;
+                bool anyFlipH = false;
+                bool anyFlipV = false;
                 for (int f = 0; f < ad.FramesCount && f < ad.Frames.Count; f++)
                 {
                     List<FlareCell> row = ad.Frames[f];
                     Sprite[] dirs = new Sprite[FlareDirection.Count];
+                    FlareCell[] cellRow = new FlareCell[FlareDirection.Count];
+                    bool[] rowFlipH = null;
+                    bool[] rowFlipV = null;
                     if (row != null && texture != null)
                     {
                         int n = Mathf.Min(FlareDirection.Count, row.Count);
                         for (int d = 0; d < n; d++)
                         {
-                            dirs[d] = BuildSprite(texture, textureHeight, row[d]);
+                            FlareCell cell = row[d];
+                            cellRow[d] = cell;
+                            dirs[d] = BuildSprite(texture, textureHeight, cell);
+                            if (cell != null && cell.FlipH)
+                            {
+                                rowFlipH ??= new bool[FlareDirection.Count];
+                                rowFlipH[d] = true;
+                                anyFlipH = true;
+                            }
+                            if (cell != null && cell.FlipV)
+                            {
+                                rowFlipV ??= new bool[FlareDirection.Count];
+                                rowFlipV[d] = true;
+                                anyFlipV = true;
+                            }
                         }
                     }
                     sprites[f] = dirs;
+                    cells[f] = cellRow;
+                    if (rowFlipH != null)
+                    {
+                        flipH ??= new bool[ad.FramesCount][];
+                        flipH[f] = rowFlipH;
+                    }
+                    if (rowFlipV != null)
+                    {
+                        flipV ??= new bool[ad.FramesCount][];
+                        flipV[f] = rowFlipV;
+                    }
                 }
-                float durationSeconds = Mathf.Max(0.001f, ad.DurationMs / 1000f);
-                animations[kvp.Key] = new FlareAnimation(kvp.Key, ad.Type, durationSeconds, sprites);
+                float[] frameDurations = null;
+                if (ad.FrameDurationsMs != null && ad.FrameDurationsMs.Length == ad.FramesCount)
+                {
+                    frameDurations = new float[ad.FramesCount];
+                    for (int f = 0; f < ad.FramesCount; f++)
+                    {
+                        int ms = ad.FrameDurationsMs[f];
+                        // Defensive: ein Tick als Minimum, damit Frame nicht "verschluckt" wird.
+                        frameDurations[f] = Mathf.Max(1f / 60f, ms / 1000f);
+                    }
+                }
+                float durationSeconds;
+                if (frameDurations != null)
+                {
+                    // Per-Frame-Dauer ist Wahrheitsquelle; DurationSeconds = Summe.
+                    float sum = 0f;
+                    for (int f = 0; f < frameDurations.Length; f++)
+                    {
+                        sum += frameDurations[f];
+                    }
+                    durationSeconds = Mathf.Max(0.001f, sum);
+                }
+                else
+                {
+                    durationSeconds = Mathf.Max(0.001f, ad.DurationMs / 1000f);
+                }
+                animations[kvp.Key] = new FlareAnimation(
+                    kvp.Key,
+                    ad.Type,
+                    durationSeconds,
+                    sprites,
+                    cells,
+                    anyFlipH ? flipH : null,
+                    anyFlipV ? flipV : null,
+                    frameDurations);
             }
 
             return new FlareAtlas(name, texture, animations);

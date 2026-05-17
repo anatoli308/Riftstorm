@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 2695336093515043885}
   - component: {fileID: -6858420798198050943}
   - component: {fileID: 2270049582356626853}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -201,6 +201,11 @@ MonoBehaviour:
   m_Level: 1
   m_HitRadius: 0.2
   m_SelectionRadius: 0
+  m_WalkSpeed: 0
+  m_RunSpeed: 0
+  m_AttackRange: 0
+  m_ProjectileRange: 0
+  m_DisplayName: 
 --- !u!114 &6273741711409788343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,7 +323,7 @@ MonoBehaviour:
   m_Input: {fileID: 3229784933833492351}
   m_TargetSelection: {fileID: 4317724205577696828}
   m_SelfStats: {fileID: 5708302143726135351}
-  m_Combat: {fileID: 0}
+  m_Combat: {fileID: -525944449724255899}
   m_Camera: {fileID: 0}
   m_MaxRayDistance: 200
   m_RaycastMask:
@@ -338,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 127a9437cd842c54990000c1466bf513, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerNameTag
-  m_Identity: {fileID: 1186222734823470071}
+  m_IdentitySource: {fileID: 1186222734823470071}
   m_Anchor: {fileID: 5634081016197058092}
   m_HeadHeight: 1.2
   m_WorldOffset: {x: 0, y: -2, z: 0.8}
@@ -354,7 +359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5634081016197058092}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Nametag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +392,7 @@ GameObject:
   - component: {fileID: 8562255069969653052}
   - component: {fileID: 6230382906803308275}
   - component: {fileID: 753316626033607580}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SelectionVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}

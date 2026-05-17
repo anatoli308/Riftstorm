@@ -291,3 +291,101 @@ Combat-System (siehe `04-animationen-combat.md`). MUGEN liefert nur:
 | Wo sind die Hitboxen? | `out/<char>/animations.json` → `frames[i].clsn2` |
 | Wie sieht ein Command-Eintrag aus? | `out/<char>/commands.json` |
 | Wo sind die WAVs? | `out/<char>/sounds/<group>_<sample>.wav` |
+
+---
+
+## 11. FLARE-Bridge — `mugen_to_flare.py`
+
+> **Status (Mai 2026): pausiert.** MUGEN-Import war ein explorativer Ansatz.
+> Wir bleiben zunächst bei nativen FLARE-Charakteren. Dieser Abschnitt
+> hält den Stand fest, damit der Faden später ohne Re-Entry-Cost wieder
+> aufgenommen werden kann.
+
+### 11.1 Zweck
+
+Konvertiert die Importer-Ausgabe (`animations.json` + `atlas.sprites.json`
++ optional `constants.json`/`char.json`/`states.json`) in das
+FLARE-Runtime-Format:
+
+```
+<char>/<char>.json         # FLARE-Atlas: animations + per-cell flipH
+<char>/<char>.stats.json   # Sidecar mit Combat-Stats + Provenance
+```
+
+Konsumiert direkt von `Assets/Scripts/Runtime/Game/Sprites/FlareAtlasLoader.cs`
+→ `FlareCharacter.SetDirection(int)` (Slot = `direction & 7`).
+
+### 11.2 Datei
+
+`Tools/Scripts/mugen_import/mugen_to_flare.py` (eigenständige CLI,
+keine Abhängigkeit zum Importer-Modul außer dessen JSON-Output).
+
+### 11.3 Direction-Modes
+
+| `--directions` | Verhalten | Wann nutzen |
+|---|---|---|
+| `2` (Default) | **2D-Side-View.** Nur E-Frames als Quelle; W/SW/NW (Slots 0/1/7) bekommen `flipH=true`, N/S/NE/SE bekommen die unflipped E-Frames. | Standard für alle MUGEN-Quellen (sind native 2D-Sidescroller). |
+| `8` (Legacy) | Pro Slot der MUGEN-Action-Nummer für diese Richtung lookup, Fallback auf E. | Nur falls eine MUGEN-Quelle tatsächlich N/S/Diagonal-Frames besitzt (extrem selten). |
+
+### 11.4 Warum 2-dir Default ist
+
+Der Legacy-8-dir-Modus produzierte **Dreh-/Rotations-Artefakte** beim
+Richtungswechsel: 5 unflipped Slots (N/S/E/NE/SE) + 3 flipped (W/SW/NW)
+ergaben inkonsistente Spiegelung, weil die MUGEN-Fake-Frames die gleichen
+E-Sprites waren — aber mal mit, mal ohne Flip.
+
+**Lehre:** Wenn die Quelle fundamental 2D ist, ist ehrliches L/R-Mirror
+besser als faken-mit-Lücken. FLARE-Runtime ändert sich dadurch nicht,
+weil der Per-Cell `flipH` schon der kanonische Mechanismus ist.
+
+### 11.5 Aufruf
+
+```powershell
+& 'C:\Program Files\LibreOffice\program\python.exe' `
+  'd:\Riftstorm\Tools\Scripts\mugen_import\mugen_to_flare.py' `
+  'd:\Riftstorm\Assets\StreamingAssets\Custom_Characters\Mudpenis' `
+  'd:\Riftstorm\Assets\StreamingAssets\Custom_Characters\Gallon'
+```
+
+(Default `--directions 2` greift automatisch.)
+
+### 11.6 Aktueller Stand der konvertierten Charaktere
+
+Stand: Mai 2026, beide neu mit `directions=2` geschrieben.
+
+| Character | Actions | Anim-Keys | Aliases | Skipped | Out-of-range | Dup-suffixed | Atlas-JSON |
+|---|---|---|---|---|---|---|---|
+| Mudpenis | 111 | 153 | 42 | 12 | 106 | 1 | 3.15 MB |
+| Gallon (Jon Talbain) | 460 | 512 | 52 | 53 | 300 | 6 | 5.32 MB |
+
+Stats-Sidecars unverändert (hp/mp/str/arm/scale/velocities/skills).
+Beide haben `"directions": 2` als Provenance-Marker.
+
+### 11.7 Konverter-Härtungen (über Sessions hinweg)
+
+- **Duplikat-Suffix** (`_b`, `_c`, …) für mehrfach belegte FLARE-Slots
+  statt stillem Überschreiben.
+- **Max-9999-Filter** für MUGEN-Actions außerhalb des FLARE-Index-Raums
+  (zählt als `out-of-range`).
+- **Frames-empty-guard** in `_build_animation` (Action ohne nutzbare
+  Frames → übersprungen, kein Crash).
+- **Stats-Sidecar** trägt Provenance (`directions`, ggf. Source-Charname).
+
+### 11.8 Showcase-Nutzbarkeit
+
+| Use-Case | Verdict |
+|---|---|
+| 2D-Arena / Bossfight | ✅ Sauber |
+| Billboard-Boss in 3D-Welt | ✅ Sauber |
+| Standard-Topdown-Mob (nicht-vertikale Kamera) | ⚠️ Visuell „okay", bleibt Side-View |
+| Echter Topdown von oben | ❌ Bleibt Platzhalter (siehe §6) |
+
+### 11.9 Wenn-wir-zurückkommen — offene Punkte
+
+- `NpcController.BindMugenStats(MugenCharacterStats)` ggf. entfernen
+  (war an alte Stats-Form gebunden, jetzt obsolet durch Sidecar).
+- `MugenAnimationShowcase` source-agnostic machen (FLARE-only Reader,
+  nicht mehr MUGEN-spezifisch).
+- Echte N/S-Diagonal-Frames für ausgewählte Chars manuell ergänzen, falls
+  ein MUGEN-Char als richtiger Topdown-Mob eingesetzt werden soll.
+
