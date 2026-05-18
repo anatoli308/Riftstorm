@@ -1,0 +1,620 @@
+{
+  "2": {
+    "entry": 2,
+    "item": 1020,
+    "lootId": 2,
+    "chance": 100,
+    "condition1": 14,
+    "condition1_value1": 103,
+    "condition1_value2": 1020,
+    "condition2": 0,
+    "condition2_value1": 0,
+    "condition1_true": 1
+  },
+  "35": {
+    "entry": 35,
+    "item": 1070,
+    "lootId": 26,
+    "chance": 70,
+    "condition1": 14,
+    "condition1_value1": 123,
+    "condition1_value2": 1070,
+    "condition1_true": 1
+  },
+  "36": {
+    "entry": 36,
+    "item": 1071,
+    "lootId": 26,
+    "chance": 100,
+    "condition1": 14,
+    "condition1_value1": 59,
+    "condition1_value2": 1071,
+    "condition1_true": 1
+  },
+  "37": {
+    "entry": 37,
+    "item": 1064,
+    "lootId": 22,
+    "chance": 75,
+    "condition1": 14,
+    "condition1_value1": 28,
+    "condition1_value2": 1064,
+    "condition1_true": 1
+  },
+  "38": {
+    "entry": 38,
+    "item": 1065,
+    "lootId": 23,
+    "chance": 75,
+    "condition1": 14,
+    "condition1_value1": 28,
+    "condition1_value2": 1065,
+    "condition1_true": 1
+  },
+  "39": {
+    "entry": 39,
+    "item": 1082,
+    "lootId": 1,
+    "chance": 100,
+    "condition1": 14,
+    "condition1_value1": 109,
+    "condition1_value2": 1082,
+    "condition1_true": 1
+  },
+  "40": {
+    "entry": 40,
+    "item": 1113,
+    "lootId": 3,
+    "chance": 100,
+    "condition1": 1,
+    "condition1_value1": 111,
+    "condition1_true": 1
+  },
+  "41": {
+    "entry": 41,
+    "item": 1114,
+    "lootId": 4,
+    "chance": 100,
+    "condition1": 1,
+    "condition1_value1": 111,
+    "condition1_true": 1
+  },
+  "42": {
+    "entry": 42,
+    "item": 1115,
+    "lootId": 5,
+    "chance": 100,
+    "condition1": 1,
+    "condition1_value1": 111,
+    "condition1_true": 1
+  },
+  "43": {
+    "entry": 43,
+    "item": 1116,
+    "lootId": 6,
+    "chance": 100,
+    "condition1": 1,
+    "condition1_value1": 111,
+    "condition1_true": 1
+  },
+  "44": {
+    "entry": 44,
+    "item": 1120,
+    "lootId": 7,
+    "chance": 7,
+    "count_min": 1,
+    "count_max": 1,
+    "condition1": 1,
+    "condition1_value1": 32,
+    "condition1_true": 1
+  },
+  "45": {
+    "entry": 45,
+    "item": 1041,
+    "lootId": 100,
+    "chance": 100
+  },
+  "46": {
+    "entry": 46,
+    "item": 1127,
+    "lootId": 30,
+    "chance": 100,
+    "count_min": 10,
+    "count_max": 10
+  },
+  "47": {
+    "entry": 47,
+    "item": 1131,
+    "lootId": 31,
+    "chance": 5,
+    "count_min": 1,
+    "count_max": 1,
+    "condition1": 0,
+    "condition1_value1": 0,
+    "condition1_value2": 0
+  },
+  "48": {
+    "entry": 48,
+    "item": 1129,
+    "lootId": 32,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "49": {
+    "entry": 49,
+    "item": 1135,
+    "lootId": 33,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1,
+    "condition1": 0,
+    "condition1_value1": 0,
+    "condition1_value2": 0,
+    "condition1_true": 0
+  },
+  "50": {
+    "entry": 50,
+    "item": 1130,
+    "lootId": 34,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "51": {
+    "entry": 51,
+    "item": 1128,
+    "lootId": 34,
+    "chance": 1,
+    "count_min": 2,
+    "count_max": 2
+  },
+  "52": {
+    "entry": 52,
+    "item": 1129,
+    "lootId": 34,
+    "chance": 100,
+    "count_min": 2,
+    "count_max": 2
+  },
+  "53": {
+    "entry": 53,
+    "item": 1136,
+    "lootId": 35,
+    "chance": 15,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "54": {
+    "entry": 54,
+    "item": 1127,
+    "lootId": 30,
+    "chance": 100,
+    "count_min": 10,
+    "count_max": 10
+  },
+  "55": {
+    "entry": 55,
+    "item": 1128,
+    "lootId": 13,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "56": {
+    "entry": 56,
+    "item": 1147,
+    "lootId": 50,
+    "chance": 100,
+    "count_min": 20,
+    "count_max": 20
+  },
+  "57": {
+    "entry": 57,
+    "item": 1148,
+    "lootId": 50,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 3
+  },
+  "58": {
+    "entry": 58,
+    "item": 1149,
+    "lootId": 50,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 3
+  },
+  "59": {
+    "entry": 59,
+    "item": 1150,
+    "lootId": 50,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 3
+  },
+  "60": {
+    "entry": 60,
+    "item": 1151,
+    "lootId": 50,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 3
+  },
+  "61": {
+    "entry": 61,
+    "item": 1152,
+    "lootId": 50,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 3
+  },
+  "62": {
+    "entry": 62,
+    "item": 920,
+    "lootId": 50,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 5
+  },
+  "63": {
+    "entry": 63,
+    "item": 921,
+    "lootId": 50,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 5
+  },
+  "64": {
+    "entry": 64,
+    "item": 922,
+    "lootId": 50,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 5
+  },
+  "65": {
+    "entry": 65,
+    "item": 923,
+    "lootId": 50,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 5
+  },
+  "67": {
+    "entry": 67,
+    "item": 1153,
+    "lootId": 13,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "69": {
+    "entry": 69,
+    "item": 1148,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "70": {
+    "entry": 70,
+    "item": 1149,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "71": {
+    "entry": 71,
+    "item": 1150,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "72": {
+    "entry": 72,
+    "item": 1151,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "73": {
+    "entry": 73,
+    "item": 1152,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "74": {
+    "entry": 74,
+    "item": 1144,
+    "lootId": 51,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "76": {
+    "entry": 76,
+    "item": 1130,
+    "lootId": 36,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "77": {
+    "entry": 77,
+    "item": 1128,
+    "lootId": 36,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 2
+  },
+  "78": {
+    "entry": 78,
+    "item": 1129,
+    "lootId": 36,
+    "chance": 100,
+    "count_min": 2,
+    "count_max": 2
+  },
+  "79": {
+    "entry": 79,
+    "item": 1154,
+    "lootId": 36,
+    "chance": 100,
+    "count_min": 4,
+    "count_max": 4
+  },
+  "80": {
+    "entry": 80,
+    "item": 1128,
+    "lootId": 37,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "81": {
+    "entry": 81,
+    "item": 1129,
+    "lootId": 37,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "84": {
+    "entry": 84,
+    "item": 1156,
+    "lootId": 32,
+    "chance": 100,
+    "count_min": 2,
+    "count_max": 2
+  },
+  "86": {
+    "entry": 86,
+    "item": 1154,
+    "lootId": 37,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "87": {
+    "entry": 87,
+    "item": 1127,
+    "lootId": 30,
+    "chance": 100,
+    "count_min": 10,
+    "count_max": 10
+  },
+  "88": {
+    "entry": 88,
+    "item": 1127,
+    "lootId": 30,
+    "chance": 100,
+    "count_min": 10,
+    "count_max": 10
+  },
+  "89": {
+    "entry": 89,
+    "item": 1128,
+    "lootId": 30,
+    "chance": 100,
+    "count_min": 3,
+    "count_max": 3
+  },
+  "91": {
+    "entry": 91,
+    "item": 931,
+    "lootId": 38,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "92": {
+    "entry": 92,
+    "item": 927,
+    "lootId": 38,
+    "chance": 100,
+    "count_min": 5,
+    "count_max": 5
+  },
+  "93": {
+    "entry": 93,
+    "item": 1130,
+    "lootId": 38,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "94": {
+    "entry": 94,
+    "item": 1154,
+    "lootId": 38,
+    "chance": 100,
+    "count_min": 2,
+    "count_max": 2
+  },
+  "95": {
+    "entry": 95,
+    "item": 1155,
+    "lootId": 37,
+    "chance": 100,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "97": {
+    "entry": 97,
+    "item": 1109,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "98": {
+    "entry": 98,
+    "item": 1099,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "99": {
+    "entry": 99,
+    "item": 1089,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "100": {
+    "entry": 100,
+    "item": 1094,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "101": {
+    "entry": 101,
+    "item": 1099,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "102": {
+    "entry": 102,
+    "item": 1104,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "103": {
+    "entry": 103,
+    "item": 1109,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "104": {
+    "entry": 104,
+    "item": 919,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "105": {
+    "entry": 105,
+    "item": 920,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "106": {
+    "entry": 106,
+    "item": 921,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "107": {
+    "entry": 107,
+    "item": 922,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "108": {
+    "entry": 108,
+    "item": 923,
+    "lootId": 39,
+    "chance": 50,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "109": {
+    "entry": 109,
+    "item": 1237,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "110": {
+    "entry": 110,
+    "item": 1152,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "111": {
+    "entry": 111,
+    "item": 1151,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "112": {
+    "entry": 112,
+    "item": 1150,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "113": {
+    "entry": 113,
+    "item": 1149,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "114": {
+    "entry": 114,
+    "item": 1148,
+    "lootId": 60,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  },
+  "116": {
+    "entry": 116,
+    "item": 1237,
+    "lootId": 61,
+    "chance": 1,
+    "count_min": 1,
+    "count_max": 1
+  }
+}

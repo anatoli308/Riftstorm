@@ -1,0 +1,1841 @@
+==============================================================================
+DB: c:\Users\anato\Downloads\steam-main\game.db
+  size: 3,960,832 bytes
+  total tables: 56
+  tables: affix_template, area_template, arena_template, combine_items, crafting_recipes, dialog, dungeon_template, gameobject, gameobject_models, gameobject_template, gossip, gossip_option, graveyard, item_dictionary, item_gems, item_orbs, item_potions_worldloot, item_template, loot, map, material_chance_armor, material_chance_weapon, model_info, npc, npc_ai, npc_announcer, npc_groups, npc_models, npc_models_junkloot, npc_sounds, npc_template, npc_vendor, npc_vendor_random, npc_waypoints, player_class_stats, player_create_item, player_create_known_waypoints, player_create_spell, player_desirable_armor, player_desirable_stats, player_exp_levels, quest_template, reserved_names, scripts, spell_conditions, spell_conditions_target, spell_template, spell_visual, spell_visual_kit, sprite_hotspot, sprite_light, sprite_proximity_sound, sprite_psi, teleport_names, world_texts, zone_template
+
+[PRIORITY TABLES]
+
+  === npc_template  rows=328 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 name                         varchar(48)    default=Unknown
+      2 subname                      varchar(48)    default=NULL
+      3 model_id                     int(10)        default=1
+      4 min_level                    int(10)        default=1
+      5 max_level                    int(10)        default=1
+      6 faction                      int(10)        default=1
+      7 model_scale                  INTEGER        default=100
+      8 leash_range                  INTEGER       
+      9 type                         int(10)        default=NULL
+     10 npc_flags                    int(10)        default=NULL
+     11 game_flags                   int(10)        default=NULL
+     12 gossip_menu_id               int(10)        default=NULL
+     13 movement_type                int(10)        default=NULL
+     14 path_id                      int(10)        default=NULL
+     15 ai_type                      int(10)        default=NULL
+     16 mechanic_immune_mask         INTEGER       
+     17 resistance_holy              int(10)        default=NULL
+     18 resistance_frost             int(10)        default=NULL
+     19 resistance_shadow            int(10)        default=NULL
+     20 resistance_fire              int(10)        default=NULL
+     21 strength                     INTEGER        default=0
+     22 agility                      INTEGER        default=0
+     23 intellect                    INTEGER        default=0
+     24 willpower                    INTEGER        default=0
+     25 courage                      INTEGER        default=0
+     26 armor                        int(10)        default=25 [NOT NULL]
+     27 health                       int(10)        default=-1 [NOT NULL]
+     28 mana                         int(10)        default=-1 [NOT NULL]
+     29 weapon_value                 int(10)        default=-1 [NOT NULL]
+     30 melee_skill                  INTEGER        default=-1
+     31 ranged_skill                 INTEGER        default=0
+     32 shield_skill                 INTEGER        default=0
+     33 ranged_weapon_value          INTEGER        default=0
+     34 melee_speed                  int(10)        default=2000 [NOT NULL]
+     35 ranged_speed                 int(10)        default=0
+     36 loot_green_chance            REAL           default=-1 [NOT NULL]
+     37 loot_blue_chance             REAL           default=-1 [NOT NULL]
+     38 loot_gold_chance             REAL           default=-1 [NOT NULL]
+     39 loot_purple_chance           REAL           default=-1 [NOT NULL]
+     40 portrait                     TEXT          
+     41 custom_loot                  INTEGER        default=-1 [NOT NULL]
+     42 custom_gold_ratio            INTEGER        default=-1 [NOT NULL]
+     43 bool_elite                   INTEGER       
+     44 bool_boss                    INTEGER       
+     45 spell_primary                INTEGER       
+     46 spell_1_id                   INTEGER       
+     47 spell_1_chance               INTEGER        default=30
+     48 spell_1_interval             INTEGER        default=1500
+     49 spell_1_cooldown             INTEGER       
+     50 spell_1_targetType           INTEGER       
+     51 spell_2_id                   INTEGER       
+     52 spell_2_chance               INTEGER        default=30
+     53 spell_2_interval             INTEGER        default=1500
+     54 spell_2_cooldown             INTEGER       
+     55 spell_2_targetType           INTEGER       
+     56 spell_3_id                   INTEGER       
+     57 spell_3_chance               INTEGER        default=30
+     58 spell_3_interval             INTEGER        default=1500
+     59 spell_3_cooldown             INTEGER       
+     60 spell_3_targetType           INTEGER       
+     61 spell_4_id                   INTEGER       
+     62 spell_4_chance               INTEGER       
+     63 spell_4_interval             INTEGER       
+     64 spell_4_cooldown             INTEGER       
+     65 spell_4_targetType           INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Lone Howler", "subname": "", "model_id": 53, "min_level": 6, "max_level": 7, "faction": 3, "model_scale": null, "leash_range": null, "type": 1, "npc_flags": 0, "game_flags": "", "gossip_menu_id": "", "movement_type": "", "path_id": "", "ai_type": "", "mechanic_immune_mask": null, "resistance_holy": "", "resistance_frost": "", "resistance_shadow": "", "resistance_fire": "", "strength": 0, "agility": 0, "intellect": 0, "willpower": 0, "courage": 0, "armor": 80, "health": -1, "mana": 0, "weapon_value": -1, "melee_skill": -1, "ranged_skill": 0, "shield_skill": null, "ranged_weapon_value": null, "melee_speed": 2000, "ranged_speed": 0, "loot_green_chance": -1.0, "loot_blue_chance": -1.0, "loot_gold_chance": -1.0, "loot_purple_chance": -1.0, "portrait": null, "custom_loot": -1, "custom_gold_ratio": -1, "bool_elite": null, "bool_boss": null, "spell_primary": null, "spell_1_id": 228, "spell_1_chance": 30, "spell_1_interval": 1300, "spell_1_cooldown": 30000, "spell_1_targetType": null, "spell_2_id": 229, "spell_2_chance": 30, "spell_2_interval": 1300, "spell_2_cooldown": 15000, "spell_2_targetType": null, "spell_3_id": null, "spell_3_chance": null, "spell_3_interval": null, "spell_3_cooldown": null, "spell_3_targetType": null, "spell_4_id": null, "spell_4_chance": null, "spell_4_interval": null, "spell_4_cooldown": null, "spell_4_targetType": null}
+
+  === npc_models  rows=93 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         varchar(48)    default=NULL
+      2 height                       INTEGER       
+  --- sample (1) ---
+    {"id": 1, "name": "antlion", "height": 50}
+
+  === npc_sounds  rows=233 ===
+      0 model                        TEXT           [PK]
+      1 event                        TEXT           [PK]
+      2 sound                        TEXT           [PK]
+  --- sample (1) ---
+    {"model": "antlion", "event": "damage", "sound": "varanus_voice_01_attack.ogg"}
+
+  === spell_template  rows=339 ===
+      0 entry                        INTEGER        [PK]
+      1 name                         varchar(30)    default=NULL
+      2 icon                         varchar(34)    default=NULL
+      3 description                  TEXT          
+      4 aura_description             TEXT          
+      5 mana_formula                 TEXT           default=NULL
+      6 mana_pct                     INTEGER       
+      7 effect1                      int(10)        default=NULL
+      8 effect2                      int(10)        default=NULL
+      9 effect3                      int(10)        default=NULL
+     10 effect1_data1                int(10)        default=NULL
+     11 effect2_data1                int(10)        default=NULL
+     12 effect3_data1                int(10)        default=NULL
+     13 effect1_data2                int(10)        default=NULL
+     14 effect2_data2                int(10)        default=NULL
+     15 effect3_data2                int(10)        default=NULL
+     16 effect1_data3                int(10)        default=NULL
+     17 effect2_data3                int(10)        default=NULL
+     18 effect3_data3                int(10)        default=NULL
+     19 effect1_targetType           int(10)        default=NULL
+     20 effect2_targetType           int(10)        default=NULL
+     21 effect3_targetType           int(10)        default=NULL
+     22 effect1_radius               int(10)        default=NULL
+     23 effect2_radius               int(10)        default=NULL
+     24 effect3_radius               int(10)        default=NULL
+     25 effect1_positive             int(10)        default=NULL
+     26 effect2_positive             int(10)        default=NULL
+     27 effect3_positive             int(10)        default=NULL
+     28 effect1_scale_formula        TEXT          
+     29 effect2_scale_formula        TEXT          
+     30 effect3_scale_formula        TEXT          
+     31 maxTargets                   INTEGER       
+     32 dispel                       int(10)        default=NULL
+     33 attributes                   int(10)        default=NULL
+     34 cast_time                    int(10)        default=NULL
+     35 cooldown                     int(10)        default=NULL
+     36 cooldown_category            INTEGER       
+     37 aura_interrupt_flags         int(10)        default=NULL
+     38 cast_interrupt_flags         int(10)        default=NULL
+     39 magic_roll_school            INTEGER       
+     40 duration                     int(10)        default=NULL
+     41 speed                        int(10)        default=NULL
+     42 prevention_type              int(10)        default=1
+     43 cast_school                  int(10)        default=1
+     44 range                        int(10)        default=NULL
+     45 stack_amount                 int(10)        default=NULL
+     46 required_equipment           INTEGER       
+     47 health_cost                  INTEGER       
+     48 health_pct_cost              INTEGER       
+     49 interval                     INTEGER       
+     50 activated_by_in              INTEGER       
+     51 activated_by_out             INTEGER       
+     52 duration_formula             TEXT          
+     53 abilities_tab                INTEGER       
+     54 reagent1                     int(10)        default=NULL
+     55 reagent2                     int(10)        default=NULL
+     56 reagent3                     int(10)        default=NULL
+     57 reagent4                     int(10)        default=NULL
+     58 reagent5                     int(10)        default=NULL
+     59 reagent_count1               int(10)        default=NULL
+     60 reagent_count2               int(10)        default=NULL
+     61 reagent_count3               int(10)        default=NULL
+     62 reagent_count4               int(10)        default=NULL
+     63 reagent_count5               int(10)        default=NULL
+     64 req_caster_mechanic          INTEGER       
+     65 req_tar_mechanic             INTEGER       
+     66 req_tar_aura                 INTEGER       
+     67 req_caster_aura              INTEGER       
+     68 stat_scale_1                 INTEGER       
+     69 stat_scale_2                 INTEGER       
+     70 can_level_up                 INTEGER       
+     71 range_min                    INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Wings of Freedom", "icon": "Blessing of Freedom.png", "description": "Removes and grants a friendly target immunity to effects that cause loss of control for $DUR.", "aura_description": "Immune to crowd control effects.", "mana_formula": "2+((clvl*20)/20)", "mana_pct": null, "effect1": 3, "effect2": null, "effect3": null, "effect1_data1": 12, "effect2_data1": null, "effect3_data1": null, "effect1_data2": 1517, "effect2_data2": null, "effect3_data2": null, "effect1_data3": 1, "effect2_data3": null, "effect3_data3": null, "effect1_targetType": 2, "effect2_targetType": null, "effect3_targetType": null, "effect1_radius": null, "effect2_radius": null, "effect3_radius": null, "effect1_positive": 1, "effect2_positive": null, "effect3_positive": null, "effect1_scale_formula": "", "effect2_scale_formula": "", "effect3_scale_formula": "", "maxTargets": null, "dispel": 0, "attributes": 0, "cast_time": 0, "cooldown": 60000, "cooldown_category": null, "aura_interrupt_flags": 0, "cast_interrupt_flags": 0, "magic_roll_school": 1, "duration": 1000, "speed": null, "prevention_type": 8208, "cast_school": 5, "range": 610, "stack_amount": null, "required_equipment": null, "health_cost": null, "health_pct_cost": null, "interval": null, "activated_by_in": null, "activated_by_out": null, "duration_formula": "value+(splvl*1000)", "abilities_tab": 1, "reagent1": null, "reagent2": null, "reagent3": null, "reagent4": null, "reagent5": null, "reagent_count1": null, "reagent_count2": null, "reagent_count3": null, "reagent_count4": null, "reagent_count5": null, "req_caster_mechanic": null, "req_tar_mechanic": null, "req_tar_aura": null, "req_caster_aura": null, "stat_scale_1": null, "stat_scale_2": null, "can_level_up": 1, "range_min": null}
+
+  === spell_visual  rows=340 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 traveling_kit                int(10)        default=NULL
+      2 impact_kit                   int(10)        default=NULL
+      3 casting_kit                  int(10)       
+      4 go_kit                       INTEGER       
+      5 aura_kit_ontop               int(10)        default=NULL
+      6 aura_kit_below               int(10)        default=NULL
+      7 unit_go_animation            INTEGER       
+      8 unit_cast_animation          INTEGER       
+      9 uca_speed                    REAL          
+     10 uca_freeze_frame             INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "traveling_kit": 0, "impact_kit": "", "casting_kit": null, "go_kit": null, "aura_kit_ontop": 3, "aura_kit_below": 138, "unit_go_animation": 6, "unit_cast_animation": 0, "uca_speed": null, "uca_freeze_frame": null}
+
+  === spell_visual_kit  rows=211 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 psystem                      varchar(48)    default=NULL
+      2 psystem_x                    int(10)        default=NULL
+      3 psystem_y                    int(10)        default=NULL
+      4 spranim                      varchar(48)    default=NULL
+      5 spranim_x                    int(10)        default=NULL
+      6 spranim_y                    int(10)        default=NULL
+      7 sprcolor                     bigint(11)     default="-1"
+      8 spranim_blend                bigint(11)     default="-1"
+      9 spranim_topmost              INTEGER       
+     10 spranim_2                    varchar(48)    default=NULL
+     11 spranim_x_2                  int(10)        default=NULL
+     12 spranim_y_2                  int(10)        default=NULL
+     13 sprcolor_2                   bigint(11)     default="-1"
+     14 spranim2_blend               INTEGER        default="-1"
+     15 spranim2_topmost             INTEGER       
+     16 sound                        varchar(48)    default=NULL
+     17 directional_spranim          varchar(48)   
+     18 directional_spranim_x        INTEGER       
+     19 directional_spranim_y        INTEGER       
+     20 ground_glow_color            bigint(11)     default=-1
+     21 unit_glow_color              bigint(11)     default=-1
+  --- sample (1) ---
+    {"id": 3, "psystem": null, "psystem_x": null, "psystem_y": null, "spranim": "magic_008d.sa", "spranim_x": 47, "spranim_y": 17, "sprcolor": -1, "spranim_blend": -1, "spranim_topmost": null, "spranim_2": "cast_007.sa", "spranim_x_2": 24, "spranim_y_2": "-heightp", "sprcolor_2": -1, "spranim2_blend": -1, "spranim2_topmost": 1, "sound": "e3_stereoskill_spell1.ogg", "directional_spranim": null, "directional_spranim_x": null, "directional_spranim_y": null, "ground_glow_color": 4294967167, "unit_glow_color": 4294967103}
+
+  === item_template  rows=17179 ===
+      0 entry                        INTEGER        [PK]
+      1 sort_entry                   INTEGER       
+      2 name                         varchar(48)    default=NULL
+      3 icon                         varchar(48)    default='reward-unknown.png' [NOT NULL]
+      4 icon_sound                   varchar(48)    default='item_def_robe.ogg' [NOT NULL]
+      5 model                        varchar(48)    default=NULL
+      6 required_level               int(11)        default=NULL
+      7 weapon_type                  int(11)        default=NULL
+      8 armor_type                   int(11)        default=NULL
+      9 equip_type                   int(11)        default=NULL
+     10 weapon_material              INTEGER       
+     11 num_sockets                  INTEGER       
+     12 quality                      int(11)        default=NULL
+     13 item_level                   INTEGER       
+     14 durability                   int(11)        default=NULL
+     15 sell_price                   int(11)        default=NULL
+     16 stack_count                  int(11)        default=1
+     17 required_class               INTEGER       
+     18 description                  INTEGER       
+     19 flags                        INTEGER       
+     20 quest_offer                  INTEGER       
+     21 spell_1                      int(11)        default=NULL
+     22 spell_2                      int(11)        default=NULL
+     23 spell_3                      int(11)        default=NULL
+     24 spell_4                      int(11)        default=NULL
+     25 spell_5                      int(11)        default=NULL
+     26 stat_type1                   int(11)        default=NULL
+     27 stat_value1                  int(11)        default=NULL
+     28 stat_type2                   int(11)        default=NULL
+     29 stat_value2                  int(11)        default=NULL
+     30 stat_type3                   int(11)        default=NULL
+     31 stat_value3                  int(11)        default=NULL
+     32 stat_type4                   int(11)        default=NULL
+     33 stat_value4                  int(11)        default=NULL
+     34 stat_type5                   int(11)        default=NULL
+     35 stat_value5                  int(11)        default=NULL
+     36 stat_type6                   int(11)        default=NULL
+     37 stat_value6                  int(11)        default=NULL
+     38 stat_type7                   int(11)        default=NULL
+     39 stat_value7                  int(11)        default=NULL
+     40 stat_type8                   int(11)        default=NULL
+     41 stat_value8                  int(11)        default=NULL
+     42 stat_type9                   int(11)        default=NULL
+     43 stat_value9                  int(11)        default=NULL
+     44 stat_type10                  int(11)        default=NULL
+     45 stat_value10                 int(11)        default=NULL
+     46 generated                    INTEGER       
+     47 buy_cost_ratio               INTEGER        default=3
+  --- sample (1) ---
+    {"entry": 1, "sort_entry": 1, "name": "Minor Life Potion", "icon": "icon_item_potion_hp02_1.png", "icon_sound": "item_gen_potion.ogg", "model": "0", "required_level": 1, "weapon_type": null, "armor_type": null, "equip_type": null, "weapon_material": null, "num_sockets": null, "quality": 2, "item_level": null, "durability": null, "sell_price": 5, "stack_count": 5, "required_class": null, "description": null, "flags": null, "quest_offer": null, "spell_1": 89, "spell_2": null, "spell_3": null, "spell_4": null, "spell_5": null, "stat_type1": 0, "stat_value1": null, "stat_type2": null, "stat_value2": null, "stat_type3": null, "stat_value3": null, "stat_type4": null, "stat_value4": null, "stat_type5": null, "stat_value5": null, "stat_type6": null, "stat_value6": null, "stat_type7": null, "stat_value7": null, "stat_type8": null, "stat_value8": null, "stat_type9": null, "stat_value9": null, "stat_type10": null, "stat_value10": null, "generated": 0, "buy_cost_ratio": 3}
+
+  === item_gems  rows=25 ===
+      0 gem_id                       INTEGER        [PK]
+      1 icon                         TEXT          
+      2 name                         INTEGER       
+      3 quality                      INTEGER       
+      4 stat_1                       INTEGER       
+      5 stat_1_amount                INTEGER       
+      6 stat_2                       INTEGER       
+      7 stat_2_amount                INTEGER       
+  --- sample (1) ---
+    {"gem_id": 1, "icon": "icon_item_enchantstone01.png", "name": "+1 Strength", "quality": 2, "stat_1": 4, "stat_1_amount": 1, "stat_2": null, "stat_2_amount": null}
+
+  === affix_template  rows=7145 ===
+      0 entry                        INTEGER        [PK]
+      1 name                         varchar(48)    default=NULL
+      2 name_single_noun             INTEGER       
+      3 min_level                    INTEGER       
+      4 max_level                    INTEGER       
+      5 stat_type1                   INTEGER       
+      6 stat_value1                  REAL          
+      7 stat_type2                   INTEGER       
+      8 stat_value2                  REAL          
+      9 stat_type3                   INTEGER       
+     10 stat_value3                  REAL          
+     11 stat_type4                   INTEGER       
+     12 stat_value4                  REAL          
+     13 stat_type5                   INTEGER       
+     14 stat_value5                  REAL          
+  --- sample (1) ---
+    {"entry": 7541, "name": "Novice", "name_single_noun": 1, "min_level": 1, "max_level": 5, "stat_type1": 1, "stat_value1": 2.0, "stat_type2": 0, "stat_value2": 0.0, "stat_type3": 0, "stat_value3": 0.0, "stat_type4": 0, "stat_value4": 0.0, "stat_type5": null, "stat_value5": null}
+
+  === gameobject_template  rows=96 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 name                         varchar(30)    default=NULL
+      2 type                         int(10)        default=NULL
+      3 flags                        INTEGER       
+      4 model                        int(10)       
+      5 required_quest               INTEGER       
+      6 required_item                INTEGER       
+      7 data1                        int(10)        default=NULL
+      8 data2                        int(10)        default=NULL
+      9 data3                        int(10)        default=NULL
+     10 data4                        int(10)        default=NULL
+     11 data5                        int(10)        default=NULL
+     12 data6                        int(10)        default=NULL
+     13 data7                        int(10)        default=NULL
+     14 data8                        int(10)        default=NULL
+     15 data9                        int(10)        default=NULL
+     16 data10                       int(10)        default=NULL
+     17 data11                       INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Aspen Chest", "type": 1, "flags": 9, "model": 1, "required_quest": null, "required_item": null, "data1": null, "data2": null, "data3": 3, "data4": 100, "data5": 12, "data6": 5, "data7": 1, "data8": 75, "data9": 75, "data10": 2, "data11": 0}
+
+  === gameobject_models  rows=26 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 name_closed                  varchar(48)    default=NULL
+      2 name_open                    varchar(48)   
+      3 anim_name_closed             varchar(48)   
+      4 anim_name_open               varchar(48)   
+      5 anim_closed_blend            INTEGER        default=-1 [NOT NULL]
+      6 anim_open_blend              INTEGER        default=-1 [NOT NULL]
+      7 anim_closed_offset_x         INTEGER       
+      8 anim_closed_offset_y         INTEGER       
+      9 anim_open_offset_x           INTEGER       
+     10 anim_open_offset_y           INTEGER       
+     11 sound_use                    TEXT          
+     12 sound_unlocked               TEXT          
+  --- sample (1) ---
+    {"id": 1, "name_closed": "tileset_cave_160.png", "name_open": "tileset_cave_176.png", "anim_name_closed": "", "anim_name_open": "", "anim_closed_blend": -1, "anim_open_blend": -1, "anim_closed_offset_x": null, "anim_closed_offset_y": null, "anim_open_offset_x": null, "anim_open_offset_y": null, "sound_use": "unlock.wav", "sound_unlocked": "open.wav"}
+
+  === gameobject  rows=353 ===
+      0 guid                         int(10)        [PK, NOT NULL]
+      1 entry                        int(10)        default=NULL
+      2 map                          int(10)        default=NULL
+      3 position_x                   float          default=NULL
+      4 position_y                   float          default=NULL
+      5 respawn                      int(10)        default=NULL
+      6 state                        int(10)        default=NULL
+  --- sample (1) ---
+    {"guid": 2, "entry": 2, "map": 1, "position_x": 60.5, "position_y": 66.5, "respawn": 60, "state": 1}
+
+  === quest_template  rows=14 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 name                         TEXT          
+      2 description                  TEXT          
+      3 objective                    TEXT          
+      4 offer_reward_text            TEXT          
+      5 min_level                    int(10)        default=NULL
+      6 flags                        int(10)        default=NULL
+      7 prev_quest1                  int(10)        default=NULL
+      8 prev_quest2                  INTEGER       
+      9 prev_quest3                  INTEGER       
+     10 explore_description          TEXT          
+     11 req_item1                    int(10)        default=NULL
+     12 req_item2                    int(10)        default=NULL
+     13 req_item3                    int(10)        default=NULL
+     14 req_item4                    int(10)        default=NULL
+     15 req_npc1                     int(10)        default=NULL
+     16 req_npc2                     int(10)        default=NULL
+     17 req_npc3                     int(10)        default=NULL
+     18 req_npc4                     int(10)        default=NULL
+     19 req_go1                      int(10)        default=NULL
+     20 req_go2                      int(10)        default=NULL
+     21 req_go3                      int(10)        default=NULL
+     22 req_go4                      int(10)        default=NULL
+     23 req_spell1                   int(10)        default=NULL
+     24 req_spell2                   int(10)        default=NULL
+     25 req_spell3                   int(10)        default=NULL
+     26 req_spell4                   int(10)        default=NULL
+     27 req_count1                   int(10)        default=NULL
+     28 req_count2                   int(10)        default=NULL
+     29 req_count3                   int(10)        default=NULL
+     30 req_count4                   int(10)        default=NULL
+     31 rew_choice1_item             int(10)        default=NULL
+     32 rew_choice2_item             int(10)        default=NULL
+     33 rew_choice3_item             int(10)        default=NULL
+     34 rew_choice4_item             int(10)        default=NULL
+     35 rew_choice1_count            int(10)        default=NULL
+     36 rew_choice2_count            int(10)        default=NULL
+     37 rew_choice3_count            int(10)        default=NULL
+     38 rew_choice4_count            int(10)        default=NULL
+     39 rew_item1                    int(10)        default=NULL
+     40 rew_item2                    int(10)        default=NULL
+     41 rew_item3                    int(10)        default=NULL
+     42 rew_item4                    int(10)        default=NULL
+     43 rew_item1_count              int(10)        default=NULL
+     44 rew_item2_count              int(10)        default=NULL
+     45 rew_item3_count              int(10)        default=NULL
+     46 rew_item4_count              int(10)        default=NULL
+     47 rew_pvp_points               int(10)        default=NULL
+     48 rew_money                    int(10)        default=NULL
+     49 rew_xp                       int(10)        default=NULL
+     50 start_script                 int(10)        default=NULL
+     51 complete_script              int(10)        default=NULL
+     52 start_npc_entry              INTEGER       
+     53 finish_npc_entry             INTEGER       
+     54 provided_item                INTEGER       
+  --- sample (1) ---
+    {"entry": 20, "name": "Not much help", "description": "I'm a little busy here, fella. I got nothin' for ya, but that priest down the road might.", "objective": "Find the Priest that Laudrus mentioned.", "offer_reward_text": "Ah, hello my child. What can I do for you?", "min_level": null, "flags": null, "prev_quest1": null, "prev_quest2": null, "prev_quest3": null, "explore_description": null, "req_item1": 0, "req_item2": null, "req_item3": null, "req_item4": null, "req_npc1": null, "req_npc2": null, "req_npc3": null, "req_npc4": null, "req_go1": null, "req_go2": null, "req_go3": null, "req_go4": null, "req_spell1": null, "req_spell2": null, "req_spell3": null, "req_spell4": null, "req_count1": 3, "req_count2": null, "req_count3": null, "req_count4": null, "rew_choice1_item": null, "rew_choice2_item": null, "rew_choice3_item": null, "rew_choice4_item": null, "rew_choice1_count": null, "rew_choice2_count": null, "rew_choice3_count": null, "rew_choice4_count": null, "rew_item1": null, "rew_item2": null, "rew_item3": null, "rew_item4": null, "rew_item1_count": null, "rew_item2_count": null, "rew_item3_count": null, "rew_item4_count": null, "rew_pvp_points": null, "rew_money": 0, "rew_xp": 10, "start_script": null, "complete_script": null, "start_npc_entry": 26, "finish_npc_entry": 67, "provided_item": null}
+
+  === gossip  rows=137 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 gossipId                     int(10)        [NOT NULL]
+      2 text                         TEXT           default=NULL
+      3 condition1                   int(10)        default=NULL
+      4 condition1_value1            int(10)        default=NULL
+      5 condition1_value2            int(10)        default=NULL
+      6 condition2                   int(10)        default=NULL
+      7 condition2_value1            int(10)        default=NULL
+      8 condition2_value2            int(10)        default=NULL
+      9 condition1_true              INTEGER       
+     10 condition2_true              INTEGER       
+     11 condition3_true              INTEGER       
+     12 condition3_value1            INTEGER       
+     13 condition3_value2            INTEGER       
+     14 condition3                   INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "gossipId": 1, "text": "Greetings, stranger. You startled me, but that's nothing new around here...", "condition1": 12, "condition1_value1": 20, "condition1_value2": null, "condition2": 0, "condition2_value1": 0, "condition2_value2": null, "condition1_true": 0, "condition2_true": null, "condition3_true": null, "condition3_value1": null, "condition3_value2": null, "condition3": null}
+
+  === gossip_option  rows=70 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 gossipId                     int(10)       
+      2 text                         TEXT          
+      3 required_npc_flag            int(10)        default="1"
+      4 click_new_gossip             int(10)        default=NULL
+      5 click_script                 int(10)        default=NULL
+      6 condition1                   int(10)        default=NULL
+      7 condition1_value1            int(10)        default=NULL
+      8 condition1_value2            int(10)        default=NULL
+      9 condition2                   int(10)        default=NULL
+     10 condition2_value1            int(10)        default=NULL
+     11 condition2_value2            int(10)        default=NULL
+     12 condition1_true              INTEGER       
+     13 condition2_true              INTEGER       
+     14 condition3_true              INTEGER       
+     15 condition3_value1            INTEGER       
+     16 condition3_value2            INTEGER       
+     17 condition3                   INTEGER       
+  --- sample (1) ---
+    {"entry": 2, "gossipId": 3, "text": "<Listen to the story>", "required_npc_flag": 1, "click_new_gossip": 4, "click_script": null, "condition1": 1, "condition1_value1": 22, "condition1_value2": null, "condition2": 3, "condition2_value1": 22, "condition2_value2": null, "condition1_true": 1, "condition2_true": null, "condition3_true": null, "condition3_value1": null, "condition3_value2": null, "condition3": null}
+
+  === zone_template  rows=36 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         INTEGER        default="Unknown"
+      2 type                         INTEGER        default=0
+      3 music                        TEXT          
+      4 ambience                     TEXT          
+      5 night_pct                    REAL          
+  --- sample (1) ---
+    {"id": 0, "name": "Unknown", "type": 0, "music": null, "ambience": null, "night_pct": null}
+
+  === area_template  rows=15 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         TEXT          
+      2 music                        TEXT          
+      3 ambience                     TEXT          
+  --- sample (1) ---
+    {"id": 1, "name": "Galdur's Tower", "music": null, "ambience": null}
+
+  === map  rows=13 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 name                         varchar(48)    default=NULL
+      2 music                        varchar(48)    default=NULL
+      3 ambience                     varchar(48)    default=NULL
+      4 los_vision                   INTEGER        default=1
+      5 start_x                      INTEGER       
+      6 start_y                      INTEGER       
+      7 start_o                      INTEGER       
+  --- sample (1) ---
+    {"id": 1, "name": "fanadin", "music": "ancient_city_ru-ambience.ogg,arabesque-ambience.ogg,moslan_forest-02.ogg,teobomos_town-01.ogg,teobomos_town-02.ogg,voice_from_the_ruins-02.ogg,markutan_aria-intro.ogg", "ambience": "ambient_wind_public_01st.ogg", "los_vision": 0, "start_x": 0, "start_y": null, "start_o": null}
+
+  === player_exp_levels  rows=25 ===
+      0 level                        INTEGER       
+      1 exp                          INTEGER       
+      2 kill_exp                     INTEGER       
+      3 name                         TEXT          
+  --- sample (1) ---
+    {"level": 1, "exp": 100, "kill_exp": 20, "name": ""}
+
+  === scripts  rows=25 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 scriptId                     INTEGER        default=NULL
+      2 delay                        INTEGER        default=NULL
+      3 command                      int(10)        default=NULL
+      4 data1                        float          default=NULL
+      5 data2                        float          default=NULL
+      6 data3                        float          default=NULL
+      7 data4                        float          default=NULL
+      8 data5                        float          default=NULL
+  --- sample (1) ---
+    {"entry": 1, "scriptId": 1, "delay": 0, "command": 2, "data1": 67.0, "data2": null, "data3": null, "data4": null, "data5": null}
+
+  === loot  rows=74 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 item                         int(10)       
+      2 lootId                       INTEGER       
+      3 chance                       int(10)        default=NULL
+      4 count_min                    int(10)        default=NULL
+      5 count_max                    int(10)        default=NULL
+      6 condition1                   int(10)        default=NULL
+      7 condition1_value1            int(10)        default=NULL
+      8 condition1_value2            int(10)        default=NULL
+      9 condition2                   int(10)        default=NULL
+     10 condition2_value1            int(10)        default=NULL
+     11 condition2_value2            int(10)        default=NULL
+     12 condition1_true              INTEGER       
+     13 condition2_true              INTEGER       
+  --- sample (1) ---
+    {"entry": 2, "item": 1020, "lootId": 2, "chance": 100, "count_min": null, "count_max": null, "condition1": 14, "condition1_value1": 103, "condition1_value2": 1020, "condition2": 0, "condition2_value1": 0, "condition2_value2": null, "condition1_true": 1, "condition2_true": null}
+
+  === npc_vendor  rows=178 ===
+      0 entry                        INTEGER        [PK]
+      1 npc_entry                    int(10)       
+      2 item                         int(10)       
+      3 max_count                    int(10)        default=NULL
+      4 restock_cooldown             int(10)        default=NULL
+  --- sample (1) ---
+    {"entry": 2, "npc_entry": 103, "item": 1, "max_count": "", "restock_cooldown": ""}
+
+  === npc_vendor_random  rows=507 ===
+      0 entry                        INTEGER        [PK]
+      1 npc_entry                    INTEGER       
+      2 min_level                    INTEGER       
+      3 max_level                    INTEGER       
+      4 equip_type                   INTEGER       
+      5 weapon_type                  INTEGER       
+      6 armor_preference             INTEGER       
+      7 green_chance                 INTEGER       
+      8 blue_chance                  INTEGER       
+      9 gold_chance                  INTEGER       
+     10 purple_chance                INTEGER       
+  --- sample (1) ---
+    {"entry": 59, "npc_entry": 56, "min_level": 2, "max_level": 3, "equip_type": 5, "weapon_type": null, "armor_preference": 1, "green_chance": 100, "blue_chance": null, "gold_chance": null, "purple_chance": 0}
+
+  === teleport_names  rows=12 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 name                         INTEGER       
+      2 target_x                     INTEGER       
+      3 target_y                     INTEGER       
+      4 target_mapId                 INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "HowlersValley", "target_x": 101, "target_y": 151, "target_mapId": 1}
+
+[OTHER TABLES]
+
+  === arena_template  rows=1 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 player_1_x                   int(10)        default=NULL
+      2 player_1_y                   int(10)        default=NULL
+      3 player_2_x                   int(10)        default=NULL
+      4 player_2_y                   int(10)        default=NULL
+      5 player_3_x                   int(10)        default=NULL
+      6 player_3_y                   int(10)        default=NULL
+      7 player_4_x                   int(10)        default=NULL
+      8 player_4_y                   int(10)        default=NULL
+      9 player_1_x_start             int(10)        default=NULL
+     10 player_1_y_start             int(10)        default=NULL
+     11 player_2_x_start             int(10)        default=NULL
+     12 player_2_y_start             int(10)        default=NULL
+     13 player_3_x_start             int(10)        default=NULL
+     14 player_3_y_start             int(10)        default=NULL
+     15 player_4_x_start             int(10)        default=NULL
+     16 player_4_y_start             int(10)        default=NULL
+  --- sample (1) ---
+    {"map": 4, "player_1_x": 17, "player_1_y": 61, "player_2_x": 17, "player_2_y": 58, "player_3_x": 58, "player_3_y": 17, "player_4_x": 61, "player_4_y": 17, "player_1_x_start": 21, "player_1_y_start": 54, "player_2_x_start": 24, "player_2_y_start": 57, "player_3_x_start": 53, "player_3_y_start": 22, "player_4_x_start": 56, "player_4_y_start": 25}
+
+  === combine_items  rows=1 ===
+      0 item_id                      INTEGER        [PK]
+      1 item_id_2                    INTEGER        [PK]
+      2 output_item                  INTEGER       
+  --- sample (1) ---
+    {"item_id": 1136, "item_id_2": 1135, "output_item": 1134}
+
+  === crafting_recipes  rows=162 ===
+      0 entry                        INTEGER        [PK]
+      1 result_item                  INTEGER        [NOT NULL]
+      2 result_count                 INTEGER        default=1
+      3 item1                        INTEGER       
+      4 item1_count                  INTEGER        default=1
+      5 item2                        INTEGER       
+      6 item2_count                  INTEGER        default=1
+      7 item3                        INTEGER       
+      8 item3_count                  INTEGER        default=1
+      9 item4                        INTEGER       
+     10 item4_count                  INTEGER        default=1
+     11 item5                        INTEGER       
+     12 item5_count                  INTEGER        default=1
+  --- sample (1) ---
+    {"entry": 1, "result_item": 926, "result_count": 1, "item1": 925, "item1_count": 5, "item2": null, "item2_count": 1, "item3": null, "item3_count": 1, "item4": null, "item4_count": 1, "item5": null, "item5_count": 1}
+
+  === dialog  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 text                         TEXT          
+      2 sound                        int(10)        default=NULL
+      3 type                         int(10)        default=NULL
+      4 comment                      varchar(128)   default=NULL
+
+  === dungeon_template  rows=8 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 max_players                  int(10)        default=NULL
+      2 required_level               int(10)        default=NULL
+      3 required_item                int(10)        default=NULL
+      4 required_quest               int(10)        default=NULL
+  --- sample (1) ---
+    {"map": 5, "max_players": 4, "required_level": 25, "required_item": null, "required_quest": null}
+
+  === graveyard  rows=0 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 respawn_map                  int(10)        default=NULL
+      2 respawn_x                    float          default=NULL
+      3 respawn_y                    float          default=NULL
+
+  === item_dictionary  rows=333 ===
+      0 icon                         TEXT          
+      1 sound                        TEXT          
+      2 model                        TEXT          
+      3 quality                      INTEGER       
+      4 weapon_type                  INTEGER       
+      5 armor_type                   INTEGER       
+      6 equip_type                   INTEGER       
+  --- sample (1) ---
+    {"icon": "icon_item_belt_c01.png", "sound": "item_acc_leather.ogg", "model": null, "quality": 2, "weapon_type": null, "armor_type": null, "equip_type": 4}
+
+  === item_orbs  rows=15 ===
+      0 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"item_entry": 924}
+
+  === item_potions_worldloot  rows=45 ===
+      0 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"item_entry": 1}
+
+  === material_chance_armor  rows=173 ===
+      0 level                        INTEGER        [PK]
+      1 armor_type                   INTEGER        [PK]
+      2 chance                       float         
+  --- sample (1) ---
+    {"level": 1, "armor_type": 2, "chance": 33.333332}
+
+  === material_chance_weapon  rows=98 ===
+      0 level                        INTEGER        [PK]
+      1 weapon_material              INTEGER        [PK]
+      2 chance                       float         
+  --- sample (1) ---
+    {"level": 1, "weapon_material": 1, "chance": 50.0}
+
+  === model_info  rows=1297 ===
+      0 script_name                  TEXT           [PK]
+      1 animation_id                 INTEGER        [PK]
+      2 duration_in_seconds          REAL          
+  --- sample (1) ---
+    {"script_name": "player_male_rod_grey", "animation_id": 0, "duration_in_seconds": 0.8}
+
+  === npc  rows=817 ===
+      0 guid                         int(10)        [PK, NOT NULL]
+      1 entry                        int(10)        default=NULL
+      2 map                          int(10)        default=NULL
+      3 position_x                   float          default=NULL
+      4 position_y                   float          default=NULL
+      5 orientation                  float          default=NULL
+      6 path_id                      int(10)        default=NULL
+      7 respawn_time                 int(10)        default="300"
+      8 movement_type                int(10)        default=NULL
+      9 wander_distance              int(10)        default="5"
+     10 death_state                  int(10)        default=NULL
+     11 call_for_help                int(10)        default="1"
+  --- sample (1) ---
+    {"guid": 5, "entry": 2, "map": 1, "position_x": 78.5, "position_y": 65.5, "orientation": 0.6, "path_id": null, "respawn_time": 5, "movement_type": 1, "wander_distance": 1, "death_state": null, "call_for_help": 1}
+
+  === npc_ai  rows=0 ===
+      0 event_guid                   int(11)        [PK, NOT NULL]
+      1 creature_entry               int(11)        default=NULL
+      2 event_type                   int(11)        default=NULL
+      3 event_chance                 REAL           default=NULL
+      4 event_data1                  int(11)        default=NULL
+      5 event_data2                  int(11)        default=NULL
+      6 action1_type                 int(11)        default=NULL
+      7 action1_data1                int(11)        default=NULL
+      8 action1_data2                int(11)        default=NULL
+      9 action1_data3                int(11)        default=NULL
+     10 action1_data4                int(11)        default=NULL
+     11 action_1_data5               INTEGER       
+     12 condition1                   int(11)        default=NULL
+     13 condition1_value1            int(11)        default=NULL
+     14 condition1_value2            int(11)        default=NULL
+     15 condition2                   int(11)        default=NULL
+     16 condition2_value1            int(11)        default=NULL
+     17 condition2_value2            int(11)        default=NULL
+     18 comment                      varchar(256)   default=NULL
+
+  === npc_announcer  rows=1 ===
+      0 guid                         INTEGER        [PK]
+  --- sample (1) ---
+    {"guid": 720}
+
+  === npc_groups  rows=0 ===
+      0 guid_leader                  int(10)        [PK, NOT NULL]
+      1 guid_member                  int(10)        default=NULL
+      2 distance                     float          default=NULL
+      3 angle                        float          default=NULL
+      4 ai                           int(10)        default=NULL
+      5 linked_respawn               tinyint(1)     default=NULL
+      6 linked_loot                  tinyint(1)     default=NULL
+
+  === npc_models_junkloot  rows=9125 ===
+      0 model_id                     INTEGER        [PK]
+      1 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"model_id": 55, "item_entry": 58}
+
+  === npc_waypoints  rows=0 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 point                        int(10)        default=NULL
+      2 position_x                   int(10)        default=NULL
+      3 position_y                   int(10)        default=NULL
+      4 orientation                  float          default=NULL
+      5 run                          int(10)        default=NULL
+      6 wait_time                    int(10)        default=NULL
+      7 script                       int(10)        default=NULL
+      8 comment                      varchar(48)    default=NULL
+
+  === player_class_stats  rows=100 ===
+      0 Class                        INTEGER       
+      1 Level                        INTEGER       
+      2 HP                           INTEGER       
+      3 Mana                         INTEGER       
+      4 Strength                     INTEGER       
+      5 Agility                      INTEGER       
+      6 Willpower                    INTEGER       
+      7 Intelligence                 INTEGER       
+      8 Courage                      INTEGER       
+      9 Staves                       INTEGER       
+     10 Maces                        INTEGER       
+     11 Axes                         INTEGER       
+     12 Swords                       INTEGER       
+     13 Ranged                       INTEGER       
+     14 Daggers                      INTEGER       
+     15 Wands                        INTEGER       
+     16 Shields                      INTEGER       
+  --- sample (1) ---
+    {"Class": 1, "Level": 1, "HP": 75, "Mana": 30, "Strength": 15, "Agility": 10, "Willpower": 5, "Intelligence": 5, "Courage": 15, "Staves": null, "Maces": null, "Axes": null, "Swords": null, "Ranged": null, "Daggers": null, "Wands": null, "Shields": null}
+
+  === player_create_item  rows=31 ===
+      0 class                        int(10)        [PK, NOT NULL]
+      1 item                         int(10)        [PK, NOT NULL]
+      2 count                        int(10)        default=NULL
+  --- sample (1) ---
+    {"class": 1, "item": 1, "count": 5}
+
+  === player_create_known_waypoints  rows=1 ===
+      0 entry                        INTEGER        [PK]
+      1 object_guid                  INTEGER        default=0
+  --- sample (1) ---
+    {"entry": 1, "object_guid": 126}
+
+  === player_create_spell  rows=28 ===
+      0 class                        int(10)        [PK, NOT NULL]
+      1 spell                        int(10)        [PK, NOT NULL]
+  --- sample (1) ---
+    {"class": 1, "spell": 81}
+
+  === player_desirable_armor  rows=547 ===
+      0 class_id                     INTEGER        [PK]
+      1 armor_type                   INTEGER        [PK]
+      2 level                        INTEGER        [PK]
+  --- sample (1) ---
+    {"class_id": 1, "armor_type": 2, "level": 1}
+
+  === player_desirable_stats  rows=72 ===
+      0 class_id                     INTEGER        [PK]
+      1 stat_id                      INTEGER        [PK]
+  --- sample (1) ---
+    {"class_id": 4, "stat_id": 1}
+
+  === reserved_names  rows=0 ===
+      0 str                          varchar(15)    [PK, NOT NULL]
+
+  === spell_conditions  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 type                         int(10)        default=NULL
+      2 value1                       int(10)        default=NULL
+      3 value2                       int(10)        default=NULL
+
+  === spell_conditions_target  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 type                         int(10)        default=NULL
+      2 value1                       int(10)        default=NULL
+      3 value2                       int(10)        default=NULL
+
+  === sprite_hotspot  rows=3352 ===
+      0 filename                     TEXT           [PK]
+      1 x_offset                     INTEGER       
+      2 y_offset                     INTEGER       
+  --- sample (1) ---
+    {"filename": "Acacia_bare.H05.png", "x_offset": 228, "y_offset": 286}
+
+  === sprite_light  rows=12 ===
+      0 filename                     TEXT           [PK]
+      1 color                        INTEGER       
+      2 x_offset                     INTEGER       
+      3 y_offset                     INTEGER       
+      4 intensity                    INTEGER       
+      5 bool_applyground             INTEGER       
+      6 bool_applytop                INTEGER       
+      7 scale                        float         
+  --- sample (1) ---
+    {"filename": "campfire_01.png", "color": 3797426888, "x_offset": 0, "y_offset": 16, "intensity": 100, "bool_applyground": 1, "bool_applytop": 0, "scale": 1.0}
+
+  === sprite_proximity_sound  rows=5 ===
+      0 filename                     TEXT           [PK]
+      1 sound                        TEXT          
+      2 radius                       REAL          
+  --- sample (1) ---
+    {"filename": "campfire_01.png", "sound": "fireplace.ogg", "radius": 4.0}
+
+  === sprite_psi  rows=20 ===
+      0 filename                     TEXT          
+      1 psi                          TEXT          
+      2 x_offset                     INTEGER       
+      3 y_offset                     INTEGER       
+  --- sample (1) ---
+    {"filename": "Building_01.png", "psi": "smoke_chimney_large.psi", "x_offset": 190, "y_offset": 12}
+
+  === world_texts  rows=1 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 string                       TEXT          
+  --- sample (1) ---
+    {"id": 1, "string": "Come, sit with me for a moment, $N."}
+==============================================================================
+DB: c:\Users\anato\Downloads\steam-main\source_server\game\game.db
+  size: 3,928,064 bytes
+  total tables: 56
+  tables: affix_template, area_template, arena_template, combine_items, crafting_recipes, dialog, dungeon_template, gameobject, gameobject_models, gameobject_template, gossip, gossip_option, graveyard, item_dictionary, item_gems, item_orbs, item_potions_worldloot, item_template, loot, map, material_chance_armor, material_chance_weapon, model_info, npc, npc_ai, npc_announcer, npc_groups, npc_models, npc_models_junkloot, npc_sounds, npc_template, npc_vendor, npc_vendor_random, npc_waypoints, player_class_stats, player_create_item, player_create_known_waypoints, player_create_spell, player_desirable_armor, player_desirable_stats, player_exp_levels, quest_template, reserved_names, scripts, spell_conditions, spell_conditions_target, spell_template, spell_visual, spell_visual_kit, sprite_hotspot, sprite_light, sprite_proximity_sound, sprite_psi, teleport_names, world_texts, zone_template
+
+[PRIORITY TABLES]
+
+  === npc_template  rows=317 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 name                         varchar(48)    default=Unknown
+      2 subname                      varchar(48)    default=NULL
+      3 model_id                     int(10)        default=1
+      4 min_level                    int(10)        default=1
+      5 max_level                    int(10)        default=1
+      6 faction                      int(10)        default=1
+      7 model_scale                  INTEGER        default=100
+      8 leash_range                  INTEGER       
+      9 type                         int(10)        default=NULL
+     10 npc_flags                    int(10)        default=NULL
+     11 game_flags                   int(10)        default=NULL
+     12 gossip_menu_id               int(10)        default=NULL
+     13 movement_type                int(10)        default=NULL
+     14 path_id                      int(10)        default=NULL
+     15 ai_type                      int(10)        default=NULL
+     16 mechanic_immune_mask         INTEGER       
+     17 resistance_holy              int(10)        default=NULL
+     18 resistance_frost             int(10)        default=NULL
+     19 resistance_shadow            int(10)        default=NULL
+     20 resistance_fire              int(10)        default=NULL
+     21 strength                     INTEGER        default=0
+     22 agility                      INTEGER        default=0
+     23 intellect                    INTEGER        default=0
+     24 willpower                    INTEGER        default=0
+     25 courage                      INTEGER        default=0
+     26 armor                        int(10)        default=25 [NOT NULL]
+     27 health                       int(10)        default=-1 [NOT NULL]
+     28 mana                         int(10)        default=-1 [NOT NULL]
+     29 weapon_value                 int(10)        default=-1 [NOT NULL]
+     30 melee_skill                  INTEGER        default=-1
+     31 ranged_skill                 INTEGER        default=0
+     32 shield_skill                 INTEGER        default=0
+     33 ranged_weapon_value          INTEGER        default=0
+     34 melee_speed                  int(10)        default=2000 [NOT NULL]
+     35 ranged_speed                 int(10)        default=0
+     36 loot_green_chance            REAL           default=-1 [NOT NULL]
+     37 loot_blue_chance             REAL           default=-1 [NOT NULL]
+     38 loot_gold_chance             REAL           default=-1 [NOT NULL]
+     39 loot_purple_chance           REAL           default=-1 [NOT NULL]
+     40 portrait                     TEXT          
+     41 custom_loot                  INTEGER        default=-1 [NOT NULL]
+     42 custom_gold_ratio            INTEGER        default=-1 [NOT NULL]
+     43 bool_elite                   INTEGER       
+     44 bool_boss                    INTEGER       
+     45 spell_primary                INTEGER       
+     46 spell_1_id                   INTEGER       
+     47 spell_1_chance               INTEGER        default=30
+     48 spell_1_interval             INTEGER        default=1500
+     49 spell_1_cooldown             INTEGER       
+     50 spell_1_targetType           INTEGER       
+     51 spell_2_id                   INTEGER       
+     52 spell_2_chance               INTEGER        default=30
+     53 spell_2_interval             INTEGER        default=1500
+     54 spell_2_cooldown             INTEGER       
+     55 spell_2_targetType           INTEGER       
+     56 spell_3_id                   INTEGER       
+     57 spell_3_chance               INTEGER        default=30
+     58 spell_3_interval             INTEGER        default=1500
+     59 spell_3_cooldown             INTEGER       
+     60 spell_3_targetType           INTEGER       
+     61 spell_4_id                   INTEGER       
+     62 spell_4_chance               INTEGER       
+     63 spell_4_interval             INTEGER       
+     64 spell_4_cooldown             INTEGER       
+     65 spell_4_targetType           INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Lone Howler", "subname": "", "model_id": 53, "min_level": 6, "max_level": 7, "faction": 3, "model_scale": null, "leash_range": null, "type": 1, "npc_flags": 0, "game_flags": "", "gossip_menu_id": "", "movement_type": "", "path_id": "", "ai_type": "", "mechanic_immune_mask": null, "resistance_holy": "", "resistance_frost": "", "resistance_shadow": "", "resistance_fire": "", "strength": 0, "agility": 0, "intellect": 0, "willpower": 0, "courage": 0, "armor": 80, "health": -1, "mana": 0, "weapon_value": -1, "melee_skill": -1, "ranged_skill": 0, "shield_skill": null, "ranged_weapon_value": null, "melee_speed": 2000, "ranged_speed": 0, "loot_green_chance": -1.0, "loot_blue_chance": -1.0, "loot_gold_chance": -1.0, "loot_purple_chance": -1.0, "portrait": null, "custom_loot": -1, "custom_gold_ratio": -1, "bool_elite": null, "bool_boss": null, "spell_primary": null, "spell_1_id": 228, "spell_1_chance": 30, "spell_1_interval": 1300, "spell_1_cooldown": 30000, "spell_1_targetType": null, "spell_2_id": 229, "spell_2_chance": 30, "spell_2_interval": 1300, "spell_2_cooldown": 15000, "spell_2_targetType": null, "spell_3_id": null, "spell_3_chance": null, "spell_3_interval": null, "spell_3_cooldown": null, "spell_3_targetType": null, "spell_4_id": null, "spell_4_chance": null, "spell_4_interval": null, "spell_4_cooldown": null, "spell_4_targetType": null}
+
+  === npc_models  rows=93 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         varchar(48)    default=NULL
+      2 height                       INTEGER       
+  --- sample (1) ---
+    {"id": 1, "name": "antlion", "height": 50}
+
+  === npc_sounds  rows=233 ===
+      0 model                        TEXT           [PK]
+      1 event                        TEXT           [PK]
+      2 sound                        TEXT           [PK]
+  --- sample (1) ---
+    {"model": "antlion", "event": "damage", "sound": "varanus_voice_01_attack.ogg"}
+
+  === spell_template  rows=319 ===
+      0 entry                        INTEGER        [PK]
+      1 name                         varchar(30)    default=NULL
+      2 icon                         varchar(34)    default=NULL
+      3 description                  TEXT          
+      4 aura_description             TEXT          
+      5 mana_formula                 TEXT           default=NULL
+      6 mana_pct                     INTEGER       
+      7 effect1                      int(10)        default=NULL
+      8 effect2                      int(10)        default=NULL
+      9 effect3                      int(10)        default=NULL
+     10 effect1_data1                int(10)        default=NULL
+     11 effect2_data1                int(10)        default=NULL
+     12 effect3_data1                int(10)        default=NULL
+     13 effect1_data2                int(10)        default=NULL
+     14 effect2_data2                int(10)        default=NULL
+     15 effect3_data2                int(10)        default=NULL
+     16 effect1_data3                int(10)        default=NULL
+     17 effect2_data3                int(10)        default=NULL
+     18 effect3_data3                int(10)        default=NULL
+     19 effect1_targetType           int(10)        default=NULL
+     20 effect2_targetType           int(10)        default=NULL
+     21 effect3_targetType           int(10)        default=NULL
+     22 effect1_radius               int(10)        default=NULL
+     23 effect2_radius               int(10)        default=NULL
+     24 effect3_radius               int(10)        default=NULL
+     25 effect1_positive             int(10)        default=NULL
+     26 effect2_positive             int(10)        default=NULL
+     27 effect3_positive             int(10)        default=NULL
+     28 effect1_scale_formula        TEXT          
+     29 effect2_scale_formula        TEXT          
+     30 effect3_scale_formula        TEXT          
+     31 maxTargets                   INTEGER       
+     32 dispel                       int(10)        default=NULL
+     33 attributes                   int(10)        default=NULL
+     34 cast_time                    int(10)        default=NULL
+     35 cooldown                     int(10)        default=NULL
+     36 cooldown_category            INTEGER       
+     37 aura_interrupt_flags         int(10)        default=NULL
+     38 cast_interrupt_flags         int(10)        default=NULL
+     39 magic_roll_school            INTEGER       
+     40 duration                     int(10)        default=NULL
+     41 speed                        int(10)        default=NULL
+     42 prevention_type              int(10)        default=1
+     43 cast_school                  int(10)        default=1
+     44 range                        int(10)        default=NULL
+     45 stack_amount                 int(10)        default=NULL
+     46 required_equipment           INTEGER       
+     47 health_cost                  INTEGER       
+     48 health_pct_cost              INTEGER       
+     49 interval                     INTEGER       
+     50 activated_by_in              INTEGER       
+     51 activated_by_out             INTEGER       
+     52 duration_formula             TEXT          
+     53 abilities_tab                INTEGER       
+     54 reagent1                     int(10)        default=NULL
+     55 reagent2                     int(10)        default=NULL
+     56 reagent3                     int(10)        default=NULL
+     57 reagent4                     int(10)        default=NULL
+     58 reagent5                     int(10)        default=NULL
+     59 reagent_count1               int(10)        default=NULL
+     60 reagent_count2               int(10)        default=NULL
+     61 reagent_count3               int(10)        default=NULL
+     62 reagent_count4               int(10)        default=NULL
+     63 reagent_count5               int(10)        default=NULL
+     64 req_caster_mechanic          INTEGER       
+     65 req_tar_mechanic             INTEGER       
+     66 req_tar_aura                 INTEGER       
+     67 req_caster_aura              INTEGER       
+     68 stat_scale_1                 INTEGER       
+     69 stat_scale_2                 INTEGER       
+     70 can_level_up                 INTEGER       
+     71 range_min                    INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Wings of Freedom", "icon": "Blessing of Freedom.png", "description": "Removes and grants a friendly target immunity to effects that cause loss of control for $DUR.", "aura_description": "Immune to crowd control effects.", "mana_formula": "2+((clvl*20)/20)", "mana_pct": null, "effect1": 3, "effect2": null, "effect3": null, "effect1_data1": 12, "effect2_data1": null, "effect3_data1": null, "effect1_data2": 1517, "effect2_data2": null, "effect3_data2": null, "effect1_data3": 1, "effect2_data3": null, "effect3_data3": null, "effect1_targetType": 2, "effect2_targetType": null, "effect3_targetType": null, "effect1_radius": null, "effect2_radius": null, "effect3_radius": null, "effect1_positive": 1, "effect2_positive": null, "effect3_positive": null, "effect1_scale_formula": "", "effect2_scale_formula": "", "effect3_scale_formula": "", "maxTargets": null, "dispel": 1, "attributes": 0, "cast_time": 0, "cooldown": 60000, "cooldown_category": null, "aura_interrupt_flags": 0, "cast_interrupt_flags": 0, "magic_roll_school": 1, "duration": 1000, "speed": null, "prevention_type": 8208, "cast_school": 5, "range": 610, "stack_amount": null, "required_equipment": null, "health_cost": null, "health_pct_cost": null, "interval": null, "activated_by_in": null, "activated_by_out": null, "duration_formula": "value+(splvl*1000)", "abilities_tab": 1, "reagent1": null, "reagent2": null, "reagent3": null, "reagent4": null, "reagent5": null, "reagent_count1": null, "reagent_count2": null, "reagent_count3": null, "reagent_count4": null, "reagent_count5": null, "req_caster_mechanic": null, "req_tar_mechanic": null, "req_tar_aura": null, "req_caster_aura": null, "stat_scale_1": null, "stat_scale_2": null, "can_level_up": 1, "range_min": null}
+
+  === spell_visual  rows=320 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 traveling_kit                int(10)        default=NULL
+      2 impact_kit                   int(10)        default=NULL
+      3 casting_kit                  int(10)       
+      4 go_kit                       INTEGER       
+      5 aura_kit_ontop               int(10)        default=NULL
+      6 aura_kit_below               int(10)        default=NULL
+      7 unit_go_animation            INTEGER       
+      8 unit_cast_animation          INTEGER       
+      9 uca_speed                    REAL          
+     10 uca_freeze_frame             INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "traveling_kit": 0, "impact_kit": 3, "casting_kit": null, "go_kit": null, "aura_kit_ontop": "", "aura_kit_below": 138, "unit_go_animation": 6, "unit_cast_animation": 0, "uca_speed": null, "uca_freeze_frame": null}
+
+  === spell_visual_kit  rows=208 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 psystem                      varchar(48)    default=NULL
+      2 psystem_x                    int(10)        default=NULL
+      3 psystem_y                    int(10)        default=NULL
+      4 spranim                      varchar(48)    default=NULL
+      5 spranim_x                    int(10)        default=NULL
+      6 spranim_y                    int(10)        default=NULL
+      7 sprcolor                     bigint(11)     default="-1"
+      8 spranim_blend                bigint(11)     default="-1"
+      9 spranim_topmost              INTEGER       
+     10 spranim_2                    varchar(48)    default=NULL
+     11 spranim_x_2                  int(10)        default=NULL
+     12 spranim_y_2                  int(10)        default=NULL
+     13 sprcolor_2                   bigint(11)     default="-1"
+     14 spranim2_blend               INTEGER        default="-1"
+     15 spranim2_topmost             INTEGER       
+     16 sound                        varchar(48)    default=NULL
+     17 directional_spranim          varchar(48)   
+     18 directional_spranim_x        INTEGER       
+     19 directional_spranim_y        INTEGER       
+     20 ground_glow_color            bigint(11)     default=-1
+     21 unit_glow_color              bigint(11)     default=-1
+  --- sample (1) ---
+    {"id": 3, "psystem": null, "psystem_x": null, "psystem_y": null, "spranim": "magic_008d.sa", "spranim_x": 47, "spranim_y": 17, "sprcolor": -1, "spranim_blend": 0, "spranim_topmost": null, "spranim_2": "cast_007.sa", "spranim_x_2": 24, "spranim_y_2": "-heightp", "sprcolor_2": -1, "spranim2_blend": -1, "spranim2_topmost": 1, "sound": "e3_stereoskill_spell1.ogg", "directional_spranim": null, "directional_spranim_x": null, "directional_spranim_y": null, "ground_glow_color": 4294967167, "unit_glow_color": 4294967103}
+
+  === item_template  rows=17083 ===
+      0 entry                        INTEGER        [PK]
+      1 sort_entry                   INTEGER       
+      2 name                         varchar(48)    default=NULL
+      3 icon                         varchar(48)    default='reward-unknown.png' [NOT NULL]
+      4 icon_sound                   varchar(48)    default='item_def_robe.ogg' [NOT NULL]
+      5 model                        varchar(48)    default=NULL
+      6 required_level               int(11)        default=NULL
+      7 weapon_type                  int(11)        default=NULL
+      8 armor_type                   int(11)        default=NULL
+      9 equip_type                   int(11)        default=NULL
+     10 weapon_material              INTEGER       
+     11 num_sockets                  INTEGER       
+     12 quality                      int(11)        default=NULL
+     13 item_level                   INTEGER       
+     14 durability                   int(11)        default=NULL
+     15 sell_price                   int(11)        default=NULL
+     16 stack_count                  int(11)        default=1
+     17 required_class               INTEGER       
+     18 description                  INTEGER       
+     19 flags                        INTEGER       
+     20 quest_offer                  INTEGER       
+     21 spell_1                      int(11)        default=NULL
+     22 spell_2                      int(11)        default=NULL
+     23 spell_3                      int(11)        default=NULL
+     24 spell_4                      int(11)        default=NULL
+     25 spell_5                      int(11)        default=NULL
+     26 stat_type1                   int(11)        default=NULL
+     27 stat_value1                  int(11)        default=NULL
+     28 stat_type2                   int(11)        default=NULL
+     29 stat_value2                  int(11)        default=NULL
+     30 stat_type3                   int(11)        default=NULL
+     31 stat_value3                  int(11)        default=NULL
+     32 stat_type4                   int(11)        default=NULL
+     33 stat_value4                  int(11)        default=NULL
+     34 stat_type5                   int(11)        default=NULL
+     35 stat_value5                  int(11)        default=NULL
+     36 stat_type6                   int(11)        default=NULL
+     37 stat_value6                  int(11)        default=NULL
+     38 stat_type7                   int(11)        default=NULL
+     39 stat_value7                  int(11)        default=NULL
+     40 stat_type8                   int(11)        default=NULL
+     41 stat_value8                  int(11)        default=NULL
+     42 stat_type9                   int(11)        default=NULL
+     43 stat_value9                  int(11)        default=NULL
+     44 stat_type10                  int(11)        default=NULL
+     45 stat_value10                 int(11)        default=NULL
+     46 generated                    INTEGER       
+     47 buy_cost_ratio               INTEGER        default=3
+  --- sample (1) ---
+    {"entry": 1, "sort_entry": 1, "name": "Minor Life Potion", "icon": "icon_item_potion_hp02_1.png", "icon_sound": "item_gen_potion.ogg", "model": "0", "required_level": 1, "weapon_type": null, "armor_type": null, "equip_type": null, "weapon_material": null, "num_sockets": null, "quality": 2, "item_level": null, "durability": null, "sell_price": 5, "stack_count": 5, "required_class": null, "description": null, "flags": null, "quest_offer": null, "spell_1": 89, "spell_2": null, "spell_3": null, "spell_4": null, "spell_5": null, "stat_type1": 0, "stat_value1": null, "stat_type2": null, "stat_value2": null, "stat_type3": null, "stat_value3": null, "stat_type4": null, "stat_value4": null, "stat_type5": null, "stat_value5": null, "stat_type6": null, "stat_value6": null, "stat_type7": null, "stat_value7": null, "stat_type8": null, "stat_value8": null, "stat_type9": null, "stat_value9": null, "stat_type10": null, "stat_value10": null, "generated": 0, "buy_cost_ratio": 3}
+
+  === item_gems  rows=15 ===
+      0 gem_id                       INTEGER        [PK]
+      1 icon                         TEXT          
+      2 name                         INTEGER       
+      3 quality                      INTEGER       
+      4 stat_1                       INTEGER       
+      5 stat_1_amount                INTEGER       
+      6 stat_2                       INTEGER       
+      7 stat_2_amount                INTEGER       
+  --- sample (1) ---
+    {"gem_id": 1, "icon": "icon_item_enchantstone01.png", "name": "+1 Strength", "quality": 2, "stat_1": 4, "stat_1_amount": 1, "stat_2": null, "stat_2_amount": null}
+
+  === affix_template  rows=7145 ===
+      0 entry                        INTEGER        [PK]
+      1 name                         varchar(48)    default=NULL
+      2 name_single_noun             INTEGER       
+      3 min_level                    INTEGER       
+      4 max_level                    INTEGER       
+      5 stat_type1                   INTEGER       
+      6 stat_value1                  REAL          
+      7 stat_type2                   INTEGER       
+      8 stat_value2                  REAL          
+      9 stat_type3                   INTEGER       
+     10 stat_value3                  REAL          
+     11 stat_type4                   INTEGER       
+     12 stat_value4                  REAL          
+     13 stat_type5                   INTEGER       
+     14 stat_value5                  REAL          
+  --- sample (1) ---
+    {"entry": 7541, "name": "Novice", "name_single_noun": 1, "min_level": 1, "max_level": 5, "stat_type1": 1, "stat_value1": 2.0, "stat_type2": 0, "stat_value2": 0.0, "stat_type3": 0, "stat_value3": 0.0, "stat_type4": 0, "stat_value4": 0.0, "stat_type5": null, "stat_value5": null}
+
+  === gameobject_template  rows=93 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 name                         varchar(30)    default=NULL
+      2 type                         int(10)        default=NULL
+      3 flags                        INTEGER       
+      4 model                        int(10)       
+      5 required_quest               INTEGER       
+      6 required_item                INTEGER       
+      7 data1                        int(10)        default=NULL
+      8 data2                        int(10)        default=NULL
+      9 data3                        int(10)        default=NULL
+     10 data4                        int(10)        default=NULL
+     11 data5                        int(10)        default=NULL
+     12 data6                        int(10)        default=NULL
+     13 data7                        int(10)        default=NULL
+     14 data8                        int(10)        default=NULL
+     15 data9                        int(10)        default=NULL
+     16 data10                       int(10)        default=NULL
+     17 data11                       INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "Aspen Chest", "type": 1, "flags": 9, "model": 1, "required_quest": null, "required_item": null, "data1": null, "data2": null, "data3": 3, "data4": 100, "data5": 12, "data6": 5, "data7": 1, "data8": 75, "data9": 75, "data10": 2, "data11": 0}
+
+  === gameobject_models  rows=26 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 name_closed                  varchar(48)    default=NULL
+      2 name_open                    varchar(48)   
+      3 anim_name_closed             varchar(48)   
+      4 anim_name_open               varchar(48)   
+      5 anim_closed_blend            INTEGER        default=-1 [NOT NULL]
+      6 anim_open_blend              INTEGER        default=-1 [NOT NULL]
+      7 anim_closed_offset_x         INTEGER       
+      8 anim_closed_offset_y         INTEGER       
+      9 anim_open_offset_x           INTEGER       
+     10 anim_open_offset_y           INTEGER       
+     11 sound_use                    TEXT          
+     12 sound_unlocked               TEXT          
+  --- sample (1) ---
+    {"id": 1, "name_closed": "tileset_cave_160.png", "name_open": "tileset_cave_176.png", "anim_name_closed": "", "anim_name_open": "", "anim_closed_blend": -1, "anim_open_blend": -1, "anim_closed_offset_x": null, "anim_closed_offset_y": null, "anim_open_offset_x": null, "anim_open_offset_y": null, "sound_use": "unlock.wav", "sound_unlocked": "open.wav"}
+
+  === gameobject  rows=335 ===
+      0 guid                         int(10)        [PK, NOT NULL]
+      1 entry                        int(10)        default=NULL
+      2 map                          int(10)        default=NULL
+      3 position_x                   float          default=NULL
+      4 position_y                   float          default=NULL
+      5 respawn                      int(10)        default=NULL
+      6 state                        int(10)        default=NULL
+  --- sample (1) ---
+    {"guid": 2, "entry": 2, "map": 1, "position_x": 60.5, "position_y": 66.5, "respawn": 60, "state": 1}
+
+  === quest_template  rows=14 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 name                         TEXT          
+      2 description                  TEXT          
+      3 objective                    TEXT          
+      4 offer_reward_text            TEXT          
+      5 min_level                    int(10)        default=NULL
+      6 flags                        int(10)        default=NULL
+      7 prev_quest1                  int(10)        default=NULL
+      8 prev_quest2                  INTEGER       
+      9 prev_quest3                  INTEGER       
+     10 explore_description          TEXT          
+     11 req_item1                    int(10)        default=NULL
+     12 req_item2                    int(10)        default=NULL
+     13 req_item3                    int(10)        default=NULL
+     14 req_item4                    int(10)        default=NULL
+     15 req_npc1                     int(10)        default=NULL
+     16 req_npc2                     int(10)        default=NULL
+     17 req_npc3                     int(10)        default=NULL
+     18 req_npc4                     int(10)        default=NULL
+     19 req_go1                      int(10)        default=NULL
+     20 req_go2                      int(10)        default=NULL
+     21 req_go3                      int(10)        default=NULL
+     22 req_go4                      int(10)        default=NULL
+     23 req_spell1                   int(10)        default=NULL
+     24 req_spell2                   int(10)        default=NULL
+     25 req_spell3                   int(10)        default=NULL
+     26 req_spell4                   int(10)        default=NULL
+     27 req_count1                   int(10)        default=NULL
+     28 req_count2                   int(10)        default=NULL
+     29 req_count3                   int(10)        default=NULL
+     30 req_count4                   int(10)        default=NULL
+     31 rew_choice1_item             int(10)        default=NULL
+     32 rew_choice2_item             int(10)        default=NULL
+     33 rew_choice3_item             int(10)        default=NULL
+     34 rew_choice4_item             int(10)        default=NULL
+     35 rew_choice1_count            int(10)        default=NULL
+     36 rew_choice2_count            int(10)        default=NULL
+     37 rew_choice3_count            int(10)        default=NULL
+     38 rew_choice4_count            int(10)        default=NULL
+     39 rew_item1                    int(10)        default=NULL
+     40 rew_item2                    int(10)        default=NULL
+     41 rew_item3                    int(10)        default=NULL
+     42 rew_item4                    int(10)        default=NULL
+     43 rew_item1_count              int(10)        default=NULL
+     44 rew_item2_count              int(10)        default=NULL
+     45 rew_item3_count              int(10)        default=NULL
+     46 rew_item4_count              int(10)        default=NULL
+     47 rew_pvp_points               int(10)        default=NULL
+     48 rew_money                    int(10)        default=NULL
+     49 rew_xp                       int(10)        default=NULL
+     50 start_script                 int(10)        default=NULL
+     51 complete_script              int(10)        default=NULL
+     52 start_npc_entry              INTEGER       
+     53 finish_npc_entry             INTEGER       
+     54 provided_item                INTEGER       
+  --- sample (1) ---
+    {"entry": 20, "name": "Not much help", "description": "I'm a little busy here, fella. I got nothin' for ya, but that priest down the road might.", "objective": "Find the Priest that Laudrus mentioned.", "offer_reward_text": "Ah, hello my child. What can I do for you?", "min_level": null, "flags": null, "prev_quest1": null, "prev_quest2": null, "prev_quest3": null, "explore_description": null, "req_item1": 0, "req_item2": null, "req_item3": null, "req_item4": null, "req_npc1": null, "req_npc2": null, "req_npc3": null, "req_npc4": null, "req_go1": null, "req_go2": null, "req_go3": null, "req_go4": null, "req_spell1": null, "req_spell2": null, "req_spell3": null, "req_spell4": null, "req_count1": 3, "req_count2": null, "req_count3": null, "req_count4": null, "rew_choice1_item": null, "rew_choice2_item": null, "rew_choice3_item": null, "rew_choice4_item": null, "rew_choice1_count": null, "rew_choice2_count": null, "rew_choice3_count": null, "rew_choice4_count": null, "rew_item1": null, "rew_item2": null, "rew_item3": null, "rew_item4": null, "rew_item1_count": null, "rew_item2_count": null, "rew_item3_count": null, "rew_item4_count": null, "rew_pvp_points": null, "rew_money": 0, "rew_xp": 10, "start_script": null, "complete_script": null, "start_npc_entry": 26, "finish_npc_entry": 67, "provided_item": null}
+
+  === gossip  rows=136 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 gossipId                     int(10)        [NOT NULL]
+      2 text                         TEXT           default=NULL
+      3 condition1                   int(10)        default=NULL
+      4 condition1_value1            int(10)        default=NULL
+      5 condition1_value2            int(10)        default=NULL
+      6 condition2                   int(10)        default=NULL
+      7 condition2_value1            int(10)        default=NULL
+      8 condition2_value2            int(10)        default=NULL
+      9 condition1_true              INTEGER       
+     10 condition2_true              INTEGER       
+     11 condition3_true              INTEGER       
+     12 condition3_value1            INTEGER       
+     13 condition3_value2            INTEGER       
+     14 condition3                   INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "gossipId": 1, "text": "Greetings, stranger. You startled me, but that's nothing new around here...", "condition1": 12, "condition1_value1": 20, "condition1_value2": null, "condition2": 0, "condition2_value1": 0, "condition2_value2": null, "condition1_true": 0, "condition2_true": null, "condition3_true": null, "condition3_value1": null, "condition3_value2": null, "condition3": null}
+
+  === gossip_option  rows=70 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 gossipId                     int(10)       
+      2 text                         TEXT          
+      3 required_npc_flag            int(10)        default="1"
+      4 click_new_gossip             int(10)        default=NULL
+      5 click_script                 int(10)        default=NULL
+      6 condition1                   int(10)        default=NULL
+      7 condition1_value1            int(10)        default=NULL
+      8 condition1_value2            int(10)        default=NULL
+      9 condition2                   int(10)        default=NULL
+     10 condition2_value1            int(10)        default=NULL
+     11 condition2_value2            int(10)        default=NULL
+     12 condition1_true              INTEGER       
+     13 condition2_true              INTEGER       
+     14 condition3_true              INTEGER       
+     15 condition3_value1            INTEGER       
+     16 condition3_value2            INTEGER       
+     17 condition3                   INTEGER       
+  --- sample (1) ---
+    {"entry": 2, "gossipId": 3, "text": "<Listen to the story>", "required_npc_flag": 1, "click_new_gossip": 4, "click_script": null, "condition1": 1, "condition1_value1": 22, "condition1_value2": null, "condition2": 3, "condition2_value1": 22, "condition2_value2": null, "condition1_true": 1, "condition2_true": null, "condition3_true": null, "condition3_value1": null, "condition3_value2": null, "condition3": null}
+
+  === zone_template  rows=33 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         INTEGER        default="Unknown"
+      2 type                         INTEGER        default=0
+      3 music                        TEXT          
+      4 ambience                     TEXT          
+      5 night_pct                    REAL          
+  --- sample (1) ---
+    {"id": 0, "name": "Unknown", "type": 0, "music": null, "ambience": null, "night_pct": null}
+
+  === area_template  rows=15 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 name                         TEXT          
+      2 music                        TEXT          
+      3 ambience                     TEXT          
+  --- sample (1) ---
+    {"id": 1, "name": "Galdur's Tower", "music": null, "ambience": null}
+
+  === map  rows=11 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 name                         varchar(48)    default=NULL
+      2 music                        varchar(48)    default=NULL
+      3 ambience                     varchar(48)    default=NULL
+      4 los_vision                   INTEGER        default=1
+      5 start_x                      INTEGER       
+      6 start_y                      INTEGER       
+      7 start_o                      INTEGER       
+  --- sample (1) ---
+    {"id": 1, "name": "fanadin", "music": "ancient_city_ru-ambience.ogg,arabesque-ambience.ogg,moslan_forest-02.ogg,teobomos_town-01.ogg,teobomos_town-02.ogg,voice_from_the_ruins-02.ogg,markutan_aria-intro.ogg", "ambience": "ambient_wind_public_01st.ogg", "los_vision": 0, "start_x": 0, "start_y": null, "start_o": null}
+
+  === player_exp_levels  rows=25 ===
+      0 level                        INTEGER       
+      1 exp                          INTEGER       
+      2 kill_exp                     INTEGER       
+      3 name                         TEXT          
+  --- sample (1) ---
+    {"level": 1, "exp": 100, "kill_exp": 20, "name": ""}
+
+  === scripts  rows=24 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 scriptId                     INTEGER        default=NULL
+      2 delay                        INTEGER        default=NULL
+      3 command                      int(10)        default=NULL
+      4 data1                        float          default=NULL
+      5 data2                        float          default=NULL
+      6 data3                        float          default=NULL
+      7 data4                        float          default=NULL
+      8 data5                        float          default=NULL
+  --- sample (1) ---
+    {"entry": 1, "scriptId": 1, "delay": 0, "command": 2, "data1": 67.0, "data2": null, "data3": null, "data4": null, "data5": null}
+
+  === loot  rows=22 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 item                         int(10)       
+      2 lootId                       INTEGER       
+      3 chance                       int(10)        default=NULL
+      4 count_min                    int(10)        default=NULL
+      5 count_max                    int(10)        default=NULL
+      6 condition1                   int(10)        default=NULL
+      7 condition1_value1            int(10)        default=NULL
+      8 condition1_value2            int(10)        default=NULL
+      9 condition2                   int(10)        default=NULL
+     10 condition2_value1            int(10)        default=NULL
+     11 condition2_value2            int(10)        default=NULL
+     12 condition1_true              INTEGER       
+     13 condition2_true              INTEGER       
+  --- sample (1) ---
+    {"entry": 2, "item": 1020, "lootId": 2, "chance": 100, "count_min": null, "count_max": null, "condition1": 14, "condition1_value1": 103, "condition1_value2": 1020, "condition2": 0, "condition2_value1": 0, "condition2_value2": null, "condition1_true": 1, "condition2_true": null}
+
+  === npc_vendor  rows=174 ===
+      0 entry                        INTEGER        [PK]
+      1 npc_entry                    int(10)       
+      2 item                         int(10)       
+      3 max_count                    int(10)        default=NULL
+      4 restock_cooldown             int(10)        default=NULL
+  --- sample (1) ---
+    {"entry": 2, "npc_entry": 103, "item": 1, "max_count": "", "restock_cooldown": ""}
+
+  === npc_vendor_random  rows=507 ===
+      0 entry                        INTEGER        [PK]
+      1 npc_entry                    INTEGER       
+      2 min_level                    INTEGER       
+      3 max_level                    INTEGER       
+      4 equip_type                   INTEGER       
+      5 weapon_type                  INTEGER       
+      6 armor_preference             INTEGER       
+      7 green_chance                 INTEGER       
+      8 blue_chance                  INTEGER       
+      9 gold_chance                  INTEGER       
+     10 purple_chance                INTEGER       
+  --- sample (1) ---
+    {"entry": 59, "npc_entry": 56, "min_level": 2, "max_level": 3, "equip_type": 5, "weapon_type": null, "armor_preference": 1, "green_chance": 100, "blue_chance": null, "gold_chance": null, "purple_chance": 0}
+
+  === teleport_names  rows=12 ===
+      0 entry                        INTEGER        [PK, NOT NULL]
+      1 name                         INTEGER       
+      2 target_x                     INTEGER       
+      3 target_y                     INTEGER       
+      4 target_mapId                 INTEGER       
+  --- sample (1) ---
+    {"entry": 1, "name": "HowlersValley", "target_x": 101, "target_y": 151, "target_mapId": 1}
+
+[OTHER TABLES]
+
+  === arena_template  rows=1 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 player_1_x                   int(10)        default=NULL
+      2 player_1_y                   int(10)        default=NULL
+      3 player_2_x                   int(10)        default=NULL
+      4 player_2_y                   int(10)        default=NULL
+      5 player_3_x                   int(10)        default=NULL
+      6 player_3_y                   int(10)        default=NULL
+      7 player_4_x                   int(10)        default=NULL
+      8 player_4_y                   int(10)        default=NULL
+      9 player_1_x_start             int(10)        default=NULL
+     10 player_1_y_start             int(10)        default=NULL
+     11 player_2_x_start             int(10)        default=NULL
+     12 player_2_y_start             int(10)        default=NULL
+     13 player_3_x_start             int(10)        default=NULL
+     14 player_3_y_start             int(10)        default=NULL
+     15 player_4_x_start             int(10)        default=NULL
+     16 player_4_y_start             int(10)        default=NULL
+  --- sample (1) ---
+    {"map": 4, "player_1_x": 17, "player_1_y": 61, "player_2_x": 17, "player_2_y": 58, "player_3_x": 58, "player_3_y": 17, "player_4_x": 61, "player_4_y": 17, "player_1_x_start": 21, "player_1_y_start": 54, "player_2_x_start": 24, "player_2_y_start": 57, "player_3_x_start": 53, "player_3_y_start": 22, "player_4_x_start": 56, "player_4_y_start": 25}
+
+  === combine_items  rows=1 ===
+      0 item_id                      INTEGER        [PK]
+      1 item_id_2                    INTEGER        [PK]
+      2 output_item                  INTEGER       
+  --- sample (1) ---
+    {"item_id": 1136, "item_id_2": 1135, "output_item": 1134}
+
+  === crafting_recipes  rows=40 ===
+      0 entry                        INTEGER        [PK]
+      1 result_item                  INTEGER        [NOT NULL]
+      2 result_count                 INTEGER        default=1
+      3 item1                        INTEGER       
+      4 item1_count                  INTEGER        default=1
+      5 item2                        INTEGER       
+      6 item2_count                  INTEGER        default=1
+      7 item3                        INTEGER       
+      8 item3_count                  INTEGER        default=1
+      9 item4                        INTEGER       
+     10 item4_count                  INTEGER        default=1
+     11 item5                        INTEGER       
+     12 item5_count                  INTEGER        default=1
+  --- sample (1) ---
+    {"entry": 1, "result_item": 926, "result_count": 1, "item1": 925, "item1_count": 5, "item2": null, "item2_count": 1, "item3": null, "item3_count": 1, "item4": null, "item4_count": 1, "item5": null, "item5_count": 1}
+
+  === dialog  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 text                         TEXT          
+      2 sound                        int(10)        default=NULL
+      3 type                         int(10)        default=NULL
+      4 comment                      varchar(128)   default=NULL
+
+  === dungeon_template  rows=5 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 max_players                  int(10)        default=NULL
+      2 required_level               int(10)        default=NULL
+      3 required_item                int(10)        default=NULL
+      4 required_quest               int(10)        default=NULL
+  --- sample (1) ---
+    {"map": 5, "max_players": 4, "required_level": 25, "required_item": null, "required_quest": null}
+
+  === graveyard  rows=0 ===
+      0 map                          int(10)        [PK, NOT NULL]
+      1 respawn_map                  int(10)        default=NULL
+      2 respawn_x                    float          default=NULL
+      3 respawn_y                    float          default=NULL
+
+  === item_dictionary  rows=333 ===
+      0 icon                         TEXT          
+      1 sound                        TEXT          
+      2 model                        TEXT          
+      3 quality                      INTEGER       
+      4 weapon_type                  INTEGER       
+      5 armor_type                   INTEGER       
+      6 equip_type                   INTEGER       
+  --- sample (1) ---
+    {"icon": "icon_item_belt_c01.png", "sound": "item_acc_leather.ogg", "model": null, "quality": 2, "weapon_type": null, "armor_type": null, "equip_type": 4}
+
+  === item_orbs  rows=15 ===
+      0 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"item_entry": 924}
+
+  === item_potions_worldloot  rows=45 ===
+      0 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"item_entry": 1}
+
+  === material_chance_armor  rows=173 ===
+      0 level                        INTEGER        [PK]
+      1 armor_type                   INTEGER        [PK]
+      2 chance                       float         
+  --- sample (1) ---
+    {"level": 1, "armor_type": 2, "chance": 33.333332}
+
+  === material_chance_weapon  rows=98 ===
+      0 level                        INTEGER        [PK]
+      1 weapon_material              INTEGER        [PK]
+      2 chance                       float         
+  --- sample (1) ---
+    {"level": 1, "weapon_material": 1, "chance": 50.0}
+
+  === model_info  rows=1297 ===
+      0 script_name                  TEXT           [PK]
+      1 animation_id                 INTEGER        [PK]
+      2 duration_in_seconds          REAL          
+  --- sample (1) ---
+    {"script_name": "player_male_rod_grey", "animation_id": 0, "duration_in_seconds": 0.8}
+
+  === npc  rows=744 ===
+      0 guid                         int(10)        [PK, NOT NULL]
+      1 entry                        int(10)        default=NULL
+      2 map                          int(10)        default=NULL
+      3 position_x                   float          default=NULL
+      4 position_y                   float          default=NULL
+      5 orientation                  float          default=NULL
+      6 path_id                      int(10)        default=NULL
+      7 respawn_time                 int(10)        default="300"
+      8 movement_type                int(10)        default=NULL
+      9 wander_distance              int(10)        default="5"
+     10 death_state                  int(10)        default=NULL
+     11 call_for_help                int(10)        default="1"
+  --- sample (1) ---
+    {"guid": 5, "entry": 2, "map": 1, "position_x": 78.5, "position_y": 65.5, "orientation": 0.6, "path_id": null, "respawn_time": 5, "movement_type": 1, "wander_distance": 1, "death_state": null, "call_for_help": 1}
+
+  === npc_ai  rows=0 ===
+      0 event_guid                   int(11)        [PK, NOT NULL]
+      1 creature_entry               int(11)        default=NULL
+      2 event_type                   int(11)        default=NULL
+      3 event_chance                 REAL           default=NULL
+      4 event_data1                  int(11)        default=NULL
+      5 event_data2                  int(11)        default=NULL
+      6 action1_type                 int(11)        default=NULL
+      7 action1_data1                int(11)        default=NULL
+      8 action1_data2                int(11)        default=NULL
+      9 action1_data3                int(11)        default=NULL
+     10 action1_data4                int(11)        default=NULL
+     11 action_1_data5               INTEGER       
+     12 condition1                   int(11)        default=NULL
+     13 condition1_value1            int(11)        default=NULL
+     14 condition1_value2            int(11)        default=NULL
+     15 condition2                   int(11)        default=NULL
+     16 condition2_value1            int(11)        default=NULL
+     17 condition2_value2            int(11)        default=NULL
+     18 comment                      varchar(256)   default=NULL
+
+  === npc_announcer  rows=1 ===
+      0 guid                         INTEGER        [PK]
+  --- sample (1) ---
+    {"guid": 720}
+
+  === npc_groups  rows=0 ===
+      0 guid_leader                  int(10)        [PK, NOT NULL]
+      1 guid_member                  int(10)        default=NULL
+      2 distance                     float          default=NULL
+      3 angle                        float          default=NULL
+      4 ai                           int(10)        default=NULL
+      5 linked_respawn               tinyint(1)     default=NULL
+      6 linked_loot                  tinyint(1)     default=NULL
+
+  === npc_models_junkloot  rows=9125 ===
+      0 model_id                     INTEGER        [PK]
+      1 item_entry                   INTEGER        [PK]
+  --- sample (1) ---
+    {"model_id": 55, "item_entry": 58}
+
+  === npc_waypoints  rows=0 ===
+      0 id                           int(10)        [PK, NOT NULL]
+      1 point                        int(10)        default=NULL
+      2 position_x                   int(10)        default=NULL
+      3 position_y                   int(10)        default=NULL
+      4 orientation                  float          default=NULL
+      5 run                          int(10)        default=NULL
+      6 wait_time                    int(10)        default=NULL
+      7 script                       int(10)        default=NULL
+      8 comment                      varchar(48)    default=NULL
+
+  === player_class_stats  rows=100 ===
+      0 Class                        INTEGER       
+      1 Level                        INTEGER       
+      2 HP                           INTEGER       
+      3 Mana                         INTEGER       
+      4 Strength                     INTEGER       
+      5 Agility                      INTEGER       
+      6 Willpower                    INTEGER       
+      7 Intelligence                 INTEGER       
+      8 Courage                      INTEGER       
+      9 Staves                       INTEGER       
+     10 Maces                        INTEGER       
+     11 Axes                         INTEGER       
+     12 Swords                       INTEGER       
+     13 Ranged                       INTEGER       
+     14 Daggers                      INTEGER       
+     15 Wands                        INTEGER       
+     16 Shields                      INTEGER       
+  --- sample (1) ---
+    {"Class": 1, "Level": 1, "HP": 75, "Mana": 30, "Strength": 15, "Agility": 10, "Willpower": 5, "Intelligence": 5, "Courage": 15, "Staves": null, "Maces": null, "Axes": null, "Swords": null, "Ranged": null, "Daggers": null, "Wands": null, "Shields": null}
+
+  === player_create_item  rows=31 ===
+      0 class                        int(10)        [PK, NOT NULL]
+      1 item                         int(10)        [PK, NOT NULL]
+      2 count                        int(10)        default=NULL
+  --- sample (1) ---
+    {"class": 1, "item": 1, "count": 5}
+
+  === player_create_known_waypoints  rows=1 ===
+      0 entry                        INTEGER        [PK]
+      1 object_guid                  INTEGER        default=0
+  --- sample (1) ---
+    {"entry": 1, "object_guid": 126}
+
+  === player_create_spell  rows=28 ===
+      0 class                        int(10)        [PK, NOT NULL]
+      1 spell                        int(10)        [PK, NOT NULL]
+  --- sample (1) ---
+    {"class": 1, "spell": 81}
+
+  === player_desirable_armor  rows=547 ===
+      0 class_id                     INTEGER        [PK]
+      1 armor_type                   INTEGER        [PK]
+      2 level                        INTEGER        [PK]
+  --- sample (1) ---
+    {"class_id": 1, "armor_type": 2, "level": 1}
+
+  === player_desirable_stats  rows=72 ===
+      0 class_id                     INTEGER        [PK]
+      1 stat_id                      INTEGER        [PK]
+  --- sample (1) ---
+    {"class_id": 4, "stat_id": 1}
+
+  === reserved_names  rows=0 ===
+      0 str                          varchar(15)    [PK, NOT NULL]
+
+  === spell_conditions  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 type                         int(10)        default=NULL
+      2 value1                       int(10)        default=NULL
+      3 value2                       int(10)        default=NULL
+
+  === spell_conditions_target  rows=0 ===
+      0 entry                        int(10)        [PK, NOT NULL]
+      1 type                         int(10)        default=NULL
+      2 value1                       int(10)        default=NULL
+      3 value2                       int(10)        default=NULL
+
+  === sprite_hotspot  rows=3352 ===
+      0 filename                     TEXT           [PK]
+      1 x_offset                     INTEGER       
+      2 y_offset                     INTEGER       
+  --- sample (1) ---
+    {"filename": "Acacia_bare.H05.png", "x_offset": 228, "y_offset": 286}
+
+  === sprite_light  rows=12 ===
+      0 filename                     TEXT           [PK]
+      1 color                        INTEGER       
+      2 x_offset                     INTEGER       
+      3 y_offset                     INTEGER       
+      4 intensity                    INTEGER       
+      5 bool_applyground             INTEGER       
+      6 bool_applytop                INTEGER       
+      7 scale                        float         
+  --- sample (1) ---
+    {"filename": "campfire_01.png", "color": 3797426888, "x_offset": 0, "y_offset": 16, "intensity": 100, "bool_applyground": 1, "bool_applytop": 0, "scale": 1.0}
+
+  === sprite_proximity_sound  rows=5 ===
+      0 filename                     TEXT           [PK]
+      1 sound                        TEXT          
+      2 radius                       REAL          
+  --- sample (1) ---
+    {"filename": "campfire_01.png", "sound": "fireplace.ogg", "radius": 4.0}
+
+  === sprite_psi  rows=20 ===
+      0 filename                     TEXT          
+      1 psi                          TEXT          
+      2 x_offset                     INTEGER       
+      3 y_offset                     INTEGER       
+  --- sample (1) ---
+    {"filename": "Building_01.png", "psi": "smoke_chimney_large.psi", "x_offset": 190, "y_offset": 12}
+
+  === world_texts  rows=1 ===
+      0 id                           INTEGER        [PK, NOT NULL]
+      1 string                       TEXT          
+  --- sample (1) ---
+    {"id": 1, "string": "Come, sit with me for a moment, $N."}
+==============================================================================
+DB: c:\Users\anato\Downloads\steam-main\source_server\Server\data\server.db
+  size: 217,088 bytes
+  total tables: 18
+  tables: accounts, character_actionbars, character_bank, character_cooldowns, character_equipment, character_inventory, character_mail, character_mail_items, character_quests, character_social, character_spells, character_stat_bonuses, characters, guild_bank, guild_members, guild_ranks, guilds, server_variables
+
+[PRIORITY TABLES]
+
+[OTHER TABLES]
+
+  === accounts  rows=3 ===
+      0 id                           INTEGER        [PK]
+      1 username                     TEXT           [NOT NULL]
+      2 password_hash                TEXT           [NOT NULL]
+      3 email                        TEXT          
+      4 created_at                   DATETIME       default=CURRENT_TIMESTAMP
+      5 last_login                   DATETIME      
+      6 banned_until                 DATETIME      
+      7 ban_reason                   TEXT          
+      8 is_gm                        INTEGER        default=0
+      9 failed_logins                INTEGER        default=0
+     10 last_failed_login            DATETIME      
+  --- sample (1) ---
+    {"id": 1, "username": "invtestone", "password_hash": "5QTKd7RNftwpPWpX:a2b5617918e86e3e", "email": null, "created_at": "2026-01-21 00:12:49", "last_login": "2026-01-21 00:12:49", "banned_until": null, "ban_reason": null, "is_gm": 0, "failed_logins": 0, "last_failed_login": null}
+
+  === character_actionbars  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 slot                         INTEGER        [PK, NOT NULL]
+      2 action_type                  INTEGER        [NOT NULL]
+      3 action_id                    INTEGER        [NOT NULL]
+
+  === character_bank  rows=0 ===
+      0 id                           INTEGER        [PK]
+      1 character_guid               INTEGER        [NOT NULL]
+      2 slot                         INTEGER        [NOT NULL]
+      3 item_id                      INTEGER        [NOT NULL]
+      4 stack_count                  INTEGER        default=1
+      5 durability                   INTEGER        default=100
+      6 enchant_id                   INTEGER        default=0
+
+  === character_cooldowns  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 spell_id                     INTEGER        [PK, NOT NULL]
+      2 cooldown_end                 DATETIME       [NOT NULL]
+
+  === character_equipment  rows=1 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 slot                         INTEGER        [PK, NOT NULL]
+      2 item_id                      INTEGER        [NOT NULL]
+      3 durability                   INTEGER        default=100
+      4 enchant_id                   INTEGER        default=0
+      5 affix1                       INTEGER        default=0
+      6 affix2                       INTEGER        default=0
+      7 gem1                         INTEGER        default=0
+      8 gem2                         INTEGER        default=0
+      9 gem3                         INTEGER        default=0
+  --- sample (1) ---
+    {"character_guid": 1, "slot": 11, "item_id": 14, "durability": 40, "enchant_id": 0, "affix1": 0, "affix2": 0, "gem1": 0, "gem2": 0, "gem3": 0}
+
+  === character_inventory  rows=5 ===
+      0 id                           INTEGER        [PK]
+      1 character_guid               INTEGER        [NOT NULL]
+      2 slot                         INTEGER        [NOT NULL]
+      3 item_id                      INTEGER        [NOT NULL]
+      4 stack_count                  INTEGER        default=1
+      5 durability                   INTEGER        default=100
+      6 enchant_id                   INTEGER        default=0
+      7 flags                        INTEGER        default=0
+  --- sample (1) ---
+    {"id": 6, "character_guid": 2, "slot": 0, "item_id": 13, "stack_count": 1, "durability": 40, "enchant_id": 0, "flags": 0}
+
+  === character_mail  rows=0 ===
+      0 id                           INTEGER        [PK]
+      1 sender_guid                  INTEGER        [NOT NULL]
+      2 receiver_guid                INTEGER        [NOT NULL]
+      3 subject                      TEXT           [NOT NULL]
+      4 body                         TEXT           default=''
+      5 gold                         INTEGER        default=0
+      6 sent_at                      DATETIME       default=CURRENT_TIMESTAMP
+      7 expires_at                   DATETIME      
+      8 is_read                      INTEGER        default=0
+      9 has_attachment               INTEGER        default=0
+
+  === character_mail_items  rows=0 ===
+      0 mail_id                      INTEGER        [PK, NOT NULL]
+      1 slot                         INTEGER        [PK, NOT NULL]
+      2 item_id                      INTEGER        [NOT NULL]
+      3 stack_count                  INTEGER        default=1
+
+  === character_quests  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 quest_id                     INTEGER        [PK, NOT NULL]
+      2 status                       INTEGER        default=0 [NOT NULL]
+      3 progress                     TEXT          
+      4 accepted_at                  DATETIME       default=CURRENT_TIMESTAMP
+      5 completed_at                 DATETIME      
+
+  === character_social  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 friend_guid                  INTEGER        [PK, NOT NULL]
+      2 flags                        INTEGER        default=0
+      3 note                         TEXT           default=''
+
+  === character_spells  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 spell_id                     INTEGER        [PK, NOT NULL]
+      2 rank                         INTEGER        default=1
+      3 learned_at                   DATETIME       default=CURRENT_TIMESTAMP
+
+  === character_stat_bonuses  rows=0 ===
+      0 character_guid               INTEGER        [PK, NOT NULL]
+      1 stat_id                      INTEGER        [PK, NOT NULL]
+      2 bonus                        INTEGER        [NOT NULL]
+
+  === characters  rows=3 ===
+      0 guid                         INTEGER        [PK]
+      1 account_id                   INTEGER        [NOT NULL]
+      2 name                         TEXT           [NOT NULL]
+      3 class_id                     INTEGER        [NOT NULL]
+      4 gender                       INTEGER        [NOT NULL]
+      5 level                        INTEGER        default=1
+      6 experience                   INTEGER        default=0
+      7 portrait_id                  INTEGER        default=0
+      8 skin_color                   INTEGER        default=0
+      9 hair_style                   INTEGER        default=0
+     10 hair_color                   INTEGER        default=0
+     11 map_id                       INTEGER        default=1
+     12 position_x                   REAL           default=0
+     13 position_y                   REAL           default=0
+     14 facing                       REAL           default=0
+     15 health                       INTEGER        default=100
+     16 max_health                   INTEGER        default=100
+     17 mana                         INTEGER        default=50
+     18 max_mana                     INTEGER        default=50
+     19 gold                         INTEGER        default=0
+     20 played_time                  INTEGER        default=0
+     21 created_at                   DATETIME       default=CURRENT_TIMESTAMP
+     22 last_login                   DATETIME      
+     23 last_logout                  DATETIME      
+     24 deleted_at                   DATETIME      
+     25 is_deleted                   INTEGER        default=0
+  --- sample (1) ---
+    {"guid": 1, "account_id": 1, "name": "InvTesterAlpha", "class_id": 1, "gender": 0, "level": 20, "experience": 0, "portrait_id": 0, "skin_color": 0, "hair_style": 0, "hair_color": 0, "map_id": 1, "position_x": 253.5, "position_y": 95.5, "facing": 0.10654684901237488, "health": 1500, "max_health": 1500, "mana": 578, "max_mana": 600, "gold": 991, "played_time": 22, "created_at": "2026-01-21 00:12:50", "last_login": "2026-01-21 00:12:52", "last_logout": null, "deleted_at": null, "is_deleted": 0}
+
+  === guild_bank  rows=0 ===
+      0 id                           INTEGER        [PK]
+      1 guild_id                     INTEGER        [NOT NULL]
+      2 tab                          INTEGER        [NOT NULL]
+      3 slot                         INTEGER        [NOT NULL]
+      4 item_id                      INTEGER        [NOT NULL]
+      5 stack_count                  INTEGER        default=1
+
+  === guild_members  rows=0 ===
+      0 guild_id                     INTEGER        [PK, NOT NULL]
+      1 character_guid               INTEGER        [PK, NOT NULL]
+      2 rank                         INTEGER        default=0
+      3 note                         TEXT           default=''
+      4 officer_note                 TEXT           default=''
+      5 joined_at                    DATETIME       default=CURRENT_TIMESTAMP
+
+  === guild_ranks  rows=0 ===
+      0 guild_id                     INTEGER        [PK, NOT NULL]
+      1 rank_id                      INTEGER        [PK, NOT NULL]
+      2 name                         TEXT           [NOT NULL]
+      3 permissions                  INTEGER        default=0
+
+  === guilds  rows=0 ===
+      0 id                           INTEGER        [PK]
+      1 name                         TEXT           [NOT NULL]
+      2 leader_guid                  INTEGER        [NOT NULL]
+      3 motd                         TEXT           default=''
+      4 info                         TEXT           default=''
+      5 created_at                   DATETIME       default=CURRENT_TIMESTAMP
+      6 bank_gold                    INTEGER        default=0
+
+  === server_variables  rows=1 ===
+      0 key                          TEXT           [PK, NOT NULL]
+      1 value                        TEXT           [NOT NULL]
+      2 updated_at                   DATETIME       default=CURRENT_TIMESTAMP
+  --- sample (1) ---
+    {"key": "schema_version", "value": "1", "updated_at": "2026-01-21 00:12:35"}

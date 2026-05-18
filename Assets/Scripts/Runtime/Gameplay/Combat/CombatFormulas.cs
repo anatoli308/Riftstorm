@@ -1,4 +1,5 @@
 using UnityEngine;
+using Riftstorm.Gameplay.Combat.Spells;
 
 namespace Riftstorm.Gameplay.Combat
 {
@@ -171,5 +172,217 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>True, wenn ein Roll-100 die Chance unterschreitet.</summary>
         public static bool RollChance(int percent) => Roll100() < percent;
+
+        // ---------------------------------------------------------------------
+        // Spell-Hit-Resolution (1:1 zu C++ CombatFormulas::rollToHit)
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Würfelt das Hit-Ergebnis für einen Spell-Cast. Reihenfolge:
+        /// Miss → Resist (nur magische Schools) → Crit → Hit. Heals/Buffs
+        /// (positive Effekte) crit-rollen aber missen/resisten nicht.
+        /// </summary>
+        /// <param name="attacker">Caster-Stats.</param>
+        /// <param name="victim">Ziel-Stats (für friendly Spells = Caster selbst).</param>
+        /// <param name="school">Spell-School (Physical = Armor, sonst Resist).</param>
+        /// <param name="isPositive">True für Heal/Buff — überspringt Miss/Resist.</param>
+        public static HitResult RollSpellHit(IUnitStats attacker, IUnitStats victim, SpellSchool school, bool isPositive)
+        {
+            int levelDiff = Mathf.Clamp(attacker.Level - victim.Level, -MaxLevelDiff, MaxLevelDiff);
+
+            if (!isPositive)
+            {
+                // Miss: Spells haben i. d. R. höhere Trefferchance als Melee (+4 wie C++).
+                int hitChance = Mathf.Clamp(BaseHitChance + 4 + levelDiff, 5, 100);
+                if (Roll100() >= hitChance)
+                {
+                    return HitResult.Miss;
+                }
+
+                // Resist nur für magische Schools — Physical kümmert sich Armor.
+                if (school != SpellSchool.Physical && school != SpellSchool.None)
+                {
+                    int resistChance = Mathf.Clamp(2 - levelDiff, 0, 75);
+                    if (Roll100() < resistChance)
+                    {
+                        return HitResult.Resist;
+                    }
+                }
+            }
+
+            // Crit gilt auch für Heals.
+            int critChance = Mathf.Clamp(BaseCritChance + levelDiff, 0, 95);
+            if (Roll100() < critChance)
+            {
+                return HitResult.Crit;
+            }
+
+            return HitResult.Hit;
+        }
+
+        // ---------------------------------------------------------------------
+        // Spell-Damage (1:1 zu C++ CombatFormulas::calculateDamage)
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Berechnet kompletten Spell-Schaden für einen einzelnen Effect-Slot
+        /// inkl. Hit-Roll, Caster-Skalierung, Variance, School-Reduktion und Crit.
+        /// </summary>
+        /// <param name="attacker">Caster-Stats.</param>
+        /// <param name="victim">Ziel-Stats.</param>
+        /// <param name="spell">Spell-Definition (für School + Stat-Scaling).</param>
+        /// <param name="effectIndex">Index in <see cref="SpellDefinition.Effects"/>.</param>
+        public static DamageInfo CalculateSpellDamage(
+            IUnitStats attacker,
+            IUnitStats victim,
+            SpellDefinition spell,
+            int effectIndex)
+        {
+            if (spell == null || (uint)effectIndex >= (uint)spell.Effects.Count)
+            {
+                return default;
+            }
+
+            SpellEffectDefinition effDef = spell.Effects[effectIndex];
+
+            HitResult hit = RollSpellHit(attacker, victim, spell.School, isPositive: false);
+
+            if (hit is HitResult.Miss or HitResult.Resist or HitResult.Immune or HitResult.Dodge or HitResult.Parry)
+            {
+                return new DamageInfo
+                {
+                    HitResult = hit,
+                    BaseDamage = 0,
+                    FinalDamage = 0,
+                    Absorbed = 0,
+                };
+            }
+
+            // 1) Grundschaden aus Effect-Data1 + halbem Level-Bonus (vereinfachte Skalierung).
+            int baseDamage = Mathf.Max(0, effDef.Data1) + (attacker.Level / 2);
+
+            // 2) Variance.
+            float varianceMul = 1f + Random.Range(-DamageVariance, DamageVariance);
+            int afterVariance = Mathf.RoundToInt(baseDamage * varianceMul);
+
+            // 3) School-spezifische Reduktion: Physical → Armor, magisch → Resist-Heuristik.
+            int afterReduction;
+            int absorbed;
+            if (spell.School == SpellSchool.Physical)
+            {
+                afterReduction = ApplyArmorReduction(afterVariance, victim.Armor, victim.Level);
+                absorbed = Mathf.Max(0, afterVariance - afterReduction);
+            }
+            else
+            {
+                afterReduction = ApplyResistReduction(afterVariance, victim, spell.School);
+                absorbed = Mathf.Max(0, afterVariance - afterReduction);
+            }
+
+            // 4) Crit / Block.
+            int finalDamage = hit switch
+            {
+                HitResult.Crit => Mathf.RoundToInt(afterReduction * CritMultiplier),
+                HitResult.Block => Mathf.RoundToInt(afterReduction * 0.5f),
+                HitResult.GlancingBlow => Mathf.RoundToInt(afterReduction * GlancingMultiplier),
+                _ => afterReduction,
+            };
+
+            // 5) Floor.
+            finalDamage = Mathf.Max(MinDamage, finalDamage);
+
+            return new DamageInfo
+            {
+                HitResult = hit,
+                BaseDamage = baseDamage,
+                FinalDamage = finalDamage,
+                Absorbed = absorbed,
+            };
+        }
+
+        /// <summary>
+        /// Reduziert magischen Schaden anhand eines simplen Level-basierten
+        /// Resist-Modells (Phase-4-MVP — Resist-Stat pro School kann später in
+        /// <see cref="IUnitStats"/> ergänzt werden, ohne Call-Sites zu brechen).
+        /// </summary>
+        /// <remarks>
+        /// Im C++-Vorbild liest <c>calculateResistReduction</c> einen Resist-Wert
+        /// aus den Victim-Variables. Solange Riftstorm noch keinen Resist-Stat
+        /// trackt, gilt eine Pauschale, die Mob-Level über Caster-Level berücksichtigt.
+        /// </remarks>
+        public static int ApplyResistReduction(int damage, IUnitStats victim, SpellSchool school)
+        {
+            if (damage <= 0 || school == SpellSchool.None || school == SpellSchool.Physical)
+            {
+                return damage;
+            }
+            // Pauschal ~10 % bei gleichem Level, ±2 % pro Levelschritt.
+            int basePct = 10 + Mathf.Clamp(victim.Level / 5, 0, 20);
+            int reductionPct = Mathf.Clamp(basePct, 0, MaxArmorReductionPercent);
+            return Mathf.RoundToInt(damage * (1f - reductionPct / 100f));
+        }
+
+        // ---------------------------------------------------------------------
+        // Heal (1:1 zu C++ CombatFormulas::calculateHeal)
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Berechnet den Heilwert für einen einzelnen Effect-Slot. Heals können
+        /// crit-en, missen aber nicht und werden nicht durch Armor/Resist reduziert.
+        /// </summary>
+        /// <param name="healer">Caster-Stats.</param>
+        /// <param name="target">Ziel-Stats.</param>
+        /// <param name="spell">Spell-Definition.</param>
+        /// <param name="effectIndex">Index in <see cref="SpellDefinition.Effects"/>.</param>
+        public static HealInfo CalculateHeal(
+            IUnitStats healer,
+            IUnitStats target,
+            SpellDefinition spell,
+            int effectIndex)
+        {
+            if (spell == null || (uint)effectIndex >= (uint)spell.Effects.Count)
+            {
+                return default;
+            }
+
+            SpellEffectDefinition effDef = spell.Effects[effectIndex];
+            HitResult hit = RollSpellHit(healer, target, spell.School, isPositive: true);
+
+            // 1) Grund-Heal je nach Effect-Type.
+            int baseHeal;
+            if (effDef.Type == SpellEffectType.HealPct)
+            {
+                // Data1 = Prozent vom Ziel-MaxHp.
+                baseHeal = Mathf.Max(0, (target.MaxHp * effDef.Data1) / 100);
+            }
+            else
+            {
+                baseHeal = Mathf.Max(0, effDef.Data1) + (healer.Level / 2);
+            }
+
+            // 2) Variance.
+            float varianceMul = 1f + Random.Range(-DamageVariance, DamageVariance);
+            int afterVariance = Mathf.RoundToInt(baseHeal * varianceMul);
+
+            // 3) Crit-Multiplier.
+            int finalHeal = hit == HitResult.Crit
+                ? Mathf.RoundToInt(afterVariance * CritMultiplier)
+                : afterVariance;
+
+            // 4) Overheal-Cap.
+            int missingHp = Mathf.Max(0, target.MaxHp - target.CurrentHp);
+            int applied = Mathf.Min(finalHeal, missingHp);
+            int overheal = finalHeal - applied;
+            bool fullHeal = (target.CurrentHp + applied) >= target.MaxHp;
+
+            return new HealInfo
+            {
+                HitResult = hit,
+                BaseHeal = baseHeal,
+                FinalHeal = applied,
+                Overheal = overheal,
+                FullHeal = fullHeal,
+            };
+        }
     }
 }

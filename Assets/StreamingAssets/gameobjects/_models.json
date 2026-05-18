@@ -1,0 +1,258 @@
+{
+  "1": {
+    "id": 1,
+    "name_closed": "tileset_cave_160.png",
+    "name_open": "tileset_cave_176.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "unlock.wav",
+    "sound_unlocked": "open.wav"
+  },
+  "2": {
+    "id": 2,
+    "anim_name_closed": "gowaypoint.sa",
+    "anim_name_open": "gowaypoint.sa",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 0,
+    "anim_closed_offset_y": 0,
+    "sound_use": "ghost_jewelbox_open.ogg",
+    "sound_unlocked": "ghost_jewelbox_open.ogg"
+  },
+  "3": {
+    "id": 3,
+    "name_closed": "tileset_dungeon_147.png",
+    "name_open": "tileset_dungeon_163.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1
+  },
+  "4": {
+    "id": 4,
+    "name_closed": "tileset_dungeon_146.png",
+    "name_open": "tileset_dungeon_162.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "unlock.wav"
+  },
+  "5": {
+    "id": 5,
+    "name_closed": "tileset_cave_161.png",
+    "name_open": "tileset_cave_177.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "unlock.wav",
+    "sound_unlocked": "open.wav"
+  },
+  "6": {
+    "id": 6,
+    "name_closed": "chest_boss_3.png",
+    "name_open": "chest_boss_2.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "unlock.wav",
+    "sound_unlocked": "open.wav"
+  },
+  "7": {
+    "id": 7,
+    "name_closed": "chest_boss_4.png",
+    "name_open": "chest_boss_1.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "unlock.wav",
+    "sound_unlocked": "open.wav"
+  },
+  "8": {
+    "id": 8,
+    "anim_name_closed": "green_quest_ready.sa",
+    "anim_name_open": "lightblue_portal1.sa",
+    "anim_closed_blend": -1,
+    "anim_open_blend": 3,
+    "anim_closed_offset_x": 40,
+    "anim_closed_offset_y": -15,
+    "anim_open_offset_x": 73,
+    "anim_open_offset_y": 17,
+    "sound_use": "ghost_jewelbox_open.ogg",
+    "sound_unlocked": "ghost_jewelbox_open.ogg"
+  },
+  "16": {
+    "id": 16,
+    "name_closed": "tileset_dungeon_164.png",
+    "name_open": "tileset_dungeon_164.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg"
+  },
+  "18": {
+    "id": 18,
+    "name_closed": "tileset_dungeon_147.png",
+    "name_open": "tileset_dungeon_163.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "ghost_jewelbox_open.ogg",
+    "sound_unlocked": "ghost_jewelbox_open.ogg"
+  },
+  "20": {
+    "id": 20,
+    "name_closed": "barrel1closed.png",
+    "name_open": "barrel1open.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "ghost_jewelbox_open.ogg",
+    "sound_unlocked": "ghost_jewelbox_open.ogg"
+  },
+  "21": {
+    "id": 21,
+    "name_closed": "Bellengar_flower1.png",
+    "name_open": "Bellengar_flower1.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg",
+    "sound_unlocked": "herb_gathering1.ogg"
+  },
+  "22": {
+    "id": 22,
+    "name_closed": "Bellengar_flower2.png",
+    "name_open": "Bellengar_flower2.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg",
+    "sound_unlocked": "herb_gathering1.ogg"
+  },
+  "23": {
+    "id": 23,
+    "name_closed": "Bellengar_flower3.png",
+    "name_open": "Bellengar_flower3.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg",
+    "sound_unlocked": "herb_gathering1.ogg"
+  },
+  "24": {
+    "id": 24,
+    "name_closed": "Bellengar_flower4.png",
+    "name_open": "Bellengar_flower4.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg",
+    "sound_unlocked": "herb_gathering1.ogg"
+  },
+  "25": {
+    "id": 25,
+    "name_closed": "Bellengar_flower5.png",
+    "name_open": "Bellengar_flower5.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "sound_use": "herb_gathering1.ogg",
+    "sound_unlocked": "herb_gathering1.ogg"
+  },
+  "26": {
+    "id": 26,
+    "anim_name_closed": "instance_entrance_a.sa",
+    "anim_name_open": "instance_entrance_a.sa",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "27": {
+    "id": 27,
+    "name_closed": "tileset_cave_240.png",
+    "name_open": "tileset_cave_240.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "28": {
+    "id": 28,
+    "name_closed": "cave_entrance_right.png",
+    "name_open": "cave_entrance_right.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "29": {
+    "id": 29,
+    "name_closed": "cave_mine_entrance_left.png",
+    "name_open": "cave_mine_entrance_left.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "30": {
+    "id": 30,
+    "name_closed": "tileset_cave_241.png",
+    "name_open": "tileset_cave_241.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "31": {
+    "id": 31,
+    "name_closed": "dungeon_entrance_ruin.png",
+    "name_open": "dungeon_entrance_ruin.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "32": {
+    "id": 32,
+    "anim_name_closed": "return_obelisk.sa",
+    "anim_name_open": "return_obelisk.sa",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": -48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": -48
+  },
+  "33": {
+    "id": 33,
+    "name_closed": "tileset_dungeon_284.png",
+    "name_open": "tileset_dungeon_284.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "34": {
+    "id": 34,
+    "name_closed": "tileset_dungeon_285.png",
+    "name_open": "tileset_dungeon_285.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  },
+  "35": {
+    "id": 35,
+    "name_closed": "tileset_dungeon_286.png",
+    "name_open": "tileset_dungeon_286.png",
+    "anim_closed_blend": -1,
+    "anim_open_blend": -1,
+    "anim_closed_offset_x": 32,
+    "anim_closed_offset_y": 48,
+    "anim_open_offset_x": 32,
+    "anim_open_offset_y": 48
+  }
+}

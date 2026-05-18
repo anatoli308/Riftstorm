@@ -1,0 +1,867 @@
+[
+  {
+    "level": 1,
+    "armor_type": 2,
+    "chance": 33.333332
+  },
+  {
+    "level": 2,
+    "armor_type": 2,
+    "chance": 33.333332
+  },
+  {
+    "level": 3,
+    "armor_type": 2,
+    "chance": 66.666664
+  },
+  {
+    "level": 4,
+    "armor_type": 2,
+    "chance": 100.0
+  },
+  {
+    "level": 5,
+    "armor_type": 2,
+    "chance": 75.0
+  },
+  {
+    "level": 6,
+    "armor_type": 2,
+    "chance": 50.0
+  },
+  {
+    "level": 7,
+    "armor_type": 2,
+    "chance": 25.0
+  },
+  {
+    "level": 3,
+    "armor_type": 3,
+    "chance": 33.333332
+  },
+  {
+    "level": 4,
+    "armor_type": 3,
+    "chance": 33.333332
+  },
+  {
+    "level": 5,
+    "armor_type": 3,
+    "chance": 66.666664
+  },
+  {
+    "level": 6,
+    "armor_type": 3,
+    "chance": 100.0
+  },
+  {
+    "level": 7,
+    "armor_type": 3,
+    "chance": 66.666672
+  },
+  {
+    "level": 8,
+    "armor_type": 3,
+    "chance": 33.33334
+  },
+  {
+    "level": 6,
+    "armor_type": 4,
+    "chance": 50.0
+  },
+  {
+    "level": 7,
+    "armor_type": 4,
+    "chance": 50.0
+  },
+  {
+    "level": 8,
+    "armor_type": 4,
+    "chance": 100.0
+  },
+  {
+    "level": 9,
+    "armor_type": 4,
+    "chance": 50.0
+  },
+  {
+    "level": 1,
+    "armor_type": 5,
+    "chance": 10.0
+  },
+  {
+    "level": 2,
+    "armor_type": 5,
+    "chance": 10.0
+  },
+  {
+    "level": 3,
+    "armor_type": 5,
+    "chance": 20.0
+  },
+  {
+    "level": 4,
+    "armor_type": 5,
+    "chance": 30.0
+  },
+  {
+    "level": 5,
+    "armor_type": 5,
+    "chance": 40.0
+  },
+  {
+    "level": 6,
+    "armor_type": 5,
+    "chance": 50.0
+  },
+  {
+    "level": 7,
+    "armor_type": 5,
+    "chance": 60.0
+  },
+  {
+    "level": 8,
+    "armor_type": 5,
+    "chance": 70.0
+  },
+  {
+    "level": 9,
+    "armor_type": 5,
+    "chance": 80.0
+  },
+  {
+    "level": 10,
+    "armor_type": 5,
+    "chance": 90.0
+  },
+  {
+    "level": 11,
+    "armor_type": 5,
+    "chance": 100.0
+  },
+  {
+    "level": 12,
+    "armor_type": 5,
+    "chance": 90.0
+  },
+  {
+    "level": 13,
+    "armor_type": 5,
+    "chance": 80.0
+  },
+  {
+    "level": 14,
+    "armor_type": 5,
+    "chance": 70.0
+  },
+  {
+    "level": 15,
+    "armor_type": 5,
+    "chance": 60.0
+  },
+  {
+    "level": 16,
+    "armor_type": 5,
+    "chance": 50.0
+  },
+  {
+    "level": 17,
+    "armor_type": 5,
+    "chance": 40.0
+  },
+  {
+    "level": 18,
+    "armor_type": 5,
+    "chance": 30.0
+  },
+  {
+    "level": 19,
+    "armor_type": 5,
+    "chance": 20.0
+  },
+  {
+    "level": 20,
+    "armor_type": 5,
+    "chance": 10.0
+  },
+  {
+    "level": 5,
+    "armor_type": 6,
+    "chance": 10.0
+  },
+  {
+    "level": 6,
+    "armor_type": 6,
+    "chance": 10.0
+  },
+  {
+    "level": 7,
+    "armor_type": 6,
+    "chance": 20.0
+  },
+  {
+    "level": 8,
+    "armor_type": 6,
+    "chance": 30.0
+  },
+  {
+    "level": 9,
+    "armor_type": 6,
+    "chance": 40.0
+  },
+  {
+    "level": 10,
+    "armor_type": 6,
+    "chance": 50.0
+  },
+  {
+    "level": 11,
+    "armor_type": 6,
+    "chance": 60.0
+  },
+  {
+    "level": 12,
+    "armor_type": 6,
+    "chance": 70.0
+  },
+  {
+    "level": 13,
+    "armor_type": 6,
+    "chance": 80.0
+  },
+  {
+    "level": 14,
+    "armor_type": 6,
+    "chance": 90.0
+  },
+  {
+    "level": 15,
+    "armor_type": 6,
+    "chance": 100.0
+  },
+  {
+    "level": 16,
+    "armor_type": 6,
+    "chance": 90.909088
+  },
+  {
+    "level": 17,
+    "armor_type": 6,
+    "chance": 81.818176
+  },
+  {
+    "level": 18,
+    "armor_type": 6,
+    "chance": 72.727264
+  },
+  {
+    "level": 19,
+    "armor_type": 6,
+    "chance": 63.636356
+  },
+  {
+    "level": 20,
+    "armor_type": 6,
+    "chance": 54.545448
+  },
+  {
+    "level": 21,
+    "armor_type": 6,
+    "chance": 45.45454
+  },
+  {
+    "level": 22,
+    "armor_type": 6,
+    "chance": 36.363632
+  },
+  {
+    "level": 23,
+    "armor_type": 6,
+    "chance": 27.272724
+  },
+  {
+    "level": 24,
+    "armor_type": 6,
+    "chance": 18.181816
+  },
+  {
+    "level": 25,
+    "armor_type": 6,
+    "chance": 9.090907
+  },
+  {
+    "level": 10,
+    "armor_type": 7,
+    "chance": 12.5
+  },
+  {
+    "level": 11,
+    "armor_type": 7,
+    "chance": 12.5
+  },
+  {
+    "level": 12,
+    "armor_type": 7,
+    "chance": 25.0
+  },
+  {
+    "level": 13,
+    "armor_type": 7,
+    "chance": 37.5
+  },
+  {
+    "level": 14,
+    "armor_type": 7,
+    "chance": 50.0
+  },
+  {
+    "level": 15,
+    "armor_type": 7,
+    "chance": 62.5
+  },
+  {
+    "level": 16,
+    "armor_type": 7,
+    "chance": 75.0
+  },
+  {
+    "level": 17,
+    "armor_type": 7,
+    "chance": 87.5
+  },
+  {
+    "level": 18,
+    "armor_type": 7,
+    "chance": 100.0
+  },
+  {
+    "level": 19,
+    "armor_type": 7,
+    "chance": 87.5
+  },
+  {
+    "level": 20,
+    "armor_type": 7,
+    "chance": 75.0
+  },
+  {
+    "level": 21,
+    "armor_type": 7,
+    "chance": 62.5
+  },
+  {
+    "level": 22,
+    "armor_type": 7,
+    "chance": 50.0
+  },
+  {
+    "level": 23,
+    "armor_type": 7,
+    "chance": 37.5
+  },
+  {
+    "level": 24,
+    "armor_type": 7,
+    "chance": 25.0
+  },
+  {
+    "level": 25,
+    "armor_type": 7,
+    "chance": 12.5
+  },
+  {
+    "level": 15,
+    "armor_type": 8,
+    "chance": 20.0
+  },
+  {
+    "level": 16,
+    "armor_type": 8,
+    "chance": 20.0
+  },
+  {
+    "level": 17,
+    "armor_type": 8,
+    "chance": 40.0
+  },
+  {
+    "level": 18,
+    "armor_type": 8,
+    "chance": 60.0
+  },
+  {
+    "level": 19,
+    "armor_type": 8,
+    "chance": 80.0
+  },
+  {
+    "level": 20,
+    "armor_type": 8,
+    "chance": 100.0
+  },
+  {
+    "level": 21,
+    "armor_type": 8,
+    "chance": 83.333336
+  },
+  {
+    "level": 22,
+    "armor_type": 8,
+    "chance": 66.666672
+  },
+  {
+    "level": 23,
+    "armor_type": 8,
+    "chance": 50.000008
+  },
+  {
+    "level": 24,
+    "armor_type": 8,
+    "chance": 33.333344
+  },
+  {
+    "level": 25,
+    "armor_type": 8,
+    "chance": 16.666677
+  },
+  {
+    "level": 10,
+    "armor_type": 9,
+    "chance": 12.5
+  },
+  {
+    "level": 11,
+    "armor_type": 9,
+    "chance": 12.5
+  },
+  {
+    "level": 12,
+    "armor_type": 9,
+    "chance": 25.0
+  },
+  {
+    "level": 13,
+    "armor_type": 9,
+    "chance": 37.5
+  },
+  {
+    "level": 14,
+    "armor_type": 9,
+    "chance": 50.0
+  },
+  {
+    "level": 15,
+    "armor_type": 9,
+    "chance": 62.5
+  },
+  {
+    "level": 16,
+    "armor_type": 9,
+    "chance": 75.0
+  },
+  {
+    "level": 17,
+    "armor_type": 9,
+    "chance": 87.5
+  },
+  {
+    "level": 18,
+    "armor_type": 9,
+    "chance": 100.0
+  },
+  {
+    "level": 19,
+    "armor_type": 9,
+    "chance": 87.5
+  },
+  {
+    "level": 20,
+    "armor_type": 9,
+    "chance": 75.0
+  },
+  {
+    "level": 21,
+    "armor_type": 9,
+    "chance": 62.5
+  },
+  {
+    "level": 22,
+    "armor_type": 9,
+    "chance": 50.0
+  },
+  {
+    "level": 23,
+    "armor_type": 9,
+    "chance": 37.5
+  },
+  {
+    "level": 24,
+    "armor_type": 9,
+    "chance": 25.0
+  },
+  {
+    "level": 25,
+    "armor_type": 9,
+    "chance": 12.5
+  },
+  {
+    "level": 15,
+    "armor_type": 10,
+    "chance": 20.0
+  },
+  {
+    "level": 16,
+    "armor_type": 10,
+    "chance": 20.0
+  },
+  {
+    "level": 17,
+    "armor_type": 10,
+    "chance": 40.0
+  },
+  {
+    "level": 18,
+    "armor_type": 10,
+    "chance": 60.0
+  },
+  {
+    "level": 19,
+    "armor_type": 10,
+    "chance": 80.0
+  },
+  {
+    "level": 20,
+    "armor_type": 10,
+    "chance": 100.0
+  },
+  {
+    "level": 21,
+    "armor_type": 10,
+    "chance": 83.333336
+  },
+  {
+    "level": 22,
+    "armor_type": 10,
+    "chance": 66.666672
+  },
+  {
+    "level": 23,
+    "armor_type": 10,
+    "chance": 50.000008
+  },
+  {
+    "level": 24,
+    "armor_type": 10,
+    "chance": 33.333344
+  },
+  {
+    "level": 25,
+    "armor_type": 10,
+    "chance": 16.666677
+  },
+  {
+    "level": 20,
+    "armor_type": 11,
+    "chance": 33.333332
+  },
+  {
+    "level": 21,
+    "armor_type": 11,
+    "chance": 33.333332
+  },
+  {
+    "level": 22,
+    "armor_type": 11,
+    "chance": 66.666664
+  },
+  {
+    "level": 23,
+    "armor_type": 11,
+    "chance": 100.0
+  },
+  {
+    "level": 24,
+    "armor_type": 11,
+    "chance": 66.666672
+  },
+  {
+    "level": 25,
+    "armor_type": 11,
+    "chance": 33.33334
+  },
+  {
+    "level": 1,
+    "armor_type": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 2,
+    "armor_type": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 3,
+    "armor_type": 12,
+    "chance": 40.0
+  },
+  {
+    "level": 4,
+    "armor_type": 12,
+    "chance": 60.0
+  },
+  {
+    "level": 5,
+    "armor_type": 12,
+    "chance": 80.0
+  },
+  {
+    "level": 6,
+    "armor_type": 12,
+    "chance": 100.0
+  },
+  {
+    "level": 7,
+    "armor_type": 12,
+    "chance": 80.0
+  },
+  {
+    "level": 8,
+    "armor_type": 12,
+    "chance": 60.0
+  },
+  {
+    "level": 9,
+    "armor_type": 12,
+    "chance": 40.0
+  },
+  {
+    "level": 10,
+    "armor_type": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 3,
+    "armor_type": 13,
+    "chance": 11.111111
+  },
+  {
+    "level": 4,
+    "armor_type": 13,
+    "chance": 11.111111
+  },
+  {
+    "level": 5,
+    "armor_type": 13,
+    "chance": 22.222221
+  },
+  {
+    "level": 6,
+    "armor_type": 13,
+    "chance": 33.333332
+  },
+  {
+    "level": 7,
+    "armor_type": 13,
+    "chance": 44.444443
+  },
+  {
+    "level": 8,
+    "armor_type": 13,
+    "chance": 55.555553
+  },
+  {
+    "level": 9,
+    "armor_type": 13,
+    "chance": 66.666664
+  },
+  {
+    "level": 10,
+    "armor_type": 13,
+    "chance": 77.777771
+  },
+  {
+    "level": 11,
+    "armor_type": 13,
+    "chance": 88.888885
+  },
+  {
+    "level": 12,
+    "armor_type": 13,
+    "chance": 100.0
+  },
+  {
+    "level": 13,
+    "armor_type": 13,
+    "chance": 88.888885
+  },
+  {
+    "level": 14,
+    "armor_type": 13,
+    "chance": 77.777771
+  },
+  {
+    "level": 15,
+    "armor_type": 13,
+    "chance": 66.666656
+  },
+  {
+    "level": 16,
+    "armor_type": 13,
+    "chance": 55.555546
+  },
+  {
+    "level": 17,
+    "armor_type": 13,
+    "chance": 44.444435
+  },
+  {
+    "level": 18,
+    "armor_type": 13,
+    "chance": 33.333324
+  },
+  {
+    "level": 19,
+    "armor_type": 13,
+    "chance": 22.222214
+  },
+  {
+    "level": 20,
+    "armor_type": 13,
+    "chance": 11.111103
+  },
+  {
+    "level": 10,
+    "armor_type": 14,
+    "chance": 12.5
+  },
+  {
+    "level": 11,
+    "armor_type": 14,
+    "chance": 12.5
+  },
+  {
+    "level": 12,
+    "armor_type": 14,
+    "chance": 25.0
+  },
+  {
+    "level": 13,
+    "armor_type": 14,
+    "chance": 37.5
+  },
+  {
+    "level": 14,
+    "armor_type": 14,
+    "chance": 50.0
+  },
+  {
+    "level": 15,
+    "armor_type": 14,
+    "chance": 62.5
+  },
+  {
+    "level": 16,
+    "armor_type": 14,
+    "chance": 75.0
+  },
+  {
+    "level": 17,
+    "armor_type": 14,
+    "chance": 87.5
+  },
+  {
+    "level": 18,
+    "armor_type": 14,
+    "chance": 100.0
+  },
+  {
+    "level": 19,
+    "armor_type": 14,
+    "chance": 87.5
+  },
+  {
+    "level": 20,
+    "armor_type": 14,
+    "chance": 75.0
+  },
+  {
+    "level": 21,
+    "armor_type": 14,
+    "chance": 62.5
+  },
+  {
+    "level": 22,
+    "armor_type": 14,
+    "chance": 50.0
+  },
+  {
+    "level": 23,
+    "armor_type": 14,
+    "chance": 37.5
+  },
+  {
+    "level": 24,
+    "armor_type": 14,
+    "chance": 25.0
+  },
+  {
+    "level": 25,
+    "armor_type": 14,
+    "chance": 12.5
+  },
+  {
+    "level": 15,
+    "armor_type": 15,
+    "chance": 20.0
+  },
+  {
+    "level": 16,
+    "armor_type": 15,
+    "chance": 20.0
+  },
+  {
+    "level": 17,
+    "armor_type": 15,
+    "chance": 40.0
+  },
+  {
+    "level": 18,
+    "armor_type": 15,
+    "chance": 60.0
+  },
+  {
+    "level": 19,
+    "armor_type": 15,
+    "chance": 80.0
+  },
+  {
+    "level": 20,
+    "armor_type": 15,
+    "chance": 100.0
+  },
+  {
+    "level": 21,
+    "armor_type": 15,
+    "chance": 83.333336
+  },
+  {
+    "level": 22,
+    "armor_type": 15,
+    "chance": 66.666672
+  },
+  {
+    "level": 23,
+    "armor_type": 15,
+    "chance": 50.000008
+  },
+  {
+    "level": 24,
+    "armor_type": 15,
+    "chance": 33.333344
+  },
+  {
+    "level": 25,
+    "armor_type": 15,
+    "chance": 16.666677
+  }
+]

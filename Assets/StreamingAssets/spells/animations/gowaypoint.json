@@ -1,0 +1,28 @@
+{
+  "name": "gowaypoint",
+  "image_pattern": "spells/gowaypoint_{frame}.png",
+  "canvas_size": 128,
+  "scale": 1,
+  "frames_count": 4,
+  "delay_ms": 100,
+  "loop_start": 1,
+  "loop_end": 4,
+  "frames": [
+    {
+      "w": 64,
+      "h": 102
+    },
+    {
+      "w": 64,
+      "h": 102
+    },
+    {
+      "w": 64,
+      "h": 102
+    },
+    {
+      "w": 64,
+      "h": 102
+    }
+  ]
+}

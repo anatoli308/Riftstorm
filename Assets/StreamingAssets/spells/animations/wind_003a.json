@@ -1,0 +1,36 @@
+{
+  "name": "wind_003a",
+  "image_pattern": "spells/wind_003a_{frame}.png",
+  "canvas_size": 768,
+  "scale": 4,
+  "frames_count": 6,
+  "delay_ms": 50,
+  "loop_start": 6,
+  "loop_end": 6,
+  "frames": [
+    {
+      "w": 84,
+      "h": 460
+    },
+    {
+      "w": 120,
+      "h": 440
+    },
+    {
+      "w": 80,
+      "h": 412
+    },
+    {
+      "w": 64,
+      "h": 384
+    },
+    {
+      "w": 112,
+      "h": 352
+    },
+    {
+      "w": 144,
+      "h": 316
+    }
+  ]
+}

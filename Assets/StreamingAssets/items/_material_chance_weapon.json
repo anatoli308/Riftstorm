@@ -1,0 +1,492 @@
+[
+  {
+    "level": 1,
+    "weapon_material": 1,
+    "chance": 50.0
+  },
+  {
+    "level": 2,
+    "weapon_material": 1,
+    "chance": 50.0
+  },
+  {
+    "level": 3,
+    "weapon_material": 1,
+    "chance": 100.0
+  },
+  {
+    "level": 4,
+    "weapon_material": 1,
+    "chance": 66.666672
+  },
+  {
+    "level": 5,
+    "weapon_material": 1,
+    "chance": 33.33334
+  },
+  {
+    "level": 2,
+    "weapon_material": 2,
+    "chance": 25.0
+  },
+  {
+    "level": 3,
+    "weapon_material": 2,
+    "chance": 25.0
+  },
+  {
+    "level": 4,
+    "weapon_material": 2,
+    "chance": 50.0
+  },
+  {
+    "level": 5,
+    "weapon_material": 2,
+    "chance": 75.0
+  },
+  {
+    "level": 6,
+    "weapon_material": 2,
+    "chance": 100.0
+  },
+  {
+    "level": 7,
+    "weapon_material": 2,
+    "chance": 80.0
+  },
+  {
+    "level": 8,
+    "weapon_material": 2,
+    "chance": 60.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 2,
+    "chance": 40.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 2,
+    "chance": 20.0
+  },
+  {
+    "level": 6,
+    "weapon_material": 3,
+    "chance": 25.0
+  },
+  {
+    "level": 7,
+    "weapon_material": 3,
+    "chance": 25.0
+  },
+  {
+    "level": 8,
+    "weapon_material": 3,
+    "chance": 50.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 3,
+    "chance": 75.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 3,
+    "chance": 100.0
+  },
+  {
+    "level": 11,
+    "weapon_material": 3,
+    "chance": 75.0
+  },
+  {
+    "level": 12,
+    "weapon_material": 3,
+    "chance": 50.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 3,
+    "chance": 25.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 4,
+    "chance": 25.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 4,
+    "chance": 25.0
+  },
+  {
+    "level": 11,
+    "weapon_material": 4,
+    "chance": 50.0
+  },
+  {
+    "level": 12,
+    "weapon_material": 4,
+    "chance": 75.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 4,
+    "chance": 100.0
+  },
+  {
+    "level": 14,
+    "weapon_material": 4,
+    "chance": 80.0
+  },
+  {
+    "level": 15,
+    "weapon_material": 4,
+    "chance": 60.0
+  },
+  {
+    "level": 16,
+    "weapon_material": 4,
+    "chance": 40.0
+  },
+  {
+    "level": 17,
+    "weapon_material": 4,
+    "chance": 20.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 5,
+    "chance": 20.0
+  },
+  {
+    "level": 14,
+    "weapon_material": 5,
+    "chance": 20.0
+  },
+  {
+    "level": 15,
+    "weapon_material": 5,
+    "chance": 40.0
+  },
+  {
+    "level": 16,
+    "weapon_material": 5,
+    "chance": 60.0
+  },
+  {
+    "level": 17,
+    "weapon_material": 5,
+    "chance": 80.0
+  },
+  {
+    "level": 18,
+    "weapon_material": 5,
+    "chance": 100.0
+  },
+  {
+    "level": 19,
+    "weapon_material": 5,
+    "chance": 80.0
+  },
+  {
+    "level": 20,
+    "weapon_material": 5,
+    "chance": 60.0
+  },
+  {
+    "level": 21,
+    "weapon_material": 5,
+    "chance": 40.0
+  },
+  {
+    "level": 22,
+    "weapon_material": 5,
+    "chance": 20.0
+  },
+  {
+    "level": 19,
+    "weapon_material": 6,
+    "chance": 33.333332
+  },
+  {
+    "level": 20,
+    "weapon_material": 6,
+    "chance": 33.333332
+  },
+  {
+    "level": 21,
+    "weapon_material": 6,
+    "chance": 66.666664
+  },
+  {
+    "level": 22,
+    "weapon_material": 6,
+    "chance": 100.0
+  },
+  {
+    "level": 23,
+    "weapon_material": 6,
+    "chance": 75.0
+  },
+  {
+    "level": 24,
+    "weapon_material": 6,
+    "chance": 50.0
+  },
+  {
+    "level": 25,
+    "weapon_material": 6,
+    "chance": 25.0
+  },
+  {
+    "level": 25,
+    "weapon_material": 7,
+    "chance": 100.0
+  },
+  {
+    "level": 1,
+    "weapon_material": 8,
+    "chance": 50.0
+  },
+  {
+    "level": 2,
+    "weapon_material": 8,
+    "chance": 50.0
+  },
+  {
+    "level": 3,
+    "weapon_material": 8,
+    "chance": 100.0
+  },
+  {
+    "level": 4,
+    "weapon_material": 8,
+    "chance": 66.666672
+  },
+  {
+    "level": 5,
+    "weapon_material": 8,
+    "chance": 33.33334
+  },
+  {
+    "level": 2,
+    "weapon_material": 9,
+    "chance": 25.0
+  },
+  {
+    "level": 3,
+    "weapon_material": 9,
+    "chance": 25.0
+  },
+  {
+    "level": 4,
+    "weapon_material": 9,
+    "chance": 50.0
+  },
+  {
+    "level": 5,
+    "weapon_material": 9,
+    "chance": 75.0
+  },
+  {
+    "level": 6,
+    "weapon_material": 9,
+    "chance": 100.0
+  },
+  {
+    "level": 7,
+    "weapon_material": 9,
+    "chance": 80.0
+  },
+  {
+    "level": 8,
+    "weapon_material": 9,
+    "chance": 60.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 9,
+    "chance": 40.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 9,
+    "chance": 20.0
+  },
+  {
+    "level": 6,
+    "weapon_material": 10,
+    "chance": 25.0
+  },
+  {
+    "level": 7,
+    "weapon_material": 10,
+    "chance": 25.0
+  },
+  {
+    "level": 8,
+    "weapon_material": 10,
+    "chance": 50.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 10,
+    "chance": 75.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 10,
+    "chance": 100.0
+  },
+  {
+    "level": 11,
+    "weapon_material": 10,
+    "chance": 75.0
+  },
+  {
+    "level": 12,
+    "weapon_material": 10,
+    "chance": 50.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 10,
+    "chance": 25.0
+  },
+  {
+    "level": 9,
+    "weapon_material": 11,
+    "chance": 25.0
+  },
+  {
+    "level": 10,
+    "weapon_material": 11,
+    "chance": 25.0
+  },
+  {
+    "level": 11,
+    "weapon_material": 11,
+    "chance": 50.0
+  },
+  {
+    "level": 12,
+    "weapon_material": 11,
+    "chance": 75.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 11,
+    "chance": 100.0
+  },
+  {
+    "level": 14,
+    "weapon_material": 11,
+    "chance": 80.0
+  },
+  {
+    "level": 15,
+    "weapon_material": 11,
+    "chance": 60.0
+  },
+  {
+    "level": 16,
+    "weapon_material": 11,
+    "chance": 40.0
+  },
+  {
+    "level": 17,
+    "weapon_material": 11,
+    "chance": 20.0
+  },
+  {
+    "level": 13,
+    "weapon_material": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 14,
+    "weapon_material": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 15,
+    "weapon_material": 12,
+    "chance": 40.0
+  },
+  {
+    "level": 16,
+    "weapon_material": 12,
+    "chance": 60.0
+  },
+  {
+    "level": 17,
+    "weapon_material": 12,
+    "chance": 80.0
+  },
+  {
+    "level": 18,
+    "weapon_material": 12,
+    "chance": 100.0
+  },
+  {
+    "level": 19,
+    "weapon_material": 12,
+    "chance": 80.0
+  },
+  {
+    "level": 20,
+    "weapon_material": 12,
+    "chance": 60.0
+  },
+  {
+    "level": 21,
+    "weapon_material": 12,
+    "chance": 40.0
+  },
+  {
+    "level": 22,
+    "weapon_material": 12,
+    "chance": 20.0
+  },
+  {
+    "level": 19,
+    "weapon_material": 13,
+    "chance": 33.333332
+  },
+  {
+    "level": 20,
+    "weapon_material": 13,
+    "chance": 33.333332
+  },
+  {
+    "level": 21,
+    "weapon_material": 13,
+    "chance": 66.666664
+  },
+  {
+    "level": 22,
+    "weapon_material": 13,
+    "chance": 100.0
+  },
+  {
+    "level": 23,
+    "weapon_material": 13,
+    "chance": 75.0
+  },
+  {
+    "level": 24,
+    "weapon_material": 13,
+    "chance": 50.0
+  },
+  {
+    "level": 25,
+    "weapon_material": 13,
+    "chance": 25.0
+  },
+  {
+    "level": 25,
+    "weapon_material": 14,
+    "chance": 100.0
+  }
+]

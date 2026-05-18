@@ -3,6 +3,9 @@ using Riftstorm.Game.Combat.CombatStates;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Movement;
 using Riftstorm.Gameplay.Combat;
+using Riftstorm.Gameplay.Combat.Spells;
+using Riftstorm.Gameplay.Combat.Spells.Visuals;
+using Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime;
 using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
 using Tolik.Riftstorm.Runtime.Core;
 using Unity.Collections;
@@ -85,6 +88,10 @@ namespace Riftstorm.Game.Combat
         // -------------------------------------------------------------------------
 
         private WeaponCatalogLoader m_WeaponCatalogLoader;
+        private SpellCatalogLoader m_SpellCatalogLoader;
+        private AuraCatalogLoader m_AuraCatalogLoader;
+        private SpellVisualCatalogLoader m_VisualCatalogLoader;
+        private SpellAnimationCatalogLoader m_AnimationCatalogLoader;
 
         /// <summary>Server-only: initiale Welt-Position bei Spawn, dorthin wird respawnt.</summary>
         private Vector3 m_ServerSpawnPosition;
@@ -706,6 +713,164 @@ namespace Riftstorm.Game.Combat
                 WeaponDefinition weapon = ResolveCurrentWeapon();
                 return weapon != null ? weapon.Range : 0f;
             }
+        }
+
+        // -------------------------------------------------------------------------
+        // Spell-Cast (HUD/ActionBar → Server → SpellExecutor)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Einstieg, um einen Spell zu casten. HUD/ActionBar ruft das auf,
+        /// sobald der Spieler eine Ability-Hotkey betätigt. Lokal nur Sanity-Checks
+        /// (lebt, hat Spawn, hat Owner-Rechte, valides Target gewählt) — die
+        /// autoritative Validierung passiert serverseitig in
+        /// <see cref="RequestCastSpellServerRpc"/> über <see cref="SpellExecutor"/>.
+        /// Target-Auswahl folgt der bestehenden <see cref="TargetSelection"/>-Logik;
+        /// für Self-Casts darf das Target leer sein.
+        /// </summary>
+        /// <param name="spellId">Snake-Case-ID aus <c>spells.json</c> (z. B. <c>fireball</c>).</param>
+        public void TryRequestCastSpell(string spellId)
+        {
+            if (!IsSpawned || !IsOwner || string.IsNullOrEmpty(spellId))
+            {
+                return;
+            }
+            if (m_Stats != null && m_Stats.IsDead)
+            {
+                return;
+            }
+
+            ulong targetId = 0UL;
+            if (m_TargetSelection != null
+                && m_TargetSelection.CurrentTargetId != TargetSelection.NoTarget
+                && m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetObject, out _)
+                && targetObject != null)
+            {
+                targetId = targetObject.NetworkObjectId;
+            }
+
+            RequestCastSpellServerRpc(new FixedString64Bytes(spellId), targetId);
+        }
+
+        /// <summary>
+        /// Server-autoritative Spell-Ausführung. Lädt Catalog + Aura-Catalog lazy
+        /// aus dem <see cref="ServiceLocator"/>, löst Caster + Target zu
+        /// <see cref="ICombatUnit"/> auf und delegiert an
+        /// <see cref="SpellExecutor.Execute"/>. Visuals/Animation/Floating-Text
+        /// folgen in einer späteren Phase (PlayCastClientRpc-Fanout) — die reine
+        /// Gameplay-Auflösung (Mana, CD/GCD, Effects) ist hier vollständig.
+        /// </summary>
+        [ServerRpc]
+        private void RequestCastSpellServerRpc(FixedString64Bytes spellId, ulong targetNetworkObjectId, ServerRpcParams _ = default)
+        {
+            if (m_Stats == null || m_Stats.IsDead)
+            {
+                return;
+            }
+
+            m_SpellCatalogLoader ??= ServiceLocator.Get<SpellCatalogLoader>();
+            m_AuraCatalogLoader ??= ServiceLocator.Get<AuraCatalogLoader>();
+            SpellCatalog spellCatalog = m_SpellCatalogLoader?.GetCached();
+            AuraCatalog auraCatalog = m_AuraCatalogLoader?.GetCached();
+            if (spellCatalog == null || auraCatalog == null)
+            {
+                Debug.LogWarning("[PlayerCombat] Spell- oder Aura-Catalog nicht geladen — Cast ignoriert.");
+                return;
+            }
+
+            string id = spellId.ToString();
+            if (!spellCatalog.TryGet(id, out SpellDefinition spell) || spell == null)
+            {
+                Debug.LogWarning($"[PlayerCombat] Unbekannter Spell '{id}'.");
+                return;
+            }
+
+            // Target-Auflösung: erst NetworkObject → UnitStats (implementiert ICombatUnit),
+            // bei 0/None oder Self-Targeting fällt das Ziel auf den Caster zurück.
+            ICombatUnit caster = m_Stats;
+            ICombatUnit primaryTarget = caster;
+            if (targetNetworkObjectId != 0UL
+                && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkObjectId, out NetworkObject targetObj)
+                && targetObj != null)
+            {
+                UnitStats targetStats = targetObj.GetComponent<UnitStats>();
+                if (targetStats != null)
+                {
+                    primaryTarget = targetStats;
+                }
+            }
+
+            SpellExecutionResult result = SpellExecutor.Execute(caster, spell, primaryTarget, auraCatalog);
+            if (result.Result != CastResult.Success)
+            {
+                Debug.Log($"[PlayerCombat] Cast '{id}' fehlgeschlagen: {result.Result}");
+                return;
+            }
+
+            // Visual-Fanout: alle Clients spielen das Spell-Visual lokal ab.
+            // Quelle = dieser Spieler; Ziel = Self (0) oder gegnerisches NetworkObject.
+            ulong sourceNetId = NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
+            ulong resolvedTargetNetId = ReferenceEquals(primaryTarget, caster) ? 0UL : targetNetworkObjectId;
+            PlaySpellCastClientRpc(spellId, sourceNetId, resolvedTargetNetId);
+        }
+
+        /// <summary>
+        /// Client-seitiger Visual-Handler. Löst Caster + optional Target zu
+        /// Transforms auf und delegiert an <see cref="SpellVisualSpawner.Spawn"/>.
+        /// Schlägt schweigend fehl, wenn der Spell kein Visual-Kit hat oder die
+        /// Catalogs noch nicht geladen sind — Gameplay läuft unverändert weiter.
+        /// </summary>
+        /// <remarks>
+        /// Bewusst ohne NetworkObject-Spawn für das Visual: <see cref="WorldSpellAnimation"/>
+        /// ist rein lokal pro Client (siehe Projektregel "Never sync each projectile /
+        /// particle as its own NetworkObject").
+        /// </remarks>
+        [ClientRpc]
+        private void PlaySpellCastClientRpc(FixedString64Bytes spellId, ulong sourceNetId, ulong targetNetId)
+        {
+            m_VisualCatalogLoader ??= ServiceLocator.Get<SpellVisualCatalogLoader>();
+            m_AnimationCatalogLoader ??= ServiceLocator.Get<SpellAnimationCatalogLoader>();
+            SpellVisualCatalog visuals = m_VisualCatalogLoader?.GetCached();
+            SpellAnimationCatalog anims = m_AnimationCatalogLoader?.GetCached();
+            if (visuals == null || anims == null)
+            {
+                return;
+            }
+
+            string id = spellId.ToString();
+            if (!visuals.TryGet(id, out SpellVisualDefinition kit) || kit == null || !kit.HasAny)
+            {
+                return;
+            }
+
+            Transform sourceTransform = ResolveNetworkTransform(sourceNetId);
+            if (sourceTransform == null)
+            {
+                return;
+            }
+            // 0 = Self-Cast → Target-Transform bleibt null, Spawner ankert am Caster.
+            Transform targetTransform = targetNetId != 0UL && targetNetId != sourceNetId
+                ? ResolveNetworkTransform(targetNetId)
+                : null;
+
+            SpellVisualSpawner.Spawn(kit, anims, sourceTransform, targetTransform);
+        }
+
+        /// <summary>
+        /// Resolves a spawned <see cref="NetworkObject"/> by id to its transform,
+        /// oder <c>null</c> wenn es auf diesem Client nicht (mehr) existiert.
+        /// </summary>
+        private Transform ResolveNetworkTransform(ulong netId)
+        {
+            if (netId == 0UL || NetworkManager == null || NetworkManager.SpawnManager == null)
+            {
+                return null;
+            }
+            if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(netId, out NetworkObject no) || no == null)
+            {
+                return null;
+            }
+            return no.transform;
         }
     }
 }

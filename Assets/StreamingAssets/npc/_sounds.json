@@ -1,0 +1,1167 @@
+[
+  {
+    "model": "antlion",
+    "event": "damage",
+    "sound": "varanus_voice_01_attack.ogg"
+  },
+  {
+    "model": "antlion",
+    "event": "die",
+    "sound": "lich_fire.ogg"
+  },
+  {
+    "model": "fire_ant",
+    "event": "damage",
+    "sound": "varanus_voice_01_attack.ogg"
+  },
+  {
+    "model": "fire_ant",
+    "event": "die",
+    "sound": "lich_fire.ogg"
+  },
+  {
+    "model": "goblin",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "goblin",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "goblin_elite",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_elite",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_elite",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_elite",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_elite",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_elite_runner",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_elite_runner",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_elite_runner",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_elite_runner",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_elite_runner",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_runner",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin_runner",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin_runner",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin_runner",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "goblin_runner",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "ice_ant",
+    "event": "damage",
+    "sound": "varanus_voice_01_attack.ogg"
+  },
+  {
+    "model": "ice_ant",
+    "event": "die",
+    "sound": "lich_fire.ogg"
+  },
+  {
+    "model": "fire_ant",
+    "event": "damage",
+    "sound": "varanus_voice_02_damage.ogg"
+  },
+  {
+    "model": "fire_ant",
+    "event": "die",
+    "sound": "varanus_voice_03_die.ogg"
+  },
+  {
+    "model": "antlion",
+    "event": "damage",
+    "sound": "varanus_voice_02_damage.ogg"
+  },
+  {
+    "model": "antlion",
+    "event": "die",
+    "sound": "varanus_voice_03_die.ogg"
+  },
+  {
+    "model": "ice_ant",
+    "event": "damage",
+    "sound": "varanus_voice_02_damage.ogg"
+  },
+  {
+    "model": "ice_ant",
+    "event": "die",
+    "sound": "varanus_voice_03_die.ogg"
+  },
+  {
+    "model": "minotaur",
+    "event": "damage",
+    "sound": "trico_voice_03_attack.ogg"
+  },
+  {
+    "model": "minotaur",
+    "event": "damage",
+    "sound": "orcwarrior_voice_03_attack.wav"
+  },
+  {
+    "model": "minotaur",
+    "event": "die",
+    "sound": "trico_voice_01_die.ogg"
+  },
+  {
+    "model": "minotaur",
+    "event": "die",
+    "sound": "orcwarrior_voice_01_growl.wav"
+  },
+  {
+    "model": "skeleton",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "wyvern",
+    "event": "damage",
+    "sound": "debrie_voice_04_attack.ogg"
+  },
+  {
+    "model": "wyvern",
+    "event": "damage",
+    "sound": "debrie_voice_05_damage.ogg"
+  },
+  {
+    "model": "wyvern",
+    "event": "die",
+    "sound": "debrie_voice_02_die.ogg"
+  },
+  {
+    "model": "wyvern_adult",
+    "event": "damage",
+    "sound": "debrie_voice_04_attack.ogg"
+  },
+  {
+    "model": "wyvern_adult",
+    "event": "damage",
+    "sound": "debrie_voice_05_damage.ogg"
+  },
+  {
+    "model": "wyvern_adult",
+    "event": "die",
+    "sound": "debrie_voice_02_die.ogg"
+  },
+  {
+    "model": "wyvern_air",
+    "event": "damage",
+    "sound": "debrie_voice_04_attack.ogg"
+  },
+  {
+    "model": "wyvern_air",
+    "event": "damage",
+    "sound": "debrie_voice_05_damage.ogg"
+  },
+  {
+    "model": "wyvern_air",
+    "event": "die",
+    "sound": "debrie_voice_02_die.ogg"
+  },
+  {
+    "model": "wyvern_fire",
+    "event": "damage",
+    "sound": "debrie_voice_04_attack.ogg"
+  },
+  {
+    "model": "wyvern_fire",
+    "event": "damage",
+    "sound": "debrie_voice_05_damage.ogg"
+  },
+  {
+    "model": "wyvern_fire",
+    "event": "die",
+    "sound": "debrie_voice_02_die.ogg"
+  },
+  {
+    "model": "wyvern_water",
+    "event": "damage",
+    "sound": "debrie_voice_04_attack.ogg"
+  },
+  {
+    "model": "wyvern_water",
+    "event": "damage",
+    "sound": "debrie_voice_05_damage.ogg"
+  },
+  {
+    "model": "wyvern_water",
+    "event": "die",
+    "sound": "debrie_voice_02_die.ogg"
+  },
+  {
+    "model": "antlion_small",
+    "event": "damage",
+    "sound": "starcrab_voice_04_die.wav"
+  },
+  {
+    "model": "antlion_small",
+    "event": "damage",
+    "sound": "starcrab_voice_03_damage.wav"
+  },
+  {
+    "model": "skeleton_archer",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_knight",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_knight_boss",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_mage",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_mage_boss",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_mage_high",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_mage_high_boss",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_occultist",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "skeleton_weak",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "hobgoblin",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "hobgoblin",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "hobgoblin",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "hobgoblin",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "hobgoblin",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "hobgoblin_archer",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "hobgoblin_archer",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "hobgoblin_archer",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "hobgoblin_archer",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "hobgoblin_archer",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "orc_archer",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "orc_archer",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "orc_archer",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "orc_archer",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "orc_archer",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "orc_elite",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "orc_elite",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "orc_elite",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "orc_elite",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "orc_elite",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "orc_heavy",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "orc_heavy",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "orc_heavy",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "orc_heavy",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "orc_heavy",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "orc_regular",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "orc_regular",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "orc_regular",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "orc_regular",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "orc_regular",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "spider",
+    "event": "die",
+    "sound": "e3_frillfaimam_die.ogg"
+  },
+  {
+    "model": "spider",
+    "event": "damage",
+    "sound": "ratman_voice_05_damage.ogg"
+  },
+  {
+    "model": "spider_giant",
+    "event": "die",
+    "sound": "e3_frillfaimam_die.ogg"
+  },
+  {
+    "model": "spider_giant",
+    "event": "damage",
+    "sound": "ratman_voice_05_damage.ogg"
+  },
+  {
+    "model": "spider_large",
+    "event": "die",
+    "sound": "e3_frillfaimam_die.ogg"
+  },
+  {
+    "model": "spider_large",
+    "event": "damage",
+    "sound": "ratman_voice_05_damage.ogg"
+  },
+  {
+    "model": "antlion_small",
+    "event": "die",
+    "sound": "starcrab_voice_02_idle.wav"
+  },
+  {
+    "model": "scathelocke",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "scathelocke",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "scathelocke",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "scathelocke",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "scathelocke",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "zombie",
+    "event": "attack",
+    "sound": "zombie_voice_03_idle.wav"
+  },
+  {
+    "model": "zombie",
+    "event": "damage",
+    "sound": "zombie_voice_01_damage.wav"
+  },
+  {
+    "model": "zombie",
+    "event": "die",
+    "sound": "zombie_voice_02_die.wav"
+  },
+  {
+    "model": "zombie_dark",
+    "event": "attack",
+    "sound": "zombie_voice_03_idle.wav"
+  },
+  {
+    "model": "zombie_dark",
+    "event": "damage",
+    "sound": "zombie_voice_01_damage.wav"
+  },
+  {
+    "model": "zombie_dark",
+    "event": "die",
+    "sound": "zombie_voice_02_die.wav"
+  },
+  {
+    "model": "pirate_ghost_captain",
+    "event": "attack",
+    "sound": "zombie_voice_03_idle.wav"
+  },
+  {
+    "model": "pirate_ghost_captain",
+    "event": "damage",
+    "sound": "zombie_voice_01_damage.wav"
+  },
+  {
+    "model": "pirate_ghost_captain",
+    "event": "die",
+    "sound": "zombie_voice_02_die.wav"
+  },
+  {
+    "model": "pirate_ghost_crewman",
+    "event": "attack",
+    "sound": "zombie_voice_03_idle.wav"
+  },
+  {
+    "model": "pirate_ghost_crewman",
+    "event": "damage",
+    "sound": "zombie_voice_01_damage.wav"
+  },
+  {
+    "model": "pirate_ghost_crewman",
+    "event": "die",
+    "sound": "zombie_voice_02_die.wav"
+  },
+  {
+    "model": "vesuvvio",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "vesuvvio",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "vesuvvio",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "vesuvvio",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "vesuvvio",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "werewolf",
+    "event": "attack",
+    "sound": "warg_voice_02_attack.ogg"
+  },
+  {
+    "model": "werewolf",
+    "event": "attack",
+    "sound": "warg_voice_01_attack.ogg"
+  },
+  {
+    "model": "werewolf",
+    "event": "damage",
+    "sound": "tog_voice_02_damage.wav"
+  },
+  {
+    "model": "werewolf",
+    "event": "die",
+    "sound": "tog_voice_03_die.wav"
+  },
+  {
+    "model": "minotaur_armor",
+    "event": "damage",
+    "sound": "trico_voice_03_attack.ogg"
+  },
+  {
+    "model": "minotaur_armor",
+    "event": "damage",
+    "sound": "orcwarrior_voice_03_attack.wav"
+  },
+  {
+    "model": "minotaur_armor",
+    "event": "die",
+    "sound": "trico_voice_01_die.ogg"
+  },
+  {
+    "model": "minotaur_armor",
+    "event": "die",
+    "sound": "orcwarrior_voice_01_growl.wav"
+  },
+  {
+    "model": "goblin_spearman",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_jumper",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_jumper",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_jumper",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_jumper",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_jumper",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_jumper",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_jumper",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_jumper",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_jumper",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_jumper",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "skeleton",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_archer",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_knight",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_knight_boss",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_mage",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_mage_boss",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_mage_high",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_mage_high_boss",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_occultist",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton_weak",
+    "event": "aggro",
+    "sound": "spectre_voice_05_idle.wav"
+  },
+  {
+    "model": "skeleton",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_archer",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_knight",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_knight_boss",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_mage",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_mage_boss",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_mage_high",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_mage_high_boss",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_occultist",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton_weak",
+    "event": "aggro",
+    "sound": "brohum_f_attack_02.ogg"
+  },
+  {
+    "model": "skeleton",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_archer",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_knight",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_knight_boss",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_mage",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_mage_boss",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_mage_high",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_mage_high_boss",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_occultist",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "skeleton_weak",
+    "event": "damage",
+    "sound": "brohum_f_attack_01.ogg"
+  },
+  {
+    "model": "goblin_shaman",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin_shaman",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin_shaman",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin_shaman",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "goblin_shaman",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "goblin_charger",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_01.ogg"
+  },
+  {
+    "model": "goblin_charger",
+    "event": "attack",
+    "sound": "shulack_ranger_attack_02.ogg"
+  },
+  {
+    "model": "goblin_charger",
+    "event": "damage",
+    "sound": "shulack_ranger_damage_01.ogg"
+  },
+  {
+    "model": "goblin_charger",
+    "event": "die",
+    "sound": "shulack_wizard_damage_02.ogg"
+  },
+  {
+    "model": "goblin_charger",
+    "event": "damage",
+    "sound": "shulack_wizard_damage_01.ogg"
+  },
+  {
+    "model": "cursed_grave",
+    "event": "die",
+    "sound": "e3_livingrock_falldown.ogg"
+  },
+  {
+    "model": "gribson",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "gribson",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "gribson",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "gribson",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "gribson",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_blue",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_blue",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_blue",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_blue",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_blue",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_green",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_green",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_green",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_green",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_green",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_pink",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_pink",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_pink",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_pink",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_pink",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_red",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_red",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_red",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_red",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_red",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_yellow",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_yellow",
+    "event": "attack",
+    "sound": "shulack_cannon_attack_02.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_yellow",
+    "event": "damage",
+    "sound": "shulack_cannon_damage_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_yellow",
+    "event": "damage",
+    "sound": "shulack_cannon_parry_01.ogg"
+  },
+  {
+    "model": "goblin_spearman_elite_yellow",
+    "event": "die",
+    "sound": "shulack_cannon_die_01.ogg"
+  },
+  {
+    "model": "swordsman_grey",
+    "event": "attack",
+    "sound": "shulack_captain_attack_04.ogg"
+  },
+  {
+    "model": "swordsman_grey",
+    "event": "attack",
+    "sound": "shulack_captain_attack_01.ogg"
+  },
+  {
+    "model": "swordsman_grey",
+    "event": "damage",
+    "sound": "shulack_captain_damage_01.ogg"
+  },
+  {
+    "model": "swordsman_grey",
+    "event": "damage",
+    "sound": "shulack_captain_cfire_1hand_normalfire.ogg"
+  },
+  {
+    "model": "swordsman_grey",
+    "event": "die",
+    "sound": "shulack_fighter_damage_02.ogg"
+  },
+  {
+    "model": "werewolf_orange",
+    "event": "attack",
+    "sound": "warg_voice_02_attack.ogg"
+  },
+  {
+    "model": "werewolf_orange",
+    "event": "attack",
+    "sound": "warg_voice_01_attack.ogg"
+  },
+  {
+    "model": "werewolf_orange",
+    "event": "damage",
+    "sound": "tog_voice_02_damage.wav"
+  },
+  {
+    "model": "werewolf_orange",
+    "event": "die",
+    "sound": "tog_voice_03_die.wav"
+  },
+  {
+    "model": "zombie_green",
+    "event": "attack",
+    "sound": "zombie_voice_03_idle.wav"
+  },
+  {
+    "model": "zombie_green",
+    "event": "damage",
+    "sound": "zombie_voice_01_damage.wav"
+  },
+  {
+    "model": "zombie_green",
+    "event": "die",
+    "sound": "zombie_voice_02_die.wav"
+  }
+]

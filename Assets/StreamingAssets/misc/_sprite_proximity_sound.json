@@ -1,0 +1,27 @@
+[
+  {
+    "filename": "campfire_01.png",
+    "sound": "fireplace.ogg",
+    "radius": 4.0
+  },
+  {
+    "filename": "street_light.png",
+    "sound": "fireplace.ogg",
+    "radius": 4.0
+  },
+  {
+    "filename": "tileset_dungeon_167.png",
+    "sound": "fireplace.ogg",
+    "radius": 4.0
+  },
+  {
+    "filename": "water_shallow.png",
+    "sound": "ambient_water_lake.ogg",
+    "radius": 2.0
+  },
+  {
+    "filename": "water_cell_tile.png",
+    "sound": "ambient_water_lake.ogg",
+    "radius": 2.0
+  }
+]

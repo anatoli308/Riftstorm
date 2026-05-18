@@ -1,0 +1,32 @@
+{
+  "name": "slash_002a",
+  "image_pattern": "spells/slash_002a_{frame}.png",
+  "canvas_size": 768,
+  "scale": 4,
+  "frames_count": 5,
+  "delay_ms": 50,
+  "loop_start": 0,
+  "loop_end": 0,
+  "frames": [
+    {
+      "w": 164,
+      "h": 168
+    },
+    {
+      "w": 72,
+      "h": 164
+    },
+    {
+      "w": 64,
+      "h": 176
+    },
+    {
+      "w": 64,
+      "h": 200
+    },
+    {
+      "w": 92,
+      "h": 196
+    }
+  ]
+}

@@ -1,0 +1,467 @@
+{
+  "1": {
+    "id": 1,
+    "name": "antlion",
+    "height": 50
+  },
+  "2": {
+    "id": 2,
+    "name": "antlion_small",
+    "height": 50
+  },
+  "3": {
+    "id": 3,
+    "name": "cursed_grave",
+    "height": 90
+  },
+  "4": {
+    "id": 4,
+    "name": "demon",
+    "height": 90
+  },
+  "5": {
+    "id": 5,
+    "name": "farmer_pitchfork_working",
+    "height": 65
+  },
+  "6": {
+    "id": 6,
+    "name": "fire_ant",
+    "height": 50
+  },
+  "7": {
+    "id": 7,
+    "name": "goblin",
+    "height": 50
+  },
+  "8": {
+    "id": 8,
+    "name": "goblin_elite",
+    "height": 50
+  },
+  "9": {
+    "id": 9,
+    "name": "goblin_elite_jumper",
+    "height": 50
+  },
+  "10": {
+    "id": 10,
+    "name": "goblin_jumper",
+    "height": 50
+  },
+  "11": {
+    "id": 11,
+    "name": "grisbon",
+    "height": 55
+  },
+  "12": {
+    "id": 12,
+    "name": "guild_man1",
+    "height": 55
+  },
+  "13": {
+    "id": 13,
+    "name": "guild_man2",
+    "height": 55
+  },
+  "14": {
+    "id": 14,
+    "name": "hobgoblin",
+    "height": 50
+  },
+  "15": {
+    "id": 15,
+    "name": "hobgoblin_archer",
+    "height": 50
+  },
+  "17": {
+    "id": 17,
+    "name": "horse",
+    "height": 65
+  },
+  "18": {
+    "id": 18,
+    "name": "horse_tack",
+    "height": 65
+  },
+  "19": {
+    "id": 19,
+    "name": "ice_ant",
+    "height": 50
+  },
+  "20": {
+    "id": 20,
+    "name": "knight",
+    "height": 50
+  },
+  "21": {
+    "id": 21,
+    "name": "minotaur",
+    "height": 75
+  },
+  "22": {
+    "id": 22,
+    "name": "orc_archer",
+    "height": 55
+  },
+  "23": {
+    "id": 23,
+    "name": "orc_elite",
+    "height": 55
+  },
+  "24": {
+    "id": 24,
+    "name": "orc_heavy",
+    "height": 55
+  },
+  "25": {
+    "id": 25,
+    "name": "orc_regular",
+    "height": 55
+  },
+  "30": {
+    "id": 30,
+    "name": "pirate_ghost_captain",
+    "height": 60
+  },
+  "31": {
+    "id": 31,
+    "name": "pirate_ghost_crewman",
+    "height": 60
+  },
+  "32": {
+    "id": 32,
+    "name": "raider",
+    "height": 55
+  },
+  "33": {
+    "id": 33,
+    "name": "scathelocke",
+    "height": 55
+  },
+  "34": {
+    "id": 34,
+    "name": "skeleton",
+    "height": 55
+  },
+  "35": {
+    "id": 35,
+    "name": "skeleton_archer",
+    "height": 55
+  },
+  "36": {
+    "id": 36,
+    "name": "skeleton_knight",
+    "height": 55
+  },
+  "37": {
+    "id": 37,
+    "name": "skeleton_knight_boss",
+    "height": 60
+  },
+  "38": {
+    "id": 38,
+    "name": "skeleton_mage",
+    "height": 55
+  },
+  "39": {
+    "id": 39,
+    "name": "skeleton_mage_boss",
+    "height": 60
+  },
+  "40": {
+    "id": 40,
+    "name": "skeleton_mage_high",
+    "height": 55
+  },
+  "41": {
+    "id": 41,
+    "name": "skeleton_mage_high_boss",
+    "height": 55
+  },
+  "42": {
+    "id": 42,
+    "name": "skeleton_occultist",
+    "height": 55
+  },
+  "43": {
+    "id": 43,
+    "name": "skeleton_weak",
+    "height": 55
+  },
+  "44": {
+    "id": 44,
+    "name": "spider",
+    "height": 50
+  },
+  "45": {
+    "id": 45,
+    "name": "spider_giant",
+    "height": 50
+  },
+  "46": {
+    "id": 46,
+    "name": "spider_large",
+    "height": 50
+  },
+  "47": {
+    "id": 47,
+    "name": "stealth",
+    "height": 50
+  },
+  "48": {
+    "id": 48,
+    "name": "training_dummy",
+    "height": 55
+  },
+  "49": {
+    "id": 49,
+    "name": "vesuvvio",
+    "height": 55
+  },
+  "50": {
+    "id": 50,
+    "name": "wandering_trader1",
+    "height": 55
+  },
+  "51": {
+    "id": 51,
+    "name": "wandering_trader2",
+    "height": 55
+  },
+  "52": {
+    "id": 52,
+    "name": "werebear",
+    "height": 75
+  },
+  "53": {
+    "id": 53,
+    "name": "werewolf",
+    "height": 50
+  },
+  "54": {
+    "id": 54,
+    "name": "wyvern",
+    "height": 75
+  },
+  "55": {
+    "id": 55,
+    "name": "wyvern_adult",
+    "height": 130
+  },
+  "56": {
+    "id": 56,
+    "name": "wyvern_air",
+    "height": 75
+  },
+  "57": {
+    "id": 57,
+    "name": "wyvern_fire",
+    "height": 75
+  },
+  "58": {
+    "id": 58,
+    "name": "wyvern_water",
+    "height": 75
+  },
+  "59": {
+    "id": 59,
+    "name": "zombie",
+    "height": 55
+  },
+  "60": {
+    "id": 60,
+    "name": "zombie_dark",
+    "height": 55
+  },
+  "61": {
+    "id": 61,
+    "name": "peddler_goblin",
+    "height": 50
+  },
+  "62": {
+    "id": 62,
+    "name": "goblin_spearman",
+    "height": 50
+  },
+  "63": {
+    "id": 63,
+    "name": "goblin_spearman_elite",
+    "height": 50
+  },
+  "64": {
+    "id": 64,
+    "name": "goblin_spearman_elite_jumper",
+    "height": 50
+  },
+  "65": {
+    "id": 65,
+    "name": "goblin_spearman_jumper",
+    "height": 50
+  },
+  "66": {
+    "id": 66,
+    "name": "minotaur_armor",
+    "height": 75
+  },
+  "67": {
+    "id": 67,
+    "name": "FemaleOld",
+    "height": 55
+  },
+  "68": {
+    "id": 68,
+    "name": "FemalePeasant1",
+    "height": 55
+  },
+  "69": {
+    "id": 69,
+    "name": "FemalePeasant2",
+    "height": 55
+  },
+  "70": {
+    "id": 70,
+    "name": "FemalePeasant3",
+    "height": 55
+  },
+  "71": {
+    "id": 71,
+    "name": "FemalePeasant4",
+    "height": 55
+  },
+  "72": {
+    "id": 72,
+    "name": "LuxHighPriestNpc",
+    "height": 60
+  },
+  "73": {
+    "id": 73,
+    "name": "LuxPriestNpc",
+    "height": 60
+  },
+  "74": {
+    "id": 74,
+    "name": "MalePeasant1",
+    "height": 55
+  },
+  "75": {
+    "id": 75,
+    "name": "MalePeasant2",
+    "height": 55
+  },
+  "76": {
+    "id": 76,
+    "name": "MalePeasant3",
+    "height": 55
+  },
+  "77": {
+    "id": 77,
+    "name": "MalePeasant4",
+    "height": 55
+  },
+  "78": {
+    "id": 78,
+    "name": "NoblemanBlue",
+    "height": 55
+  },
+  "79": {
+    "id": 79,
+    "name": "NobleWoman1",
+    "height": 55
+  },
+  "80": {
+    "id": 80,
+    "name": "Noblewoman2",
+    "height": 55
+  },
+  "81": {
+    "id": 81,
+    "name": "NobleWomanFat1",
+    "height": 55
+  },
+  "82": {
+    "id": 82,
+    "name": "NobleWomanFat2",
+    "height": 55
+  },
+  "83": {
+    "id": 83,
+    "name": "OldManBrown",
+    "height": 55
+  },
+  "84": {
+    "id": 84,
+    "name": "OldManGrey",
+    "height": 55
+  },
+  "85": {
+    "id": 85,
+    "name": "OldWitch",
+    "height": 55
+  },
+  "86": {
+    "id": 86,
+    "name": "Pig",
+    "height": 50
+  },
+  "87": {
+    "id": 87,
+    "name": "goblin_shaman",
+    "height": 50
+  },
+  "88": {
+    "id": 88,
+    "name": "goblin_charger",
+    "height": 50
+  },
+  "89": {
+    "id": 89,
+    "name": "werewolf_orange",
+    "height": 50
+  },
+  "90": {
+    "id": 90,
+    "name": "boar",
+    "height": 50
+  },
+  "91": {
+    "id": 91,
+    "name": "goblin_spearman_elite_blue",
+    "height": 50
+  },
+  "92": {
+    "id": 92,
+    "name": "goblin_spearman_elite_green",
+    "height": 50
+  },
+  "93": {
+    "id": 93,
+    "name": "goblin_spearman_elite_pink",
+    "height": 50
+  },
+  "94": {
+    "id": 94,
+    "name": "goblin_spearman_elite_red",
+    "height": 50
+  },
+  "95": {
+    "id": 95,
+    "name": "goblin_spearman_elite_yellow",
+    "height": 50
+  },
+  "96": {
+    "id": 96,
+    "name": "MalePeasant_green",
+    "height": 55
+  },
+  "97": {
+    "id": 97,
+    "name": "swordsman_grey",
+    "height": 55
+  },
+  "98": {
+    "id": 98,
+    "name": "zombie_green",
+    "height": 55
+  }
+}

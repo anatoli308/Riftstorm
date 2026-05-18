@@ -1,0 +1,6487 @@
+[
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_rod_grey",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wandering_trader1",
+    "animation_id": 0,
+    "duration_in_seconds": 2.0
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 1,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 7,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "antlion_small",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_greatbow_orange",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_default_feet",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_battle_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_plate_helm",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_plate_gauntlets",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_battle_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_default_chest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_buckler",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 1,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 7,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "antlion",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_leather_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_buckler",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_chain_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_default_chest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_chain_coif",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_club",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wandering_trader2",
+    "animation_id": 0,
+    "duration_in_seconds": 2.0
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_boots_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "cursed_grave",
+    "animation_id": 0,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "cursed_grave",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "cursed_grave",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "cursed_grave",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "cursed_grave",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_coif",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_longbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_dagger_red",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_chain_cuirass",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 1,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 7,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "fire_ant",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_head_bald",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin_elite_runner",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_cuirass",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "peasant_man2",
+    "animation_id": 0,
+    "duration_in_seconds": 1.0
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_default_hands",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_iron_buckler",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_rod",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_vest_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 1,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 7,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "ice_ant",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_vest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_chain_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "peasant_woman1",
+    "animation_id": 0,
+    "duration_in_seconds": 1.0
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "skeleton_mage",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 2,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "skeleton_weak",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_chain_greaves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin_elite",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_club",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_chain_greaves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin_runner",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_cloth_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_cloth_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_cloth_pants",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_cloth_pants",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "guild_man1",
+    "animation_id": 0,
+    "duration_in_seconds": 6.4
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_cloth_sandals",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_greatbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_default_feet",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "guild_man2",
+    "animation_id": 0,
+    "duration_in_seconds": 6.4
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_cloth_sandals",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_cloth_shirt",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_cloth_shirt",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 2,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "skeleton_archer",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 0,
+    "duration_in_seconds": 1.6
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 8,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 9,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "minotaur",
+    "animation_id": 10,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_dagger",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "peasant_man1",
+    "animation_id": 0,
+    "duration_in_seconds": 1.0
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_slingshot",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_default_hands",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_dagger",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_vest_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_dagger_red",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "peasant_woman2",
+    "animation_id": 0,
+    "duration_in_seconds": 1.0
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 2,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "skeleton",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_greatbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 8,
+    "duration_in_seconds": 0.266
+  },
+  {
+    "script_name": "skeleton_knight_boss",
+    "animation_id": 9,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_default_legs",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_default_legs",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "stealth",
+    "animation_id": 0,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "stealth",
+    "animation_id": 3,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "stealth",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "stealth",
+    "animation_id": 8,
+    "duration_in_seconds": 0.0
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 8,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_fire",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_greatbow_orange",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_greatstaff",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_greatstaff",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_shortbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_greatsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 8,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_greatsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_hand_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_hand_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_shortbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 8,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_adult",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_reinforced_club",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_head_long",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_head_short",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_infantry_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 8,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_air",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_infantry_axe",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_iron_buckler",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_leather_chest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_plate_cuirass",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_leather_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_hood_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_leather_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 2,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 4,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 5,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 6,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 7,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 8,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "wyvern_water",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_longsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_leather_chest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_leather_hood",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 0,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 1,
+    "duration_in_seconds": 1.066
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 3,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 7,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "zombie",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_leather_gloves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_leather_pants",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_leather_hood",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_leather_pants",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_longsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_longbow",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mace",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mace",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_boots_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_boots_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_boots_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_hood",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_hood",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_hood_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_hood_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_skirt",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_hood_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_skirt",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_skirt_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_skirt_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_sleeves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_sleeves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_sleeves_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_wand",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_mage_vest",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_plate_cuirass",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_sleeves_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_vest_alt1",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_maul",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_mage_vest_alt2",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_plate_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_maul",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_plate_boots",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_plate_gauntlets",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_plate_greaves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_rod",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_plate_greaves",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_reinforced_club",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_plate_helm",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_rod_grey",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_shield",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_shield",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_shortsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_shortsword",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_smith_hammer",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_slingshot",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_staff",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_smith_hammer",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_staff",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_steel_armor",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_steel_armor",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_wand",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_war_hammer",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_war_hammer",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_female_zweihander",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 4,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 6,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 7,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "player_male_zweihander",
+    "animation_id": 9,
+    "duration_in_seconds": 0.066
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin_spearman",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 0,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 2,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 3,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 4,
+    "duration_in_seconds": 0.4
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 5,
+    "duration_in_seconds": 0.8
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 6,
+    "duration_in_seconds": 0.533
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 7,
+    "duration_in_seconds": 0.3
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 8,
+    "duration_in_seconds": 0.133
+  },
+  {
+    "script_name": "goblin_spearman_jumper",
+    "animation_id": 9,
+    "duration_in_seconds": 0.2
+  }
+]

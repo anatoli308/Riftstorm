@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "auras": [
+    {
+      "id": "burn",
+      "name": "Verbrennung",
+      "icon": "icons/aura_burn",
+      "type": "PeriodicDamage",
+      "school": "Fire",
+      "duration_ms": 8000,
+      "interval_ms": 2000,
+      "max_stacks": 1,
+      "dispel_type": "Magic",
+      "mechanic": "None",
+      "data1": 12,
+      "data2": 0,
+      "data3": 0,
+      "positive": false,
+      "refresh_on_reapply": true
+    },
+    {
+      "id": "chilled",
+      "name": "Unterk\u00fchlt",
+      "icon": "icons/aura_chilled",
+      "type": "ModifyMoveSpeedPct",
+      "school": "Frost",
+      "duration_ms": 4000,
+      "interval_ms": 0,
+      "max_stacks": 1,
+      "dispel_type": "Magic",
+      "mechanic": "Snare",
+      "data1": -30,
+      "data2": 0,
+      "data3": 0,
+      "positive": false,
+      "refresh_on_reapply": true
+    },
+    {
+      "id": "inner_fire",
+      "name": "Inneres Feuer",
+      "icon": "icons/aura_inner_fire",
+      "type": "ModifyDamageDealtPct",
+      "school": "Holy",
+      "duration_ms": 1800000,
+      "interval_ms": 0,
+      "max_stacks": 1,
+      "dispel_type": "Magic",
+      "mechanic": "None",
+      "data1": 15,
+      "data2": 0,
+      "data3": 0,
+      "positive": true,
+      "refresh_on_reapply": true
+    }
+  ]
+}

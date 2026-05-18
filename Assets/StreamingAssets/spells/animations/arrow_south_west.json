@@ -1,0 +1,16 @@
+{
+  "name": "arrow_south_west",
+  "image_pattern": "spells/arrow_south_west_{frame}.png",
+  "canvas_size": 32,
+  "scale": 1,
+  "frames_count": 1,
+  "delay_ms": 0,
+  "loop_start": 1,
+  "loop_end": 1,
+  "frames": [
+    {
+      "w": 0,
+      "h": 0
+    }
+  ]
+}

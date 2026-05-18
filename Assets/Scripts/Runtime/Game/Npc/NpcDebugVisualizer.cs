@@ -1,3 +1,4 @@
+using Riftstorm.Game.Combat;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -19,9 +20,9 @@ namespace Riftstorm.Game.Npc
     /// <para>
     /// Read-only Bindings:
     /// <list type="bullet">
-    ///   <item><see cref="NpcController.AggroRadius"/></item>
-    ///   <item><see cref="NpcController.DeaggroRadius"/></item>
-    ///   <item><see cref="NpcController.AttackRangeWithSelfHitRadius"/></item>
+    ///   <item><see cref="NpcController.AggroRange"/></item>
+    ///   <item><see cref="NpcController.LeashRange"/> (FLARE-Port nutzt Leash statt Deaggro)</item>
+    ///   <item><see cref="NpcController.MeleeRange"/> + <see cref="UnitStats.HitRadius"/></item>
     /// </list>
     /// </para>
     /// </remarks>
@@ -94,15 +95,19 @@ namespace Riftstorm.Game.Npc
 
             if (m_ShowAggro && m_AggroRing != null)
             {
-                FillCircle(m_AggroRing, m_Npc.AggroRadius);
+                FillCircle(m_AggroRing, m_Npc.AggroRange);
             }
             if (m_ShowDeaggro && m_DeaggroRing != null)
             {
-                FillCircle(m_DeaggroRing, m_Npc.DeaggroRadius);
+                // FLARE kennt kein separates Deaggro — Leash uebernimmt die Rolle
+                // (NPC bricht ab, sobald er zu weit vom Spawn entfernt ist).
+                FillCircle(m_DeaggroRing, m_Npc.LeashRange);
             }
             if (m_ShowAttackRange && m_AttackRing != null)
             {
-                FillCircle(m_AttackRing, m_Npc.AttackRangeWithSelfHitRadius);
+                UnitStats selfStats = m_Npc.GetComponent<UnitStats>();
+                float selfRadius = selfStats != null ? selfStats.HitRadius : 0f;
+                FillCircle(m_AttackRing, m_Npc.MeleeRange + selfRadius);
             }
         }
 

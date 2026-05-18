@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7290034357191855565
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6776466479393485972}
+  - component: {fileID: 8373345667372785125}
+  - component: {fileID: 2397450522955645118}
+  - component: {fileID: 5631368820448117128}
+  - component: {fileID: 4650507505985852801}
+  - component: {fileID: 8805719366119305485}
+  - component: {fileID: -7696133044182185646}
+  m_Layer: 0
+  m_Name: Flare_TalkerNPC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6776466479393485972
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8373345667372785125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 4214623086
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &2397450522955645118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82fdc0d34989ca4b8c197c6f343627e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.UnitStats
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_MaxHp: 100
+  m_MaxMana: 100
+  m_Strength: 5
+  m_Armor: 0
+  m_Level: 1
+  m_HitRadius: 0.2
+  m_SelectionRadius: 0
+  m_WalkSpeed: 0
+  m_RunSpeed: 0
+  m_AttackRange: 0
+  m_ProjectileRange: 0
+  m_DisplayName: 
+  m_FactionId: 0
+  m_IsPlayer: 0
+--- !u!114 &5631368820448117128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1c56cad9a48ab498fde89273e0b0d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcIdentity
+  m_Stats: {fileID: 2397450522955645118}
+--- !u!114 &4650507505985852801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5472ab1e341c85a4abef67b03c86adb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.UnitCombatVisuals
+  m_Character: {fileID: 0}
+  m_AnimSwing: swing
+  m_AnimShoot: shoot
+  m_AnimCast: cast
+  m_AnimBlock: block
+  m_AnimHit: hit
+  m_AnimDie: die
+--- !u!114 &8805719366119305485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30fcc06d9a66e8e439f54eed60a12d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.FlareNpcSpawner
+  m_TemplateEntry: 0
+  m_AtlasJsonSubFolder: npc
+  m_AtlasTextureSubFolder: Art/npc
+  m_InitialAnimation: stance
+  m_InitialFlareDirection: 2
+  m_SortingOrder: 0
+  m_VisualEulerAngles: {x: 90, y: 0, z: 0}
+  m_MinHitRadius: 0.4
+  m_HitRadiusFromHeight: 0.25
+--- !u!114 &-7696133044182185646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a78874b4979a54fbaea75c2f5c313f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcController
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_Stats: {fileID: 2397450522955645118}
+  m_Visuals: {fileID: 4650507505985852801}
+  m_Character: {fileID: 0}
+  m_HitboxRuntime: {fileID: 0}
+  m_AggroRadius: 8
+  m_DeaggroRadius: 12
+  m_TargetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_AttackCooldown: 1
+  m_AttackDamage: 5
+  m_RemoteSmoothTime: 0.1
+  m_AnimStance: stance
+  m_AnimRun: run
+  m_IncludeTriggers: 1
+  m_ShowGizmos: 1

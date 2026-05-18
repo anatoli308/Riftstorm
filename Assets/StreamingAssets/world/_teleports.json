@@ -1,0 +1,86 @@
+{
+  "1": {
+    "entry": 1,
+    "name": "HowlersValley",
+    "target_x": 101,
+    "target_y": 151,
+    "target_mapId": 1
+  },
+  "2": {
+    "entry": 2,
+    "name": "TrogCave",
+    "target_x": 240,
+    "target_y": 56,
+    "target_mapId": 1
+  },
+  "3": {
+    "entry": 3,
+    "name": "revere",
+    "target_x": 524,
+    "target_y": 280,
+    "target_mapId": 1
+  },
+  "4": {
+    "entry": 4,
+    "name": "atmar",
+    "target_x": 72,
+    "target_y": 437,
+    "target_mapId": 1
+  },
+  "5": {
+    "entry": 5,
+    "name": "field",
+    "target_x": 180,
+    "target_y": 89,
+    "target_mapId": 1
+  },
+  "6": {
+    "entry": 6,
+    "name": "fields",
+    "target_x": 178,
+    "target_y": 89,
+    "target_mapId": 1
+  },
+  "7": {
+    "entry": 7,
+    "name": "dragon",
+    "target_x": 659,
+    "target_y": 62,
+    "target_mapId": 1
+  },
+  "8": {
+    "entry": 8,
+    "name": "beach",
+    "target_x": 436,
+    "target_y": 492,
+    "target_mapId": 1
+  },
+  "9": {
+    "entry": 9,
+    "name": "start",
+    "target_x": 17,
+    "target_y": 106,
+    "target_mapId": 1
+  },
+  "10": {
+    "entry": 10,
+    "name": "castle",
+    "target_x": 272,
+    "target_y": 312,
+    "target_mapId": 1
+  },
+  "11": {
+    "entry": 11,
+    "name": "dale",
+    "target_x": 200,
+    "target_y": 528,
+    "target_mapId": 1
+  },
+  "12": {
+    "entry": 12,
+    "name": "gmisland",
+    "target_x": 63,
+    "target_y": 70,
+    "target_mapId": 9
+  }
+}

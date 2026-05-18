@@ -1,0 +1,202 @@
+{
+  "1": {
+    "gem_id": 1,
+    "icon": "icon_item_enchantstone01.png",
+    "name": "+1 Strength",
+    "quality": 2,
+    "stat_1": 4,
+    "stat_1_amount": 1
+  },
+  "2": {
+    "gem_id": 2,
+    "icon": "icon_item_enchantstone05.png",
+    "name": "+1 Agility",
+    "quality": 2,
+    "stat_1": 5,
+    "stat_1_amount": 1
+  },
+  "3": {
+    "gem_id": 3,
+    "icon": "icon_item_enchantstone02.png",
+    "name": "+1 Courage",
+    "quality": 2,
+    "stat_1": 8,
+    "stat_1_amount": 1
+  },
+  "4": {
+    "gem_id": 4,
+    "icon": "icon_item_enchantstone04.png",
+    "name": "+1 Willpower",
+    "quality": 2,
+    "stat_1": 6,
+    "stat_1_amount": 1
+  },
+  "5": {
+    "gem_id": 5,
+    "icon": "icon_item_enchantstone06.png",
+    "name": "+1 Intellect",
+    "quality": 2,
+    "stat_1": 7,
+    "stat_1_amount": 1
+  },
+  "6": {
+    "gem_id": 6,
+    "icon": "icon_item_crystal02c.png",
+    "name": "+2 Strength",
+    "quality": 3,
+    "stat_1": 4,
+    "stat_1_amount": 2
+  },
+  "7": {
+    "gem_id": 7,
+    "icon": "icon_item_crystal02d.png",
+    "name": "+2 Agility",
+    "quality": 3,
+    "stat_1": 5,
+    "stat_1_amount": 2
+  },
+  "8": {
+    "gem_id": 8,
+    "icon": "icon_item_crystal02a.png",
+    "name": "+2 Courage",
+    "quality": 3,
+    "stat_1": 8,
+    "stat_1_amount": 2
+  },
+  "9": {
+    "gem_id": 9,
+    "icon": "icon_item_crystal02b.png",
+    "name": "+2 Willpower",
+    "quality": 3,
+    "stat_1": 6,
+    "stat_1_amount": 2
+  },
+  "10": {
+    "gem_id": 10,
+    "icon": "icon_item_crystal02g.png",
+    "name": "+2 Intellect",
+    "quality": 3,
+    "stat_1": 7,
+    "stat_1_amount": 2
+  },
+  "11": {
+    "gem_id": 11,
+    "icon": "icon_item_polish06.png",
+    "name": "+3 Strength",
+    "quality": 4,
+    "stat_1": 4,
+    "stat_1_amount": 3
+  },
+  "12": {
+    "gem_id": 12,
+    "icon": "icon_item_polish01.png",
+    "name": "+3 Agility",
+    "quality": 4,
+    "stat_1": 5,
+    "stat_1_amount": 3
+  },
+  "13": {
+    "gem_id": 13,
+    "icon": "icon_item_polish03.png",
+    "name": "+3 Courage",
+    "quality": 4,
+    "stat_1": 8,
+    "stat_1_amount": 3
+  },
+  "14": {
+    "gem_id": 14,
+    "icon": "icon_item_polish02.png",
+    "name": "+3 Willpower",
+    "quality": 4,
+    "stat_1": 6,
+    "stat_1_amount": 3
+  },
+  "15": {
+    "gem_id": 15,
+    "icon": "icon_item_polish07.png",
+    "name": "+3 Intellect",
+    "quality": 4,
+    "stat_1": 7,
+    "stat_1_amount": 3
+  },
+  "16": {
+    "gem_id": 16,
+    "icon": "icon_item_red_flawless.png",
+    "name": "+4 Strength",
+    "quality": 5,
+    "stat_1": 4,
+    "stat_1_amount": 4
+  },
+  "17": {
+    "gem_id": 17,
+    "icon": "icon_item_green_flawless.png",
+    "name": "+4 Agility",
+    "quality": 5,
+    "stat_1": 5,
+    "stat_1_amount": 4
+  },
+  "18": {
+    "gem_id": 18,
+    "icon": "icon_item_yellow_flawless.png",
+    "name": "+4 Courage",
+    "quality": 5,
+    "stat_1": 8,
+    "stat_1_amount": 4
+  },
+  "19": {
+    "gem_id": 19,
+    "icon": "icon_item_blue_flawless.png",
+    "name": "+4 Willpower",
+    "quality": 5,
+    "stat_1": 6,
+    "stat_1_amount": 4
+  },
+  "20": {
+    "gem_id": 20,
+    "icon": "icon_item_purple_flawless.png",
+    "name": "+4 Intellect",
+    "quality": 5,
+    "stat_1": 7,
+    "stat_1_amount": 4
+  },
+  "21": {
+    "gem_id": 21,
+    "icon": "icon_item_red_draconic.png",
+    "name": "+5 Strength",
+    "quality": 6,
+    "stat_1": 4,
+    "stat_1_amount": 5
+  },
+  "22": {
+    "gem_id": 22,
+    "icon": "icon_item_green_draconic.png",
+    "name": "+5 Agility",
+    "quality": 6,
+    "stat_1": 5,
+    "stat_1_amount": 5
+  },
+  "23": {
+    "gem_id": 23,
+    "icon": "icon_item_yellow_draconic.png",
+    "name": "+5 Courage",
+    "quality": 6,
+    "stat_1": 8,
+    "stat_1_amount": 5
+  },
+  "24": {
+    "gem_id": 24,
+    "icon": "icon_item_blue_draconic.png",
+    "name": "+5 Willpower",
+    "quality": 6,
+    "stat_1": 6,
+    "stat_1_amount": 5
+  },
+  "25": {
+    "gem_id": 25,
+    "icon": "icon_item_purple_draconic.png",
+    "name": "+5 Intellect",
+    "quality": 6,
+    "stat_1": 7,
+    "stat_1_amount": 5
+  }
+}

@@ -1,0 +1,2552 @@
+[
+  {
+    "icon": "icon_item_belt_c01.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 2,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_c02.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 2,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 5,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 6,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_r01.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 3,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_r02.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 3,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 4,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_belt_u02.png",
+    "sound": "item_acc_leather.ogg",
+    "quality": 4,
+    "equip_type": 4
+  },
+  {
+    "icon": "icon_item_bow_c01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "shortbow",
+    "quality": 2,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_c02.png",
+    "sound": "item_att_bow.ogg",
+    "model": "shortbow",
+    "quality": 2,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_deva65a.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow_orange",
+    "quality": 6,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_e01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow_orange",
+    "quality": 5,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_l01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow",
+    "quality": 4,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_l02.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow",
+    "quality": 4,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_m01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow_orange",
+    "quality": 6,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_r01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "longbow",
+    "quality": 3,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_r02.png",
+    "sound": "item_att_bow.ogg",
+    "model": "longbow",
+    "quality": 3,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_u01.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow",
+    "quality": 4,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_bow_u02.png",
+    "sound": "item_att_bow.ogg",
+    "model": "greatbow",
+    "quality": 4,
+    "weapon_type": 2,
+    "equip_type": 11
+  },
+  {
+    "icon": "icon_item_ch_glove_c01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 2,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_glove_e01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 5,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_glove_l01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_glove_m01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 6,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_glove_r01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 3,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_glove_u01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_gloves",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_ch_head_c01a.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 3,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_ch_head_c01b.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 2,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_ch_head_m01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 6,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_ch_pants_c01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 2,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_pants_e01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 5,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_pants_l01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_pants_m01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 6,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_pants_r01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 3,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_pants_u01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_greaves",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_ch_shoes_c01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 2,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_shoes_e01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 5,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_shoes_l01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_shoes_m01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 6,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_shoes_r01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 3,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_shoes_u01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_boots",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_ch_torso_c01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 2,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_ch_torso_e01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 5,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_ch_torso_l01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_ch_torso_m01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 6,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_ch_torso_r01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 3,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_ch_torso_u01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_cuirass",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_dagger_c01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger",
+    "quality": 2,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_c02.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger",
+    "quality": 2,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_e01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 5,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_l01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 4,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_l02.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 4,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_m01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 6,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_r01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger",
+    "quality": 3,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_r02.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger",
+    "quality": 3,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_u01.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 4,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_dagger_u02.png",
+    "sound": "item_att_short_sword.ogg",
+    "model": "dagger_red",
+    "quality": 4,
+    "weapon_type": 6,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_lt_glove_c01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 2,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_glove_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 5,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_glove_l01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_glove_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 6,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_glove_r01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 3,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_glove_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_gloves",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_lt_head_c01a.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 3,
+    "armor_type": 2,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_head_c01b.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 2,
+    "armor_type": 2,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_head_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 5,
+    "armor_type": 2,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_head_l01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_head_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_pants_c01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 2,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_pants_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 5,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_pants_l01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_pants_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 6,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_pants_r01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 3,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_pants_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_pants",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_lt_shoes_c01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 2,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_shoes_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 5,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_shoes_l01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_shoes_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 6,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_shoes_r01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 3,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_shoes_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_boots",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_lt_torso_c01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 2,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_lt_torso_e01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 5,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_lt_torso_l01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_lt_torso_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 6,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_lt_torso_r01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 3,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_lt_torso_u01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_chest",
+    "quality": 4,
+    "armor_type": 2,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_mace_c01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "club",
+    "quality": 2,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_c02.png",
+    "sound": "item_att_mace.ogg",
+    "model": "reinforced_club",
+    "quality": 2,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_deva65a.png",
+    "sound": "item_att_mace.ogg",
+    "model": "maul",
+    "quality": 6,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_l01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "mace",
+    "quality": 4,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_l02.png",
+    "sound": "item_att_mace.ogg",
+    "model": "mace",
+    "quality": 4,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_m01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "maul",
+    "quality": 6,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_r01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "smith_hammer",
+    "quality": 3,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_r02.png",
+    "sound": "item_att_mace.ogg",
+    "model": "smith_hammer",
+    "quality": 3,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_s01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "war_hammer",
+    "quality": 5,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_u01.png",
+    "sound": "item_att_mace.ogg",
+    "model": "mace",
+    "quality": 4,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_mace_u02.png",
+    "sound": "item_att_mace.ogg",
+    "model": "mace",
+    "quality": 4,
+    "weapon_type": 3,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_necklace_e01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 5,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_l01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_m01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 6,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_r01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 3,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_r02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 3,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_u01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_u02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_pl_head_c01a.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 3,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_pl_head_c01b.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 2,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_pl_head_e01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 5,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_pl_head_m01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 6,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_polearm_c01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "hand_axe",
+    "quality": 2,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_c02.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "hand_axe",
+    "quality": 2,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_deva65a.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "battle_axe",
+    "quality": 6,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_l01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "infantry_axe",
+    "quality": 4,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_m01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "battle_axe",
+    "quality": 6,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_r01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "hand_axe",
+    "quality": 3,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_r02.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "hand_axe",
+    "quality": 3,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_polearm_u01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "infantry_axe",
+    "quality": 4,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_potion_hp02_1.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_hp02_2.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_hp02_3.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_hp03_1.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_hp03_2.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_hp03_3.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp02_1.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp02_2.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp02_3.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp03_1.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp03_2.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_potion_mp03_3.png",
+    "sound": "item_gen_potion.ogg"
+  },
+  {
+    "icon": "icon_item_ring_c02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 2,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_e01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 5,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_l01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_m01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 6,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_r01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 3,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_r02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 3,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_u01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_ring_u02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 4,
+    "equip_type": 8
+  },
+  {
+    "icon": "icon_item_shield_c01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "buckler",
+    "quality": 2,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_c02.png",
+    "sound": "item_def_shield.ogg",
+    "model": "buckler",
+    "quality": 2,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_e01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "shield",
+    "quality": 5,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_l01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "iron_buckler",
+    "quality": 4,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_l02.png",
+    "sound": "item_def_shield.ogg",
+    "model": "iron_buckler",
+    "quality": 4,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_m01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "shield",
+    "quality": 6,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_r01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "buckler",
+    "quality": 3,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_r02.png",
+    "sound": "item_def_shield.ogg",
+    "model": "buckler",
+    "quality": 3,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_u01.png",
+    "sound": "item_def_shield.ogg",
+    "model": "iron_buckler",
+    "quality": 4,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_shield_u02.png",
+    "sound": "item_def_shield.ogg",
+    "model": "iron_buckler",
+    "quality": 4,
+    "equip_type": 10
+  },
+  {
+    "icon": "icon_item_staff_c01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "staff_grey",
+    "quality": 2,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_c02.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "staff_grey",
+    "quality": 2,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_deva65a.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_red",
+    "quality": 6,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_e01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_purple",
+    "quality": 5,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_l01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff",
+    "quality": 4,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_l02.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff",
+    "quality": 4,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_m01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_red",
+    "quality": 6,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_r01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "staff",
+    "quality": 3,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_r02.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "staff",
+    "quality": 3,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_s01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_purple",
+    "quality": 5,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_u01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff",
+    "quality": 4,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_staff_u02.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff",
+    "quality": 4,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_star_staff_m01.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_red",
+    "quality": 6,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_star_staff_m02.png",
+    "sound": "item_gat_tree.ogg",
+    "model": "greatstaff_red",
+    "quality": 6,
+    "weapon_type": 5,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_c01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "shortsword",
+    "quality": 2,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_c02.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "shortsword",
+    "quality": 2,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_e01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "greatsword",
+    "quality": 5,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_l01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "zweihander",
+    "quality": 4,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_l02.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "zweihander",
+    "quality": 4,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_m01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "greatsword",
+    "quality": 6,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_r01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "longsword",
+    "quality": 3,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_r02.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "longsword",
+    "quality": 3,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_u01.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "zweihander",
+    "quality": 4,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_sword_u02.png",
+    "sound": "item_att_long_sword.ogg",
+    "model": "zweihander",
+    "quality": 4,
+    "weapon_type": 4,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_pl_glove_c01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 2,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_glove_e01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 5,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_glove_l01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_glove_m01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 6,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_glove_r01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 3,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_glove_u01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_gauntlets",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_pl_pants_c01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 2,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_pants_e01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 5,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_pants_l01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_pants_m01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 6,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_pants_r01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 3,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_pants_u01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_greaves",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_pl_shoes_c01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 2,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_shoes_e01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 5,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_shoes_l01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_shoes_m01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 6,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_shoes_r01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 3,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_shoes_u01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_boots",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_pl_torso_c01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 2,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_pl_torso_e01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 5,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_pl_torso_l01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_pl_torso_m01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 6,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_pl_torso_r01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 3,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_pl_torso_u01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_cuirass",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_polearm_e01.png",
+    "sound": "item_att_polearm.ogg",
+    "model": "battle_axe",
+    "quality": 5,
+    "weapon_type": 1,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_c01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "wand",
+    "quality": 2,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_c02.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "wand",
+    "quality": 2,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_deva65a.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_red",
+    "quality": 6,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_e01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_purple",
+    "quality": 5,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_l01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_blue",
+    "quality": 4,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_l02.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_blue",
+    "quality": 4,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_m01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_red",
+    "quality": 6,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_r01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod",
+    "quality": 3,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_r02.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod",
+    "quality": 3,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_u01.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_blue",
+    "quality": 4,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_cannon_u02.png",
+    "sound": "item_gat_jewelry.ogg",
+    "model": "rod_blue",
+    "quality": 4,
+    "weapon_type": 7,
+    "equip_type": 9
+  },
+  {
+    "icon": "icon_item_ch_head_l01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_ch_head_u01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 4,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_pl_head_l01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_pl_head_u01.png",
+    "sound": "item_acc_plate.ogg",
+    "model": "plate_helm",
+    "quality": 4,
+    "armor_type": 4,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_glove_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 2,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 5,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 6,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 3,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_gloves",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_head_c01a.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 3,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_c01b.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 2,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_e01.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 5,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_l01.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_m01.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 6,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_u01.png",
+    "sound": "item_def_robe.ogg",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_pants_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 2,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 5,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 6,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 3,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_pants",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_shoes_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 2,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 5,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 6,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 3,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_sandals",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_torso_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 2,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 5,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 6,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 3,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "cloth_shirt",
+    "quality": 4,
+    "armor_type": 1,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_glove_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 2,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 5,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 6,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 3,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_head_c01a.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 3,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_c01b.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 2,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 5,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 6,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_pants_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 2,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 5,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 6,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 3,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_shoes_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 2,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 5,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 6,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 3,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_torso_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 2,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 5,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 6,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 3,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest",
+    "quality": 4,
+    "armor_type": 5,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_glove_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 2,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 5,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 6,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 3,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_head_c01a.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 3,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_c01b.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 2,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 5,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 6,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_pants_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 2,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 5,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 6,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 3,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_shoes_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 2,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 5,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 6,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 3,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_torso_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 2,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 5,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 6,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 3,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt1",
+    "quality": 4,
+    "armor_type": 6,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_glove_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 2,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 5,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 6,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 3,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_glove_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_sleeves_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 7
+  },
+  {
+    "icon": "icon_item_rb_head_c01a.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 3,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_c01b.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 2,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 5,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 6,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_head_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_hood_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_rb_pants_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 2,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 5,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 6,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 3,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_pants_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_skirt_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 5
+  },
+  {
+    "icon": "icon_item_rb_shoes_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 2,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 5,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 6,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 3,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_shoes_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_boots_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 6
+  },
+  {
+    "icon": "icon_item_rb_torso_c01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 2,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_e01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 5,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_l01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_m01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 6,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_r01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 3,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_rb_torso_u01.png",
+    "sound": "item_def_robe.ogg",
+    "model": "mage_vest_alt2",
+    "quality": 4,
+    "armor_type": 7,
+    "equip_type": 3
+  },
+  {
+    "icon": "icon_item_necklace_c01.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 2,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_necklace_c02.png",
+    "sound": "item_acc_jewelry.ogg",
+    "quality": 2,
+    "equip_type": 2
+  },
+  {
+    "icon": "icon_item_ch_head_e01.png",
+    "sound": "item_acc_chain.ogg",
+    "model": "chain_coif",
+    "quality": 5,
+    "armor_type": 3,
+    "equip_type": 1
+  },
+  {
+    "icon": "icon_item_lt_head_m01.png",
+    "sound": "item_acc_leather.ogg",
+    "model": "leather_hood",
+    "quality": 6,
+    "armor_type": 2,
+    "equip_type": 1
+  }
+]

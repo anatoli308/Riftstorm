@@ -1,0 +1,118 @@
+{
+  "1": {
+    "id": 1,
+    "name": "fanadin",
+    "music": "ancient_city_ru-ambience.ogg,arabesque-ambience.ogg,moslan_forest-02.ogg,teobomos_town-01.ogg,teobomos_town-02.ogg,voice_from_the_ruins-02.ogg,markutan_aria-intro.ogg",
+    "ambience": "ambient_wind_public_01st.ogg",
+    "los_vision": 0,
+    "start_x": 0
+  },
+  "2": {
+    "id": 2,
+    "name": "wolf_cave_1",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 56,
+    "start_y": 65
+  },
+  "3": {
+    "id": 3,
+    "name": "goblin_cave",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 18,
+    "start_y": 44
+  },
+  "4": {
+    "id": 4,
+    "name": "arena",
+    "music": "bursthonin_field-05.ogg",
+    "ambience": "ambient_wind_natural.ogg",
+    "los_vision": 0,
+    "start_x": 18,
+    "start_y": 44
+  },
+  "5": {
+    "id": 5,
+    "name": "stormrock_ruins",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 47,
+    "start_y": 96
+  },
+  "6": {
+    "id": 6,
+    "name": "fort_nasu",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 96,
+    "start_y": 66
+  },
+  "7": {
+    "id": 7,
+    "name": "fort_amir",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 11,
+    "start_y": 76
+  },
+  "8": {
+    "id": 8,
+    "name": "dilapidated_sewers",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 22,
+    "start_y": 72
+  },
+  "9": {
+    "id": 9,
+    "name": "gmisland",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 63,
+    "start_y": 70
+  },
+  "10": {
+    "id": 10,
+    "name": "wizards_tower_2",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 11,
+    "start_y": 68
+  },
+  "11": {
+    "id": 11,
+    "name": "st_maria_3",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 7,
+    "start_y": 47
+  },
+  "12": {
+    "id": 12,
+    "name": "st_maria_1",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 39,
+    "start_y": 66
+  },
+  "13": {
+    "id": 13,
+    "name": "temple_of_mez_1",
+    "music": "zorkfouralchs.mp3",
+    "ambience": "ambient_cave_2.ogg",
+    "los_vision": 0,
+    "start_x": 77,
+    "start_y": 34
+  }
+}

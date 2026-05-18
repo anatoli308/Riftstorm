@@ -1,5 +1,8 @@
 using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Gameplay.Combat;
+using Riftstorm.Gameplay.Combat.Spells;
+using Riftstorm.Gameplay.Combat.Spells.Visuals;
+using Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime;
 using Riftstorm.Management.TextureManagement;
 using Tolik.Riftstorm.Runtime.ConnectionManagement;
 using Unity.Multiplayer;
@@ -95,11 +98,40 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             ServiceLocator.Register(offhandLoader);
             _ = offhandLoader.LoadAsync();
 
+            // Spell-Katalog (StreamingAssets/spells/spells.json). Datengetrieben /
+            // modding-freundlich; konsumiert vom Server-seitigen SpellCaster.
+            SpellCatalogLoader spellLoader = new();
+            ServiceLocator.Register(spellLoader);
+            _ = spellLoader.LoadAsync();
+
+            // Aura-Katalog (StreamingAssets/spells/auras.json). Wird von
+            // SpellEffectType.ApplyAura referenziert; vom Server-seitigen AuraSystem konsumiert.
+            AuraCatalogLoader auraLoader = new();
+            ServiceLocator.Register(auraLoader);
+            _ = auraLoader.LoadAsync();
+
+            // Spell-Animations-Bibliothek (StreamingAssets/spells/animations/*.json).
+            // Sprite-Sheet-Definitionen; per Name (= Dateistem) gelookupt.
+            SpellAnimationCatalogLoader spellAnimLoader = new();
+            ServiceLocator.Register(spellAnimLoader);
+            _ = spellAnimLoader.LoadAsync();
+
+            // Per-Spell-Visual-Kits (StreamingAssets/spells/spell_visuals.json).
+            // 3-Phasen-Modell (Casting → Travel → Impact); referenziert Namen aus
+            // dem SpellAnimationCatalog. Konsumiert client-seitig vom Visual-Player.
+            SpellVisualCatalogLoader spellVisualLoader = new();
+            ServiceLocator.Register(spellVisualLoader);
+            _ = spellVisualLoader.LoadAsync();
+
             // Scant Application.dataPath/Art rekursiv und indexiert alle Bilddateien
             // mit Keys ohne Extension (z. B. "interface/unit_frame"). Texturen werden
             // erst beim ersten GetTexture(key) lazy geladen.
             TextureManager textureManager = new();
             ServiceLocator.Register(textureManager);
+
+            // Resolver für den Gameplay-seitigen Sprite-Cache injizieren. So bleibt
+            // Riftstorm.Gameplay frei von Management-/ApplicationLifecycle-Refs.
+            SpellSpriteCache.TextureResolver = textureManager.GetTexture;
 
             // UI-Fonts: Inspector-zugewiesene Font-Assets in eine Name->Font-Map packen.
             // Die Rolle->Name-Zuordnung kommt zur Laufzeit aus

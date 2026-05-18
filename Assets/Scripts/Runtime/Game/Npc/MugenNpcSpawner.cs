@@ -201,10 +201,8 @@ namespace Riftstorm.Game.Npc
             if (controller != null)
             {
                 controller.BindCharacter(character);
-                // B.5.0: MUGEN-Skill-Pool an die AI uebergeben, damit TryAttack
-                // pro Schwung einen zufaelligen Stand-Normal-Attack ziehen kann.
-                // m_Stats wird in Awake synchron geladen und ist hier garantiert gesetzt.
-                controller.BindMugenStats(m_Stats);
+                // Mugen-Skill-Pool wurde mit dem FLARE-Port aus NpcController entfernt.
+                // MugenNpcSpawner laeuft hier nur noch fuer Visuals; AI nutzt FLARE-Defaults.
             }
             else
             {

@@ -1,0 +1,532 @@
+{
+  "2": {
+    "entry": 2,
+    "gossipId": 3,
+    "text": "<Listen to the story>",
+    "required_npc_flag": 1,
+    "click_new_gossip": 4,
+    "condition1": 1,
+    "condition1_value1": 22,
+    "condition2": 3,
+    "condition2_value1": 22,
+    "condition1_true": 1
+  },
+  "3": {
+    "entry": 3,
+    "gossipId": 4,
+    "text": "<Continue listening>",
+    "required_npc_flag": 1,
+    "click_new_gossip": 5
+  },
+  "5": {
+    "entry": 5,
+    "gossipId": 5,
+    "text": "What about you? What do you think?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 6,
+    "click_script": 0
+  },
+  "6": {
+    "entry": 6,
+    "gossipId": 6,
+    "text": "And so you're looking to hire someone.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 7,
+    "click_script": 0
+  },
+  "7": {
+    "entry": 7,
+    "gossipId": 7,
+    "text": "Sure, why not.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 3,
+    "click_script": 1
+  },
+  "10": {
+    "entry": 10,
+    "gossipId": 30,
+    "text": "What are your thoughts about Zedek?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 31,
+    "condition1": 2,
+    "condition1_value1": 40,
+    "condition1_true": 1
+  },
+  "11": {
+    "entry": 11,
+    "gossipId": 35,
+    "text": "Why do you folks live out here?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 36
+  },
+  "12": {
+    "entry": 12,
+    "gossipId": 43,
+    "text": "The town is still safe, for now. They are trying to find the source of the undead uprising and hiring mercenaries, like myself, to help keep people safe.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 44,
+    "condition1": 2,
+    "condition1_value1": 118,
+    "condition1_true": 1
+  },
+  "13": {
+    "entry": 13,
+    "gossipId": 49,
+    "text": "It doesn't look good, I think we're all going to die REALLY soon.\n\n<You stare at Samel with a crazed look in your eye.>",
+    "required_npc_flag": 1,
+    "click_new_gossip": 50
+  },
+  "14": {
+    "entry": 14,
+    "gossipId": 49,
+    "text": "I think everything is going to be okay, but we need to stay calm and composed.\n\n<You pat Samel on the shoulder.>",
+    "required_npc_flag": 1,
+    "click_new_gossip": 51
+  },
+  "15": {
+    "entry": 15,
+    "gossipId": 55,
+    "text": "You are the first \"undead\" that hasn't tried to rip my face off, what happened?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 56
+  },
+  "16": {
+    "entry": 16,
+    "gossipId": 26,
+    "text": "Sure.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 57,
+    "click_script": 6,
+    "condition1": 7,
+    "condition1_value1": 277
+  },
+  "17": {
+    "entry": 17,
+    "gossipId": 26,
+    "text": "No Thanks.",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1,
+    "condition1": 7,
+    "condition1_value1": 277
+  },
+  "18": {
+    "entry": 18,
+    "gossipId": 10,
+    "text": "We need to talk.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 64,
+    "condition1": 1,
+    "condition1_value1": 107,
+    "condition2": 3,
+    "condition2_value1": 107,
+    "condition1_true": 1
+  },
+  "19": {
+    "entry": 19,
+    "gossipId": 64,
+    "text": "Explain these stories about At'mar",
+    "required_npc_flag": 1,
+    "click_new_gossip": 66
+  },
+  "20": {
+    "entry": 20,
+    "gossipId": 64,
+    "text": "Monsters attacked me over this flower",
+    "required_npc_flag": 1,
+    "click_new_gossip": 65
+  },
+  "21": {
+    "entry": 21,
+    "gossipId": 64,
+    "text": "Nevermind. I'll take my leave",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "23": {
+    "entry": 23,
+    "gossipId": 66,
+    "text": "What does that have to do with At'mar?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 67
+  },
+  "24": {
+    "entry": 24,
+    "gossipId": 66,
+    "text": "Undead attacked me over this flower",
+    "required_npc_flag": 1,
+    "click_new_gossip": 65
+  },
+  "25": {
+    "entry": 25,
+    "gossipId": 66,
+    "text": "Nevermind. I'll take my leave",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "26": {
+    "entry": 26,
+    "gossipId": 67,
+    "text": "What do you think? Is he right?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 68
+  },
+  "27": {
+    "entry": 27,
+    "gossipId": 67,
+    "text": "Undead attacked me over this flower",
+    "required_npc_flag": 1,
+    "click_new_gossip": 65
+  },
+  "28": {
+    "entry": 28,
+    "gossipId": 67,
+    "text": "Nevermind. I'll take my leave",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "29": {
+    "entry": 29,
+    "gossipId": 68,
+    "text": "Undead attacked me over this flower",
+    "required_npc_flag": 1,
+    "click_new_gossip": 65,
+    "click_script": -1
+  },
+  "30": {
+    "entry": 30,
+    "gossipId": 68,
+    "text": "Nevermind. I'll take my leave",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "31": {
+    "entry": 31,
+    "gossipId": 65,
+    "text": "I think you know something",
+    "required_npc_flag": 1,
+    "click_new_gossip": 69
+  },
+  "32": {
+    "entry": 32,
+    "gossipId": 65,
+    "text": "Nevermind. I'll take my leave",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "33": {
+    "entry": 33,
+    "gossipId": 69,
+    "text": "Which arm do you prefer?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 70
+  },
+  "34": {
+    "entry": 34,
+    "gossipId": 70,
+    "text": "Speak or I'll break that arm first",
+    "required_npc_flag": 1,
+    "click_new_gossip": 71
+  },
+  "35": {
+    "entry": 35,
+    "gossipId": 71,
+    "text": "The graves by the flower... I see",
+    "required_npc_flag": 1,
+    "click_new_gossip": 72
+  },
+  "37": {
+    "entry": 37,
+    "gossipId": 72,
+    "text": "Liar. You were surprised I lived.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 74
+  },
+  "38": {
+    "entry": 38,
+    "gossipId": 72,
+    "text": "I see. I believe you.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 73
+  },
+  "39": {
+    "entry": 39,
+    "gossipId": 74,
+    "text": "Fine. Where is this peddler?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 75,
+    "click_script": 3
+  },
+  "43": {
+    "entry": 43,
+    "gossipId": 100,
+    "text": "Are you an explorer?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 101
+  },
+  "44": {
+    "entry": 44,
+    "gossipId": 101,
+    "text": "Clever, I guess",
+    "required_npc_flag": 1,
+    "click_new_gossip": 102
+  },
+  "45": {
+    "entry": 45,
+    "gossipId": 102,
+    "text": "What makes you say that?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 103
+  },
+  "46": {
+    "entry": 46,
+    "gossipId": 5,
+    "text": "I don't have time for this. Goodbye.",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "47": {
+    "entry": 47,
+    "gossipId": 6,
+    "text": "I don't care. Bye.",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "48": {
+    "entry": 48,
+    "gossipId": 7,
+    "text": "Alright, priest. But this better be worth it.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 3,
+    "click_script": 1
+  },
+  "49": {
+    "entry": 49,
+    "gossipId": 7,
+    "text": "Total waste of time. Bye.",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1
+  },
+  "50": {
+    "entry": 50,
+    "gossipId": 26,
+    "text": "Well I'll tell you when I've had enough!",
+    "required_npc_flag": 1,
+    "click_new_gossip": -1,
+    "condition1": 7,
+    "condition1_value1": 277,
+    "condition1_true": 1
+  },
+  "51": {
+    "entry": 51,
+    "gossipId": 112,
+    "text": "The Innkeeper",
+    "required_npc_flag": 1,
+    "click_script": 7
+  },
+  "52": {
+    "entry": 52,
+    "gossipId": 112,
+    "text": "The market district",
+    "required_npc_flag": 1,
+    "click_script": 8
+  },
+  "53": {
+    "entry": 53,
+    "gossipId": 18,
+    "text": "I need directions.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 112
+  },
+  "54": {
+    "entry": 54,
+    "gossipId": 13,
+    "text": "I need directions.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 112
+  },
+  "55": {
+    "entry": 55,
+    "gossipId": 25,
+    "text": "I need directions.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 112
+  },
+  "56": {
+    "entry": 56,
+    "gossipId": 20,
+    "text": "I need directions.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 112
+  },
+  "57": {
+    "entry": 57,
+    "gossipId": 125,
+    "text": "What do you mean?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 126
+  },
+  "58": {
+    "entry": 58,
+    "gossipId": 126,
+    "text": "What do you think?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 127
+  },
+  "59": {
+    "entry": 59,
+    "gossipId": 41,
+    "text": "I need directions.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 112
+  },
+  "60": {
+    "entry": 60,
+    "gossipId": 133,
+    "text": "What can you tell me of the recent troubles?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 134
+  },
+  "61": {
+    "entry": 61,
+    "gossipId": 133,
+    "text": "Do you know a minister named Vincent?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 135
+  },
+  "62": {
+    "entry": 62,
+    "gossipId": 135,
+    "text": "Are you in conflict with the church?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 136
+  },
+  "63": {
+    "entry": 63,
+    "gossipId": 135,
+    "text": "He said you had no shortage of gold",
+    "required_npc_flag": 1,
+    "click_new_gossip": 137
+  },
+  "64": {
+    "entry": 64,
+    "gossipId": 112,
+    "text": "The mage trainer",
+    "required_npc_flag": 1,
+    "click_script": 9
+  },
+  "65": {
+    "entry": 65,
+    "gossipId": 112,
+    "text": "The paladin trainer",
+    "required_npc_flag": 1,
+    "click_script": 10
+  },
+  "66": {
+    "entry": 66,
+    "gossipId": 112,
+    "text": "The ranger trainer",
+    "required_npc_flag": 1,
+    "click_script": 11
+  },
+  "67": {
+    "entry": 67,
+    "gossipId": 112,
+    "text": "The cleric trainer",
+    "required_npc_flag": 1,
+    "click_script": 12
+  },
+  "68": {
+    "entry": 68,
+    "gossipId": 200,
+    "text": "Who are you, what is this place?",
+    "required_npc_flag": 1,
+    "click_new_gossip": 201
+  },
+  "69": {
+    "entry": 69,
+    "gossipId": 201,
+    "text": "That's not really what I asked.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 202
+  },
+  "70": {
+    "entry": 70,
+    "gossipId": 202,
+    "text": "I'll not ask again, what is this place.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 203
+  },
+  "71": {
+    "entry": 71,
+    "gossipId": 204,
+    "text": "I'd like to make a deposit.",
+    "required_npc_flag": 1,
+    "click_script": 30
+  },
+  "72": {
+    "entry": 72,
+    "gossipId": 112,
+    "text": "The bank",
+    "required_npc_flag": 1,
+    "click_script": 40
+  },
+  "73": {
+    "entry": 73,
+    "gossipId": 19,
+    "text": "Your Grace, I require a respecialization.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 19,
+    "click_script": 41,
+    "condition1": 15,
+    "condition1_value1": 24,
+    "condition1_true": 1
+  },
+  "74": {
+    "entry": 74,
+    "gossipId": 112,
+    "text": "I need to respec",
+    "required_npc_flag": 1,
+    "click_script": 42,
+    "condition1": 15,
+    "condition1_value1": 24,
+    "condition1_true": 1
+  },
+  "75": {
+    "entry": 75,
+    "gossipId": 300,
+    "text": "Queue me for the arena.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 0,
+    "click_script": 43
+  },
+  "76": {
+    "entry": 76,
+    "gossipId": 300,
+    "text": "Leave queue.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 0,
+    "click_script": 44
+  },
+  "77": {
+    "entry": 77,
+    "gossipId": 300,
+    "text": "Tell me my status in the queue.",
+    "required_npc_flag": 1,
+    "click_new_gossip": 0,
+    "click_script": 45
+  },
+  "78": {
+    "entry": 78,
+    "gossipId": 112,
+    "text": "The arena master",
+    "required_npc_flag": 1,
+    "click_script": 46
+  },
+  "80": {
+    "entry": 80,
+    "gossipId": 190,
+    "text": "I require item transmutation",
+    "required_npc_flag": 1,
+    "click_new_gossip": -2
+  }
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "map": 4,
+    "player_1_x": 17,
+    "player_1_y": 61,
+    "player_2_x": 17,
+    "player_2_y": 58,
+    "player_3_x": 58,
+    "player_3_y": 17,
+    "player_4_x": 61,
+    "player_4_y": 17,
+    "player_1_x_start": 21,
+    "player_1_y_start": 54,
+    "player_2_x_start": 24,
+    "player_2_y_start": 57,
+    "player_3_x_start": 53,
+    "player_3_y_start": 22,
+    "player_4_x_start": 56,
+    "player_4_y_start": 25
+  }
+]

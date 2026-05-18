@@ -130,11 +130,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Movement.PlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
-  m_MoveSource: {fileID: 0}
+  m_MoveSource: {fileID: -6858420798198050943}
   m_Character: {fileID: 0}
   m_CombatVisuals: {fileID: -2700015800232922021}
   m_Combat: {fileID: -525944449724255899}
-  m_TargetSelection: {fileID: 0}
+  m_TargetSelection: {fileID: 4317724205577696828}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run
@@ -206,6 +206,8 @@ MonoBehaviour:
   m_AttackRange: 0
   m_ProjectileRange: 0
   m_DisplayName: 
+  m_FactionId: 0
+  m_IsPlayer: 1
 --- !u!114 &6273741711409788343
 MonoBehaviour:
   m_ObjectHideFlags: 0

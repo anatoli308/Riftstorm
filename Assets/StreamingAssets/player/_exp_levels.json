@@ -1,0 +1,151 @@
+[
+  {
+    "level": 1,
+    "exp": 100,
+    "kill_exp": 20
+  },
+  {
+    "level": 2,
+    "exp": 100,
+    "kill_exp": 20,
+    "name": "Private"
+  },
+  {
+    "level": 3,
+    "exp": 123,
+    "kill_exp": 24,
+    "name": "Lance Corporal"
+  },
+  {
+    "level": 4,
+    "exp": 150,
+    "kill_exp": 30,
+    "name": "Corporal"
+  },
+  {
+    "level": 5,
+    "exp": 195,
+    "kill_exp": 39,
+    "name": "Sergeant"
+  },
+  {
+    "level": 6,
+    "exp": 267,
+    "kill_exp": 44,
+    "name": "Staff Sergeant"
+  },
+  {
+    "level": 7,
+    "exp": 373,
+    "kill_exp": 62,
+    "name": "Master Sergeant"
+  },
+  {
+    "level": 8,
+    "exp": 531,
+    "kill_exp": 88,
+    "name": "First Sergeant"
+  },
+  {
+    "level": 9,
+    "exp": 760,
+    "kill_exp": 126,
+    "name": "Sergeant Major"
+  },
+  {
+    "level": 10,
+    "exp": 1087,
+    "kill_exp": 155,
+    "name": "Second Lieutenant"
+  },
+  {
+    "level": 11,
+    "exp": 1548,
+    "kill_exp": 186,
+    "name": "First Lieutenant"
+  },
+  {
+    "level": 12,
+    "exp": 2194,
+    "kill_exp": 223,
+    "name": "Captain"
+  },
+  {
+    "level": 13,
+    "exp": 3091,
+    "kill_exp": 268,
+    "name": "Major"
+  },
+  {
+    "level": 14,
+    "exp": 4331,
+    "kill_exp": 322,
+    "name": "Lieutenant Colonel"
+  },
+  {
+    "level": 15,
+    "exp": 6031,
+    "kill_exp": 386,
+    "name": "Colonel"
+  },
+  {
+    "level": 16,
+    "exp": 8352,
+    "kill_exp": 463,
+    "name": "Brigadier General"
+  },
+  {
+    "level": 17,
+    "exp": 11510,
+    "kill_exp": 556,
+    "name": "Major General"
+  },
+  {
+    "level": 18,
+    "exp": 15788,
+    "kill_exp": 667,
+    "name": "Lieutenant General"
+  },
+  {
+    "level": 19,
+    "exp": 21564,
+    "kill_exp": 800,
+    "name": "General"
+  },
+  {
+    "level": 20,
+    "exp": 29339,
+    "kill_exp": 960,
+    "name": "Field Marshal"
+  },
+  {
+    "level": 21,
+    "exp": 39780,
+    "kill_exp": 1152,
+    "name": "Knight"
+  },
+  {
+    "level": 22,
+    "exp": 53762,
+    "kill_exp": 1382,
+    "name": "Baron"
+  },
+  {
+    "level": 23,
+    "exp": 72451,
+    "kill_exp": 1659,
+    "name": "Count"
+  },
+  {
+    "level": 24,
+    "exp": 97380,
+    "kill_exp": 1991,
+    "name": "Earl"
+  },
+  {
+    "level": 25,
+    "exp": 129293,
+    "kill_exp": 2389,
+    "name": "Champion"
+  }
+]

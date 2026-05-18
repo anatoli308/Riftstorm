@@ -1,5 +1,6 @@
 using System;
 using Riftstorm.Gameplay.Combat;
+using Riftstorm.Gameplay.Combat.Spells;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,9 +12,12 @@ namespace Riftstorm.Game.Combat
     /// verändert werden dürfen.
     ///
     /// <para>
-    /// Implementiert <see cref="IDamageable"/> für eingehenden Schaden und
+    /// Implementiert <see cref="IDamageable"/> für eingehenden Schaden,
     /// <see cref="IUnitStats"/> als Lese-Schnittstelle für die
-    /// <see cref="CombatFormulas"/>.
+    /// <see cref="CombatFormulas"/>, und <see cref="ICombatUnit"/> als
+    /// Schreib-/Lese-Fassade für die Spells-Pipeline
+    /// (<see cref="SpellExecutor"/>, <see cref="AuraManager"/>,
+    /// <see cref="CooldownManager"/>).
     /// </para>
     /// <para>
     /// Aktuelle HP werden via <see cref="NetworkVariable{T}"/> an alle Clients
@@ -22,7 +26,7 @@ namespace Riftstorm.Game.Combat
     /// </para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class UnitStats : NetworkBehaviour, IDamageable, IUnitStats
+    public sealed class UnitStats : NetworkBehaviour, IDamageable, IUnitStats, ICombatUnit
     {
         // -------------------------------------------------------------------------
         // Inspector
@@ -72,6 +76,14 @@ namespace Riftstorm.Game.Combat
                  "(z. B. MUGEN <Atlas>.stats.json) etwas liefert.")]
         [SerializeField] private string m_DisplayName = "";
 
+        [Tooltip("Faction-Id für friendly/hostile-Auflösung im SpellCaster. Mobs derselben " +
+                 "Faction können einander nicht direkt angreifen. 0 = Default-Hostile.")]
+        [SerializeField] private int m_FactionId = 0;
+
+        [Tooltip("True ⇒ diese Unit ist ein menschlicher Spieler. Aktiviert Cooldown- und " +
+                 "GCD-Tracking im SpellExecutor (Mobs ignorieren beides).")]
+        [SerializeField] private bool m_IsPlayer = false;
+
         // -------------------------------------------------------------------------
         // Netzwerk-State
         // -------------------------------------------------------------------------
@@ -85,6 +97,14 @@ namespace Riftstorm.Game.Combat
             value: 0,
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
+
+        // -------------------------------------------------------------------------
+        // Spells-Pipeline (Server-only — Auren/Cooldowns existieren nur auf dem Server,
+        // Clients sehen Auswirkungen via separate Sync-Pfade).
+        // -------------------------------------------------------------------------
+
+        private readonly AuraManager m_Auras = new();
+        private readonly CooldownManager m_Cooldowns = new();
 
         // -------------------------------------------------------------------------
         // IUnitStats
@@ -289,12 +309,42 @@ namespace Riftstorm.Game.Combat
             {
                 m_CurrentHp.Value = m_MaxHp;
                 m_CurrentMana.Value = m_MaxMana;
+                // Owner setzen — AuraManager liest IsStunned/Silenced/Rooted vom Owner
+                // selbst nicht, aber Aura-Effekte greifen darüber auf die Unit zu.
+                m_Auras.SetOwner(this);
+                m_LastTickTime = Time.time;
             }
             m_CurrentHp.OnValueChanged += OnHpValueChangedInternal;
             m_CurrentMana.OnValueChanged += OnManaValueChangedInternal;
             // Initialwerte einmal feuern, damit UI-Schichten korrekt initialisieren.
             HpChanged?.Invoke(m_CurrentHp.Value, m_MaxHp);
             ManaChanged?.Invoke(m_CurrentMana.Value, m_MaxMana);
+        }
+
+        // -------------------------------------------------------------------------
+        // Server-Tick
+        // -------------------------------------------------------------------------
+
+        private float m_LastTickTime;
+
+        /// <summary>
+        /// Server-Tick: treibt den <see cref="AuraManager"/> (DoT/HoT/Duration-Decay).
+        /// FixedUpdate, damit Aura-Ticks deterministisch zur Sim-Frequenz laufen und
+        /// nicht vom Render-FPS abhängen.
+        /// </summary>
+        private void FixedUpdate()
+        {
+            if (!IsServer || !IsSpawned)
+            {
+                return;
+            }
+            float now = Time.time;
+            int deltaMs = Mathf.Max(0, Mathf.RoundToInt((now - m_LastTickTime) * 1000f));
+            m_LastTickTime = now;
+            if (deltaMs > 0)
+            {
+                m_Auras.Update(deltaMs);
+            }
         }
 
         /// <inheritdoc/>
@@ -382,6 +432,124 @@ namespace Riftstorm.Game.Combat
             try
             {
                 ClientDamageReceived?.Invoke(amount, result);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // ICombatUnit
+        // -------------------------------------------------------------------------
+
+        /// <inheritdoc/>
+        ulong ICombatUnit.Guid => NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
+
+        /// <inheritdoc/>
+        int ICombatUnit.Health => m_CurrentHp.Value;
+
+        /// <inheritdoc/>
+        int ICombatUnit.MaxHealth => m_MaxHp;
+
+        /// <inheritdoc/>
+        int ICombatUnit.Mana => m_CurrentMana.Value;
+
+        /// <inheritdoc/>
+        int ICombatUnit.MaxMana => m_MaxMana;
+
+        /// <inheritdoc/>
+        Vector3 ICombatUnit.Position => transform.position;
+
+        /// <inheritdoc/>
+        bool ICombatUnit.IsStunned => m_Auras.IsStunned;
+
+        /// <inheritdoc/>
+        bool ICombatUnit.IsSilenced => m_Auras.IsSilenced;
+
+        /// <inheritdoc/>
+        bool ICombatUnit.IsRooted => m_Auras.IsRooted;
+
+        /// <inheritdoc/>
+        bool ICombatUnit.IsPlayer => m_IsPlayer;
+
+        /// <inheritdoc/>
+        int ICombatUnit.FactionId => m_FactionId;
+
+        /// <inheritdoc/>
+        AuraManager ICombatUnit.Auras => m_Auras;
+
+        /// <inheritdoc/>
+        CooldownManager ICombatUnit.Cooldowns => m_Cooldowns;
+
+        /// <inheritdoc/>
+        IUnitStats ICombatUnit.Stats => this;
+
+        /// <inheritdoc/>
+        void ICombatUnit.TakeDamage(int amount, ICombatUnit attacker)
+        {
+            if (!IsServer || amount <= 0)
+            {
+                return;
+            }
+            // Schaden l\u00e4uft \u00fcber denselben Pfad wie Melee \u2014 ApplyDamage zieht HP ab,
+            // feuert Death-Event und broadcastet an die Clients.
+            DamageInfo info = new()
+            {
+                BaseDamage = amount,
+                FinalDamage = amount,
+                HitResult = HitResult.Hit,
+            };
+            ApplyDamage(in info);
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.Heal(int amount, ICombatUnit source)
+        {
+            if (!IsServer || amount <= 0 || IsDead)
+            {
+                return;
+            }
+            int previousHp = m_CurrentHp.Value;
+            int newHp = Mathf.Min(m_MaxHp, previousHp + amount);
+            if (newHp == previousHp)
+            {
+                return;
+            }
+            m_CurrentHp.Value = newHp;
+            // Heal an alle Clients fanouten \u2014 reuse des Damage-Pfads mit
+            // HitResult.Hit (Floating-Text-Renderer kann anhand des negativen
+            // Vorzeichens unterscheiden, falls wir das Event sp\u00e4ter doch
+            // splitten).
+            BroadcastHealClientRpc(newHp - previousHp);
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.SetMana(int amount)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            m_CurrentMana.Value = Mathf.Clamp(amount, 0, m_MaxMana);
+        }
+
+        /// <summary>
+        /// Feuert auf jedem Client (inkl. Host), sobald eine Heilung gelandet ist.
+        /// Parameter: <c>amount</c> = tats\u00e4chlich applizierte HP (nach Overheal-Cap).
+        /// </summary>
+        public event Action<int> ClientHealReceived;
+
+        /// <summary>
+        /// Verteilt das Heal-Ereignis an alle Clients und l\u00f6st das
+        /// <see cref="ClientHealReceived"/>-Event lokal aus.
+        /// </summary>
+        [ClientRpc]
+        private void BroadcastHealClientRpc(int amount, ClientRpcParams _ = default)
+        {
+            try
+            {
+                ClientHealReceived?.Invoke(amount);
             }
             catch (Exception ex)
             {
