@@ -168,5 +168,22 @@ namespace Riftstorm.Game.UI
         public string actionSlotIconHoverTexture = "interface/icons/gameicon40_hover";
         /// <summary>Slot-Icon-Cell beim Press (Maus-Down auf dem Slot).</summary>
         public string actionSlotIconPressTexture = "interface/icons/gameicon40_press";
+
+        // ---- CastBar (Owner-HUD) ------------------------------------------------
+
+        /// <summary>Breite der CastBar in Pixeln (Container-Hoehe = Hintergrund + Fill).</summary>
+        public float castBarWidth = 280f;
+        /// <summary>Hoehe der CastBar in Pixeln.</summary>
+        public float castBarHeight = 22f;
+        /// <summary>Pixel-Abstand der CastBar zum unteren Bildschirmrand (ueber der Action-Bar).</summary>
+        public float castBarBottomMargin = 110f;
+        /// <summary>Streaming-Pfad der Hintergrund-Textur (leerer Rahmen). Leer → kein Hintergrund.</summary>
+        public string castBarBackgroundTexture = "interface/castbar";
+        /// <summary>Streaming-Pfad der Fill-Textur (progressiv von links nach rechts).</summary>
+        public string castBarFillTexture = "interface/castbar_fill";
+        /// <summary>Font-Size des Spell-Namens (Label, mittig auf der CastBar).</summary>
+        public float castBarNameFontSize = 13f;
+        /// <summary>Font-Size des Prozent-Labels (rechts auf der CastBar).</summary>
+        public float castBarPercentFontSize = 12f;
     }
 }

@@ -52,7 +52,7 @@ namespace Tolik.Riftstorm.Runtime.Core
         /// </summary>
         public void ChangeState(TState nextState)
         {
-            Debug.Log($"{name}: Changed state from {m_CurrentState?.GetType().Name} to {nextState.GetType().Name}.");
+            //Debug.Log($"{name}: Changed state from {m_CurrentState?.GetType().Name} to {nextState.GetType().Name}.");
 
             if (m_CurrentState != null)
             {

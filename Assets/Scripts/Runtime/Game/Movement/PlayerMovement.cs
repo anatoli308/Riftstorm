@@ -301,6 +301,26 @@ namespace Riftstorm.Game.Movement
             cmd.MoveInput = ClampInput(cmd.MoveInput);
             cmd.DeltaTime = Mathf.Clamp(cmd.DeltaTime, 0f, 0.1f);
 
+            // Move-cancels-Cast (LoL/WoW-Style): wenn der Owner waehrend eines
+            // Casts ein non-zero MoveInput schickt, bricht der Server den Cast
+            // sofort ab. Muss VOR dem Movement-Lock-Check passieren, damit der
+            // gleiche Tick noch durchs Movement geht (sonst eine Tick-Verzoegerung).
+            // Idempotent: ausserhalb von CastingState ist ServerInterruptCast ein No-Op.
+            // Ausnahme: Spells mit SpellAttributes.CanMoveWhileCasting (z.B.
+            // WoW-Scorch-while-moving) bleiben aktiv.
+            if (m_Combat != null
+                && m_Combat.IsServerCasting
+                && cmd.MoveInput.sqrMagnitude > 0f)
+            {
+                Riftstorm.Game.Spells.SpellTemplate castSpell = m_Combat.CurrentCastSpell;
+                bool canMoveWhileCasting = castSpell != null
+                    && (castSpell.Attributes & Riftstorm.Game.Spells.SpellAttributes.CanMoveWhileCasting) != 0;
+                if (!canMoveWhileCasting)
+                {
+                    m_Combat.ServerInterruptCast();
+                }
+            }
+
             // Server-autoritativer Movement-Lock: während Attacking/Dead darf sich
             // der Spieler nicht bewegen (anti-cheat gegen Move-while-Attacking).
             if (m_Combat != null && m_Combat.IsServerMovementLocked)

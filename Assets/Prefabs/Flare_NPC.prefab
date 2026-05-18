@@ -116,6 +116,7 @@ GameObject:
   - component: {fileID: 3813441638296390173}
   - component: {fileID: -5619055656797204899}
   - component: {fileID: -7104416582928039071}
+  - component: {fileID: -6834939540450397229}
   m_Layer: 6
   m_Name: Flare_NPC
   m_TagString: Untagged
@@ -152,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3415209060
+  GlobalObjectIdHash: 4214623086
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -350,3 +351,27 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FontSize: 14
   m_MaxDistance: 50
+--- !u!114 &-6834939540450397229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290034357191855565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd1cca1a2dee99348be270adb12b9a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.FloatingCombatText
+  m_Stats: {fileID: 2397450522955645118}
+  m_Anchor: {fileID: 6776466479393485972}
+  m_WorldOffset: {x: 0, y: 0.5, z: 0}
+  m_LifetimeSeconds: 1.1
+  m_RiseSpeed: 1.4
+  m_HorizontalJitter: 22
+  m_MaxActive: 16
+  m_FontSize: 18
+  m_MaxDistance: 50
+  m_HitColor: {r: 1, g: 0.92, b: 0.4, a: 1}
+  m_CritColor: {r: 1, g: 0.45, b: 0.2, a: 1}
+  m_MitigatedColor: {r: 0.8, g: 0.8, b: 0.85, a: 1}

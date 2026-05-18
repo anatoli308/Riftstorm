@@ -75,5 +75,13 @@
 
   "actionSlotIconIdleTexture": "interface/icons/gameicon40_idle",
   "actionSlotIconHoverTexture": "interface/icons/gameicon40_hover",
-  "actionSlotIconPressTexture": "interface/icons/gameicon40_press"
+  "actionSlotIconPressTexture": "interface/icons/gameicon40_press",
+
+  "castBarWidth": 280,
+  "castBarHeight": 22,
+  "castBarBottomMargin": 110,
+  "castBarBackgroundTexture": "interface/castbar",
+  "castBarFillTexture": "interface/castbar_fill",
+  "castBarNameFontSize": 13,
+  "castBarPercentFontSize": 12
 }

@@ -15,6 +15,15 @@
             "ox": 9,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 0,
             "y": 57,
@@ -23,6 +32,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 30,
             "y": 57,
@@ -31,6 +49,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 59,
             "y": 0,
@@ -39,6 +66,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 0,
             "y": 0,
@@ -47,6 +83,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 60,
             "y": 56,
@@ -55,6 +100,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 30,
             "y": 57,
@@ -63,6 +117,15 @@
             "ox": 10,
             "oy": 52
           },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
           {
             "x": 89,
             "y": 0,
@@ -70,20 +133,7 @@
             "h": 56,
             "ox": 10,
             "oy": 52
-          }
-        ],
-        [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
+          },
           null,
           null,
           null,
@@ -93,27 +143,14 @@
           null
         ],
         [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
+          {
+            "x": 30,
+            "y": 0,
+            "w": 29,
+            "h": 57,
+            "ox": 9,
+            "oy": 52
+          },
           null,
           null,
           null,
@@ -123,27 +160,14 @@
           null
         ],
         [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
+          {
+            "x": 119,
+            "y": 0,
+            "w": 30,
+            "h": 56,
+            "ox": 10,
+            "oy": 52
+          },
           null,
           null,
           null,
@@ -153,7 +177,14 @@
           null
         ],
         [
-          null,
+          {
+            "x": 30,
+            "y": 57,
+            "w": 30,
+            "h": 56,
+            "ox": 10,
+            "oy": 52
+          },
           null,
           null,
           null,
@@ -163,17 +194,14 @@
           null
         ],
         [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        [
-          null,
+          {
+            "x": 90,
+            "y": 56,
+            "w": 30,
+            "h": 56,
+            "ox": 10,
+            "oy": 52
+          },
           null,
           null,
           null,

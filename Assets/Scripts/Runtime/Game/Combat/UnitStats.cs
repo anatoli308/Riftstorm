@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Generic;
+using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
-using Riftstorm.Gameplay.Combat.Spells;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -40,6 +41,28 @@ namespace Riftstorm.Game.Combat
         [SerializeField, Min(0)] private int m_Strength = 5;
         [SerializeField, Min(0)] private int m_Armor = 0;
         [SerializeField, Min(1)] private int m_Level = 1;
+
+        [Header("Magic Stats")]
+        [Tooltip("Skaliert magische Spell-Damage und (mit niedrigerer Gewichtung) Heals.")]
+        [SerializeField, Min(0)] private int m_Intelligence = 0;
+        [Tooltip("Skaliert Heals und (perspektivisch) Mana-Regeneration.")]
+        [SerializeField, Min(0)] private int m_Willpower = 0;
+        [Tooltip("Grundschaden fuer WeaponDamage-Effekte ohne explizites Weapon-Asset.")]
+        [SerializeField, Min(0)] private int m_WeaponDamage = 0;
+
+        [Header("Hit-Modifiers (in Prozent)")]
+        [SerializeField, Range(0, 100)] private int m_CritChance = 0;
+        [SerializeField, Range(0, 100)] private int m_DodgeChance = 0;
+        [SerializeField, Range(0, 100)] private int m_ParryChance = 0;
+        [SerializeField, Range(0, 100)] private int m_BlockChance = 0;
+
+        [Header("Resistenzen")]
+        [SerializeField, Min(0)] private int m_ResistFire = 0;
+        [SerializeField, Min(0)] private int m_ResistFrost = 0;
+        [SerializeField, Min(0)] private int m_ResistArcane = 0;
+        [SerializeField, Min(0)] private int m_ResistNature = 0;
+        [SerializeField, Min(0)] private int m_ResistShadow = 0;
+        [SerializeField, Min(0)] private int m_ResistHoly = 0;
 
         [Header("Hitbox")]
         [Tooltip("Radius der Einheits-Hitbox in Metern. Wird vom Server-seitigen Hit-Resolve " +
@@ -134,6 +157,45 @@ namespace Riftstorm.Game.Combat
         /// <inheritdoc/>
         public int Level => m_Level;
 
+        /// <inheritdoc/>
+        public int Intelligence => m_Intelligence;
+
+        /// <inheritdoc/>
+        public int Willpower => m_Willpower;
+
+        /// <inheritdoc/>
+        public int WeaponDamage => m_WeaponDamage;
+
+        /// <inheritdoc/>
+        public int CritChance => m_CritChance;
+
+        /// <inheritdoc/>
+        public int DodgeChance => m_DodgeChance;
+
+        /// <inheritdoc/>
+        public int ParryChance => m_ParryChance;
+
+        /// <inheritdoc/>
+        public int BlockChance => m_BlockChance;
+
+        /// <inheritdoc/>
+        public int ResistFire => m_ResistFire;
+
+        /// <inheritdoc/>
+        public int ResistFrost => m_ResistFrost;
+
+        /// <inheritdoc/>
+        public int ResistArcane => m_ResistArcane;
+
+        /// <inheritdoc/>
+        public int ResistNature => m_ResistNature;
+
+        /// <inheritdoc/>
+        public int ResistShadow => m_ResistShadow;
+
+        /// <inheritdoc/>
+        public int ResistHoly => m_ResistHoly;
+
         /// <summary>
         /// Radius der Körper-Hitbox in Metern. Wird vom Server-Hit-Resolve als
         /// Reichweiten-Bonus addiert (siehe <see cref="m_HitRadius"/>).
@@ -179,6 +241,17 @@ namespace Riftstorm.Game.Combat
         public event Action OnServerDied;
 
         /// <summary>
+        /// Server-only: feuert nach jedem applizierten Schaden mit
+        /// <c>FinalDamage &gt; 0</c>. Liefert den Angreifer (kann <c>null</c>
+        /// sein bei Environment-Damage oder DoT ohne Caster-Ref), den
+        /// applizierten Schaden und das Hit-Ergebnis. Wird vom
+        /// <see cref="Riftstorm.Game.Npc.ThreatManager"/>-Hook im
+        /// <see cref="Riftstorm.Game.Npc.NpcController"/> konsumiert, um
+        /// Threat aufzubauen und Retaliation auszulösen.
+        /// </summary>
+        public event Action<UnitStats, int, HitResult> OnServerDamaged;
+
+        /// <summary>
         /// Feuert auf jedem Peer, sobald sich die HP aendern (oder beim Spawn
         /// einmal initial). Erster Parameter = aktuelle HP, zweiter = MaxHp.
         /// Listener bauen damit ihre HP-Bar ohne Polling auf.
@@ -194,6 +267,23 @@ namespace Riftstorm.Game.Combat
 
         /// <inheritdoc/>
         public void ApplyDamage(in DamageInfo info)
+        {
+            // Convenience-Overload ohne Attacker — fuer Quellen ohne Caster-Ref
+            // (Environment-Damage, Self-Damage, alte Aufrufpfade). Threat wird
+            // dann nicht aufgebaut.
+            ApplyDamage(null, in info);
+        }
+
+        /// <summary>
+        /// Variante mit Attacker-Ref. Wird vom Caster-Pfad (Spell/Melee)
+        /// genutzt, damit der <see cref="Riftstorm.Game.Npc.ThreatManager"/>
+        /// die Quelle des Schadens zuordnen und Threat aufbauen kann.
+        /// </summary>
+        /// <param name="attacker">
+        /// Angreifer-Unit oder <c>null</c> (Environment / DoT-ohne-Caster).
+        /// </param>
+        /// <param name="info">Vom <see cref="CombatFormulas"/> vorbereiteter Schaden.</param>
+        public void ApplyDamage(UnitStats attacker, in DamageInfo info)
         {
             if (!IsServer)
             {
@@ -211,6 +301,15 @@ namespace Riftstorm.Game.Combat
             m_CurrentHp.Value = newHp;
 
             BroadcastDamageClientRpc(info.FinalDamage, (byte)info.HitResult);
+
+            try
+            {
+                OnServerDamaged?.Invoke(attacker, info.FinalDamage, info.HitResult);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
 
             if (newHp == 0)
             {
@@ -253,7 +352,8 @@ namespace Riftstorm.Game.Combat
             float runSpeed = 0f,
             float attackRange = 0f,
             float projectileRange = 0f,
-            string displayName = null)
+            string displayName = null,
+            int factionId = -1)
         {
             if (IsSpawned)
             {
@@ -261,6 +361,14 @@ namespace Riftstorm.Game.Combat
                     "[UnitStats] ApplyBaseStats nach OnNetworkSpawn ignoriert — " +
                     "Stats müssen vor dem Netcode-Spawn gesetzt werden.", this);
                 return;
+            }
+
+            // factionId < 0 = Sentinel "Inspector-Default behalten" (z. B. MUGEN-Pfad,
+            // der keine Faction-Daten kennt). >= 0 wird übernommen — FLARE-NPCs liefern
+            // npc_template.faction (3 = FACTION_HOSTILE) durch.
+            if (factionId >= 0)
+            {
+                m_FactionId = factionId;
             }
 
             m_MaxHp = Mathf.Max(1, maxHp);
@@ -312,6 +420,7 @@ namespace Riftstorm.Game.Combat
                 // Owner setzen — AuraManager liest IsStunned/Silenced/Rooted vom Owner
                 // selbst nicht, aber Aura-Effekte greifen darüber auf die Unit zu.
                 m_Auras.SetOwner(this);
+                m_Auras.OnChanged += ServerOnAurasChanged;
                 m_LastTickTime = Time.time;
             }
             m_CurrentHp.OnValueChanged += OnHpValueChangedInternal;
@@ -352,6 +461,10 @@ namespace Riftstorm.Game.Combat
         {
             m_CurrentHp.OnValueChanged -= OnHpValueChangedInternal;
             m_CurrentMana.OnValueChanged -= OnManaValueChangedInternal;
+            if (IsServer)
+            {
+                m_Auras.OnChanged -= ServerOnAurasChanged;
+            }
             base.OnNetworkDespawn();
         }
 
@@ -493,14 +606,15 @@ namespace Riftstorm.Game.Combat
                 return;
             }
             // Schaden l\u00e4uft \u00fcber denselben Pfad wie Melee \u2014 ApplyDamage zieht HP ab,
-            // feuert Death-Event und broadcastet an die Clients.
+            // feuert Death-Event und broadcastet an die Clients. Attacker wird
+            // an die Overload weitergereicht, damit ThreatManager Quelle zuordnet.
             DamageInfo info = new()
             {
                 BaseDamage = amount,
                 FinalDamage = amount,
                 HitResult = HitResult.Hit,
             };
-            ApplyDamage(in info);
+            ApplyDamage(attacker as UnitStats, in info);
         }
 
         /// <inheritdoc/>
@@ -556,5 +670,140 @@ namespace Riftstorm.Game.Combat
                 Debug.LogException(ex, this);
             }
         }
-    }
+        // -------------------------------------------------------------------------
+        // Aura-Replikation (Server -> Client Snapshot bei Aenderung)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Client-sichtbarer Schnappschuss einer einzelnen aktiven Aura. Wird
+        /// vom Server bei jeder strukturellen Aenderung der Aura-Liste
+        /// (Apply/Refresh/Stack/Remove/Expire) gebroadcastet. Die HUD-Schicht
+        /// rechnet die verbleibende Dauer lokal aus
+        /// (<see cref="MaxDurationMs"/> minus seit <see cref="ReceivedAt"/>
+        /// vergangene Zeit), damit kein Per-Frame-Netcode noetig ist.
+        /// </summary>
+        public readonly struct AuraSnapshot
+        {
+            /// <summary>Source-Spell-Entry der Aura (Verweis auf SpellTemplate).</summary>
+            public readonly int SpellEntry;
+            /// <summary>Aktuelle Stack-Anzahl (1..MaxStacks).</summary>
+            public readonly int Stacks;
+            /// <summary>True = Buff, false = Debuff.</summary>
+            public readonly bool IsPositive;
+            /// <summary>Verbleibende Dauer in ms zum Broadcast-Zeitpunkt. -1 = permanent.</summary>
+            public readonly int RemainingMs;
+            /// <summary>Gesamtdauer in ms (0 = permanent).</summary>
+            public readonly int MaxDurationMs;
+            /// <summary>Client-Zeitstempel <c>Time.unscaledTime</c> beim Empfang. Fuer Cooldown-Sweep.</summary>
+            public readonly float ReceivedAt;
+
+            /// <summary>Vollstaendiger Konstruktor.</summary>
+            public AuraSnapshot(int spellEntry, int stacks, bool isPositive, int remainingMs, int maxDurationMs, float receivedAt)
+            {
+                SpellEntry = spellEntry;
+                Stacks = stacks;
+                IsPositive = isPositive;
+                RemainingMs = remainingMs;
+                MaxDurationMs = maxDurationMs;
+                ReceivedAt = receivedAt;
+            }
+        }
+
+        private AuraSnapshot[] m_ClientAuras = Array.Empty<AuraSnapshot>();
+
+        /// <summary>
+        /// Aktuelle Aura-Snapshots wie sie der Server zuletzt gebroadcastet hat.
+        /// Auf dem Server identisch mit dem Server-State. Niemals <c>null</c>.
+        /// </summary>
+        public IReadOnlyList<AuraSnapshot> ClientAuras => m_ClientAuras;
+
+        /// <summary>
+        /// Feuert auf jedem Peer, sobald ein neuer Aura-Snapshot eintrifft.
+        /// HUD-Komponenten (BuffBar, DebuffBar) bauen ihre Icon-Liste hierauf
+        /// auf, ohne pollen zu muessen.
+        /// </summary>
+        public event Action ClientAurasChanged;
+
+        /// <summary>
+        /// Server-Hook auf <see cref="AuraManager.OnChanged"/>. Baut einen
+        /// kompakten Snapshot der aktuellen Aura-Liste und sendet ihn an alle
+        /// Clients (Observer). Filtert <see cref="AuraFlags.Hidden"/> und
+        /// <see cref="AuraFlags.Passive"/> heraus &#8212; passive Auren haben per
+        /// Konvention kein UI-Icon.
+        /// </summary>
+        private void ServerOnAurasChanged()
+        {
+            if (!IsServer || !IsSpawned)
+            {
+                return;
+            }
+            IReadOnlyList<Aura> all = m_Auras.All;
+            int count = 0;
+            for (int i = 0; i < all.Count; i++)
+            {
+                Aura a = all[i];
+                if ((a.Flags & (AuraFlags.Hidden | AuraFlags.Passive)) != 0) { continue; }
+                count++;
+            }
+
+            int[] entries = new int[count];
+            byte[] stacks = new byte[count];
+            byte[] positive = new byte[count];
+            int[] remainingMs = new int[count];
+            int[] maxDurationMs = new int[count];
+
+            int w = 0;
+            for (int i = 0; i < all.Count; i++)
+            {
+                Aura a = all[i];
+                if ((a.Flags & (AuraFlags.Hidden | AuraFlags.Passive)) != 0) { continue; }
+                entries[w] = a.SourceSpellEntry;
+                stacks[w] = (byte)Mathf.Clamp(a.Stacks, 0, 255);
+                positive[w] = (byte)(a.IsPositive ? 1 : 0);
+                remainingMs[w] = a.RemainingMs;
+                maxDurationMs[w] = a.MaxDurationMs;
+                w++;
+            }
+
+            BroadcastAurasClientRpc(entries, stacks, positive, remainingMs, maxDurationMs);
+            m_Auras.ClearDirty();
+        }
+
+        /// <summary>
+        /// Fanout an alle Observer-Clients (inkl. Host). Parallele Arrays statt
+        /// INetworkSerializable-Struct-Array, weil NGO primitive Arrays am
+        /// stabilsten serialisiert.
+        /// </summary>
+        [ClientRpc]
+        private void BroadcastAurasClientRpc(
+            int[] entries,
+            byte[] stacks,
+            byte[] positive,
+            int[] remainingMs,
+            int[] maxDurationMs,
+            ClientRpcParams _ = default)
+        {
+            int n = entries != null ? entries.Length : 0;
+            AuraSnapshot[] next = n > 0 ? new AuraSnapshot[n] : Array.Empty<AuraSnapshot>();
+            float now = Time.unscaledTime;
+            for (int i = 0; i < n; i++)
+            {
+                next[i] = new AuraSnapshot(
+                    spellEntry: entries[i],
+                    stacks: stacks[i],
+                    isPositive: positive[i] != 0,
+                    remainingMs: remainingMs[i],
+                    maxDurationMs: maxDurationMs[i],
+                    receivedAt: now);
+            }
+            m_ClientAuras = next;
+            try
+            {
+                ClientAurasChanged?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
+        }    }
 }

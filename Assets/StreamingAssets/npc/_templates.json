@@ -34,7 +34,11 @@
     "spell_2_id": 229,
     "spell_2_chance": 30,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 15000
+    "spell_2_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "2": {
     "entry": 2,
@@ -66,7 +70,11 @@
     "spell_1_id": 142,
     "spell_1_chance": 15,
     "spell_1_interval": 1500,
-    "spell_1_cooldown": 20000
+    "spell_1_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "3": {
     "entry": 3,
@@ -94,7 +102,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "5": {
     "entry": 5,
@@ -133,7 +145,11 @@
     "spell_2_id": 229,
     "spell_2_chance": 30,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 15000
+    "spell_2_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "8": {
     "entry": 8,
@@ -161,7 +177,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "9": {
     "entry": 9,
@@ -190,7 +210,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": 15,
     "custom_gold_ratio": -1,
-    "bool_elite": 1
+    "bool_elite": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "10": {
     "entry": 10,
@@ -218,7 +242,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 14,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "11": {
     "entry": 11,
@@ -246,7 +274,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "12": {
     "entry": 12,
@@ -276,7 +308,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "13": {
     "entry": 13,
@@ -304,7 +340,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "14": {
     "entry": 14,
@@ -332,7 +372,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "15": {
     "entry": 15,
@@ -372,7 +416,11 @@
     "spell_2_id": 236,
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 30000
+    "spell_2_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "17": {
     "entry": 17,
@@ -400,7 +448,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 16,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "18": {
     "entry": 18,
@@ -432,7 +484,11 @@
     "spell_1_id": 229,
     "spell_1_chance": 25,
     "spell_1_interval": 2000,
-    "spell_1_cooldown": 25000
+    "spell_1_cooldown": 25000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "19": {
     "entry": 19,
@@ -460,7 +516,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "20": {
     "entry": 20,
@@ -488,7 +548,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "21": {
     "entry": 21,
@@ -516,7 +580,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "22": {
     "entry": 22,
@@ -544,7 +612,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "23": {
     "entry": 23,
@@ -572,7 +644,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "24": {
     "entry": 24,
@@ -600,7 +676,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "25": {
     "entry": 25,
@@ -628,7 +708,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "26": {
     "entry": 26,
@@ -658,7 +742,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "27": {
     "entry": 27,
@@ -686,7 +774,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "28": {
     "entry": 28,
@@ -725,7 +817,11 @@
     "spell_3_id": 231,
     "spell_3_chance": 30,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 6000
+    "spell_3_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "29": {
     "entry": 29,
@@ -756,7 +852,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_gold_ratio": -1,
-    "spell_primary": 276
+    "spell_primary": 276,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "30": {
     "entry": 30,
@@ -800,7 +900,11 @@
     "spell_3_id": 272,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "31": {
     "entry": 31,
@@ -841,7 +945,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 15,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 8000
+    "spell_3_cooldown": 8000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "34": {
     "entry": 34,
@@ -888,7 +996,11 @@
     "spell_3_id": 275,
     "spell_3_chance": 30,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "35": {
     "entry": 35,
@@ -933,7 +1045,11 @@
     "spell_3_id": 275,
     "spell_3_chance": 30,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "36": {
     "entry": 36,
@@ -967,7 +1083,11 @@
     "spell_1_id": 230,
     "spell_1_chance": 15,
     "spell_1_interval": 1500,
-    "spell_1_cooldown": 10000
+    "spell_1_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "37": {
     "entry": 37,
@@ -1005,7 +1125,11 @@
     "spell_2_id": 243,
     "spell_2_chance": 30,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 10000
+    "spell_2_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "38": {
     "entry": 38,
@@ -1051,7 +1175,11 @@
     "spell_4_id": 231,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 9000
+    "spell_4_cooldown": 9000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "39": {
     "entry": 39,
@@ -1079,7 +1207,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "40": {
     "entry": 40,
@@ -1126,7 +1258,11 @@
     "spell_3_chance": 15,
     "spell_3_interval": 1300,
     "spell_3_cooldown": 6000,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "41": {
     "entry": 41,
@@ -1169,7 +1305,11 @@
     "spell_3_id": 144,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "42": {
     "entry": 42,
@@ -1215,7 +1355,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 4000
+    "spell_3_cooldown": 4000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "43": {
     "entry": 43,
@@ -1263,7 +1407,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 15,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 12000
+    "spell_3_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "44": {
     "entry": 44,
@@ -1295,7 +1443,11 @@
     "loot_purple_chance": -1.0,
     "portrait": "malte",
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "45": {
     "entry": 45,
@@ -1340,7 +1492,11 @@
     "spell_3_id": 142,
     "spell_3_chance": 15,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 12000
+    "spell_3_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "46": {
     "entry": 46,
@@ -1386,7 +1542,11 @@
     "spell_3_id": 144,
     "spell_3_chance": 5,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "47": {
     "entry": 47,
@@ -1414,7 +1574,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "49": {
     "entry": 49,
@@ -1458,7 +1622,11 @@
     "spell_3_id": 237,
     "spell_3_chance": 5,
     "spell_3_interval": 500,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "50": {
     "entry": 50,
@@ -1502,7 +1670,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 15,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 12000
+    "spell_3_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "51": {
     "entry": 51,
@@ -1546,7 +1718,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 10,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "52": {
     "entry": 52,
@@ -1590,7 +1766,11 @@
     "spell_3_id": 144,
     "spell_3_chance": 10,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 20000
+    "spell_3_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "53": {
     "entry": 53,
@@ -1634,7 +1814,11 @@
     "spell_3_id": 237,
     "spell_3_chance": 10,
     "spell_3_interval": 500,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "54": {
     "entry": 54,
@@ -1666,7 +1850,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "55": {
     "entry": 55,
@@ -1698,7 +1886,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "56": {
     "entry": 56,
@@ -1729,7 +1921,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "57": {
     "entry": 57,
@@ -1759,7 +1955,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "58": {
     "entry": 58,
@@ -1800,7 +2000,11 @@
     "spell_3_id": 231,
     "spell_3_chance": 15,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 7000
+    "spell_3_cooldown": 7000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "59": {
     "entry": 59,
@@ -1837,7 +2041,11 @@
     "spell_2_id": 236,
     "spell_2_chance": 20,
     "spell_2_interval": 200,
-    "spell_2_cooldown": 90000
+    "spell_2_cooldown": 90000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "60": {
     "entry": 60,
@@ -1869,7 +2077,11 @@
     "spell_1_id": 230,
     "spell_1_chance": 30,
     "spell_1_interval": 1300,
-    "spell_1_cooldown": 15000
+    "spell_1_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "61": {
     "entry": 61,
@@ -1898,7 +2110,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": 0,
     "custom_gold_ratio": -1,
-    "bool_elite": 1
+    "bool_elite": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "62": {
     "entry": 62,
@@ -1929,7 +2145,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "63": {
     "entry": 63,
@@ -1965,7 +2185,11 @@
     "spell_2_id": 229,
     "spell_2_chance": 15,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 15000
+    "spell_2_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "64": {
     "entry": 64,
@@ -2005,7 +2229,11 @@
     "spell_3_id": 239,
     "spell_3_chance": 30,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "65": {
     "entry": 65,
@@ -2043,7 +2271,11 @@
     "spell_2_id": 274,
     "spell_2_chance": 100,
     "spell_2_interval": 1000,
-    "spell_2_cooldown": 15000
+    "spell_2_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "66": {
     "entry": 66,
@@ -2071,7 +2303,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "67": {
     "entry": 67,
@@ -2103,7 +2339,11 @@
     "loot_purple_chance": -1.0,
     "portrait": "vincent",
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "68": {
     "entry": 68,
@@ -2130,7 +2370,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "4": {
     "entry": 4,
@@ -2173,7 +2417,11 @@
     "spell_3_id": 144,
     "spell_3_chance": 5,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "6": {
     "entry": 6,
@@ -2212,7 +2460,11 @@
     "spell_2_id": 143,
     "spell_2_chance": 15,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 8000
+    "spell_2_cooldown": 8000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "100": {
     "entry": 100,
@@ -2243,7 +2495,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "101": {
     "entry": 101,
@@ -2273,7 +2529,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "102": {
     "entry": 102,
@@ -2302,7 +2562,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "103": {
     "entry": 103,
@@ -2333,7 +2597,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "104": {
     "entry": 104,
@@ -2364,7 +2632,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "105": {
     "entry": 105,
@@ -2395,7 +2667,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "106": {
     "entry": 106,
@@ -2425,7 +2701,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "107": {
     "entry": 107,
@@ -2454,7 +2734,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "108": {
     "entry": 108,
@@ -2485,7 +2769,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "109": {
     "entry": 109,
@@ -2516,7 +2804,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "110": {
     "entry": 110,
@@ -2546,7 +2838,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "111": {
     "entry": 111,
@@ -2577,7 +2873,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "112": {
     "entry": 112,
@@ -2608,7 +2908,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "113": {
     "entry": 113,
@@ -2638,7 +2942,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "114": {
     "entry": 114,
@@ -2668,7 +2976,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "115": {
     "entry": 115,
@@ -2699,7 +3011,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "116": {
     "entry": 116,
@@ -2730,7 +3046,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "117": {
     "entry": 117,
@@ -2760,7 +3080,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "118": {
     "entry": 118,
@@ -2791,7 +3115,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "119": {
     "entry": 119,
@@ -2822,7 +3150,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "120": {
     "entry": 120,
@@ -2853,7 +3185,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "121": {
     "entry": 121,
@@ -2884,7 +3220,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "122": {
     "entry": 122,
@@ -2913,7 +3253,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "123": {
     "entry": 123,
@@ -2943,7 +3287,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "124": {
     "entry": 124,
@@ -2973,7 +3321,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "125": {
     "entry": 125,
@@ -3005,7 +3357,11 @@
     "loot_purple_chance": -1.0,
     "portrait": "donal",
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "126": {
     "entry": 126,
@@ -3035,7 +3391,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "127": {
     "entry": 127,
@@ -3065,7 +3425,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "128": {
     "entry": 128,
@@ -3096,7 +3460,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "129": {
     "entry": 129,
@@ -3126,7 +3494,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "130": {
     "entry": 130,
@@ -3156,7 +3528,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "131": {
     "entry": 131,
@@ -3187,7 +3563,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "132": {
     "entry": 132,
@@ -3217,7 +3597,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "133": {
     "entry": 133,
@@ -3248,7 +3632,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "134": {
     "entry": 134,
@@ -3277,7 +3665,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "135": {
     "entry": 135,
@@ -3308,7 +3700,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "136": {
     "entry": 136,
@@ -3336,7 +3732,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "137": {
     "entry": 137,
@@ -3366,7 +3766,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "48": {
     "entry": 48,
@@ -3400,7 +3804,11 @@
     "spell_1_id": 141,
     "spell_1_chance": 50,
     "spell_1_interval": 300,
-    "spell_1_cooldown": 20000
+    "spell_1_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "7": {
     "entry": 7,
@@ -3440,7 +3848,11 @@
     "spell_2_id": 229,
     "spell_2_chance": 30,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 15000
+    "spell_2_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "138": {
     "entry": 138,
@@ -3470,7 +3882,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "139": {
     "entry": 139,
@@ -3500,7 +3916,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "140": {
     "entry": 140,
@@ -3531,7 +3951,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "141": {
     "entry": 141,
@@ -3562,7 +3986,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "142": {
     "entry": 142,
@@ -3592,7 +4020,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "144": {
     "entry": 144,
@@ -3620,7 +4052,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "143": {
     "entry": 143,
@@ -3648,7 +4084,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "145": {
     "entry": 145,
@@ -3676,7 +4116,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "146": {
     "entry": 146,
@@ -3707,7 +4151,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "147": {
     "entry": 147,
@@ -3738,7 +4186,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "148": {
     "entry": 148,
@@ -3770,7 +4222,11 @@
     "loot_purple_chance": -1.0,
     "portrait": "reginald",
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "149": {
     "entry": 149,
@@ -3801,7 +4257,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "150": {
     "entry": 150,
@@ -3831,7 +4291,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "151": {
     "entry": 151,
@@ -3860,7 +4324,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "152": {
     "entry": 152,
@@ -3890,7 +4358,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "153": {
     "entry": 153,
@@ -3919,7 +4391,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "154": {
     "entry": 154,
@@ -3950,7 +4426,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "155": {
     "entry": 155,
@@ -3980,7 +4460,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "156": {
     "entry": 156,
@@ -4010,7 +4494,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "157": {
     "entry": 157,
@@ -4040,7 +4528,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "158": {
     "entry": 158,
@@ -4070,7 +4562,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "159": {
     "entry": 159,
@@ -4100,7 +4596,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "160": {
     "entry": 160,
@@ -4130,7 +4630,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "161": {
     "entry": 161,
@@ -4160,7 +4664,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "162": {
     "entry": 162,
@@ -4191,7 +4699,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "163": {
     "entry": 163,
@@ -4221,7 +4733,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "164": {
     "entry": 164,
@@ -4252,7 +4768,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "165": {
     "entry": 165,
@@ -4282,7 +4802,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "166": {
     "entry": 166,
@@ -4313,7 +4837,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "167": {
     "entry": 167,
@@ -4343,7 +4871,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "168": {
     "entry": 168,
@@ -4373,7 +4905,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "169": {
     "entry": 169,
@@ -4403,7 +4939,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "170": {
     "entry": 170,
@@ -4433,7 +4973,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "171": {
     "entry": 171,
@@ -4463,7 +5007,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "172": {
     "entry": 172,
@@ -4493,7 +5041,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "173": {
     "entry": 173,
@@ -4523,7 +5075,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "174": {
     "entry": 174,
@@ -4553,7 +5109,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "175": {
     "entry": 175,
@@ -4583,7 +5143,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "176": {
     "entry": 176,
@@ -4612,7 +5176,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "177": {
     "entry": 177,
@@ -4641,7 +5209,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "178": {
     "entry": 178,
@@ -4672,7 +5244,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "179": {
     "entry": 179,
@@ -4703,7 +5279,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "180": {
     "entry": 180,
@@ -4733,7 +5313,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "181": {
     "entry": 181,
@@ -4763,7 +5347,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "182": {
     "entry": 182,
@@ -4793,7 +5381,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "183": {
     "entry": 183,
@@ -4824,7 +5416,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "184": {
     "entry": 184,
@@ -4854,7 +5450,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "185": {
     "entry": 185,
@@ -4884,7 +5484,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "186": {
     "entry": 186,
@@ -4914,7 +5518,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "187": {
     "entry": 187,
@@ -4944,7 +5552,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "188": {
     "entry": 188,
@@ -4975,7 +5587,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "189": {
     "entry": 189,
@@ -5005,7 +5621,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "190": {
     "entry": 190,
@@ -5035,7 +5655,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "191": {
     "entry": 191,
@@ -5066,7 +5690,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "192": {
     "entry": 192,
@@ -5096,7 +5724,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "193": {
     "entry": 193,
@@ -5127,7 +5759,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "194": {
     "entry": 194,
@@ -5157,7 +5793,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "195": {
     "entry": 195,
@@ -5187,7 +5827,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "196": {
     "entry": 196,
@@ -5217,7 +5861,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "197": {
     "entry": 197,
@@ -5248,7 +5896,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "198": {
     "entry": 198,
@@ -5279,7 +5931,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "199": {
     "entry": 199,
@@ -5309,7 +5965,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "200": {
     "entry": 200,
@@ -5339,7 +5999,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "201": {
     "entry": 201,
@@ -5368,7 +6032,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "202": {
     "entry": 202,
@@ -5397,7 +6065,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "203": {
     "entry": 203,
@@ -5427,7 +6099,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "204": {
     "entry": 204,
@@ -5456,7 +6132,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "205": {
     "entry": 205,
@@ -5485,7 +6165,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "206": {
     "entry": 206,
@@ -5514,7 +6198,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "207": {
     "entry": 207,
@@ -5543,7 +6231,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "208": {
     "entry": 208,
@@ -5573,7 +6265,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "209": {
     "entry": 209,
@@ -5602,7 +6298,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "210": {
     "entry": 210,
@@ -5631,7 +6331,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "211": {
     "entry": 211,
@@ -5660,7 +6364,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "212": {
     "entry": 212,
@@ -5689,7 +6397,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "213": {
     "entry": 213,
@@ -5720,7 +6432,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "214": {
     "entry": 214,
@@ -5752,7 +6468,11 @@
     "loot_purple_chance": -1.0,
     "portrait": "clive",
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "215": {
     "entry": 215,
@@ -5782,7 +6502,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "216": {
     "entry": 216,
@@ -5813,7 +6537,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "217": {
     "entry": 217,
@@ -5844,7 +6572,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "218": {
     "entry": 218,
@@ -5875,7 +6607,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "219": {
     "entry": 219,
@@ -5906,7 +6642,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "220": {
     "entry": 220,
@@ -5937,7 +6677,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "221": {
     "entry": 221,
@@ -5968,7 +6712,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "69": {
     "entry": 69,
@@ -6009,7 +6757,11 @@
     "spell_3_id": 236,
     "spell_3_chance": 50,
     "spell_3_interval": 200,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "71": {
     "entry": 71,
@@ -6036,7 +6788,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "72": {
     "entry": 72,
@@ -6079,7 +6835,11 @@
     "spell_3_id": 237,
     "spell_3_chance": 40,
     "spell_3_interval": 200,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "73": {
     "entry": 73,
@@ -6119,7 +6879,11 @@
     "spell_2_id": 231,
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 12000
+    "spell_2_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "74": {
     "entry": 74,
@@ -6161,7 +6925,11 @@
     "spell_2_id": 243,
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 6000
+    "spell_2_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "75": {
     "entry": 75,
@@ -6205,7 +6973,11 @@
     "spell_3_id": 232,
     "spell_3_chance": 30,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 17000
+    "spell_3_cooldown": 17000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "76": {
     "entry": 76,
@@ -6247,7 +7019,11 @@
     "spell_3_id": 236,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 20000
+    "spell_3_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "77": {
     "entry": 77,
@@ -6292,7 +7068,11 @@
     "spell_3_id": 243,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 6000
+    "spell_3_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "78": {
     "entry": 78,
@@ -6321,7 +7101,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 10,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "79": {
     "entry": 79,
@@ -6350,7 +7134,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 8,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "80": {
     "entry": 80,
@@ -6379,7 +7167,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 9,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "81": {
     "entry": 81,
@@ -6408,7 +7200,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 11,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "82": {
     "entry": 82,
@@ -6438,7 +7234,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
     "custom_gold_ratio": -1,
-    "bool_elite": 1
+    "bool_elite": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "83": {
     "entry": 83,
@@ -6467,7 +7267,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "84": {
     "entry": 84,
@@ -6496,7 +7300,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 0,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "85": {
     "entry": 85,
@@ -6526,7 +7334,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
     "custom_gold_ratio": -1,
-    "bool_elite": 1
+    "bool_elite": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "86": {
     "entry": 86,
@@ -6555,7 +7367,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": 0,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "32": {
     "entry": 32,
@@ -6586,7 +7402,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
     "custom_gold_ratio": -1,
-    "spell_primary": 141
+    "spell_primary": 141,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "33": {
     "entry": 33,
@@ -6619,7 +7439,11 @@
     "spell_1_id": 236,
     "spell_1_chance": 15,
     "spell_1_interval": 1500,
-    "spell_1_cooldown": 30000
+    "spell_1_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "88": {
     "entry": 88,
@@ -6649,7 +7473,11 @@
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
     "custom_gold_ratio": -1,
-    "bool_elite": 1
+    "bool_elite": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "89": {
     "entry": 89,
@@ -6697,7 +7525,11 @@
     "spell_3_chance": 100,
     "spell_3_interval": 200,
     "spell_3_cooldown": 15000,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "90": {
     "entry": 90,
@@ -6745,7 +7577,11 @@
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
     "spell_3_cooldown": 6000,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "91": {
     "entry": 91,
@@ -6793,7 +7629,11 @@
     "spell_3_chance": 0,
     "spell_3_interval": 0,
     "spell_3_cooldown": 0,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "92": {
     "entry": 92,
@@ -6831,7 +7671,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "93": {
     "entry": 93,
@@ -6867,7 +7711,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "222": {
     "entry": 222,
@@ -6904,7 +7752,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "223": {
     "entry": 223,
@@ -6943,7 +7795,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "94": {
     "entry": 94,
@@ -6982,7 +7838,11 @@
     "spell_2_interval": 1500,
     "spell_2_cooldown": 10000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "95": {
     "entry": 95,
@@ -7024,7 +7884,11 @@
     "spell_3_id": 0,
     "spell_3_chance": 0,
     "spell_3_interval": 0,
-    "spell_3_cooldown": 0
+    "spell_3_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "96": {
     "entry": 96,
@@ -7071,7 +7935,11 @@
     "spell_3_id": 228,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 12000
+    "spell_3_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "224": {
     "entry": 224,
@@ -7110,7 +7978,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "225": {
     "entry": 225,
@@ -7150,7 +8022,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "97": {
     "entry": 97,
@@ -7186,7 +8062,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "98": {
     "entry": 98,
@@ -7223,7 +8103,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "99": {
     "entry": 99,
@@ -7259,7 +8143,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "226": {
     "entry": 226,
@@ -7302,7 +8190,11 @@
     "spell_3_id": 142,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 10000
+    "spell_3_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "227": {
     "entry": 227,
@@ -7338,7 +8230,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "228": {
     "entry": 228,
@@ -7376,7 +8272,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "229": {
     "entry": 229,
@@ -7413,7 +8313,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "230": {
     "entry": 230,
@@ -7451,7 +8355,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "231": {
     "entry": 231,
@@ -7489,7 +8397,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "232": {
     "entry": 232,
@@ -7527,7 +8439,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "233": {
     "entry": 233,
@@ -7564,7 +8480,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "234": {
     "entry": 234,
@@ -7606,7 +8526,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 15,
     "spell_3_interval": 1300,
-    "spell_3_cooldown": 12000
+    "spell_3_cooldown": 12000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "235": {
     "entry": 235,
@@ -7646,7 +8570,11 @@
     "spell_2_interval": 1500,
     "spell_2_cooldown": 10000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "236": {
     "entry": 236,
@@ -7686,7 +8614,11 @@
     "spell_2_interval": 1500,
     "spell_2_cooldown": 15000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "237": {
     "entry": 237,
@@ -7727,7 +8659,11 @@
     "spell_2_cooldown": 7000,
     "spell_2_targetType": 2,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "238": {
     "entry": 238,
@@ -7764,7 +8700,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "239": {
     "entry": 239,
@@ -7803,7 +8743,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "240": {
     "entry": 240,
@@ -7842,7 +8786,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "241": {
     "entry": 241,
@@ -7878,7 +8826,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "242": {
     "entry": 242,
@@ -7914,7 +8866,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "243": {
     "entry": 243,
@@ -7950,7 +8906,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "244": {
     "entry": 244,
@@ -7986,7 +8946,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "245": {
     "entry": 245,
@@ -8022,7 +8986,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "246": {
     "entry": 246,
@@ -8061,7 +9029,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "247": {
     "entry": 247,
@@ -8100,7 +9072,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "248": {
     "entry": 248,
@@ -8136,7 +9112,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "249": {
     "entry": 249,
@@ -8173,7 +9153,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "250": {
     "entry": 250,
@@ -8209,7 +9193,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "251": {
     "entry": 251,
@@ -8244,7 +9232,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "252": {
     "entry": 252,
@@ -8281,7 +9273,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "253": {
     "entry": 253,
@@ -8318,7 +9314,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "254": {
     "entry": 254,
@@ -8355,7 +9355,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "255": {
     "entry": 255,
@@ -8394,7 +9398,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "256": {
     "entry": 256,
@@ -8432,7 +9440,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "257": {
     "entry": 257,
@@ -8470,7 +9482,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "258": {
     "entry": 258,
@@ -8508,7 +9524,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "259": {
     "entry": 259,
@@ -8547,7 +9567,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "260": {
     "entry": 260,
@@ -8584,7 +9608,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "261": {
     "entry": 261,
@@ -8629,7 +9657,11 @@
     "spell_3_id": 234,
     "spell_3_chance": 5,
     "spell_3_interval": 500,
-    "spell_3_cooldown": 2000
+    "spell_3_cooldown": 2000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "262": {
     "entry": 262,
@@ -8673,7 +9705,11 @@
     "spell_3_id": 232,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 6000
+    "spell_3_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "263": {
     "entry": 263,
@@ -8715,7 +9751,11 @@
     "spell_2_interval": 1500,
     "spell_2_cooldown": 15000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "264": {
     "entry": 264,
@@ -8754,7 +9794,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "265": {
     "entry": 265,
@@ -8800,7 +9844,11 @@
     "spell_3_id": 243,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 6000
+    "spell_3_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "266": {
     "entry": 266,
@@ -8837,7 +9885,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "267": {
     "entry": 267,
@@ -8872,7 +9924,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "268": {
     "entry": 268,
@@ -8910,7 +9966,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "269": {
     "entry": 269,
@@ -8946,7 +10006,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "270": {
     "entry": 270,
@@ -8985,7 +10049,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "271": {
     "entry": 271,
@@ -9021,7 +10089,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "272": {
     "entry": 272,
@@ -9057,7 +10129,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "273": {
     "entry": 273,
@@ -9094,7 +10170,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "274": {
     "entry": 274,
@@ -9130,7 +10210,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "275": {
     "entry": 275,
@@ -9166,7 +10250,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "276": {
     "entry": 276,
@@ -9201,7 +10289,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "277": {
     "entry": 277,
@@ -9238,7 +10330,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "278": {
     "entry": 278,
@@ -9274,7 +10370,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "279": {
     "entry": 279,
@@ -9320,7 +10420,11 @@
     "spell_3_id": 232,
     "spell_3_chance": 10,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 15000
+    "spell_3_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "280": {
     "entry": 280,
@@ -9356,7 +10460,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "281": {
     "entry": 281,
@@ -9403,7 +10511,11 @@
     "spell_3_chance": 40,
     "spell_3_interval": 5000,
     "spell_3_cooldown": 30000,
-    "spell_3_targetType": 3
+    "spell_3_targetType": 3,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "282": {
     "entry": 282,
@@ -9445,7 +10557,11 @@
     "spell_3_id": 229,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "283": {
     "entry": 283,
@@ -9488,7 +10604,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "284": {
     "entry": 284,
@@ -9524,7 +10644,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "285": {
     "entry": 285,
@@ -9560,7 +10684,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "286": {
     "entry": 286,
@@ -9595,7 +10723,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "287": {
     "entry": 287,
@@ -9637,7 +10769,11 @@
     "spell_3_chance": 30,
     "spell_3_interval": 15000,
     "spell_3_cooldown": 25000,
-    "spell_3_targetType": 2
+    "spell_3_targetType": 2,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "288": {
     "entry": 288,
@@ -9673,7 +10809,11 @@
     "spell_2_id": 141,
     "spell_2_chance": 50,
     "spell_2_interval": 200,
-    "spell_2_cooldown": 30000
+    "spell_2_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "289": {
     "entry": 289,
@@ -9709,7 +10849,11 @@
     "spell_2_id": 236,
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 30000
+    "spell_2_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "290": {
     "entry": 290,
@@ -9740,7 +10884,11 @@
     "loot_gold_chance": -1.0,
     "loot_purple_chance": -1.0,
     "custom_loot": -1,
-    "custom_gold_ratio": -1
+    "custom_gold_ratio": -1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "291": {
     "entry": 291,
@@ -9785,7 +10933,11 @@
     "spell_2_interval": 1300,
     "spell_2_cooldown": 12000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "296": {
     "entry": 296,
@@ -9829,7 +10981,11 @@
     "spell_2_interval": 300,
     "spell_2_cooldown": 12000,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "297": {
     "entry": 297,
@@ -9863,7 +11019,11 @@
     "spell_1_id": 141,
     "spell_1_chance": 50,
     "spell_1_interval": 300,
-    "spell_1_cooldown": 20000
+    "spell_1_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "300": {
     "entry": 300,
@@ -9916,7 +11076,11 @@
     "spell_4_id": 231,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 6000
+    "spell_4_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "301": {
     "entry": 301,
@@ -9961,7 +11125,11 @@
     "spell_3_id": 235,
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
-    "spell_3_cooldown": 9000
+    "spell_3_cooldown": 9000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "302": {
     "entry": 302,
@@ -10018,7 +11186,11 @@
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
     "spell_4_cooldown": 9000,
-    "spell_4_targetType": 1
+    "spell_4_targetType": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "303": {
     "entry": 303,
@@ -10069,7 +11241,11 @@
     "spell_4_id": 237,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 20000
+    "spell_4_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "304": {
     "entry": 304,
@@ -10126,7 +11302,11 @@
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
     "spell_4_cooldown": 9000,
-    "spell_4_targetType": 1
+    "spell_4_targetType": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "305": {
     "entry": 305,
@@ -10177,7 +11357,11 @@
     "spell_4_id": 239,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 10000
+    "spell_4_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "306": {
     "entry": 306,
@@ -10223,7 +11407,11 @@
     "spell_4_id": 231,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 9000
+    "spell_4_cooldown": 9000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "307": {
     "entry": 307,
@@ -10262,7 +11450,11 @@
     "spell_2_id": 236,
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
-    "spell_2_cooldown": 30000
+    "spell_2_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "308": {
     "entry": 308,
@@ -10308,7 +11500,11 @@
     "spell_4_id": 0,
     "spell_4_chance": 0,
     "spell_4_interval": 0,
-    "spell_4_cooldown": 0
+    "spell_4_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "309": {
     "entry": 309,
@@ -10362,7 +11558,11 @@
     "spell_4_id": 0,
     "spell_4_chance": 0,
     "spell_4_interval": 0,
-    "spell_4_cooldown": 0
+    "spell_4_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "310": {
     "entry": 310,
@@ -10420,7 +11620,10 @@
     "spell_4_id": 319,
     "spell_4_chance": 100,
     "spell_4_interval": 10000,
-    "spell_4_cooldown": 10000
+    "spell_4_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "311": {
     "entry": 311,
@@ -10477,7 +11680,10 @@
     "spell_4_id": 307,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 9000
+    "spell_4_cooldown": 9000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "312": {
     "entry": 312,
@@ -10526,7 +11732,11 @@
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
     "spell_3_cooldown": 6000,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "313": {
     "entry": 313,
@@ -10562,7 +11772,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "314": {
     "entry": 314,
@@ -10621,7 +11835,11 @@
     "spell_4_chance": 0,
     "spell_4_interval": 0,
     "spell_4_cooldown": 0,
-    "spell_4_targetType": 0
+    "spell_4_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "315": {
     "entry": 315,
@@ -10665,7 +11883,11 @@
     "spell_4_id": 237,
     "spell_4_chance": 30,
     "spell_4_interval": 300,
-    "spell_4_cooldown": 15000
+    "spell_4_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "316": {
     "entry": 316,
@@ -10704,7 +11926,11 @@
     "spell_2_id": 311,
     "spell_2_chance": 30,
     "spell_2_interval": 1300,
-    "spell_2_cooldown": 6000
+    "spell_2_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "317": {
     "entry": 317,
@@ -10752,7 +11978,11 @@
     "spell_4_id": 312,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 9000
+    "spell_4_cooldown": 9000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "318": {
     "entry": 318,
@@ -10811,7 +12041,11 @@
     "spell_4_chance": 0,
     "spell_4_interval": 0,
     "spell_4_cooldown": 0,
-    "spell_4_targetType": 0
+    "spell_4_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "319": {
     "entry": 319,
@@ -10859,7 +12093,11 @@
     "spell_3_chance": 30,
     "spell_3_interval": 1500,
     "spell_3_cooldown": 6000,
-    "spell_3_targetType": 0
+    "spell_3_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "320": {
     "entry": 320,
@@ -10907,7 +12145,11 @@
     "spell_4_id": 237,
     "spell_4_chance": 30,
     "spell_4_interval": 300,
-    "spell_4_cooldown": 15000
+    "spell_4_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "321": {
     "entry": 321,
@@ -10964,7 +12206,10 @@
     "spell_4_id": 404,
     "spell_4_chance": 100,
     "spell_4_interval": 30000,
-    "spell_4_cooldown": 30000
+    "spell_4_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "322": {
     "entry": 322,
@@ -11016,7 +12261,11 @@
     "spell_4_id": 237,
     "spell_4_chance": 30,
     "spell_4_interval": 300,
-    "spell_4_cooldown": 15000
+    "spell_4_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "323": {
     "entry": 323,
@@ -11066,7 +12315,11 @@
     "spell_4_id": 143,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 6000
+    "spell_4_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "324": {
     "entry": 324,
@@ -11116,7 +12369,11 @@
     "spell_4_id": 143,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 6000
+    "spell_4_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "325": {
     "entry": 325,
@@ -11168,7 +12425,11 @@
     "spell_3_id": 0,
     "spell_3_chance": 0,
     "spell_3_interval": 0,
-    "spell_3_cooldown": 0
+    "spell_3_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "326": {
     "entry": 326,
@@ -11229,7 +12490,10 @@
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
     "spell_4_cooldown": 12000,
-    "spell_4_targetType": 0
+    "spell_4_targetType": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "327": {
     "entry": 327,
@@ -11279,7 +12543,11 @@
     "spell_4_id": 0,
     "spell_4_chance": 0,
     "spell_4_interval": 0,
-    "spell_4_cooldown": 0
+    "spell_4_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "328": {
     "entry": 328,
@@ -11337,7 +12605,10 @@
     "spell_4_id": 238,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 15000
+    "spell_4_cooldown": 15000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "329": {
     "entry": 329,
@@ -11394,7 +12665,11 @@
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
     "spell_4_cooldown": 9000,
-    "spell_4_targetType": 1
+    "spell_4_targetType": 1,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "330": {
     "entry": 330,
@@ -11445,7 +12720,11 @@
     "spell_4_id": 237,
     "spell_4_chance": 30,
     "spell_4_interval": 1500,
-    "spell_4_cooldown": 20000
+    "spell_4_cooldown": 20000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "331": {
     "entry": 331,
@@ -11497,7 +12776,11 @@
     "spell_3_id": 0,
     "spell_3_chance": 0,
     "spell_3_interval": 0,
-    "spell_3_cooldown": 0
+    "spell_3_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "332": {
     "entry": 332,
@@ -11556,7 +12839,10 @@
     "spell_4_id": 0,
     "spell_4_chance": 0,
     "spell_4_interval": 0,
-    "spell_4_cooldown": 0
+    "spell_4_cooldown": 0,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "move_speed": 0
   },
   "333": {
     "entry": 333,
@@ -11610,7 +12896,11 @@
     "spell_4_id": 231,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 10000
+    "spell_4_cooldown": 10000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "334": {
     "entry": 334,
@@ -11650,7 +12940,11 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "335": {
     "entry": 335,
@@ -11692,7 +12986,11 @@
     "spell_3_id": 236,
     "spell_3_chance": 50,
     "spell_3_interval": 200,
-    "spell_3_cooldown": 30000
+    "spell_3_cooldown": 30000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "336": {
     "entry": 336,
@@ -11742,7 +13040,11 @@
     "spell_4_id": 274,
     "spell_4_chance": 30,
     "spell_4_interval": 1300,
-    "spell_4_cooldown": 6000
+    "spell_4_cooldown": 6000,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   },
   "337": {
     "entry": 337,
@@ -11782,6 +13084,10 @@
     "spell_2_chance": 30,
     "spell_2_interval": 1500,
     "spell_3_chance": 30,
-    "spell_3_interval": 1500
+    "spell_3_interval": 1500,
+    "aggro_range": -1,
+    "melee_range": -1,
+    "leash_range": -1,
+    "move_speed": 0
   }
 }

@@ -93,10 +93,33 @@ namespace Riftstorm.Game.Npc
         [JsonProperty("ranged_speed")] public float RangedSpeed { get; set; }
 
         /// <summary>
+        /// Per-Template-Aggro-Reichweite in Meter. Sentinel <c>&lt;=0</c> ⇒ Source-Default
+        /// (<c>DEFAULT_AGGRO_RANGE=5</c>, siehe <c>Npc.h</c>). Riftstorm-Erweiterung:
+        /// Source haelt diesen Wert global als constexpr; hier per Template tunebar.
+        /// </summary>
+        [JsonProperty("aggro_range")] public float AggroRange { get; set; }
+
+        /// <summary>
+        /// Per-Template-Melee-Reichweite (Auto-Attack-Reach) in Meter. Sentinel <c>&lt;=0</c>
+        /// ⇒ Source-Default (<c>DEFAULT_MELEE_RANGE=3</c>). Riftstorm-Erweiterung gegenueber
+        /// Source, das diesen Wert ebenfalls global haelt.
+        /// </summary>
+        [JsonProperty("melee_range")] public float MeleeRange { get; set; }
+
+        /// <summary>
         /// Per-Template-Leash-Override in Meter. Sentinel <c>&lt;=0</c> ⇒ Source-Default
         /// (<c>DEFAULT_LEASH_RANGE=50</c>, siehe <c>Npc.cpp</c> <c>initFromTemplate</c>).
         /// </summary>
         [JsonProperty("leash_range")] public float LeashRange { get; set; }
+
+        /// <summary>
+        /// Per-Template-Lauftempo in Unit/Sekunde. Sentinel <c>&lt;=0</c> ⇒ Spawner-Default
+        /// (<c>NpcController.WalkSpeed</c>, abgeleitet aus Source <c>NPC_MOVE_SPEED=100 px/s</c>
+        /// bei <c>PPU=64</c> ≈ 1.56 m/s). Riftstorm-Erweiterung: Source haelt diesen Wert
+        /// global als <c>const float</c>; hier pro NPC tunebar (z. B. langsame Boesse,
+        /// schnelle Wolves).
+        /// </summary>
+        [JsonProperty("move_speed")] public float MoveSpeed { get; set; }
 
         // ---- Loot -------------------------------------------------------
 

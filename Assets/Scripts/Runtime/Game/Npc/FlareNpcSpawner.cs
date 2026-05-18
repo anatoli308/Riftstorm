@@ -196,10 +196,19 @@ namespace Riftstorm.Game.Npc
             int strength = Mathf.Max(0, tpl.Strength);
             int armor = Mathf.Max(0, tpl.Armor);
 
-            // UnitStats uebernimmt Speed-/Range-Parameter nur, wenn > 0. npc_template selbst
-            // hat dafuer keine Spalten, also kommen Defaults aus Source (NPC_MOVE_SPEED,
-            // DEFAULT_MELEE_RANGE), exposed ueber die Spawner-Inspector-Felder. Ohne diese
-            // Werte bleibt WalkSpeed=0 und der NPC dreht sich im Kreis statt zu laufen.
+            // UnitStats uebernimmt Speed-/Range-Parameter nur, wenn > 0. Source haelt
+            // NPC_MOVE_SPEED=100 px/s als global const; Riftstorm-Erweiterung erlaubt
+            // per-Template-Override via tpl.MoveSpeed. Sentinel <=0 ⇒ Inspector-Default
+            // (m_WalkSpeed). Range-Felder (m_AttackRange) sind weiter Inspector-getrieben,
+            // weil DEFAULT_MELEE_RANGE im NpcController per Template ueberschrieben wird.
+            float walkSpeed = tpl.MoveSpeed > 0f ? tpl.MoveSpeed : m_WalkSpeed;
+            // npc_template.faction (FLARE: 3 = FACTION_HOSTILE, 0 = NEUTRAL, 1 = ALLY)
+            // muss in UnitStats landen, sonst sieht SpellCaster jeden Cast vom Spieler
+            // (FactionId aus Inspector) als same-faction → TargetFriendly. Sentinel <0 wird
+            // im UnitStats ignoriert; tpl.Faction kann theoretisch <0 sein (DB-Sentinel),
+            // dann auf NpcController-Default (=Template-Wert ungeprüft) zurückfallen
+            // wäre falsch — coercen auf 0 (neutral) statt "Inspector behalten".
+            int faction = tpl.Faction >= 0 ? tpl.Faction : 0;
             unitStats.ApplyBaseStats(
                 maxHp: health,
                 maxMana: mana,
@@ -207,11 +216,12 @@ namespace Riftstorm.Game.Npc
                 armor: armor,
                 hitRadius: hitRadius,
                 selectionRadius: 0f,
-                walkSpeed: m_WalkSpeed,
+                walkSpeed: walkSpeed,
                 runSpeed: m_RunSpeed,
                 attackRange: m_AttackRange,
                 projectileRange: 0f,
-                displayName: tpl.Name);
+                displayName: tpl.Name,
+                factionId: faction);
         }
 
         private async Task BuildAsync()

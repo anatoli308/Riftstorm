@@ -24,11 +24,36 @@ namespace Riftstorm.Game.Input
                  "Wird vom MobaCommandController in einen Bewegungs-Intent uebersetzt.")]
         [SerializeField] private string m_MoveCommandAction = "MoveCommand";
 
+        /// <summary>
+        /// Anzahl der WoW-Style Spell-Hotkey-Slots. Bindings sind hartverdrahtet auf
+        /// die Zahlentasten 1..9 + 0 (Slot 0 = Taste '1', Slot 9 = Taste '0'). Wird
+        /// als Konstante gefuehrt, weil die zugehoerigen <see cref="InputAction"/>s
+        /// code-erzeugt sind (kein Asset-Eintrag) und der Konsument
+        /// (<see cref="PlayerSpellInput"/>) ein passendes Loadout-Array gleicher Laenge
+        /// verwaltet.
+        /// </summary>
+        public const int SpellSlotCount = 10;
+
+        private static readonly string[] k_SpellSlotBindings =
+        {
+            "<Keyboard>/1",
+            "<Keyboard>/2",
+            "<Keyboard>/3",
+            "<Keyboard>/4",
+            "<Keyboard>/5",
+            "<Keyboard>/6",
+            "<Keyboard>/7",
+            "<Keyboard>/8",
+            "<Keyboard>/9",
+            "<Keyboard>/0",
+        };
+
         private InputAction m_Attack;
         private InputAction m_NextTarget;
         private InputAction m_ClearTarget;
         private InputAction m_AttackRangeIndicator;
         private InputAction m_MoveCommand;
+        private InputAction[] m_SpellSlots;
 
         /// <summary>
         /// Wird einmal pro Tastendruck der <c>Attack</c>-Action gefeuert
@@ -67,6 +92,17 @@ namespace Riftstorm.Game.Input
         /// uebersetzt.
         /// </summary>
         public event Action MoveCommandPressed;
+
+        /// <summary>
+        /// Wird einmal pro Tastendruck eines Spell-Hotkey-Slots (Tasten 1..9, 0)
+        /// gefeuert. Der uebergebene Index ist 0-basiert (Taste '1' = 0, Taste '0' = 9)
+        /// und entspricht dem Slot-Index im Loadout-Array von
+        /// <see cref="PlayerSpellInput"/>, das den Index in einen Spell-Entry aufloest
+        /// und an <see cref="Combat.PlayerCombat.TryRequestCastSpell"/> weiterreicht.
+        /// Owner-Filter passiert dort autoritativ; das Event feuert wie alle anderen
+        /// hier auf jeder PlayerInputController-Instanz (shared Keyboard-Device).
+        /// </summary>
+        public event Action<int> SpellSlotPressed;
 
         private void OnEnable()
         {
@@ -114,6 +150,21 @@ namespace Riftstorm.Game.Input
                 Debug.LogWarning($"[PlayerInputController] MoveCommand-Action '{m_MoveCommandAction}' nicht im Asset gefunden. Asset reimporten?");
             }
             map.Enable();
+
+            // Spell-Hotkey-Slots: code-erzeugte InputActions, nicht aus dem geteilten
+            // Asset-Map. Damit pro Controller-Instanz eigene Actions existieren, die
+            // wir in OnDisable gefahrlos wieder deaktivieren koennen (im Gegensatz zur
+            // shared ActionMap oben). Die Bindings sind hartverdrahtet auf die
+            // Zahlentasten 1..0 (siehe <see cref="k_SpellSlotBindings"/>).
+            m_SpellSlots = new InputAction[SpellSlotCount];
+            for (int i = 0; i < SpellSlotCount; i++)
+            {
+                InputAction action = new(name: $"SpellSlot{i + 1}", binding: k_SpellSlotBindings[i]);
+                int capturedIndex = i;
+                action.performed += ctx => OnSpellSlotPerformed(capturedIndex);
+                action.Enable();
+                m_SpellSlots[i] = action;
+            }
         }
 
         private void OnDisable()
@@ -148,6 +199,24 @@ namespace Riftstorm.Game.Input
                 m_MoveCommand.performed -= OnMoveCommandPerformed;
                 m_MoveCommand = null;
             }
+            if (m_SpellSlots != null)
+            {
+                // Spell-Slot-Actions sind code-erzeugt und gehoeren dieser Instanz —
+                // disabled werden sie hier explizit, damit beim Despawn / Owner-Wechsel
+                // keine Phantom-Listener weiterlaufen.
+                for (int i = 0; i < m_SpellSlots.Length; i++)
+                {
+                    InputAction action = m_SpellSlots[i];
+                    if (action == null)
+                    {
+                        continue;
+                    }
+                    action.Disable();
+                    action.Dispose();
+                    m_SpellSlots[i] = null;
+                }
+                m_SpellSlots = null;
+            }
         }
 
         private void OnAttackPerformed(InputAction.CallbackContext _)
@@ -173,6 +242,11 @@ namespace Riftstorm.Game.Input
         private void OnMoveCommandPerformed(InputAction.CallbackContext _)
         {
             MoveCommandPressed?.Invoke();
+        }
+
+        private void OnSpellSlotPerformed(int slotIndex)
+        {
+            SpellSlotPressed?.Invoke(slotIndex);
         }
     }
 }

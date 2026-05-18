@@ -1,4 +1,5 @@
 using Riftstorm.Game.Combat;
+using Riftstorm.Game.Spells;
 using Riftstorm.Game.Sprites;
 using Riftstorm.Gameplay.Combat;
 using Unity.Collections;
@@ -116,6 +117,17 @@ namespace Riftstorm.Game.Npc
         private float m_LastAttackTime = -999f;
         private bool m_ServerDead;
 
+        // Server-only Threat-Tabelle. Ersetzt das alte "closest hostile"-Picking
+        // in UpdateCombat und ist die Quelle der Retaliation-Logik fuer
+        // Neutral/Friendly. Wird in OnNetworkSpawn (Server) initialisiert und
+        // ueber OnServerDamaged von UnitStats gespeist. Source-Pendant:
+        // Server/src/AI/ThreatManager.h.
+        private readonly ThreatManager m_Threat = new();
+
+        // Runtime-Daten fuer die vier Template-Spell-Slots.
+        private readonly NpcSpellSlotRuntime[] m_SpellSlots = new NpcSpellSlotRuntime[4];
+        private int m_ActiveSpellSlotCount;
+
         // Template-Daten via BindTemplate (kein Mugen, kein ScriptableObject).
         private int m_Faction;
         private int m_WeaponValue = 10;
@@ -136,6 +148,38 @@ namespace Riftstorm.Game.Npc
         private Vector3 m_ServerFacingVec;
         private Vector3 m_ServerPrevPosition;
         private bool m_ServerPrevInitialized;
+
+        // Anzahl aufeinanderfolgender Server-Ticks ohne Bewegung. Wird genutzt, um
+        // m_ServerMoving asymmetrisch zu hysteresen: true ist immediate, false
+        // braucht k_MovingStopGraceTicks Ticks ohne Bewegung. Verhindert das
+        // run/stance-Strobing waehrend Combat, wenn der NPC zwischen Chase-Schritt
+        // und In-Melee-Stillstand oszilliert (ein Schritt pro Tick reicht sonst
+        // aus, um die Run-Anim 50–100 ms lang einzublenden, dann wieder Stance,
+        // dann wieder Run — was visuell wie 'Drehen hin und her' wirkt).
+        private int m_StoppedTickCount;
+
+        // ~3 Ticks bei ServerTickRate 20 Hz = 150 ms Mindest-Stand vor Stance-Wechsel.
+        // Knapp unterhalb der menschlichen Flicker-Wahrnehmungsschwelle (~100 ms).
+        private const int k_MovingStopGraceTicks = 3;
+
+        /// <summary>
+        /// Laufzeitzustand eines NPC-Spell-Slots (Template + Timestamps in Sekunden).
+        /// <para>
+        /// <see cref="IntervalSec"/> gate't die Auswahl-Frequenz ("wie oft darf der
+        /// Slot einen Cast-Versuch machen"), <see cref="CooldownSec"/> gate't den
+        /// erfolgreichen Cast selbst. Beide Werte kommen aus
+        /// <see cref="NpcTemplate.GetSpellSlot(int)"/>.
+        /// </para>
+        /// </summary>
+        private struct NpcSpellSlotRuntime
+        {
+            public int SpellId;
+            public float ChancePct;
+            public float IntervalSec;
+            public float CooldownSec;
+            public float NextAttemptAt;
+            public float NextReadyAt;
+        }
 
         // -------------------------------------------------------------------
         // Visual-Tracking (alle Peers)
@@ -187,11 +231,59 @@ namespace Riftstorm.Game.Npc
             // attackTimer = npc->getMeleeSpeed() / 1000.0f. Sentinel/0 => 2 s.
             float meleeMs = tpl.MeleeSpeed > 0f ? tpl.MeleeSpeed : 2000f;
             m_MeleeCooldownSec = Mathf.Max(0.1f, meleeMs / 1000f);
-            // leash_range aus Template uebernehmen, wenn vom JSON gesetzt (>0).
-            // Source: NpcAI verwendet getLeashRange() pro NPC, Default 50.
+            // Range-Felder aus Template uebernehmen, wenn vom JSON gesetzt (>0). Sentinel
+            // <=0 ⇒ Inspector-Default behalten (entspricht Source-Constants
+            // DEFAULT_AGGRO_RANGE=5, DEFAULT_MELEE_RANGE=3, DEFAULT_LEASH_RANGE=50).
+            // Source bindet nur leash_range pro NPC; aggro/melee sind dort globale
+            // constexpr. Riftstorm-Erweiterung: alle drei pro Template tunebar.
+            if (tpl.AggroRange > 0f)
+            {
+                m_AggroRange = tpl.AggroRange;
+            }
+            if (tpl.MeleeRange > 0f)
+            {
+                m_MeleeRange = tpl.MeleeRange;
+            }
             if (tpl.LeashRange > 0f)
             {
                 m_LeashRange = tpl.LeashRange;
+            }
+
+            ConfigureSpellSlots(tpl);
+            // move_speed wird NICHT hier gesetzt: UnitStats.WalkSpeed ist read-only und
+            // ApplyBaseStats ist nach OnNetworkSpawn gesperrt. Der Override laeuft im
+            // FlareNpcSpawner.ApplyStatsToUnitStats VOR dem Netcode-Spawn.
+        }
+
+        /// <summary>
+        /// Uebernimmt die vier flachen SQL-Spell-Slots aus dem Template in
+        /// einen kompakten Runtime-Array-Cache. JSON-Werte sind Millisekunden;
+        /// im Tick arbeiten wir in Sekunden (Time.time).
+        /// </summary>
+        private void ConfigureSpellSlots(NpcTemplate tpl)
+        {
+            m_ActiveSpellSlotCount = 0;
+            for (int i = 0; i < m_SpellSlots.Length; i++)
+            {
+                (int id, float chance, float interval, float cooldown) = tpl.GetSpellSlot(i + 1);
+                if (id > 0 && !SpellCatalogLoader.TryGetTemplate(id, out _))
+                {
+                    Debug.LogWarning($"[NpcController] Unbekannter Spell {id} in Slot {i + 1} von NPC '{tpl.Name}' ({tpl.Entry}).");
+                    id = 0;
+                }
+                m_SpellSlots[i] = new NpcSpellSlotRuntime
+                {
+                    SpellId = id > 0 ? id : 0,
+                    ChancePct = Mathf.Clamp(chance, 0f, 100f),
+                    IntervalSec = interval > 0f ? interval / 1000f : 0f,
+                    CooldownSec = cooldown > 0f ? cooldown / 1000f : 0f,
+                    NextAttemptAt = 0f,
+                    NextReadyAt = 0f,
+                };
+                if (m_SpellSlots[i].SpellId > 0)
+                {
+                    m_ActiveSpellSlotCount++;
+                }
             }
         }
 
@@ -207,6 +299,7 @@ namespace Riftstorm.Game.Npc
                 if (IsServer)
                 {
                     m_Stats.OnServerDied += HandleServerDied;
+                    m_Stats.OnServerDamaged += HandleServerDamaged;
                     m_ServerPosition.Value = transform.position;
                     m_HomePosition = transform.position;
                     m_HomeInitialized = true;
@@ -223,9 +316,31 @@ namespace Riftstorm.Game.Npc
                 if (IsServer)
                 {
                     m_Stats.OnServerDied -= HandleServerDied;
+                    m_Stats.OnServerDamaged -= HandleServerDamaged;
                 }
             }
+            if (IsServer)
+            {
+                m_Threat.Clear();
+                ResetSpellRuntimeTimers();
+            }
             base.OnNetworkDespawn();
+        }
+
+        /// <summary>
+        /// Setzt nur Runtime-Timestamps zurueck (keine Template-Daten).
+        /// Wird bei Despawn/Death/Evade-Reset genutzt, damit NPCs nach einem
+        /// harten Reset nicht mit stale Cooldown-Zeiten weiterlaufen.
+        /// </summary>
+        private void ResetSpellRuntimeTimers()
+        {
+            for (int i = 0; i < m_SpellSlots.Length; i++)
+            {
+                NpcSpellSlotRuntime slot = m_SpellSlots[i];
+                slot.NextAttemptAt = 0f;
+                slot.NextReadyAt = 0f;
+                m_SpellSlots[i] = slot;
+            }
         }
 
         // -------------------------------------------------------------------
@@ -300,11 +415,35 @@ namespace Riftstorm.Game.Npc
             // ~1cm/Frame Schwelle. Bei ServerTickRate=20 entspricht das ~0.2 m/s
             // minimaler Sichtbarkeitsgeschwindigkeit.
             const float k_MoveEpsilonSqr = 0.0001f;
-            bool moving = posDelta.sqrMagnitude > k_MoveEpsilonSqr;
-            if (m_ServerMoving.Value != moving)
+            bool movedThisTick = posDelta.sqrMagnitude > k_MoveEpsilonSqr;
+
+            // Asymmetrische Hysterese: Run-Anim startet sofort, Stance-Anim erst
+            // nach k_MovingStopGraceTicks Ticks ohne Bewegung. Verhindert das
+            // Strobing zwischen Chase-Schritt (run) und In-Melee-Stillstand
+            // (stance) im Combat — die NetworkVariable wuerde sonst jeden Tick
+            // flippen und ueber den Client als rasendes run/stance-Toggle
+            // sichtbar werden (cf. Log-Sequenz 'dir 0→0 anim run→stance→run').
+            if (movedThisTick)
             {
-                m_ServerMoving.Value = moving;
+                m_StoppedTickCount = 0;
+                if (!m_ServerMoving.Value)
+                {
+                    m_ServerMoving.Value = true;
+                }
             }
+            else
+            {
+                if (m_StoppedTickCount < k_MovingStopGraceTicks)
+                {
+                    m_StoppedTickCount++;
+                }
+                if (m_StoppedTickCount >= k_MovingStopGraceTicks && m_ServerMoving.Value)
+                {
+                    m_ServerMoving.Value = false;
+                }
+            }
+            // Lokale Variable fuer den Rest des Ticks (Facing-Fallback unten).
+            bool moving = movedThisTick;
 
             // Wenn der State keine Intention gesetzt hat (Idle-Wander oder externer
             // Push), nimm die tatsaechliche Bewegung als Facing-Fallback.
@@ -323,9 +462,17 @@ namespace Riftstorm.Game.Npc
         /// <summary>
         /// Port von <c>NpcAI::updateIdle</c>: nur Hostile-Faction sucht aktiv
         /// nach Targets. Neutral/Friendly bleiben Idle, bis sie per
-        /// Retaliation in <see cref="HandleClientDamageReceived"/> auf Combat
-        /// geschaltet werden (TODO: Attacker-Identitaet im Damage-Event).
+        /// Retaliation in <see cref="HandleServerDamaged"/> Threat auf den
+        /// Angreifer aufbauen und damit nach Combat wechseln.
         /// </summary>
+        /// <remarks>
+        /// Der Aggro-Scan setzt nicht mehr direkt <see cref="m_CurrentTarget"/>,
+        /// sondern speist den gefundenen Spieler in den
+        /// <see cref="ThreatManager"/> ein (initialer Threat = 1). Damit läuft
+        /// das Target-Picking in <see cref="UpdateCombat"/> einheitlich über
+        /// die Threat-Tabelle — und späterer Schaden anderer Spieler kann den
+        /// Aggro-Pull ohne Sonderpfad überholen.
+        /// </remarks>
         private void UpdateIdle(float dt)
         {
             if (!IsHostileFaction(m_Faction))
@@ -336,6 +483,7 @@ namespace Riftstorm.Game.Npc
             UnitStats target = FindAggroTarget();
             if (target != null)
             {
+                m_Threat.AddThreat(target.NetworkObjectId, 1);
                 m_CurrentTarget = target;
                 m_State = NpcAIState.Combat;
             }
@@ -345,10 +493,22 @@ namespace Riftstorm.Game.Npc
         /// Port von <c>NpcAI::updateCombat</c>: Leash-Check, in-Range =&gt; Attack,
         /// sonst auf Target zulaufen. Target-Verlust (tot / despawned) =&gt; Idle.
         /// </summary>
+        /// <remarks>
+        /// Target-Picking läuft jetzt über <see cref="ThreatManager"/>: das
+        /// Top-Threat-Target wird pro Tick angefragt. Wenn die Threat-Tabelle
+        /// leer wird (alle Einträge gepruned), kehrt der NPC zurück in Idle
+        /// und setzt sein <see cref="m_CurrentTarget"/> zurück.
+        /// </remarks>
         private void UpdateCombat(float dt)
         {
-            if (!IsValidTarget(m_CurrentTarget))
+            UnitStats top = m_Threat.GetHighestThreat(NetworkManager.Singleton);
+            if (top != null)
             {
+                m_CurrentTarget = top;
+            }
+            else if (!IsValidTarget(m_CurrentTarget))
+            {
+                // Threat-Tabelle leer und kein gültiges Sticky-Target mehr.
                 m_CurrentTarget = null;
                 m_State = NpcAIState.Idle;
                 return;
@@ -356,11 +516,14 @@ namespace Riftstorm.Game.Npc
 
             if (ShouldLeash())
             {
+                // Source: beim Leash werden alle Threat-Einträge gedroppt,
+                // damit der NPC nach dem Reset nicht sofort wieder vom
+                // ursprünglichen Angreifer ge-pullt wird.
+                m_Threat.Clear();
                 m_CurrentTarget = null;
                 m_State = NpcAIState.Evading;
                 return;
             }
-
 
             if (IsInMeleeRange(m_CurrentTarget))
             {
@@ -369,6 +532,12 @@ namespace Riftstorm.Game.Npc
             else
             {
                 MoveTowardsEntity(m_CurrentTarget, dt, m_Stats.WalkSpeed);
+            }
+
+            int slotIndex = SelectSpellSlotToCast(m_CurrentTarget);
+            if (slotIndex >= 0)
+            {
+                TryPerformSpellCast(slotIndex, m_CurrentTarget);
             }
         }
 
@@ -389,8 +558,123 @@ namespace Riftstorm.Game.Npc
                 // Auren-Clear folgt mit dem Buff/Debuff-Pass.
                 m_Stats.ServerResetHp();
                 m_Stats.ServerResetMana();
+                ResetSpellRuntimeTimers();
                 m_State = NpcAIState.Idle;
             }
+        }
+
+        /// <summary>
+        /// Port von <c>NpcAI::selectSpellToCast</c>. Iteriert die vier
+        /// Template-Slots, prueft Intervall/Cooldown/Chance und liefert den
+        /// ersten castbaren Slot zurueck. -1 = kein Cast in diesem Tick.
+        /// </summary>
+        private int SelectSpellSlotToCast(UnitStats target)
+        {
+            if (target == null || m_Stats == null)
+            {
+                return -1;
+            }
+            if (m_ActiveSpellSlotCount <= 0)
+            {
+                return -1;
+            }
+
+            float now = Time.time;
+            for (int i = 0; i < m_SpellSlots.Length; i++)
+            {
+                NpcSpellSlotRuntime slot = m_SpellSlots[i];
+                if (slot.SpellId <= 0)
+                {
+                    continue;
+                }
+                if (slot.ChancePct <= 0f)
+                {
+                    continue;
+                }
+                if (slot.IntervalSec > 0f && now < slot.NextAttemptAt)
+                {
+                    continue;
+                }
+
+                if (slot.CooldownSec > 0f && now < slot.NextReadyAt)
+                {
+                    continue;
+                }
+
+                float roll = Random.Range(0f, 100f);
+                if (roll > slot.ChancePct)
+                {
+                    continue;
+                }
+
+                if (!CanCastSpell(slot.SpellId, target))
+                {
+                    continue;
+                }
+
+                // Intervall erst bei tatsaechlich erfolgreicher Slot-Wahl
+                // verbrauchen. Dadurch entspricht die Frequenz dem Designer-
+                // intent (Chance + Conditions + Cooldown) statt bereits bei
+                // reinen Fehlversuchen herunterzutakten.
+                slot.NextAttemptAt = slot.IntervalSec > 0f ? now + slot.IntervalSec : now;
+                m_SpellSlots[i] = slot;
+
+                return i;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Port von <c>NpcAI::canCastSpell</c>. Validiert Spell-Existenz plus
+        /// komplette Castbarkeit gegen den aktuellen Target-Kontext.
+        /// </summary>
+        private bool CanCastSpell(int spellId, UnitStats target)
+        {
+            if (spellId <= 0 || m_Stats == null)
+            {
+                return false;
+            }
+            if (!SpellCatalogLoader.TryGetTemplate(spellId, out SpellTemplate spell) || spell == null)
+            {
+                return false;
+            }
+            return SpellCaster.Validate(m_Stats, spell, target) == CastResult.Success;
+        }
+
+        /// <summary>
+        /// Port von <c>NpcAI::performSpellCast</c>: instant Execute ueber die
+        /// vorhandene Spell-Pipeline, danach Slot-Cooldown setzen und Cast-Anim
+        /// replizieren.
+        /// </summary>
+        private void TryPerformSpellCast(int slotIndex, UnitStats target)
+        {
+            if (slotIndex < 0 || slotIndex >= m_SpellSlots.Length || target == null || m_Stats == null)
+            {
+                return;
+            }
+
+            NpcSpellSlotRuntime slot = m_SpellSlots[slotIndex];
+            if (!SpellCatalogLoader.TryGetTemplate(slot.SpellId, out SpellTemplate spell) || spell == null)
+            {
+                return;
+            }
+
+            SpellExecutionResult result = SpellExecutor.Execute(m_Stats, spell, target);
+            if (result.Result != CastResult.Success)
+            {
+                return;
+            }
+
+            float spellCdSec = spell.Cooldown > 0 ? spell.Cooldown / 1000f : 0f;
+            // Slot-Cooldown aus dem NPC-Template ist ein expliziter Override.
+            // Wenn nicht gesetzt (<=0), faellt der Cast auf den Spell-Default
+            // aus spell_template.cooldown zurueck.
+            float cooldownSec = slot.CooldownSec > 0f ? slot.CooldownSec : spellCdSec;
+            slot.NextReadyAt = cooldownSec > 0f ? Time.time + cooldownSec : Time.time;
+            m_SpellSlots[slotIndex] = slot;
+
+            PlayCastClientRpc();
         }
 
         // -------------------------------------------------------------------
@@ -604,9 +888,40 @@ namespace Riftstorm.Game.Npc
             };
 
             DamageInfo info = CombatFormulas.CalculateMeleeDamage(m_Stats, target, weapon);
-            target.ApplyDamage(in info);
-
+            // Attacker durchreichen, damit der Schaden Threat auf dem Target
+            // erzeugt (relevant fuer Player-Pets / Npc-vs-Npc; aktuell ohne
+            // Effekt fuer reine Player-Targets, aber API-konsistent).
+            target.ApplyDamage(m_Stats, in info);
             PlaySwingClientRpc(default);
+        }
+
+        // -------------------------------------------------------------------
+        // Damage / Threat
+        // -------------------------------------------------------------------
+
+        /// <summary>
+        /// Server-Hook: speist den <see cref="ThreatManager"/> mit jedem auf
+        /// uns angewendeten Schaden und löst bei Neutral/Friendly-NPCs die
+        /// Retaliation aus (Idle → Combat). Source-Pendant: NpcAI::onDamaged
+        /// + ThreatManager::addThreat.
+        /// </summary>
+        private void HandleServerDamaged(UnitStats attacker, int damage, HitResult result)
+        {
+            if (attacker == null || damage <= 0 || attacker == m_Stats)
+            {
+                return;
+            }
+            m_Threat.AddThreat(attacker.NetworkObjectId, damage);
+
+            // Retaliation: Neutral/Friendly wechseln aus Idle in Combat,
+            // sobald sie zum ersten Mal Schaden bekommen. Hostile-NPCs sind
+            // entweder schon in Combat (durch Aggro-Scan) oder folgen hier
+            // ebenfalls dem Wechsel — letzteres ist günstig für Pull-aus-
+            // Aggro-Range-Szenarien (z. B. Bogenschuss von ausserhalb).
+            if (m_State == NpcAIState.Idle && !m_ServerDead)
+            {
+                m_State = NpcAIState.Combat;
+            }
         }
 
         // -------------------------------------------------------------------
@@ -617,6 +932,8 @@ namespace Riftstorm.Game.Npc
         {
             m_ServerDead = true;
             m_CurrentTarget = null;
+            m_Threat.Clear();
+            ResetSpellRuntimeTimers();
             m_State = NpcAIState.Dead;
             PlayDieClientRpc();
         }
@@ -660,8 +977,9 @@ namespace Riftstorm.Game.Npc
             // damit dieselbe Octanten-Wahl — kein Octanten-Flackern durch lokales
             // SmoothDamp-Jitter mehr.
             int dir = m_ServerDirection.Value & 7;
+            string anim = m_ServerMoving.Value ? m_AnimRun : m_AnimStance;
             m_Character.SetDirection(dir);
-            m_Character.Play(m_ServerMoving.Value ? m_AnimRun : m_AnimStance);
+            m_Character.Play(anim);
         }
 
         /// <summary>
@@ -734,6 +1052,15 @@ namespace Riftstorm.Game.Npc
             else
             {
                 m_Visuals.PlaySwing();
+            }
+        }
+
+        [ClientRpc]
+        private void PlayCastClientRpc()
+        {
+            if (m_Visuals != null)
+            {
+                m_Visuals.PlayCast();
             }
         }
 

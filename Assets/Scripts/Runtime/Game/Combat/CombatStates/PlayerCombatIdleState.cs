@@ -1,3 +1,4 @@
+using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
 
 namespace Riftstorm.Game.Combat.CombatStates
@@ -14,6 +15,14 @@ namespace Riftstorm.Game.Combat.CombatStates
         {
             // Server-autoritativ: Cooldown + Anim-Variante stehen in der Waffen-Definition.
             Manager.BeginAttack(weapon);
+        }
+
+        /// <inheritdoc/>
+        public override void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        {
+            // Server-autoritativ: Cast-Time entscheidet, ob direkt ausgeführt oder
+            // in den CastingState transitioniert wird (siehe PlayerCombat.BeginCast).
+            Manager.BeginCast(spellEntry, spell, targetNetId, primaryTarget);
         }
 
         /// <inheritdoc/>

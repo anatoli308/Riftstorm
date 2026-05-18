@@ -2,10 +2,11 @@ using System.Threading;
 using Riftstorm.Game.Combat.CombatStates;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Movement;
+using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
-using Riftstorm.Gameplay.Combat.Spells;
 using Riftstorm.Gameplay.Combat.Spells.Visuals;
 using Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime;
+using Riftstorm.Management.SoundManagement;
 using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
 using Tolik.Riftstorm.Runtime.Core;
 using Unity.Collections;
@@ -81,6 +82,7 @@ namespace Riftstorm.Game.Combat
 
         public PlayerCombatIdleState IdleState { get; private set; }
         public PlayerCombatAttackingState AttackingState { get; private set; }
+        public PlayerCombatCastingState CastingState { get; private set; }
         public PlayerCombatDeadState DeadState { get; private set; }
 
         // -------------------------------------------------------------------------
@@ -88,10 +90,20 @@ namespace Riftstorm.Game.Combat
         // -------------------------------------------------------------------------
 
         private WeaponCatalogLoader m_WeaponCatalogLoader;
-        private SpellCatalogLoader m_SpellCatalogLoader;
-        private AuraCatalogLoader m_AuraCatalogLoader;
-        private SpellVisualCatalogLoader m_VisualCatalogLoader;
+        private SpellVisualKitMappingCatalogLoader m_VisualKitMappingLoader;
+        private SpellVisualKitDefinitionCatalogLoader m_VisualKitDefinitionLoader;
         private SpellAnimationCatalogLoader m_AnimationCatalogLoader;
+        private ParticleSystemCatalogLoader m_ParticleCatalogLoader;
+        private SoundManager m_SoundManager;
+
+        /// <summary>
+        /// Client-lokales Handle auf die aktuell laufenden Cast-Particles
+        /// (gespawnt in <see cref="TryTriggerCasterParticles"/>). Wird in
+        /// <see cref="EndCastClientRpc"/> gestoppt, damit endlose PSystems
+        /// (<c>lifetime = -1</c>, z. B. casting_shadow / casting_holy) nicht
+        /// bis zum harten 8s-Cap am Boden weiter glitzern.
+        /// </summary>
+        private GameObject m_ActiveCasterParticles;
 
         /// <summary>Server-only: initiale Welt-Position bei Spawn, dorthin wird respawnt.</summary>
         private Vector3 m_ServerSpawnPosition;
@@ -136,9 +148,10 @@ namespace Riftstorm.Game.Combat
 
             IdleState = new PlayerCombatIdleState();
             AttackingState = new PlayerCombatAttackingState();
+            CastingState = new PlayerCombatCastingState();
             DeadState = new PlayerCombatDeadState();
 
-            InitializeStates(new PlayerCombatState[] { IdleState, AttackingState, DeadState }, IdleState);
+            InitializeStates(new PlayerCombatState[] { IdleState, AttackingState, CastingState, DeadState }, IdleState);
         }
 
         /// <inheritdoc/>
@@ -209,7 +222,53 @@ namespace Riftstorm.Game.Combat
         /// genutzt, um Move-Inputs zu verwerfen — verhindert Move-while-Attacking-Cheats.
         /// </summary>
         public bool IsServerMovementLocked =>
-            IsServer && (m_CurrentState == AttackingState || m_CurrentState == DeadState);
+            IsServer && (m_CurrentState == AttackingState || m_CurrentState == CastingState || m_CurrentState == DeadState);
+
+        /// <summary>
+        /// Server-Sicht: <c>true</c>, wenn der Spieler aktuell im
+        /// <see cref="CastingState"/> ist. Wird vom <see cref="Movement.PlayerMovement"/>
+        /// genutzt, um beim ersten Move-Command des Owners w&#228;hrend eines Casts
+        /// den Cast autoritativ zu unterbrechen (Move-cancels-Cast, LoL-Style).
+        /// </summary>
+        public bool IsServerCasting => IsServer && m_CurrentState == CastingState;
+
+        /// <summary>
+        /// Server-Sicht: das aktuell gecastete <see cref="SpellTemplate"/>, oder
+        /// <c>null</c>, wenn der Spieler nicht im <see cref="CastingState"/> ist.
+        /// Wird vom <see cref="Movement.PlayerMovement"/> konsultiert, um Spells
+        /// mit <see cref="SpellAttributes.CanMoveWhileCasting"/> vom Move-cancels-Cast
+        /// auszunehmen.
+        /// </summary>
+        public SpellTemplate CurrentCastSpell =>
+            IsServer && m_CurrentState == CastingState ? CastingState.CurrentSpell : null;
+
+        // -------------------------------------------------------------------------
+        // CastBar-Events (Owner-only, gefeuert aus den CastBar-ClientRpcs)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Event: feuert auf dem Owner-Client, sobald der Server einen
+        /// Cast-Time-Spell startet. Payload: <c>spellEntry</c> + Dauer in Sekunden.
+        /// Wird vom HUD (<see cref="UI.CastBarHUD"/>) abonniert.
+        /// </summary>
+        public event System.Action<int, float> OwnerCastStarted;
+
+        /// <summary>
+        /// Owner-Event: feuert auf dem Owner-Client, sobald ein laufender Cast
+        /// beendet wird. <c>completed = true</c> bei erfolgreichem Abschluss,
+        /// <c>false</c> bei Unterbrechung (Bewegung, Tod, expliziter Cancel).
+        /// </summary>
+        public event System.Action<bool> OwnerCastEnded;
+
+        /// <summary>
+        /// Owner-Event: feuert auf dem Owner-Client, sobald der Server einen
+        /// Cast-Wunsch ablehnt (OnCooldown, OutOfRange, NotEnoughMana,
+        /// TargetFriendly, CasterCasting, ...). Payload: numerischer
+        /// <see cref="CastResult"/>-Code &#8212; die UI mapped ihn ueber
+        /// <see cref="CastResultStrings.Get"/> auf einen sichtbaren String
+        /// (analog FLARE <c>CombatMessenger</c>). Nicht fuer <see cref="CastResult.Success"/>.
+        /// </summary>
+        public event System.Action<CastResult> OwnerCastFailed;
 
         /// <summary>
         /// Owner-Vorhersage: <c>true</c> zwischen dem lokalen Attack-Input und dem
@@ -237,6 +296,15 @@ namespace Riftstorm.Game.Combat
             if (!IsServer)
             {
                 return;
+            }
+
+            // 0) Falls der Spieler gerade gecastet hat, dem Owner-HUD den
+            //    Cast-Abbruch melden, BEVOR die State-Transition den
+            //    CastingState verl&#228;sst (sonst h&#228;tte das HUD keine
+            //    Chance mehr, die CastBar zu schlie&#223;en).
+            if (m_CurrentState == CastingState)
+            {
+                EndCastClientRpc(false);
             }
 
             // 1) Visual-Fanout auf alle Peers (inkl. Host), bevor die State-Transition
@@ -728,10 +796,10 @@ namespace Riftstorm.Game.Combat
         /// Target-Auswahl folgt der bestehenden <see cref="TargetSelection"/>-Logik;
         /// für Self-Casts darf das Target leer sein.
         /// </summary>
-        /// <param name="spellId">Snake-Case-ID aus <c>spells.json</c> (z. B. <c>fireball</c>).</param>
-        public void TryRequestCastSpell(string spellId)
+        /// <param name="spellEntry">Numerischer Entry aus <c>spells/_templates.json</c> (z. B. <c>133</c> für Fireball).</param>
+        public void TryRequestCastSpell(int spellEntry)
         {
-            if (!IsSpawned || !IsOwner || string.IsNullOrEmpty(spellId))
+            if (!IsSpawned || !IsOwner || spellEntry <= 0)
             {
                 return;
             }
@@ -749,46 +817,33 @@ namespace Riftstorm.Game.Combat
                 targetId = targetObject.NetworkObjectId;
             }
 
-            RequestCastSpellServerRpc(new FixedString64Bytes(spellId), targetId);
+            RequestCastSpellServerRpc(spellEntry, targetId);
         }
 
         /// <summary>
-        /// Server-autoritative Spell-Ausführung. Lädt Catalog + Aura-Catalog lazy
-        /// aus dem <see cref="ServiceLocator"/>, löst Caster + Target zu
-        /// <see cref="ICombatUnit"/> auf und delegiert an
-        /// <see cref="SpellExecutor.Execute"/>. Visuals/Animation/Floating-Text
-        /// folgen in einer späteren Phase (PlayCastClientRpc-Fanout) — die reine
-        /// Gameplay-Auflösung (Mana, CD/GCD, Effects) ist hier vollständig.
+        /// Server-autoritativer Eingang. Resolvt Spell-Template und Primärziel,
+        /// delegiert die Annahme-/Ablehnungs-Entscheidung an den aktuellen
+        /// Combat-State (Idle akzeptiert, Attacking/Casting/Dead verwerfen).
         /// </summary>
         [ServerRpc]
-        private void RequestCastSpellServerRpc(FixedString64Bytes spellId, ulong targetNetworkObjectId, ServerRpcParams _ = default)
+        private void RequestCastSpellServerRpc(int spellEntry, ulong targetNetworkObjectId, ServerRpcParams rpcParams = default)
         {
             if (m_Stats == null || m_Stats.IsDead)
             {
                 return;
             }
 
-            m_SpellCatalogLoader ??= ServiceLocator.Get<SpellCatalogLoader>();
-            m_AuraCatalogLoader ??= ServiceLocator.Get<AuraCatalogLoader>();
-            SpellCatalog spellCatalog = m_SpellCatalogLoader?.GetCached();
-            AuraCatalog auraCatalog = m_AuraCatalogLoader?.GetCached();
-            if (spellCatalog == null || auraCatalog == null)
+            ulong senderClientId = rpcParams.Receive.SenderClientId;
+
+            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+            if (spell == null)
             {
-                Debug.LogWarning("[PlayerCombat] Spell- oder Aura-Catalog nicht geladen — Cast ignoriert.");
+                Debug.LogWarning($"[PlayerCombat] Unbekannter Spell-Entry '{spellEntry}'.");
+                ServerNotifyCastFailed(senderClientId, CastResult.UnknownSpell);
                 return;
             }
 
-            string id = spellId.ToString();
-            if (!spellCatalog.TryGet(id, out SpellDefinition spell) || spell == null)
-            {
-                Debug.LogWarning($"[PlayerCombat] Unbekannter Spell '{id}'.");
-                return;
-            }
-
-            // Target-Auflösung: erst NetworkObject → UnitStats (implementiert ICombatUnit),
-            // bei 0/None oder Self-Targeting fällt das Ziel auf den Caster zurück.
-            ICombatUnit caster = m_Stats;
-            ICombatUnit primaryTarget = caster;
+            ICombatUnit primaryTarget = m_Stats;
             if (targetNetworkObjectId != 0UL
                 && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkObjectId, out NetworkObject targetObj)
                 && targetObj != null)
@@ -800,45 +855,245 @@ namespace Riftstorm.Game.Combat
                 }
             }
 
-            SpellExecutionResult result = SpellExecutor.Execute(caster, spell, primaryTarget, auraCatalog);
-            if (result.Result != CastResult.Success)
+            // Wenn der Spieler bereits castet oder swingt, lehnt der State silent ab
+            // (Base.OnCastRequested ist no-op in Casting/Attacking/Dead). Damit der
+            // Owner trotzdem "Du castest bereits." sieht, hier vor der State-Dispatch
+            // explizit reporten.
+            if (m_CurrentState != IdleState)
             {
-                Debug.Log($"[PlayerCombat] Cast '{id}' fehlgeschlagen: {result.Result}");
+                ServerNotifyCastFailed(senderClientId, CastResult.CasterCasting);
                 return;
             }
 
-            // Visual-Fanout: alle Clients spielen das Spell-Visual lokal ab.
-            // Quelle = dieser Spieler; Ziel = Self (0) oder gegnerisches NetworkObject.
-            ulong sourceNetId = NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
-            ulong resolvedTargetNetId = ReferenceEquals(primaryTarget, caster) ? 0UL : targetNetworkObjectId;
-            PlaySpellCastClientRpc(spellId, sourceNetId, resolvedTargetNetId);
+            // Frueh-Validate: Resourcen/Cooldown/Target/Range/Faction werden hier
+            // bereits geprueft, damit der Owner sofort eine Fehlermeldung bekommt
+            // (kein stilles Verschlucken bei Spell auf Cooldown). Bei Cast-Time-
+            // Spells laeuft am Resolve-Ende noch ein zweites Validate in
+            // SpellExecutor.Execute &#8212; das kann nochmal scheitern, wenn das Ziel
+            // waehrend des Casts aus der Range laeuft (WoW-Verhalten).
+            CastResult preValidate = SpellCaster.Validate(m_Stats, spell, primaryTarget);
+            if (preValidate != CastResult.Success)
+            {
+                ServerNotifyCastFailed(senderClientId, preValidate);
+                return;
+            }
+
+            m_CurrentState.OnCastRequested(spellEntry, spell, targetNetworkObjectId, primaryTarget);
         }
 
         /// <summary>
-        /// Client-seitiger Visual-Handler. Löst Caster + optional Target zu
-        /// Transforms auf und delegiert an <see cref="SpellVisualSpawner.Spawn"/>.
-        /// Schlägt schweigend fehl, wenn der Spell kein Visual-Kit hat oder die
-        /// Catalogs noch nicht geladen sind — Gameplay läuft unverändert weiter.
+        /// Server-Pfad zum Einleiten eines Casts. Wird vom <see cref="PlayerCombatIdleState"/>
+        /// aufgerufen. Instant-Casts (<c>CastTime &lt;= 0</c>) werden sofort über
+        /// <see cref="ServerCompleteCast"/> abgewickelt — der Spieler bleibt im
+        /// Idle-State. Cast-Time-Spells transitionieren in den <see cref="CastingState"/>,
+        /// der das Awaitable-Gate hält und am Ende ebenfalls <see cref="ServerCompleteCast"/>
+        /// aufruft.
         /// </summary>
-        /// <remarks>
-        /// Bewusst ohne NetworkObject-Spawn für das Visual: <see cref="WorldSpellAnimation"/>
-        /// ist rein lokal pro Client (siehe Projektregel "Never sync each projectile /
-        /// particle as its own NetworkObject").
-        /// </remarks>
-        [ClientRpc]
-        private void PlaySpellCastClientRpc(FixedString64Bytes spellId, ulong sourceNetId, ulong targetNetId)
+        internal void BeginCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
         {
-            m_VisualCatalogLoader ??= ServiceLocator.Get<SpellVisualCatalogLoader>();
-            m_AnimationCatalogLoader ??= ServiceLocator.Get<SpellAnimationCatalogLoader>();
-            SpellVisualCatalog visuals = m_VisualCatalogLoader?.GetCached();
-            SpellAnimationCatalog anims = m_AnimationCatalogLoader?.GetCached();
-            if (visuals == null || anims == null)
+            if (!IsServer || spell == null)
             {
                 return;
             }
 
-            string id = spellId.ToString();
-            if (!visuals.TryGet(id, out SpellVisualDefinition kit) || kit == null || !kit.HasAny)
+            // Caster Richtung Ziel ausrichten (XZ), bevor wir den Cast-Timer starten —
+            // damit gerichtete VFX/Projectile-Spawns einen sinnvollen Forward haben.
+            FaceCurrentTarget();
+
+            if (spell.CastTime <= 0)
+            {
+                // Instant-Cast: keine State-Transition nötig, aber dennoch die
+                // Cast-Pose über BeginCastClientRpc fanned (castSeconds=0 ->
+                // CastBar bleibt zu, Pose feuert trotzdem auf allen Peers).
+                BeginCastClientRpc(spellEntry, 0f);
+                ServerCompleteCast(spellEntry, spell, targetNetId, primaryTarget);
+                return;
+            }
+
+            // Owner-HUD &#252;ber den startenden Cast informieren — VOR der
+            // State-Transition, damit die CastBar parallel zum Server-Timer
+            // l&#228;uft. Sekunden statt Millisekunden, weil das HUD direkt
+            // gegen <see cref="Time.unscaledTime"/> interpoliert.
+            BeginCastClientRpc(spellEntry, spell.CastTime / 1000f);
+
+            CastingState.ConfigureFromCast(spellEntry, spell, targetNetId, primaryTarget);
+            ChangeState(CastingState);
+        }
+
+        /// <summary>
+        /// Server-Pfad zum Abschluss eines Casts (sowohl für Instant- als auch
+        /// für Cast-Time-Spells). Führt <see cref="SpellExecutor.Execute"/> aus
+        /// und fanned bei Erfolg das Visual via <see cref="PlaySpellCastClientRpc"/>
+        /// an alle Peers (inkl. Host) aus.
+        /// </summary>
+        internal void ServerCompleteCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        {
+            if (!IsServer || spell == null)
+            {
+                return;
+            }
+
+            ICombatUnit caster = m_Stats;
+            if (caster == null)
+            {
+                return;
+            }
+
+            SpellExecutionResult result = SpellExecutor.Execute(caster, spell, primaryTarget);
+            if (result.Result != CastResult.Success)
+            {
+                // CastBar auch bei serverseitig abgelehnter Execute schlie&#223;en
+                // (z. B. fehlende Mana / out-of-range zum Zeitpunkt des Resolves).
+                EndCastClientRpc(false);
+                ServerNotifyCastFailed(OwnerClientId, result.Result);
+                return;
+            }
+
+            // Erfolgreich abgeschlossen — Owner-HUD die CastBar als completed
+            // schlie&#223;en lassen.
+            EndCastClientRpc(true);
+
+            ulong sourceNetId = NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
+            ulong resolvedTargetNetId = ReferenceEquals(primaryTarget, caster) ? 0UL : targetNetId;
+            PlaySpellCastClientRpc(spellEntry, sourceNetId, resolvedTargetNetId);
+        }
+
+        /// <summary>
+        /// Server-Pfad zum harten Abbrechen eines laufenden Casts. Wird vom
+        /// <see cref="Movement.PlayerMovement.SubmitCommandServerRpc"/> aufgerufen,
+        /// sobald der Owner w&#228;hrend des Casts ein Move-Input absetzt
+        /// (LoL/WoW-Style "Move-cancels-Cast"). Idempotent: au&#223;erhalb von
+        /// <see cref="CastingState"/> ist es ein No-Op. Die State-Transition
+        /// nach <see cref="IdleState"/> ruft <see cref="PlayerCombatCastingState.Exit"/>
+        /// auf, das den Awaitable-CastTimer canceled — Resource-/Cooldown-Aufwand
+        /// ist noch nicht gefallen (passiert erst in <see cref="ServerCompleteCast"/>),
+        /// also kein Refund n&#246;tig.
+        /// </summary>
+        public void ServerInterruptCast()
+        {
+            if (!IsServer || m_CurrentState != CastingState)
+            {
+                return;
+            }
+            ChangeState(IdleState);
+            EndCastClientRpc(false);
+        }
+
+        // -------------------------------------------------------------------------
+        // CastBar-ClientRpcs (Owner-only Event-Fanout)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Wird vom Server gefeuert, sobald ein Cast startet. Triggert auf
+        /// ALLEN Peers die Caster-Cast-Pose (FLARE <c>[cast]</c>), damit die
+        /// Animation während der gesamten Cast-Zeit zu sehen ist und nicht
+        /// erst nach Cast-Ende kurz aufblitzt. Quelle für das Pose-Gate:
+        /// <c>spell_visual_kit.unit_cast_animation</c> per Spell-Entry. Da das
+        /// Source-Index→State-Mapping nicht recoverable ist, gilt: jeder
+        /// Nicht-Null-Index → generische "cast"-Pose. So feuert die Pose auch
+        /// für Spells, deren Visual-Kit kein spranim hat (z. B. Spell 133 /
+        /// Kit 154 → nur psystem + sound).
+        ///
+        /// Das <see cref="OwnerCastStarted"/>-Event (CastBar-HUD) bleibt
+        /// Owner-only und feuert nur bei echtem Cast-Time-Spell
+        /// (<paramref name="castSeconds"/> &gt; 0). Instant-Casts werden mit
+        /// <c>castSeconds = 0</c> hier durchgeschleust, damit die Pose
+        /// trotzdem auf allen Peers zu sehen ist.
+        /// </summary>
+        [ClientRpc]
+        private void BeginCastClientRpc(int spellEntry, float castSeconds, ClientRpcParams _ = default)
+        {
+            TryTriggerCasterPose(spellEntry);
+            TryTriggerCasterParticles(spellEntry);
+            TryTriggerCasterSound(spellEntry);
+
+            if (!IsOwner || castSeconds <= 0f)
+            {
+                return;
+            }
+            OwnerCastStarted?.Invoke(spellEntry, Mathf.Max(0.01f, castSeconds));
+        }
+
+        /// <summary>
+        /// Wird vom Server gefeuert, sobald ein laufender Cast beendet wird —
+        /// entweder erfolgreich (<paramref name="completed"/> = <c>true</c>) oder
+        /// unterbrochen (Bewegung, Tod, Execute-Fail). Owner-only Event-Fanout.
+        /// </summary>
+        [ClientRpc]
+        private void EndCastClientRpc(bool completed, ClientRpcParams _ = default)
+        {
+            // Cast-Particles laufen auf allen Peers (gespawnt in BeginCastClientRpc
+            // via TryTriggerCasterParticles), also muss der Stop VOR dem Owner-Check
+            // stehen — sonst wuerden Remote-Peers das endlose PSystem bis zum harten
+            // 8s-Cap weiter sehen.
+            if (m_ActiveCasterParticles != null)
+            {
+                CasterParticleSpawner.Stop(m_ActiveCasterParticles);
+                m_ActiveCasterParticles = null;
+            }
+            if (!IsOwner)
+            {
+                return;
+            }
+            OwnerCastEnded?.Invoke(completed);
+        }
+
+        /// <summary>
+        /// Server-Helper: schickt einen <see cref="CastResult"/>-Fehler nur an den
+        /// Cast-anfordernden Client (Owner). HUD (<see cref="UI.CastFailedToastHUD"/>)
+        /// rendert daraus &uuml;ber <see cref="CastResultStrings.Get"/> einen
+        /// kurzlebigen Screen-Toast. Self-Host (IsServer &amp;&amp; IsOwner) wird
+        /// trivial mitversorgt &#8212; ClientRpc liefert auch an den lokalen Client.
+        /// </summary>
+        internal void ServerNotifyCastFailed(ulong targetClientId, CastResult result)
+        {
+            if (!IsServer || result == CastResult.Success)
+            {
+                return;
+            }
+            ClientRpcParams targetOnly = new()
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { targetClientId },
+                },
+            };
+            NotifyCastFailedClientRpc((byte)result, targetOnly);
+        }
+
+        /// <summary>
+        /// Owner-only Fanout der Cast-Fehlerursache. Wird vom HUD &uuml;ber
+        /// <see cref="OwnerCastFailed"/> konsumiert &#8212; analog zu
+        /// <see cref="OwnerCastStarted"/>/<see cref="OwnerCastEnded"/>.
+        /// </summary>
+        [ClientRpc]
+        private void NotifyCastFailedClientRpc(byte resultCode, ClientRpcParams _ = default)
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+            OwnerCastFailed?.Invoke((CastResult)resultCode);
+        }
+
+        /// <summary>
+        /// Client-seitiger Visual-Handler. Loest aus den Source-Tabellen
+        /// <c>spell_visual_kit</c> (per-Spell Kit-IDs, <c>_visuals.json</c>) und
+        /// <c>spell_visual</c> (Kit-Definitionen, <c>_visual_kits.json</c>) eine
+        /// Phasen-Anim auf (Casting, Travel, Impact, Aura) und spawnt den
+        /// <see cref="WorldSpellAnimation"/> ueber <see cref="SpellVisualSpawner"/>.
+        /// </summary>
+        [ClientRpc]
+        private void PlaySpellCastClientRpc(int spellEntry, ulong sourceNetId, ulong targetNetId)
+        {
+            m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
+            m_VisualKitDefinitionLoader ??= ServiceLocator.Get<SpellVisualKitDefinitionCatalogLoader>();
+            m_AnimationCatalogLoader ??= ServiceLocator.Get<SpellAnimationCatalogLoader>();
+
+            SpellVisualKitMappingCatalog mappings = m_VisualKitMappingLoader?.GetCached();
+            SpellVisualKitDefinitionCatalog defs = m_VisualKitDefinitionLoader?.GetCached();
+            SpellAnimationCatalog anims = m_AnimationCatalogLoader?.GetCached();
+            if (mappings == null || defs == null || anims == null)
             {
                 return;
             }
@@ -848,12 +1103,158 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            // 0 = Self-Cast → Target-Transform bleibt null, Spawner ankert am Caster.
+
+            // Caster-Cast-Pose wird bereits in BeginCastClientRpc bei Cast-START
+            // auf allen Peers ausgelöst (sowohl Cast-Time- als auch Instant-Casts).
+            // Hier nur noch der Spawner-Pfad für Travel/Impact/Aura-Visuals.
+
+            SpellVisualDefinition kit = SpellVisualResolver.Resolve(spellEntry, mappings, defs);
+            if (kit == null)
+            {
+                return;
+            }
+
             Transform targetTransform = targetNetId != 0UL && targetNetId != sourceNetId
                 ? ResolveNetworkTransform(targetNetId)
                 : null;
 
             SpellVisualSpawner.Spawn(kit, anims, sourceTransform, targetTransform);
+        }
+
+        /// <summary>
+        /// Löst auf diesem Client die Cast-Pose des Casters (FLARE <c>[cast]</c>)
+        /// aus, sofern das Visual-Kit-Mapping des Spells eine Cast-Animation
+        /// vorgibt (<c>unit_cast_animation != 0</c>). Wird sowohl für Cast-Time-
+        /// als auch für Instant-Casts aus <see cref="BeginCastClientRpc"/>
+        /// aufgerufen — also bei Cast-START, nicht erst bei Cast-Resolve.
+        /// Pose-Trigger läuft via <see cref="UnitCombatVisuals.PlayCast"/> auf
+        /// dem PlayerCombat-GameObject (PlayerCombatVisuals sitzt per
+        /// <see cref="RequireComponent"/> garantiert daneben).
+        /// <c>uca_speed</c> wird bewusst ignoriert, bis
+        /// <see cref="Sprites.FlareCharacter.Play"/> eine Speed-Übergabe
+        /// unterstützt.
+        /// </summary>
+        private void TryTriggerCasterPose(int spellEntry)
+        {
+            m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
+            SpellVisualKitMappingCatalog mappings = m_VisualKitMappingLoader?.GetCached();
+            if (mappings == null)
+            {
+                return;
+            }
+            if (!mappings.TryGet(spellEntry, out SpellVisualKitMapping mapping)
+                || mapping == null
+                || mapping.UnitCastAnimation == 0)
+            {
+                return;
+            }
+            UnitCombatVisuals visuals = m_Visuals != null
+                ? m_Visuals
+                : GetComponent<UnitCombatVisuals>();
+            if (visuals == null)
+            {
+                visuals = GetComponentInChildren<UnitCombatVisuals>();
+            }
+            if (visuals != null)
+            {
+                visuals.PlayCast();
+            }
+        }
+
+        /// <summary>
+        /// Loest auf diesem Client das Caster-Partikelsystem des Spells aus.
+        /// Resolved <c>spellEntry</c> → <see cref="SpellVisualKitMapping.CastingKit"/>
+        /// → <see cref="SpellVisualKitDefinition.Psystem"/> (z. B. <c>casting_holy.psi</c>)
+        /// → <see cref="ParticleSystemCatalog"/> und spawnt das System ueber
+        /// <see cref="CasterParticleSpawner"/>. Wird parallel zur Cast-Pose aus
+        /// <see cref="BeginCastClientRpc"/> bei Cast-START auf allen Peers gefeuert
+        /// (sowohl Cast-Time- als auch Instant-Casts). Stilles No-Op, falls
+        /// Mapping/Kit/PSystem-Name nicht im Katalog vorhanden.
+        /// </summary>
+        private void TryTriggerCasterParticles(int spellEntry)
+        {
+            m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
+            m_VisualKitDefinitionLoader ??= ServiceLocator.Get<SpellVisualKitDefinitionCatalogLoader>();
+            m_ParticleCatalogLoader ??= ServiceLocator.Get<ParticleSystemCatalogLoader>();
+
+            SpellVisualKitMappingCatalog mappings = m_VisualKitMappingLoader?.GetCached();
+            SpellVisualKitDefinitionCatalog defs = m_VisualKitDefinitionLoader?.GetCached();
+            ParticleSystemCatalog particles = m_ParticleCatalogLoader?.GetCached();
+            if (mappings == null || defs == null || particles == null)
+            {
+                return;
+            }
+
+            if (!mappings.TryGet(spellEntry, out SpellVisualKitMapping mapping)
+                || mapping == null
+                || mapping.CastingKit == 0)
+            {
+                return;
+            }
+            if (!defs.TryGet(mapping.CastingKit, out SpellVisualKitDefinition kit)
+                || kit == null
+                || string.IsNullOrEmpty(kit.Psystem))
+            {
+                return;
+            }
+            string psName = ParticleSystemCatalog.StripPsi(kit.Psystem);
+            if (!particles.TryGet(psName, out ParticleSystemDefinition def) || def == null)
+            {
+                return;
+            }
+            // Falls aus irgendeinem Grund noch ein altes Cast-PSystem laeuft
+            // (z. B. zweiter Cast-Start ohne dazwischenliegendes Cast-End),
+            // sauber stoppen bevor wir das neue spawnen.
+            if (m_ActiveCasterParticles != null)
+            {
+                CasterParticleSpawner.Stop(m_ActiveCasterParticles);
+                m_ActiveCasterParticles = null;
+            }
+            m_ActiveCasterParticles = CasterParticleSpawner.Spawn(def, transform, worldYOffset: 0f);
+        }
+
+        /// <summary>
+        /// Loest auf diesem Client den Caster-Sound des Spells aus.
+        /// Resolved <c>spellEntry</c> → <see cref="SpellVisualKitMapping.CastingKit"/>
+        /// → <see cref="SpellVisualKitDefinition.Sound"/> (Dateiname inkl. Extension,
+        /// z. B. <c>"skill_heal.wav"</c>) → <see cref="SoundManager.GetClip"/>. Wird
+        /// parallel zu Cast-Pose / Cast-Particles aus <see cref="BeginCastClientRpc"/>
+        /// bei Cast-START auf allen Peers gefeuert. Stilles No-Op falls Mapping/Kit/
+        /// Sound-Name nicht im Index vorhanden.
+        /// </summary>
+        private void TryTriggerCasterSound(int spellEntry)
+        {
+            m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
+            m_VisualKitDefinitionLoader ??= ServiceLocator.Get<SpellVisualKitDefinitionCatalogLoader>();
+            m_SoundManager ??= ServiceLocator.Get<SoundManager>();
+
+            SpellVisualKitMappingCatalog mappings = m_VisualKitMappingLoader?.GetCached();
+            SpellVisualKitDefinitionCatalog defs = m_VisualKitDefinitionLoader?.GetCached();
+            if (mappings == null || defs == null || m_SoundManager == null)
+            {
+                return;
+            }
+
+            if (!mappings.TryGet(spellEntry, out SpellVisualKitMapping mapping)
+                || mapping == null
+                || mapping.CastingKit == 0)
+            {
+                return;
+            }
+            if (!defs.TryGet(mapping.CastingKit, out SpellVisualKitDefinition kit)
+                || kit == null
+                || string.IsNullOrEmpty(kit.Sound))
+            {
+                return;
+            }
+            AudioClip clip = m_SoundManager.GetClip(kit.Sound);
+            if (clip == null)
+            {
+                return;
+            }
+            // 3D one-shot am Caster; PlayClipAtPoint zerstoert das temporäre GO automatisch
+            // nach Clip-Ende. Event-Frequenz (Cast-Start) ist niedrig genug fuer dieses Pattern.
+            AudioSource.PlayClipAtPoint(clip, transform.position);
         }
 
         /// <summary>

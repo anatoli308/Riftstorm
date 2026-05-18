@@ -1,3 +1,4 @@
+using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
 using Tolik.Riftstorm.Runtime.Core;
 
@@ -23,6 +24,18 @@ namespace Riftstorm.Game.Combat.CombatStates
         /// </summary>
         /// <param name="weapon">Aktuell ausgerüstete Waffe (server-seitig aufgelöst).</param>
         public virtual void OnAttackRequested(WeaponDefinition weapon) { }
+
+        /// <summary>
+        /// Wird auf dem Server aufgerufen, sobald der Owner via ServerRpc einen
+        /// Spell-Cast anfragt. States entscheiden, ob der Cast akzeptiert wird
+        /// (Idle → Casting / sofortige Ausführung) oder verworfen (Attacking,
+        /// Casting, Dead). Default ist no-op = verwerfen.
+        /// </summary>
+        /// <param name="spellEntry">Numerischer Spell-Entry (z. B. 133).</param>
+        /// <param name="spell">Vorgeladenes Template aus <see cref="SpellCatalogLoader"/>.</param>
+        /// <param name="targetNetId">NetworkObjectId des Primärziels (0 = self).</param>
+        /// <param name="primaryTarget">Aufgelöste Combat-Unit des Primärziels.</param>
+        public virtual void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget) { }
 
         /// <summary>Wird beim Tod aufgerufen — erzwingt Übergang in den Dead-State.</summary>
         public virtual void OnDeath() { }
