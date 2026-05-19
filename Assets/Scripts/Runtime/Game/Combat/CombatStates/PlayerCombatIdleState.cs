@@ -18,11 +18,11 @@ namespace Riftstorm.Game.Combat.CombatStates
         }
 
         /// <inheritdoc/>
-        public override void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        public override void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget, CastDestination destination)
         {
             // Server-autoritativ: Cast-Time entscheidet, ob direkt ausgeführt oder
             // in den CastingState transitioniert wird (siehe PlayerCombat.BeginCast).
-            Manager.BeginCast(spellEntry, spell, targetNetId, primaryTarget);
+            Manager.BeginCast(spellEntry, spell, targetNetId, primaryTarget, destination);
         }
 
         /// <inheritdoc/>

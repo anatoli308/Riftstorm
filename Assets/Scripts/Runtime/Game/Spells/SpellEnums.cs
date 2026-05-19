@@ -134,6 +134,34 @@ namespace Riftstorm.Game.Spells
     }
 
     /// <summary>
+    /// Konkreter Mechanic-Subtyp einer <see cref="AuraType.InflictMechanic"/>-Aura.
+    /// Steckt in <c>effectN_data2</c> (= <see cref="AuraEffect.MiscValue"/>).
+    /// Werte aus den vorhandenen Spell-Templates abgeleitet (Ice Blast=4 "freezes",
+    /// Chains of Ice=7 "reduces movement speed", Ice Shard=8 "stuns"); kompatibel
+    /// mit dem source_server-Mechanic-Enum.
+    /// </summary>
+    public enum Mechanic
+    {
+        None = 0,
+        Charm = 1,
+        Disorient = 2,
+        Disarm = 3,
+        /// <summary>Frozen / immobilisiert. Wirkt wie <see cref="AuraType.Root"/>.</summary>
+        Frozen = 4,
+        Fleeing = 5,
+        Grip = 6,
+        /// <summary>Snare / Slow. <c>BaseValue</c> (= <c>data3</c>) ist die Speed-Aenderung in %.</summary>
+        Snared = 7,
+        /// <summary>Stunned. Wirkt wie <see cref="AuraType.Stun"/>.</summary>
+        Stunned = 8,
+        Sleep = 9,
+        Shackle = 10,
+        Knockback = 11,
+        /// <summary>Silenced. Wirkt wie <see cref="AuraType.Silence"/>.</summary>
+        Silenced = 12,
+    }
+
+    /// <summary>
     /// Dispel-Kategorie eines Spells / einer Aura (<c>spell_template.dispel</c>).
     /// 1:1 aus <c>source_server/Shared/SpellDefines.h</c> (<c>enum class DispelType</c>).
     /// </summary>

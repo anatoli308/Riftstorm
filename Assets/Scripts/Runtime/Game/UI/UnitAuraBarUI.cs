@@ -80,6 +80,10 @@ namespace Riftstorm.Game.UI
 
         private readonly List<AuraIconView> m_IconPool = new();
 
+        // Geteiltes Tooltip-Panel fuer alle Aura-Icons (eine Instanz, beim Hover
+        // umpositioniert). English-only Texte, vgl. <see cref="TooltipPanel"/>.
+        private TooltipPanel m_Tooltip;
+
         // Bind-Pfad: LocalPlayer
         private UnitStats m_BoundStats;
 
@@ -160,6 +164,11 @@ namespace Riftstorm.Game.UI
             m_Container.pickingMode = PickingMode.Ignore;
 
             m_Root.Add(m_Container);
+
+            // Tooltip-Overlay separat unter dem Root anhaengen, damit es per
+            // Z-Order ueber den Icons liegt. Aura-Bar oben links → Tooltip
+            // klappt nach unten auf.
+            m_Tooltip = new TooltipPanel(m_Root);
         }
 
         // -------------------------------------------------------------------------
@@ -317,6 +326,7 @@ namespace Riftstorm.Game.UI
             while (m_IconPool.Count < count)
             {
                 AuraIconView v = CreateIconView();
+                RegisterIconTooltipCallbacks(v);
                 m_Container.Add(v.Root);
                 m_IconPool.Add(v);
             }
@@ -403,7 +413,9 @@ namespace Riftstorm.Game.UI
             }
             if (normalized.IndexOf('/') < 0)
             {
-                normalized = "spell_icons/" + normalized;
+                bool isItem = normalized.StartsWith("item_", System.StringComparison.OrdinalIgnoreCase)
+                              || normalized.StartsWith("icon_item_", System.StringComparison.OrdinalIgnoreCase);
+                normalized = (isItem ? "item_icons/" : "spell_icons/") + normalized;
             }
             return normalized;
         }
@@ -424,7 +436,10 @@ namespace Riftstorm.Game.UI
             root.style.borderBottomLeftRadius = 4f;
             root.style.borderBottomRightRadius = 4f;
             root.style.overflow = Overflow.Hidden;
-            root.pickingMode = PickingMode.Ignore;
+            // Icons muessen Hit-Tests bekommen, damit Hover-Tooltips feuern.
+            // Root-Container bleibt Ignore — UIToolkit propagiert Picking
+            // ueber Ignore-Parents hinweg an Position-Children.
+            root.pickingMode = PickingMode.Position;
 
             VisualElement iconImage = new() { name = "aura-icon-image" };
             iconImage.style.position = Position.Absolute;
@@ -493,6 +508,45 @@ namespace Riftstorm.Game.UI
                 DurationLabel = durationLabel,
                 StackLabel = stackLabel,
             };
+        }
+
+        // -------------------------------------------------------------------------
+        // Tooltip pro Aura-Icon
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Registriert Hover-Callbacks fuer ein frisch gebautes Aura-Icon.
+        /// Lambdas capturen die View-Referenz, sodass <see cref="AuraIconView.SpellEntry"/>
+        /// zum Hover-Zeitpunkt (also nach <see cref="ApplySnapshotToView"/>) ausgewertet wird.
+        /// </summary>
+        private void RegisterIconTooltipCallbacks(AuraIconView view)
+        {
+            view.Root.RegisterCallback<MouseEnterEvent>(_ => ShowAuraTooltip(view));
+            view.Root.RegisterCallback<MouseLeaveEvent>(_ => m_Tooltip?.Hide());
+        }
+
+        private void ShowAuraTooltip(AuraIconView view)
+        {
+            if (m_Tooltip == null || view == null || view.SpellEntry <= 0)
+            {
+                return;
+            }
+            SpellTemplate tpl = SpellCatalogLoader.GetTemplateOrNull(view.SpellEntry);
+            string name = tpl != null && !string.IsNullOrWhiteSpace(tpl.Name)
+                ? tpl.Name
+                : $"#{view.SpellEntry}";
+
+            // Live-Restdauer aus dem letzten Snapshot + Local-Tick herleiten,
+            // damit der Tooltip nicht nur den Empfangs-Zustand zeigt.
+            float elapsedMs = (Time.unscaledTime - view.ReceivedAt) * 1000f;
+            int remainingMs = Mathf.Max(0, view.RemainingMsAtReceive - Mathf.RoundToInt(elapsedMs));
+            int stacks = view.StackLabel.style.display == DisplayStyle.Flex
+                && int.TryParse(view.StackLabel.text, out int s) ? s : 1;
+
+            string meta = TooltipPanel.BuildAuraMeta(view.IsPositive, stacks, remainingMs, view.MaxDurationMs);
+            string desc = TooltipPanel.GetAuraDescription(tpl);
+
+            m_Tooltip.Show(name, meta, desc, view.Root.worldBound, TooltipPlacement.Below);
         }
 
         // -------------------------------------------------------------------------

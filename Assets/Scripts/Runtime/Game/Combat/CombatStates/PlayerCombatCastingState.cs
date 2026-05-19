@@ -27,6 +27,7 @@ namespace Riftstorm.Game.Combat.CombatStates
         private SpellTemplate m_PendingSpell;
         private ulong m_PendingTargetNetId;
         private ICombatUnit m_PendingPrimaryTarget;
+        private CastDestination m_PendingDestination;
 
         /// <summary>
         /// Aktuell laufender Cast-Spell. <c>null</c>, sobald der State verlassen
@@ -40,12 +41,13 @@ namespace Riftstorm.Game.Combat.CombatStates
         /// Wird von <see cref="PlayerCombat.BeginCast"/> vor <see cref="ChangeState"/>
         /// gerufen, damit <see cref="Enter"/> alle nötigen Parameter zur Hand hat.
         /// </summary>
-        internal void ConfigureFromCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        internal void ConfigureFromCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget, CastDestination destination)
         {
             m_PendingSpellEntry = spellEntry;
             m_PendingSpell = spell;
             m_PendingTargetNetId = targetNetId;
             m_PendingPrimaryTarget = primaryTarget;
+            m_PendingDestination = destination;
         }
 
         /// <inheritdoc/>
@@ -57,6 +59,7 @@ namespace Riftstorm.Game.Combat.CombatStates
                 m_PendingSpell,
                 m_PendingTargetNetId,
                 m_PendingPrimaryTarget,
+                m_PendingDestination,
                 m_Cts.Token);
         }
 
@@ -75,6 +78,7 @@ namespace Riftstorm.Game.Combat.CombatStates
             m_PendingPrimaryTarget = null;
             m_PendingSpellEntry = 0;
             m_PendingTargetNetId = 0UL;
+            m_PendingDestination = CastDestination.None;
         }
 
         /// <inheritdoc/>
@@ -92,6 +96,7 @@ namespace Riftstorm.Game.Combat.CombatStates
             SpellTemplate spell,
             ulong targetNetId,
             ICombatUnit primaryTarget,
+            CastDestination destination,
             CancellationToken token)
         {
             // SpellTemplate.CastTime ist in Millisekunden (vgl. JSON-Schema).
@@ -117,7 +122,7 @@ namespace Riftstorm.Game.Combat.CombatStates
             // Nur fertigstellen, wenn wir noch der aktive State sind und auf dem Server laufen.
             if (Manager.IsServer && Manager.IsCurrentState(this))
             {
-                Manager.ServerCompleteCast(spellEntry, spell, targetNetId, primaryTarget);
+                Manager.ServerCompleteCast(spellEntry, spell, targetNetId, primaryTarget, destination);
             }
 
             if (Manager.IsCurrentState(this))

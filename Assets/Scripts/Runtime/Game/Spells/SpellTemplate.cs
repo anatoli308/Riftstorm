@@ -294,6 +294,19 @@ namespace Riftstorm.Game.Spells
         public bool IsOffensive
             => IsDamageEffect(Effect1) || IsDamageEffect(Effect2) || IsDamageEffect(Effect3);
 
+        /// <summary>
+        /// True wenn der Spell vom Spieler einen Boden-Zielpunkt erwartet
+        /// (Blink, Boden-AoE, Mark/Ward auf Boden, etc.). Wird vom Client
+        /// genutzt, um vor dem Cast in den Ground-Target-Mode zu wechseln und
+        /// einen Reticle anzuzeigen; vom Server, um eine mitgegebene
+        /// Ziel-Position als AoE-Center / Teleport-Destination zu konsumieren.
+        /// Quelle: <see cref="SpellAttributes.TargetsGround"/>-Bit aus dem
+        /// JSON-Template.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsGroundTargeted
+            => (Attributes & SpellAttributes.TargetsGround) != 0;
+
         private static bool IsDamageEffect(SpellEffect e)
             => e == SpellEffect.SchoolDamage
                || e == SpellEffect.WeaponDamage

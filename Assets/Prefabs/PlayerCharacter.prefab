@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: -6858420798198050943}
   - component: {fileID: 2270049582356626853}
   - component: {fileID: -6740747972831955272}
+  - component: {fileID: -758824109736128144}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -136,6 +137,7 @@ MonoBehaviour:
   m_CombatVisuals: {fileID: -2700015800232922021}
   m_Combat: {fileID: -525944449724255899}
   m_TargetSelection: {fileID: 4317724205577696828}
+  m_Stats: {fileID: 0}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run
@@ -380,7 +382,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.PlayerSpellInput
   m_Input: {fileID: 3229784933833492351}
   m_Combat: {fileID: -525944449724255899}
+  m_GroundPicker: {fileID: -758824109736128144}
   m_SlotSpellEntries: 28000000850000001d0000001e0000001f0000002200000023000000260000000000000000000000
+--- !u!114 &-758824109736128144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 328161a3c6b9ca14989f9a2af6a80115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Input.GroundTargetPicker
+  m_Camera: {fileID: 0}
+  m_CasterTransform: {fileID: 3690958180083129231}
+  m_MaxRayDistance: 200
+  m_GroundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_GroundPlaneY: 0
+  m_RingSegments: 64
+  m_ReticleRadius: 0.6
+  m_ReticleLineWidth: 0.08
+  m_RangeLineWidth: 0.08
+  m_ReticleColor: {r: 0.4, g: 0.85, b: 1, a: 0.95}
+  m_RangeColor: {r: 1, g: 0.85, b: 0.2, a: 0.6}
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

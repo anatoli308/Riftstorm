@@ -94,9 +94,23 @@ namespace Riftstorm.Game.Spells
             if (target == null) { return CastResult.Success; }
 
             bool targetIsCaster = ReferenceEquals(target, caster);
-            if (targetIsCaster && (spell.Attributes & SpellAttributes.CantTargetSelf) != 0)
+            bool canFriendly = SpellUtils.CanTargetFriendly(spell);
+            bool canHostile = SpellUtils.CanTargetHostile(spell);
+
+            // Self ist nur erlaubt wenn der Spell explizit Friendly-Targets traegt
+            // (z.B. Heal/Buff) oder als Self-Only deklariert ist. Hostile-only Spells
+            // (Fireball, Snare, etc.) duerfen NIE auf den Caster selbst landen,
+            // auch wenn das CantTargetSelf-Attribute in den Source-Daten fehlt.
+            if (targetIsCaster)
             {
-                return CastResult.TargetSelf;
+                if ((spell.Attributes & SpellAttributes.CantTargetSelf) != 0)
+                {
+                    return CastResult.TargetSelf;
+                }
+                if (!canFriendly)
+                {
+                    return CastResult.TargetSelf;
+                }
             }
 
             bool targetDead = target.IsDead;
@@ -104,8 +118,6 @@ namespace Riftstorm.Game.Spells
             if (targetDead && !allowDead) { return CastResult.TargetDead; }
 
             bool sameFaction = caster.FactionId == target.FactionId;
-            bool canFriendly = SpellUtils.CanTargetFriendly(spell);
-            bool canHostile = SpellUtils.CanTargetHostile(spell);
             if (sameFaction && !canFriendly && !targetIsCaster) { return CastResult.TargetFriendly; }
             if (!sameFaction && !canHostile) { return CastResult.TargetHostile; }
             return CastResult.Success;

@@ -568,6 +568,14 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            // Stun-Gate: ein gestunnter Spieler kann keine Auto-Attack starten.
+            // Roots erlauben Auto-Attack (FLARE-Konvention), daher hier
+            // explizit IsStunned, NICHT IsImmobilized.
+            if (m_Stats != null && m_Stats.IsStunned)
+            {
+                return;
+            }
+
             // Server dreht den Angreifer Richtung Ziel (XZ-Ebene), damit Visuals & sp&#228;tere
             // FX-Spawner einen sinnvollen Forward-Vektor haben.
             FaceCurrentTarget();
@@ -736,6 +744,13 @@ namespace Riftstorm.Game.Combat
             {
                 return false;
             }
+            // Mid-Windup-Stun: wenn der Angreifer waehrend des Windups gestunnt
+            // wird, cancelt das den Hit-Resolve und der AttackingState faellt
+            // zurueck in Idle. Roots blocken Auto-Attack NICHT.
+            if (m_Stats != null && m_Stats.IsStunned)
+            {
+                return false;
+            }
             if (!m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetObject, out UnitStats victimStats))
             {
                 return false;
@@ -817,7 +832,40 @@ namespace Riftstorm.Game.Combat
                 targetId = targetObject.NetworkObjectId;
             }
 
-            RequestCastSpellServerRpc(spellEntry, targetId);
+            RequestCastSpellServerRpc(spellEntry, targetId, Vector3.zero, false);
+        }
+
+        /// <summary>
+        /// Variante mit explizitem Boden-Zielpunkt fuer Ground-Target-Spells
+        /// (Blink/Boden-AoE). Wird vom Client-seitigen Ground-Target-Picker
+        /// aufgerufen, sobald der Spieler eine Reticle-Position bestaetigt hat
+        /// (LMB). Range/LoS werden serverseitig validiert; ein zu weit gesetzter
+        /// Punkt wird im SpellExecutor auf <see cref="SpellTemplate.Range"/>
+        /// geclampt.
+        /// </summary>
+        /// <param name="spellEntry">Numerischer Entry aus <c>spells/_templates.json</c>.</param>
+        /// <param name="worldDestination">Welt-Koordinate des Boden-Zielpunkts.</param>
+        public void TryRequestCastSpellAtGround(int spellEntry, Vector3 worldDestination)
+        {
+            if (!IsSpawned || !IsOwner || spellEntry <= 0)
+            {
+                return;
+            }
+            if (m_Stats != null && m_Stats.IsDead)
+            {
+                return;
+            }
+
+            ulong targetId = 0UL;
+            if (m_TargetSelection != null
+                && m_TargetSelection.CurrentTargetId != TargetSelection.NoTarget
+                && m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetObject, out _)
+                && targetObject != null)
+            {
+                targetId = targetObject.NetworkObjectId;
+            }
+
+            RequestCastSpellServerRpc(spellEntry, targetId, worldDestination, true);
         }
 
         /// <summary>
@@ -826,7 +874,12 @@ namespace Riftstorm.Game.Combat
         /// Combat-State (Idle akzeptiert, Attacking/Casting/Dead verwerfen).
         /// </summary>
         [ServerRpc]
-        private void RequestCastSpellServerRpc(int spellEntry, ulong targetNetworkObjectId, ServerRpcParams rpcParams = default)
+        private void RequestCastSpellServerRpc(
+            int spellEntry,
+            ulong targetNetworkObjectId,
+            Vector3 castDestination,
+            bool hasCastDestination,
+            ServerRpcParams rpcParams = default)
         {
             if (m_Stats == null || m_Stats.IsDead)
             {
@@ -878,7 +931,11 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            m_CurrentState.OnCastRequested(spellEntry, spell, targetNetworkObjectId, primaryTarget);
+            CastDestination destination = hasCastDestination
+                ? CastDestination.At(castDestination)
+                : CastDestination.None;
+
+            m_CurrentState.OnCastRequested(spellEntry, spell, targetNetworkObjectId, primaryTarget, destination);
         }
 
         /// <summary>
@@ -889,7 +946,7 @@ namespace Riftstorm.Game.Combat
         /// der das Awaitable-Gate hält und am Ende ebenfalls <see cref="ServerCompleteCast"/>
         /// aufruft.
         /// </summary>
-        internal void BeginCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        internal void BeginCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget, CastDestination destination)
         {
             if (!IsServer || spell == null)
             {
@@ -906,7 +963,7 @@ namespace Riftstorm.Game.Combat
                 // Cast-Pose über BeginCastClientRpc fanned (castSeconds=0 ->
                 // CastBar bleibt zu, Pose feuert trotzdem auf allen Peers).
                 BeginCastClientRpc(spellEntry, 0f);
-                ServerCompleteCast(spellEntry, spell, targetNetId, primaryTarget);
+                ServerCompleteCast(spellEntry, spell, targetNetId, primaryTarget, destination);
                 return;
             }
 
@@ -916,7 +973,7 @@ namespace Riftstorm.Game.Combat
             // gegen <see cref="Time.unscaledTime"/> interpoliert.
             BeginCastClientRpc(spellEntry, spell.CastTime / 1000f);
 
-            CastingState.ConfigureFromCast(spellEntry, spell, targetNetId, primaryTarget);
+            CastingState.ConfigureFromCast(spellEntry, spell, targetNetId, primaryTarget, destination);
             ChangeState(CastingState);
         }
 
@@ -924,9 +981,10 @@ namespace Riftstorm.Game.Combat
         /// Server-Pfad zum Abschluss eines Casts (sowohl für Instant- als auch
         /// für Cast-Time-Spells). Führt <see cref="SpellExecutor.Execute"/> aus
         /// und fanned bei Erfolg das Visual via <see cref="PlaySpellCastClientRpc"/>
-        /// an alle Peers (inkl. Host) aus.
+        /// an alle Peers (inkl. Host) aus. <paramref name="destination"/> wird
+        /// fuer Boden-Zielpunkte (Blink, Boden-AoE) durchgereicht.
         /// </summary>
-        internal void ServerCompleteCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget)
+        internal void ServerCompleteCast(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget, CastDestination destination)
         {
             if (!IsServer || spell == null)
             {
@@ -939,7 +997,7 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            SpellExecutionResult result = SpellExecutor.Execute(caster, spell, primaryTarget);
+            SpellExecutionResult result = SpellExecutor.Execute(caster, spell, primaryTarget, destination);
             if (result.Result != CastResult.Success)
             {
                 // CastBar auch bei serverseitig abgelehnter Execute schlie&#223;en
@@ -952,6 +1010,26 @@ namespace Riftstorm.Game.Combat
             // Erfolgreich abgeschlossen — Owner-HUD die CastBar als completed
             // schlie&#223;en lassen.
             EndCastClientRpc(true);
+
+            // Cooldowns sind server-autoritativ (vgl. <see cref="SpellExecutor.StartCooldowns"/>).
+            // Den startenden Cooldown + GCD an den Owner-Client mirroren, damit
+            // <see cref="UI.ActionBarHUD"/> die Sweep-Anzeige rendern kann
+            // (Cooldown-Replikation pro Cast statt Full-State-Sync).
+            int gcdMs = (spell.Attributes & SpellAttributes.Triggered) == 0
+                ? CooldownManager.GcdDurationMs
+                : 0;
+            int cooldownMs = spell.Cooldown > 0 ? spell.Cooldown : 0;
+            if (cooldownMs > 0 || gcdMs > 0)
+            {
+                ClientRpcParams ownerOnly = new()
+                {
+                    Send = new ClientRpcSendParams
+                    {
+                        TargetClientIds = new ulong[] { OwnerClientId },
+                    },
+                };
+                NotifyCooldownStartedClientRpc(spellEntry, cooldownMs, gcdMs, ownerOnly);
+            }
 
             ulong sourceNetId = NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
             ulong resolvedTargetNetId = ReferenceEquals(primaryTarget, caster) ? 0UL : targetNetId;
@@ -1074,6 +1152,37 @@ namespace Riftstorm.Game.Combat
                 return;
             }
             OwnerCastFailed?.Invoke((CastResult)resultCode);
+        }
+
+        /// <summary>
+        /// Mirror des frisch gestarteten Spell-Cooldowns + GCD an den Owner-Client.
+        /// Server hat die Cooldowns ueber <see cref="SpellExecutor.StartCooldowns"/>
+        /// bereits server-autoritativ angelegt &#8212; dieser RPC schiebt dieselben
+        /// Daten an den Owner, damit <see cref="UI.ActionBarHUD"/> auch auf
+        /// remote Clients den Sweep + Remaining-Sekunden anzeigt.
+        /// Cooldowns sind idempotent (<see cref="CooldownManager.StartCooldown"/>
+        /// ueberschreibt), daher ist Self-Host (Server == Owner) harmlos.
+        /// </summary>
+        [ClientRpc]
+        private void NotifyCooldownStartedClientRpc(int spellEntry, int cooldownMs, int gcdMs, ClientRpcParams _ = default)
+        {
+            if (!IsOwner || m_Stats == null)
+            {
+                return;
+            }
+            CooldownManager cd = ((ICombatUnit)m_Stats).Cooldowns;
+            if (cd == null)
+            {
+                return;
+            }
+            if (cooldownMs > 0)
+            {
+                cd.StartCooldown(spellEntry, cooldownMs);
+            }
+            if (gcdMs > 0)
+            {
+                cd.StartGcd(gcdMs);
+            }
         }
 
         /// <summary>

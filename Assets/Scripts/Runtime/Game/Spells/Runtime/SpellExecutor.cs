@@ -28,6 +28,40 @@ namespace Riftstorm.Game.Spells
     }
 
     /// <summary>
+    /// Optionaler Boden-Zielpunkt eines Casts. Wird vom Client erzeugt
+    /// (Mouse-Pick auf Boden-Ebene), per ServerRpc mitgeschickt und vom
+    /// <see cref="SpellExecutor"/> konsumiert, sobald ein Effekt einen
+    /// Destination-Punkt braucht (Blink/<see cref="SpellEffect.Teleport"/>,
+    /// Boden-AoE-Center bei <c>UnitAreaDst*</c>-Targets).
+    /// <para>
+    /// <see cref="HasValue"/>=<c>false</c> markiert "keine Position
+    /// uebergeben" — der Executor faellt dann auf das bisherige Verhalten
+    /// zurueck (Target-Unit-Position als Center). So bleiben Bestands-
+    /// Pfade (NPC-Casts, Self-Casts ohne Boden-Ziel) unveraendert.
+    /// </para>
+    /// </summary>
+    public readonly struct CastDestination
+    {
+        /// <summary>Welt-Koordinate des Zielpunkts (nur gueltig wenn <see cref="HasValue"/>).</summary>
+        public readonly Vector3 Position;
+        /// <summary>True, wenn ein Boden-Zielpunkt mitgeschickt wurde.</summary>
+        public readonly bool HasValue;
+
+        /// <summary>Privater Konstruktor — Erzeugung bitte ueber <see cref="At"/>/<see cref="None"/>.</summary>
+        private CastDestination(Vector3 pos, bool hasValue)
+        {
+            Position = pos;
+            HasValue = hasValue;
+        }
+
+        /// <summary>Sentinel: kein Boden-Ziel gesetzt.</summary>
+        public static CastDestination None => default;
+
+        /// <summary>Konstruiert einen gueltigen Boden-Zielpunkt.</summary>
+        public static CastDestination At(Vector3 position) => new(position, true);
+    }
+
+    /// <summary>
     /// Server-autoritative Spell-Ausfuehrung. Pipeline:
     /// <c>Validate</c> → Resource-Abzug → CD/GCD-Start → Effect-Slot-Loop.
     /// </summary>
@@ -55,7 +89,28 @@ namespace Riftstorm.Game.Spells
         static readonly List<ICombatUnit> s_TargetBuffer = new(16);
 
         /// <summary>Fuehrt einen Spell vollstaendig aus (Validation + Effects).</summary>
+        /// <remarks>
+        /// Convenience-Overload ohne Boden-Zielpunkt. Wird von NPC-Casts und
+        /// Triggered-Spells (z. B. <see cref="SpellEffect.TriggerSpell"/>)
+        /// genutzt; Spieler-Casts mit Ground-Target-Reticle gehen ueber die
+        /// vollstaendige Overload mit <see cref="CastDestination"/>.
+        /// </remarks>
         public static SpellExecutionResult Execute(ICombatUnit caster, SpellTemplate spell, ICombatUnit primaryTarget)
+            => Execute(caster, spell, primaryTarget, CastDestination.None);
+
+        /// <summary>
+        /// Fuehrt einen Spell vollstaendig aus (Validation + Effects), inklusive
+        /// optionalem Boden-Zielpunkt fuer Ground-Target-Spells (Blink,
+        /// Boden-AoE). Wenn <paramref name="destination"/> <see cref="CastDestination.HasValue"/>=<c>true</c>
+        /// liefert, wird er von <see cref="SpellEffect.Teleport"/> als
+        /// Blink-Ziel und von <c>UnitAreaDst*</c>-Targets als AoE-Center
+        /// verwendet.
+        /// </summary>
+        public static SpellExecutionResult Execute(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            ICombatUnit primaryTarget,
+            CastDestination destination)
         {
             CastResult validation = SpellCaster.Validate(caster, spell, primaryTarget);
             if (validation != CastResult.Success)
@@ -73,12 +128,12 @@ namespace Riftstorm.Game.Spells
                 SpellTemplateEffect eff = spell.GetEffect(slot);
                 if (!eff.IsActive) { continue; }
 
-                ResolveTargets(eff, caster, spell, primaryTarget, s_TargetBuffer);
+                ResolveTargets(eff, caster, spell, primaryTarget, destination, s_TargetBuffer);
                 for (int i = 0; i < s_TargetBuffer.Count; i++)
                 {
                     ICombatUnit resolved = s_TargetBuffer[i];
                     if (resolved == null) { continue; }
-                    ApplyEffect(caster, spell, resolved, eff, ref totalDamage, ref totalHeal);
+                    ApplyEffect(caster, spell, resolved, eff, destination, ref totalDamage, ref totalHeal);
                 }
                 s_TargetBuffer.Clear();
             }
@@ -138,6 +193,7 @@ namespace Riftstorm.Game.Spells
             ICombatUnit caster,
             SpellTemplate spell,
             ICombatUnit primary,
+            CastDestination destination,
             List<ICombatUnit> outBuffer)
         {
             outBuffer.Clear();
@@ -158,10 +214,21 @@ namespace Riftstorm.Game.Spells
             }
 
             // Area: Zentrum bestimmen.
+            // - UnitAreaDst*: bevorzugt expliziter Boden-Zielpunkt (Ground-Target-
+            //   Reticle vom Client); ansonsten primaeres Ziel; sonst Caster.
+            // - UnitAreaSrc*: immer am Caster.
             bool dstCentered = IsDstAreaTargetType(eff.TargetType);
-            ICombatUnit center = dstCentered ? (primary ?? caster) : caster;
-            if (center == null) { return; }
-            Vector3 centerPos = center.Position;
+            Vector3 centerPos;
+            if (dstCentered && destination.HasValue)
+            {
+                centerPos = destination.Position;
+            }
+            else
+            {
+                ICombatUnit center = dstCentered ? (primary ?? caster) : caster;
+                if (center == null) { return; }
+                centerPos = center.Position;
+            }
             float radiusM = SpellUtils.RangeToMeters(eff.Radius);
 
             int hits = Physics.OverlapSphereNonAlloc(
@@ -244,6 +311,7 @@ namespace Riftstorm.Game.Spells
             SpellTemplate spell,
             ICombatUnit target,
             SpellTemplateEffect eff,
+            CastDestination destination,
             ref int totalDamage,
             ref int totalHeal)
         {
@@ -326,6 +394,89 @@ namespace Riftstorm.Game.Spells
                     {
                         Execute(caster, triggered, target);
                     }
+                    break;
+                }
+                case SpellEffect.Teleport:
+                {
+                    // Blink: bevorzugt der explizit per Ground-Target-Reticle
+                    // gepickte Boden-Punkt; sonst Fallback auf die Position des
+                    // aufgeloesten Targets (Bestands-Verhalten fuer Spells, die
+                    // den Caster zu einem Unit teleportieren). Identische
+                    // Position &#8594; no-op.
+                    Vector3 dst = destination.HasValue ? destination.Position : target.Position;
+                    if ((dst - caster.Position).sqrMagnitude < 1e-4f) { return; }
+
+                    // Range-Cap: bei Ground-Target auf <see cref="SpellTemplate.Range"/>
+                    // clampen, damit ein zu weit gesetztes Reticle den Blink
+                    // nicht ausserhalb der Spell-Reichweite endet.
+                    if (destination.HasValue && spell.Range > 0f)
+                    {
+                        float maxMeters = SpellUtils.RangeToMeters(spell.Range);
+                        Vector3 delta = dst - caster.Position;
+                        float dist = delta.magnitude;
+                        if (dist > maxMeters && dist > 1e-4f)
+                        {
+                            dst = caster.Position + delta * (maxMeters / dist);
+                        }
+                    }
+
+                    caster.ServerTeleportTo(dst);
+                    break;
+                }
+                case SpellEffect.TeleportForward:
+                {
+                    // Caster blinkt um Data1 Source-Pixel in Blickrichtung.
+                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    if (meters <= 0f) { return; }
+                    Vector3 fwd = caster.Forward;
+                    caster.ServerTeleportTo(caster.Position + fwd * meters);
+                    break;
+                }
+                case SpellEffect.KnockBack:
+                {
+                    // Target wird vom Caster weggeschoben.
+                    // Data1 = Distanz in Source-Pixeln, Data2 = Dauer in ms.
+                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.25f;
+                    if (meters <= 0f || duration <= 0f) { return; }
+                    Vector3 dir = target.Position - caster.Position;
+                    if (dir.sqrMagnitude < 1e-4f) { dir = caster.Forward; }
+                    target.ServerApplyImpulse(dir, meters, duration);
+                    break;
+                }
+                case SpellEffect.PullTo:
+                {
+                    // Target wird zum Caster gezogen (Death-Grip).
+                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.3f;
+                    if (meters <= 0f || duration <= 0f) { return; }
+                    Vector3 dir = caster.Position - target.Position;
+                    if (dir.sqrMagnitude < 1e-4f) { return; }
+                    target.ServerApplyImpulse(dir, meters, duration);
+                    break;
+                }
+                case SpellEffect.Charge:
+                {
+                    // Caster dasht zum Target. Distanz = aktueller Abstand, soweit
+                    // explizites Data1 fehlt; mit Data1 > 0 wird hart darauf gecappt.
+                    Vector3 dir = target.Position - caster.Position;
+                    float dist = dir.magnitude;
+                    if (dist < 1e-4f) { return; }
+                    float maxMeters = eff.Data1 > 0
+                        ? SpellUtils.RangeToMeters((float)eff.Data1)
+                        : dist;
+                    float meters = Mathf.Min(dist, maxMeters);
+                    float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.35f;
+                    caster.ServerApplyImpulse(dir, meters, duration);
+                    break;
+                }
+                case SpellEffect.SlideFrom:
+                {
+                    // Caster gleitet in seine Blickrichtung (Dodge/Dash-Skill).
+                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.25f;
+                    if (meters <= 0f || duration <= 0f) { return; }
+                    caster.ServerApplyImpulse(caster.Forward, meters, duration);
                     break;
                 }
                 default:

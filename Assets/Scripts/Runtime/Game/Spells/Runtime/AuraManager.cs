@@ -235,12 +235,82 @@ namespace Riftstorm.Game.Spells
         /// <summary>Anzahl aktiver Debuffs.</summary>
         public int DebuffCount => m_Auras.Count - BuffCount;
 
-        /// <summary>True, wenn eine Stun-Aura aktiv ist.</summary>
-        public bool IsStunned => HasAuraType(AuraType.Stun);
-        /// <summary>True, wenn eine Silence-Aura aktiv ist.</summary>
-        public bool IsSilenced => HasAuraType(AuraType.Silence);
-        /// <summary>True, wenn eine Root-Aura aktiv ist.</summary>
-        public bool IsRooted => HasAuraType(AuraType.Root);
+        /// <summary>
+        /// True, wenn eine Stun-Aura aktiv ist. Beruecksichtigt direkte
+        /// <see cref="AuraType.Stun"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
+        /// mit <see cref="Mechanic.Stunned"/> (Source-DB-Form).
+        /// </summary>
+        public bool IsStunned => HasAuraType(AuraType.Stun) || HasMechanic(Mechanic.Stunned);
+        /// <summary>
+        /// True, wenn eine Silence-Aura aktiv ist. Beruecksichtigt direkte
+        /// <see cref="AuraType.Silence"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
+        /// mit <see cref="Mechanic.Silenced"/>.
+        /// </summary>
+        public bool IsSilenced => HasAuraType(AuraType.Silence) || HasMechanic(Mechanic.Silenced);
+        /// <summary>
+        /// True, wenn eine Root-Aura aktiv ist. Beruecksichtigt direkte
+        /// <see cref="AuraType.Root"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
+        /// mit <see cref="Mechanic.Frozen"/>.
+        /// </summary>
+        public bool IsRooted => HasAuraType(AuraType.Root) || HasMechanic(Mechanic.Frozen);
+
+        /// <summary>
+        /// True, wenn mindestens eine <see cref="AuraType.InflictMechanic"/>-Aura
+        /// mit dem angegebenen <paramref name="mechanic"/>-Wert in
+        /// <see cref="AuraEffect.MiscValue"/> aktiv ist.
+        /// </summary>
+        public bool HasMechanic(Mechanic mechanic)
+        {
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType == AuraType.InflictMechanic && e.MiscValue == (long)mechanic)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        /// <summary>True, wenn Stun ODER Root aktiv ist (Bewegung verboten).</summary>
+        public bool IsImmobilized => IsStunned || IsRooted;
+
+        /// <summary>
+        /// Aggregierter Move-Speed-Multiplikator aus allen aktiven
+        /// <see cref="AuraType.ModifyMoveSpeedPct"/>-Effekten sowie
+        /// <see cref="AuraType.InflictMechanic"/>-Auren mit
+        /// <see cref="Mechanic.Snared"/> (BaseValue = Speed-Delta in %).
+        /// Additive Summation (SoF-/WoW-Style):
+        /// <c>multiplier = 1 + sum(BaseValue + PerStackValue*(Stacks-1)) / 100</c>.
+        /// Negative <c>BaseValue</c> = Snare/Slow, positive = Haste. Clamped auf
+        /// <c>[0, 5]</c> &#8212; 0 ergibt zwar einen vollstaendigen Stop (gleichwertig zu
+        /// Root), 5x ist die obere Schranke gegen kaputte Datenwerte.
+        /// </summary>
+        public float MoveSpeedMultiplier
+        {
+            get
+            {
+                long sumPct = 0;
+                foreach (Aura a in m_Auras)
+                {
+                    foreach (AuraEffect e in a.Effects)
+                    {
+                        bool isMoveSpeedMod = e.AuraType == AuraType.ModifyMoveSpeedPct
+                            || (e.AuraType == AuraType.InflictMechanic
+                                && e.MiscValue == (long)Mechanic.Snared);
+                        if (isMoveSpeedMod)
+                        {
+                            sumPct += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
+                        }
+                    }
+                }
+                float mult = 1f + sumPct / 100f;
+                if (mult < 0f) { mult = 0f; }
+                if (mult > 5f) { mult = 5f; }
+                return mult;
+            }
+        }
 
         // =====================================================================
         // Update (Server-Tick)

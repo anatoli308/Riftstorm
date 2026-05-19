@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Riftstorm.Game.Combat;
+using Riftstorm.Game.Spells;
 using UnityEngine;
 
 namespace Riftstorm.Game.Input
@@ -28,10 +30,24 @@ namespace Riftstorm.Game.Input
                  "die filtert intern bereits per IsOwner / IsSpawned.")]
         [SerializeField] private PlayerCombat m_Combat;
 
+        [Tooltip("Owner-lokaler Ground-Target-Picker. Wird genutzt, sobald ein Spell " +
+                 "mit SpellAttributes.TargetsGround gedrueckt wird. Fehlt der Picker, " +
+                 "fallen Ground-Spells leise aus (mit Warn-Log) — der Spielfluss bleibt " +
+                 "stabil. Wird in Awake per GetComponentInParent gesucht, falls leer.")]
+        [SerializeField] private GroundTargetPicker m_GroundPicker;
+
         [Tooltip("Loadout-Mapping Slot-Index → Spell-Entry (Eintrag aus " +
                  "spells/_templates.json, z. B. 133 fuer Fireball). Slot 0 entspricht " +
                  "Taste '1', Slot 9 entspricht Taste '0'. Eintrag <= 0 = leerer Slot.")]
         [SerializeField] private int[] m_SlotSpellEntries = new int[PlayerInputController.SpellSlotCount];
+
+        /// <summary>
+        /// Read-only Sicht auf das aktuelle Loadout (Slot-Index → Spell-Entry).
+        /// Wird von der ActionBar-HUD genutzt, um Icons und Cooldowns je Slot zu
+        /// rendern (kein Mutations-API — der Slot-Inhalt aendert sich aktuell
+        /// ausschliesslich ueber den Inspector / Loadout-Pipeline-Eintrag).
+        /// </summary>
+        public IReadOnlyList<int> SlotEntries => m_SlotSpellEntries;
 
         private void Awake()
         {
@@ -42,6 +58,10 @@ namespace Riftstorm.Game.Input
             if (m_Combat == null)
             {
                 m_Combat = GetComponentInParent<PlayerCombat>();
+            }
+            if (m_GroundPicker == null)
+            {
+                m_GroundPicker = GetComponentInParent<GroundTargetPicker>();
             }
 
             // Loadout-Array auf die kanonische Slot-Anzahl normalisieren — verhindert
@@ -96,6 +116,34 @@ namespace Riftstorm.Game.Input
                 // fuer ein noch unbelegtes Hotkey-Slot und passiert haeufig.
                 return;
             }
+
+            // Ground-Target-Spells gehen ueber den Picker: erst Reticle anzeigen, dann
+            // bei LMB-Confirm die Welt-Position an PlayerCombat.TryRequestCastSpellAtGround
+            // schicken. Spells ohne TargetsGround-Flag laufen weiterhin direkt.
+            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+            if (spell != null && spell.IsGroundTargeted)
+            {
+                if (m_GroundPicker == null)
+                {
+                    Debug.LogWarning($"[PlayerSpellInput] Ground-Spell {spellEntry} gedrueckt, aber kein GroundTargetPicker verdrahtet — Cast wird verworfen.");
+                    return;
+                }
+                float rangeMeters = SpellUtils.RangeToMeters(spell.Range);
+                int capturedEntry = spellEntry;
+                m_GroundPicker.BeginPick(
+                    spellEntry,
+                    rangeMeters,
+                    onConfirmed: worldDestination =>
+                    {
+                        if (m_Combat != null)
+                        {
+                            m_Combat.TryRequestCastSpellAtGround(capturedEntry, worldDestination);
+                        }
+                    },
+                    onCancelled: null);
+                return;
+            }
+
             m_Combat.TryRequestCastSpell(spellEntry);
         }
 

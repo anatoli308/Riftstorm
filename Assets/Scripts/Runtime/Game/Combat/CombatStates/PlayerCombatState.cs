@@ -35,7 +35,8 @@ namespace Riftstorm.Game.Combat.CombatStates
         /// <param name="spell">Vorgeladenes Template aus <see cref="SpellCatalogLoader"/>.</param>
         /// <param name="targetNetId">NetworkObjectId des Primärziels (0 = self).</param>
         /// <param name="primaryTarget">Aufgelöste Combat-Unit des Primärziels.</param>
-        public virtual void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget) { }
+        /// <param name="destination">Optionaler Boden-Zielpunkt (Ground-Target-Reticle). <see cref="CastDestination.None"/> wenn nicht gepickt.</param>
+        public virtual void OnCastRequested(int spellEntry, SpellTemplate spell, ulong targetNetId, ICombatUnit primaryTarget, CastDestination destination) { }
 
         /// <summary>Wird beim Tod aufgerufen — erzwingt Übergang in den Dead-State.</summary>
         public virtual void OnDeath() { }

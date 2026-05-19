@@ -117,6 +117,15 @@ namespace Riftstorm.Game.Npc
         private float m_LastAttackTime = -999f;
         private bool m_ServerDead;
 
+        // Server-only Impulse-State (KnockBack/PullTo/Charge/SlideFrom). Wird via
+        // <see cref="ServerApplyImpulse"/> gesetzt; solange aktiv, ueberlagert die
+        // Velocity die AI-Bewegung in <see cref="TickServer"/>. Clients folgen via
+        // <see cref="m_ServerPosition"/>-Replikation &#8212; kein separates
+        // ClientRpc, weil die Smooth-Interpolation der Remote-Clients ohnehin
+        // jedem Server-Snapshot folgt.
+        private Vector3 m_ImpulseVelocity;
+        private float m_ImpulseSecondsRemaining;
+
         // Server-only Threat-Tabelle. Ersetzt das alte "closest hostile"-Picking
         // in UpdateCombat und ist die Quelle der Retaliation-Logik fuer
         // Neutral/Friendly. Wird in OnNetworkSpawn (Server) initialisiert und
@@ -376,6 +385,25 @@ namespace Riftstorm.Game.Npc
                 return;
             }
 
+            // Impulse-Override: externe Bewegung verdraengt jegliche AI-Logik fuer
+            // die Dauer des Effekts. Der State-Switch unten wird komplett uebersprungen,
+            // damit weder Pathing noch Combat-Approach das Knockback/Pull-Target
+            // ueberschreiben. Replikation laeuft ueber <see cref="m_ServerPosition"/>.
+            if (m_ImpulseSecondsRemaining > 0f)
+            {
+                float step = Mathf.Min(dt, m_ImpulseSecondsRemaining);
+                transform.position += m_ImpulseVelocity * step;
+                m_ImpulseSecondsRemaining -= step;
+                if (m_ImpulseSecondsRemaining <= 0f)
+                {
+                    m_ImpulseSecondsRemaining = 0f;
+                    m_ImpulseVelocity = Vector3.zero;
+                }
+                m_ServerPosition.Value = transform.position;
+                m_ServerMoving.Value = true;
+                return;
+            }
+
             if (!m_HomeInitialized)
             {
                 m_HomePosition = transform.position;
@@ -525,19 +553,30 @@ namespace Riftstorm.Game.Npc
                 return;
             }
 
-            if (IsInMeleeRange(m_CurrentTarget))
-            {
-                TryMeleeAttack(m_CurrentTarget);
-            }
-            else
-            {
-                MoveTowardsEntity(m_CurrentTarget, dt, m_Stats.WalkSpeed);
-            }
+            // CC-Gates: ein gestunnter NPC macht in diesem Tick gar nichts;
+            // ein nur gerooteter / immobilisierter NPC darf weiter attackieren
+            // und casten, kann sich aber nicht bewegen. Snare/Haste wirken
+            // multiplikativ auf die Walk-Speed.
+            bool stunned = m_Stats.IsStunned;
+            bool immobilized = m_Stats.IsImmobilized;
 
-            int slotIndex = SelectSpellSlotToCast(m_CurrentTarget);
-            if (slotIndex >= 0)
+            if (!stunned)
             {
-                TryPerformSpellCast(slotIndex, m_CurrentTarget);
+                if (IsInMeleeRange(m_CurrentTarget))
+                {
+                    TryMeleeAttack(m_CurrentTarget);
+                }
+                else if (!immobilized)
+                {
+                    float chaseSpeed = m_Stats.WalkSpeed * m_Stats.MoveSpeedMultiplier;
+                    MoveTowardsEntity(m_CurrentTarget, dt, chaseSpeed);
+                }
+
+                int slotIndex = SelectSpellSlotToCast(m_CurrentTarget);
+                if (slotIndex >= 0)
+                {
+                    TryPerformSpellCast(slotIndex, m_CurrentTarget);
+                }
             }
         }
 
@@ -548,7 +587,13 @@ namespace Riftstorm.Game.Npc
         /// </summary>
         private void UpdateEvading(float dt)
         {
-            float speed = m_Stats.WalkSpeed * m_EvadeSpeedMultiplier;
+            // Stun/Root verhindern auch die Rueckkehr zum Home-Punkt.
+            // Snare/Haste skalieren die Evade-Speed.
+            if (m_Stats.IsImmobilized)
+            {
+                return;
+            }
+            float speed = m_Stats.WalkSpeed * m_EvadeSpeedMultiplier * m_Stats.MoveSpeedMultiplier;
             MoveTowardsPoint(m_HomePosition, dt, speed);
 
             if (Vector3.Distance(transform.position, m_HomePosition) <= m_HomeArrivalDistance)
@@ -936,6 +981,57 @@ namespace Riftstorm.Game.Npc
             ResetSpellRuntimeTimers();
             m_State = NpcAIState.Dead;
             PlayDieClientRpc();
+        }
+
+        // -------------------------------------------------------------------
+        // Externe Bewegung (Teleport / Impulse) &#8212; vom SpellExecutor genutzt
+        // -------------------------------------------------------------------
+
+        /// <summary>
+        /// Server-only: harte Reposition der NPC-Unit. Synchronisiert ueber
+        /// <see cref="m_ServerPosition"/>. Bricht zusaetzlich einen laufenden
+        /// Impulse ab, weil ein Teleport semantisch dominanter ist (z. B.
+        /// Blink-to-Caster ueberschreibt einen vorherigen KnockBack).
+        /// </summary>
+        public void ServerTeleportTo(Vector3 position)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            transform.position = position;
+            m_ServerPosition.Value = position;
+            m_ImpulseSecondsRemaining = 0f;
+            m_ImpulseVelocity = Vector3.zero;
+        }
+
+        /// <summary>
+        /// Server-only: forcierte Bewegung ueber <paramref name="durationSec"/>
+        /// Sekunden mit <c>direction.normalized * meters / durationSec</c> m/s.
+        /// Waehrend der Dauer pausiert die AI-Bewegung in <see cref="TickServer"/>;
+        /// Combat-Logik (Threat, Spell-Cooldowns) laeuft weiter und greift wieder,
+        /// sobald die Dauer abgelaufen ist.
+        /// </summary>
+        public void ServerApplyImpulse(Vector3 direction, float meters, float durationSec)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            if (durationSec <= 0f || meters == 0f)
+            {
+                return;
+            }
+            Vector3 dir = direction;
+            dir.y = 0f;
+            float sqr = dir.sqrMagnitude;
+            if (sqr < 1e-6f)
+            {
+                return;
+            }
+            dir /= Mathf.Sqrt(sqr);
+            m_ImpulseVelocity = dir * (meters / durationSec);
+            m_ImpulseSecondsRemaining = durationSec;
         }
 
         // -------------------------------------------------------------------

@@ -24,6 +24,19 @@ namespace Riftstorm.Game.Spells
         /// <summary>Dateiname der Template-Tabelle.</summary>
         public const string TemplatesFileName = "_templates.json";
 
+        /// <summary>
+        /// Optionale Zusatz-Tabellen, die per <c>icon</c>-Prefix aus dem Haupt-Export
+        /// herausgeloest wurden (Items/Scrolls). Werden gemerged in den selben Cache;
+        /// Eintraege bleiben aus Runtime-Sicht ganz normale Spell-Templates (in der
+        /// Source-DB sind Item-Use-Effekte ebenfalls Spell-Eintraege, nur das Icon
+        /// liegt unter <c>Art/item_icons/</c> statt <c>Art/spell_icons/</c>).
+        /// </summary>
+        public static readonly string[] AdditionalFileNames =
+        {
+            "_items.json",
+            "_scrolls.json",
+        };
+
         private static Dictionary<int, SpellTemplate> s_Templates;
         private static bool s_LoadAttempted;
 
@@ -82,8 +95,30 @@ namespace Riftstorm.Game.Spells
             }
             s_LoadAttempted = true;
 
-            string path = Path.Combine(Application.streamingAssetsPath, SubFolder, TemplatesFileName);
-            s_Templates = LoadDictionary(path);
+            string folder = Path.Combine(Application.streamingAssetsPath, SubFolder);
+            s_Templates = LoadDictionary(Path.Combine(folder, TemplatesFileName));
+
+            // Optionale Sub-Tabellen (Items/Scrolls) mergen — Konflikte (gleiche Entry-ID)
+            // werden zugunsten der zuerst geladenen Datei verworfen und nur geloggt,
+            // damit der Migrator/Splitter Doubletten sichtbar macht.
+            for (int i = 0; i < AdditionalFileNames.Length; i++)
+            {
+                string extraPath = Path.Combine(folder, AdditionalFileNames[i]);
+                if (!File.Exists(extraPath))
+                {
+                    continue;
+                }
+                Dictionary<int, SpellTemplate> extra = LoadDictionary(extraPath);
+                foreach (KeyValuePair<int, SpellTemplate> kvp in extra)
+                {
+                    if (s_Templates.ContainsKey(kvp.Key))
+                    {
+                        Debug.LogWarning($"[SpellCatalogLoader] Doppelter Entry {kvp.Key} in {AdditionalFileNames[i]} — ignoriert.");
+                        continue;
+                    }
+                    s_Templates[kvp.Key] = kvp.Value;
+                }
+            }
         }
 
         /// <summary>

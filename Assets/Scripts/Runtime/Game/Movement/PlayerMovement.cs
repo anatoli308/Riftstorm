@@ -34,6 +34,7 @@ namespace Riftstorm.Game.Movement
         [SerializeField] private PlayerCombatVisuals m_CombatVisuals;
         [SerializeField] private PlayerCombat m_Combat;
         [SerializeField] private TargetSelection m_TargetSelection;
+        [SerializeField] private UnitStats m_Stats;
 
         [Header("Bewegung")]
         [SerializeField] private float m_Speed = 4f;
@@ -93,6 +94,24 @@ namespace Riftstorm.Game.Movement
         // harten Teleports, damit kein "Schwung" aus dem alten Pfad uebrigbleibt.
         private Vector3 m_RemoteSmoothVelocity;
 
+        // ----- Impulse-State (KnockBack/PullTo/Charge/SlideFrom) -----
+        // Auf allen Peers gespiegelt: Server schreibt aus <see cref="ServerApplyImpulse"/>
+        // und broadcastet via <see cref="ApplyImpulseClientRpc"/>. Solange
+        // <see cref="m_ImpulseSecondsRemaining"/> &gt; 0 ist, ueberlagert die
+        // Velocity die Eigen-Bewegung: Owner-Input wird verworfen, Server skippt
+        // die Move-Sim in <see cref="SubmitCommandServerRpc"/>, alle Peers
+        // advancen <c>transform.position</c> autonom mit derselben Formel
+        // (deterministisch, kein Reconciliation-Snap noetig).
+        private Vector3 m_ImpulseVelocity;
+        private float m_ImpulseSecondsRemaining;
+
+        /// <summary>
+        /// Lesbar auf jedem Peer: wird waehrend eines aktiven Impulses true und
+        /// vom <see cref="TickOwner"/>-Gate konsumiert, damit der Owner waehrend
+        /// KnockBack/PullTo/Charge keine eigenen Move-Commands schickt.
+        /// </summary>
+        private bool IsImpulseActive => m_ImpulseSecondsRemaining > 0f;
+
         // -------------------------------------------------------------------------
         // Lifecycle
         // -------------------------------------------------------------------------
@@ -122,6 +141,10 @@ namespace Riftstorm.Game.Movement
             if (m_TargetSelection == null)
             {
                 m_TargetSelection = GetComponent<TargetSelection>();
+            }
+            if (m_Stats == null)
+            {
+                m_Stats = GetComponent<UnitStats>();
             }
 
             // Input nur auf dem Owner-Client. Server-Build und Remote-Clients duerfen
@@ -155,6 +178,18 @@ namespace Riftstorm.Game.Movement
 
         private void Update()
         {
+            float dt = Time.deltaTime;
+
+            // Impulse-Vorstep auf allen Peers: deterministische lineare Bewegung
+            // mit gespiegelter Velocity. Server schreibt zusaetzlich
+            // <see cref="m_ServerPosition"/>, damit ein Late-Joiner oder ein Peer
+            // mit verlorenem ClientRpc ueber den NetworkVariable-Snapshot
+            // konvergiert.
+            if (IsImpulseActive)
+            {
+                AdvanceImpulse(dt);
+            }
+
             if (IsOwner)
             {
                 TickOwner();
@@ -169,10 +204,105 @@ namespace Riftstorm.Game.Movement
         }
 
         /// <summary>
+        /// Wendet die laufende Impulse-Velocity auf <c>transform.position</c> an.
+        /// Decrementiert <see cref="m_ImpulseSecondsRemaining"/> und stoppt
+        /// automatisch, sobald die Dauer abgelaufen ist. Auf dem Server wird
+        /// zusaetzlich <see cref="m_ServerPosition"/> gepflegt, sodass Remote-
+        /// Clients per NetworkVariable-Snapshot synchron bleiben, falls das
+        /// einleitende ClientRpc verlorengeht.
+        /// </summary>
+        private void AdvanceImpulse(float dt)
+        {
+            float step = Mathf.Min(dt, m_ImpulseSecondsRemaining);
+            Vector3 delta = m_ImpulseVelocity * step;
+            transform.position += delta;
+            m_LastObservedPosition = transform.position;
+            m_ImpulseSecondsRemaining -= step;
+            if (IsServer)
+            {
+                m_ServerPosition.Value = transform.position;
+            }
+            if (m_ImpulseSecondsRemaining <= 0f)
+            {
+                m_ImpulseSecondsRemaining = 0f;
+                m_ImpulseVelocity = Vector3.zero;
+                m_RemoteSmoothVelocity = Vector3.zero;
+                if (IsOwner)
+                {
+                    // Alle waehrend des Impulses akkumulierten Prediction-Slots
+                    // verwerfen &#8212; sonst kommt der naechste Ack mit einer
+                    // veralteten Pre-Impulse-Position und reisst den Spieler zurueck.
+                    m_LastAcknowledgedSequence = m_NextSequenceNumber;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Server-only: setzt eine forcierte Bewegung in Gang. Bewegt die Unit
+        /// mit <c>direction.normalized * meters / durationSec</c> m/s ueber
+        /// <paramref name="durationSec"/> Sekunden. Waehrend der Dauer wird
+        /// Eigen-Input verworfen (sowohl in Owner-Prediction als auch im Server-
+        /// Authority-Pfad), CC-Status wird ignoriert (Impulse ist externe Kraft).
+        /// </summary>
+        public void ServerApplyImpulse(Vector3 direction, float meters, float durationSec)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            if (durationSec <= 0f || meters == 0f)
+            {
+                return;
+            }
+            // XZ-Projektion + Normalisierung &#8212; Y-Komponente verwerfen, damit
+            // Knockbacks nicht in den Boden oder die Luft druecken.
+            Vector3 dir = direction;
+            dir.y = 0f;
+            float sqr = dir.sqrMagnitude;
+            if (sqr < 1e-6f)
+            {
+                return;
+            }
+            dir /= Mathf.Sqrt(sqr);
+            Vector3 velocity = dir * (meters / durationSec);
+            m_ImpulseVelocity = velocity;
+            m_ImpulseSecondsRemaining = durationSec;
+            ApplyImpulseClientRpc(velocity, durationSec);
+        }
+
+        [ClientRpc]
+        private void ApplyImpulseClientRpc(Vector3 velocity, float durationSec, ClientRpcParams _ = default)
+        {
+            // Host-Server hat den State bereits gesetzt.
+            if (IsServer)
+            {
+                return;
+            }
+            m_ImpulseVelocity = velocity;
+            m_ImpulseSecondsRemaining = durationSec;
+            m_RemoteSmoothVelocity = Vector3.zero;
+            if (IsOwner)
+            {
+                // Owner: alle in-flight Predictions invalidieren, damit der
+                // Ack-Receiver sie nicht gegen die jetzt veraltete Pre-Impulse-
+                // Pose vergleicht.
+                m_LastAcknowledgedSequence = m_NextSequenceNumber;
+            }
+        }
+
+        /// <summary>
         /// Owner: Command bauen, lokal predicten, in Ringbuffer ablegen, an Server schicken.
         /// </summary>
         private void TickOwner()
         {
+            // Impulse aktiv? Eigen-Input und Prediction komplett aussetzen &#8212;
+            // <see cref="AdvanceImpulse"/> hat bereits die Transform bewegt, und der
+            // Server skippt seinen Sim-Schritt symmetrisch in <see cref="SubmitCommandServerRpc"/>.
+            if (IsImpulseActive)
+            {
+                return;
+            }
+
             Vector2 rawInput = m_MoveSource != null ? m_MoveSource.MoveDirection : Vector2.zero;
             bool isMoving = m_MoveSource != null && m_MoveSource.IsMoving;
             Vector2 input = isMoving ? ClampInput(rawInput) : Vector2.zero;
@@ -192,6 +322,15 @@ namespace Riftstorm.Game.Movement
                 input = Vector2.zero;
             }
 
+            // CC-Gate: Stun/Root unterbinden jegliche Eigenbewegung. Wird hier auf dem
+            // Owner ebenfalls geprueft, damit die Prediction dasselbe Ergebnis liefert
+            // wie der autoritative Server-Pfad in <see cref="SubmitCommandServerRpc"/>
+            // &#8212; sonst gaebe es bei jedem Stun-Tick einen Reconciliation-Snap.
+            if (m_Stats != null && m_Stats.IsImmobilized)
+            {
+                input = Vector2.zero;
+            }
+
             float dt = Time.deltaTime;
 
             PlayerCommand cmd = new()
@@ -202,8 +341,12 @@ namespace Riftstorm.Game.Movement
             };
 
             // 1) Lokale Prediction mit geteilter Simulations-Formel.
+            // Snare/Haste (ModifyMoveSpeedPct) wirkt multiplikativ auf m_Speed. Wert
+            // kommt aus dem replizierten <see cref="UnitStats.MoveSpeedMultiplier"/> &#8212;
+            // identisch mit dem, den der Server fuer denselben Tick benutzt.
+            float effectiveSpeed = m_Speed * (m_Stats != null ? m_Stats.MoveSpeedMultiplier : 1f);
             Vector3 pos = transform.position;
-            Simulate(ref pos, cmd, m_Speed);
+            Simulate(ref pos, cmd, effectiveSpeed);
             transform.position = pos;
 
             // 2) In Ringbuffer ablegen fuer spaetere Reconciliation.
@@ -224,6 +367,11 @@ namespace Riftstorm.Game.Movement
         /// </summary>
         private void TickRemoteClient()
         {
+            // Impulse-Gate: AdvanceImpulse hat die Transform diesen Frame schon
+            // direkt geschrieben; SmoothDamp wuerde gegen die Server-Position
+            // zurueck-lerpen und ein Ruckeln erzeugen.
+            if (IsImpulseActive) { return; }
+
             Vector3 target = m_ServerPosition.Value;
             if (m_RemoteSmoothTime > 0f)
             {
@@ -328,9 +476,29 @@ namespace Riftstorm.Game.Movement
                 cmd.MoveInput = Vector2.zero;
             }
 
+            // CC-Gate (server-authoritativ): Stun/Root verwerfen den Move-Input.
+            // Deckungsgleich mit dem Owner-Gate in <see cref="TickOwner"/> &#8212;
+            // verhindert Move-while-Stunned-Cheats.
+            if (m_Stats != null && m_Stats.IsImmobilized)
+            {
+                cmd.MoveInput = Vector2.zero;
+            }
+
+            // Impulse-Gate: waehrend einer externen Bewegung (KnockBack/PullTo/
+            // Charge/SlideFrom) wird Eigen-Input ignoriert. Die Transform wurde in
+            // <see cref="AdvanceImpulse"/> bereits diesen Frame fortgeschrieben &#8212;
+            // der Sim-Step liefe sonst doppelt.
+            if (IsImpulseActive)
+            {
+                cmd.MoveInput = Vector2.zero;
+            }
+
             // Authoritative Simulation mit identischer Formel.
+            // Snare/Haste-Multiplikator analog Owner-Pfad &#8212; der Server ist die
+            // Quelle der Wahrheit, der Multiplier kommt direkt vom AuraManager.
+            float effectiveSpeed = m_Speed * (m_Stats != null ? m_Stats.MoveSpeedMultiplier : 1f);
             Vector3 pos = transform.position;
-            Simulate(ref pos, cmd, m_Speed);
+            Simulate(ref pos, cmd, effectiveSpeed);
             transform.position = pos;
             m_ServerPosition.Value = pos;
 
@@ -395,7 +563,12 @@ namespace Riftstorm.Game.Movement
                     continue;
                 }
 
-                Simulate(ref pos, replayCmd, m_Speed);
+                // Replay mit aktuellem Move-Speed-Multiplier. Wir kennen den
+                // historischen Multiplier-Wert nicht, aber der Drift bleibt klein,
+                // da Reconciliation nur bei > 5cm Abweichung greift und Snare-Wechsel
+                // selten innerhalb des Replay-Fensters passieren.
+                float replaySpeed = m_Speed * (m_Stats != null ? m_Stats.MoveSpeedMultiplier : 1f);
+                Simulate(ref pos, replayCmd, replaySpeed);
                 m_PredictedPositions[replaySlot] = pos;
             }
 

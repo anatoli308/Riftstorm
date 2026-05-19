@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Riftstorm.Game.Movement;
+using Riftstorm.Game.Npc;
 using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
 using Unity.Netcode;
@@ -121,6 +123,34 @@ namespace Riftstorm.Game.Combat
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
 
+        /// <summary>
+        /// CC-Flags (Bitmaske) &#8212; replizierte Sicht der AuraManager-CC-States.
+        /// Bit 0 = Immobilized (Stun ODER Root), Bit 1 = Silenced. Wird vom Server
+        /// in <see cref="ServerOnAurasChanged"/> aus dem AuraManager rekomponiert,
+        /// damit Owner-Client und Remote-Clients ohne Aura-Snapshot-Auswertung
+        /// wissen, ob sie bewegen / casten duerfen (Prediction-Konsistenz).
+        /// </summary>
+        private readonly NetworkVariable<byte> m_CcFlags = new(
+            value: 0,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
+        /// <summary>
+        /// Aggregierter Move-Speed-Multiplikator &#215; 1000 (FixedPoint, damit als
+        /// <c>short</c> ueber NGO geht). 1000 = 1.0x = neutral. 500 = 50% Slow,
+        /// 1500 = 50% Haste. Wird vom Server aus <see cref="AuraManager.MoveSpeedMultiplier"/>
+        /// gespiegelt, sodass die <see cref="Riftstorm.Game.Movement.PlayerMovement"/>-
+        /// Prediction auf dem Owner mit demselben Wert rechnet wie der Server.
+        /// </summary>
+        private readonly NetworkVariable<short> m_MoveSpeedMultiplierMilli = new(
+            value: 1000,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
+        // CC-Flag-Bitmaske &#8212; intern, damit beide Seiten dieselben Bits verwenden.
+        private const byte k_CcFlagImmobilized = 1 << 0;
+        private const byte k_CcFlagSilenced = 1 << 1;
+
         // -------------------------------------------------------------------------
         // Spells-Pipeline (Server-only — Auren/Cooldowns existieren nur auf dem Server,
         // Clients sehen Auswirkungen via separate Sync-Pfade).
@@ -128,6 +158,15 @@ namespace Riftstorm.Game.Combat
 
         private readonly AuraManager m_Auras = new();
         private readonly CooldownManager m_Cooldowns = new();
+
+        // Gecachte Sibling-Komponenten fuer Movement-Effekte (Teleport, KnockBack,
+        // PullTo, Charge, SlideFrom). Genau eine der beiden Referenzen ist auf einer
+        // Unit gesetzt &#8212; Spieler haben <see cref="PlayerMovement"/>, NPCs
+        // <see cref="NpcController"/>. Werden in <see cref="OnNetworkSpawn"/>
+        // einmalig aufgeloest und vom <see cref="Riftstorm.Game.Spells.Runtime.SpellExecutor"/>
+        // ueber die <see cref="ICombatUnit"/>-Schnittstelle konsumiert.
+        private PlayerMovement m_PlayerMovement;
+        private NpcController m_NpcController;
 
         // -------------------------------------------------------------------------
         // IUnitStats
@@ -423,6 +462,12 @@ namespace Riftstorm.Game.Combat
                 m_Auras.OnChanged += ServerOnAurasChanged;
                 m_LastTickTime = Time.time;
             }
+            // Movement-Siblings einmalig aufloesen. Spieler-Prefab: PlayerMovement.
+            // NPC-Prefab: NpcController. Beide nie gleichzeitig vorhanden &#8212;
+            // <c>ICombatUnit.ServerTeleportTo</c>/<c>ServerApplyImpulse</c> waehlen
+            // den passenden Pfad zur Laufzeit.
+            m_PlayerMovement = GetComponent<PlayerMovement>();
+            m_NpcController = GetComponent<NpcController>();
             m_CurrentHp.OnValueChanged += OnHpValueChangedInternal;
             m_CurrentMana.OnValueChanged += OnManaValueChangedInternal;
             // Initialwerte einmal feuern, damit UI-Schichten korrekt initialisieren.
@@ -575,6 +620,26 @@ namespace Riftstorm.Game.Combat
         Vector3 ICombatUnit.Position => transform.position;
 
         /// <inheritdoc/>
+        Vector3 ICombatUnit.Forward
+        {
+            get
+            {
+                // Topdown-Projektion auf XZ-Plane &#8212; verhindert Schraeg-Slides,
+                // wenn die Visuals leicht geneigt aufgesetzt sind. Fallback auf
+                // <c>Vector3.forward</c>, falls die Transform-Forward zu klein wird
+                // (z. B. unmittelbar nach Spawn ohne Facing-Update).
+                Vector3 fwd = transform.forward;
+                fwd.y = 0f;
+                float sqr = fwd.sqrMagnitude;
+                if (sqr < 1e-4f)
+                {
+                    return Vector3.forward;
+                }
+                return fwd / Mathf.Sqrt(sqr);
+            }
+        }
+
+        /// <inheritdoc/>
         bool ICombatUnit.IsStunned => m_Auras.IsStunned;
 
         /// <inheritdoc/>
@@ -582,6 +647,35 @@ namespace Riftstorm.Game.Combat
 
         /// <inheritdoc/>
         bool ICombatUnit.IsRooted => m_Auras.IsRooted;
+
+        /// <summary>
+        /// Replizierte Sicht von <see cref="AuraManager.IsImmobilized"/> (Stun ODER Root).
+        /// Auf jedem Peer lesbar &#8212; auf dem Server identisch mit dem Live-Aura-State,
+        /// auf den Clients gespiegelt ueber <see cref="m_CcFlags"/>. Wird vom
+        /// <see cref="Riftstorm.Game.Movement.PlayerMovement"/> sowohl in der Owner-
+        /// Prediction als auch im Server-Authority-Pfad konsultiert, sodass beide
+        /// Seiten denselben Bewegungs-Block sehen (keine Reconciliation-Rucker).
+        /// </summary>
+        public bool IsImmobilized =>
+            IsServer ? m_Auras.IsImmobilized : (m_CcFlags.Value & k_CcFlagImmobilized) != 0;
+
+        /// <summary>
+        /// Server-autoritative Sicht auf den Stun-Zustand. Wird ausschliesslich
+        /// fuer server-seitige Action-Gates (Auto-Attack-Gate in
+        /// <see cref="Riftstorm.Game.Combat.PlayerCombat"/>, NPC-AI in
+        /// <see cref="Riftstorm.Game.Npc.NpcController"/>) genutzt. Auf Clients
+        /// stets <c>false</c> &#8212; Clients fragen
+        /// <see cref="IsImmobilized"/> ab, das Stun ODER Root abdeckt.
+        /// </summary>
+        public bool IsStunned => IsServer && m_Auras != null && m_Auras.IsStunned;
+
+        /// <summary>
+        /// Replizierte Sicht von <see cref="AuraManager.MoveSpeedMultiplier"/>. 1.0 = neutral,
+        /// &lt; 1 = Snare/Slow, &gt; 1 = Haste. Auf dem Server live aus dem AuraManager,
+        /// auf Clients aus <see cref="m_MoveSpeedMultiplierMilli"/> (FixedPoint &#215; 1000).
+        /// </summary>
+        public float MoveSpeedMultiplier =>
+            IsServer ? m_Auras.MoveSpeedMultiplier : m_MoveSpeedMultiplierMilli.Value / 1000f;
 
         /// <inheritdoc/>
         bool ICombatUnit.IsPlayer => m_IsPlayer;
@@ -646,6 +740,57 @@ namespace Riftstorm.Game.Combat
                 return;
             }
             m_CurrentMana.Value = Mathf.Clamp(amount, 0, m_MaxMana);
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.ServerTeleportTo(Vector3 position)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            if (m_PlayerMovement != null)
+            {
+                m_PlayerMovement.ServerTeleportTo(position);
+                return;
+            }
+            if (m_NpcController != null)
+            {
+                m_NpcController.ServerTeleportTo(position);
+                return;
+            }
+            // Fallback: keine Movement-Komponente &#8212; schreibt die Transform
+            // direkt. Replikation an Remote-Clients erfolgt dann nicht (NPCs ohne
+            // NpcController + Spieler ohne PlayerMovement existieren in der Praxis
+            // nicht), wir loggen damit Setup-Fehler auffallen.
+            Debug.LogWarning(
+                "[UnitStats] ServerTeleportTo ohne Movement-Sibling &#8212; " +
+                "Replikation entfaellt.",
+                this);
+            transform.position = position;
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.ServerApplyImpulse(Vector3 direction, float meters, float durationSec)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            if (m_PlayerMovement != null)
+            {
+                m_PlayerMovement.ServerApplyImpulse(direction, meters, durationSec);
+                return;
+            }
+            if (m_NpcController != null)
+            {
+                m_NpcController.ServerApplyImpulse(direction, meters, durationSec);
+                return;
+            }
+            Debug.LogWarning(
+                "[UnitStats] ServerApplyImpulse ohne Movement-Sibling &#8212; " +
+                "Effekt wird verworfen.",
+                this);
         }
 
         /// <summary>
@@ -766,6 +911,19 @@ namespace Riftstorm.Game.Combat
             }
 
             BroadcastAurasClientRpc(entries, stacks, positive, remainingMs, maxDurationMs);
+
+            // CC-Flags + Move-Speed-Multiplier ebenfalls aus dem AuraManager spiegeln.
+            // Wird ueber NetworkVariables (Everyone-Read) automatisch zu allen Peers
+            // repliziert &#8212; <see cref="Movement.PlayerMovement"/> liest beide Werte
+            // sowohl auf dem Owner (fuer Prediction) als auch auf dem Server.
+            byte ccFlags = 0;
+            if (m_Auras.IsImmobilized) { ccFlags |= k_CcFlagImmobilized; }
+            if (m_Auras.IsSilenced)    { ccFlags |= k_CcFlagSilenced; }
+            m_CcFlags.Value = ccFlags;
+            float mult = m_Auras.MoveSpeedMultiplier;
+            int milli = Mathf.Clamp(Mathf.RoundToInt(mult * 1000f), 0, 5000);
+            m_MoveSpeedMultiplierMilli.Value = (short)milli;
+
             m_Auras.ClearDirty();
         }
 

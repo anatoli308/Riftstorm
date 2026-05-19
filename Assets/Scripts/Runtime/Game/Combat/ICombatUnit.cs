@@ -35,6 +35,16 @@ namespace Riftstorm.Game.Combat
         /// <summary>Server-authoritative Welt-Position für Range-/LoS-Checks.</summary>
         Vector3 Position { get; }
 
+        /// <summary>
+        /// Server-authoritative Blickrichtung (XZ-Plane, normalisiert). Wird vom
+        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellExecutor"/> für richtungs-
+        /// abhängige Movement-Effekte konsumiert (<c>TeleportForward</c>, <c>Charge</c>,
+        /// <c>SlideFrom</c>). Implementierungen liefern typischerweise eine projizierte
+        /// Variante von <c>transform.forward</c>; fallen auf <c>Vector3.forward</c>
+        /// zurück, falls keine sinnvolle Richtung verfügbar ist.
+        /// </summary>
+        Vector3 Forward { get; }
+
         /// <summary>True, wenn die Unit nicht handeln kann (Stun-Aura aktiv).</summary>
         bool IsStunned { get; }
         /// <summary>True, wenn die Unit nicht casten kann (Silence-Aura aktiv).</summary>
@@ -73,5 +83,22 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>Setzt Mana direkt (für RestoreMana / BurnMana).</summary>
         void SetMana(int amount);
+
+        /// <summary>
+        /// Server-only: harte Reposition der Unit (Blink/Teleport/Charge-Landung).
+        /// Auf Clients ein No-Op. Implementierungen müssen die replizierte
+        /// Server-Position aktualisieren und sicherstellen, dass die Owner-
+        /// Prediction (falls vorhanden) auf die neue Pose snappt &#8212; siehe
+        /// <see cref="Riftstorm.Game.Movement.PlayerMovement.ServerTeleportTo"/>.
+        /// </summary>
+        void ServerTeleportTo(Vector3 position);
+
+        /// <summary>
+        /// Server-only: wendet eine externe Bewegung ueber <paramref name="durationSec"/>
+        /// Sekunden an (KnockBack/PullTo/Charge/SlideFrom). Die Unit bewegt sich
+        /// mit <c>direction.normalized * meters / durationSec</c> m/s. Während
+        /// der Dauer wird Eigen-Input ignoriert. Auf Clients ein No-Op.
+        /// </summary>
+        void ServerApplyImpulse(Vector3 direction, float meters, float durationSec);
     }
 }
