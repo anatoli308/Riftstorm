@@ -82,6 +82,12 @@ namespace Riftstorm.Game.Spells
         /// <summary>Dispel-Kategorie.</summary>
         public DispelType DispelType;
 
+        /// <summary>
+        /// Bitmaske aus <see cref="SpellTemplate.AuraInterruptFlags"/> &#8212;
+        /// steuert, bei welchen Events (z. B. Schaden) die Aura abbricht.
+        /// </summary>
+        public AuraInterruptFlag InterruptFlags;
+
         /// <summary>Laufende Effekt-Slots.</summary>
         public List<AuraEffect> Effects = new();
 

@@ -133,6 +133,19 @@ namespace Riftstorm.Game.Npc
         // Server/src/AI/ThreatManager.h.
         private readonly ThreatManager m_Threat = new();
 
+        /// <summary>
+        /// Server-only: legt externen Threat auf diese NPC-Unit an. Wird von
+        /// <see cref="Riftstorm.Game.Combat.UnitStats"/> &uuml;ber das
+        /// <see cref="Riftstorm.Game.Combat.ICombatUnit.AddIncomingThreat"/>-
+        /// Bridging fuer den <see cref="Riftstorm.Game.Spells.SpellEffect.Threat"/>-
+        /// SpellEffect aufgerufen.
+        /// </summary>
+        public void AddIncomingThreat(ulong sourceGuid, int amount)
+        {
+            if (!IsServer || amount == 0 || sourceGuid == 0UL) { return; }
+            m_Threat.AddThreat(sourceGuid, amount);
+        }
+
         // Runtime-Daten fuer die vier Template-Spell-Slots.
         private readonly NpcSpellSlotRuntime[] m_SpellSlots = new NpcSpellSlotRuntime[4];
         private int m_ActiveSpellSlotCount;

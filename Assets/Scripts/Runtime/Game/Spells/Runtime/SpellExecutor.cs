@@ -330,6 +330,12 @@ namespace Riftstorm.Game.Spells
                     // SchoolDamage Physical = ebenfalls physikalisch. Alles andere = magisch.
                     bool isMagical = eff.Effect == SpellEffect.SchoolDamage
                                      && spell.MagicRollSchool != SpellSchool.Physical;
+
+                    // SchoolImmunity: Ziel ist gegen diese Schule komplett immun
+                    // (z. B. Ice-Block gegen Frost). Damage verpufft vollstaendig.
+                    SpellSchool damageSchool = isMagical ? spell.MagicRollSchool : SpellSchool.Physical;
+                    if (target.Auras != null && target.Auras.HasSchoolImmunity(damageSchool)) { return; }
+
                     int resistValue = isMagical
                         ? ResolveResist(victimStats, spell.MagicRollSchool)
                         : 0;
@@ -347,7 +353,7 @@ namespace Riftstorm.Game.Spells
                     if (effValue <= 0) { return; }
                     IUnitStats casterStats = caster.Stats;
                     if (casterStats == null) { return; }
-                    int heal = CombatFormulas.CalculateSpellHeal(casterStats, effValue);
+                    int heal = CombatFormulas.CalculateSpellHeal(casterStats, target.Stats, effValue);
                     if (heal <= 0) { return; }
                     target.Heal(heal, caster);
                     totalHeal += heal;
@@ -382,6 +388,14 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.ApplyAreaAura:
                 {
                     if (target.Auras == null) { return; }
+                    // MechanicImmunity: InflictMechanic-Auren werden verschluckt,
+                    // wenn das Ziel gegen den konkreten Mechanic immun ist
+                    // (eff.Data1 = AuraType, eff.Data2 = Mechanic-Index).
+                    if ((AuraType)eff.Data1 == AuraType.InflictMechanic
+                        && target.Auras.HasMechanicImmunity((Mechanic)eff.Data2))
+                    {
+                        return;
+                    }
                     target.Auras.ApplyAuraFromSpell(caster, spell, eff.Index);
                     break;
                 }
@@ -425,8 +439,9 @@ namespace Riftstorm.Game.Spells
                 }
                 case SpellEffect.TeleportForward:
                 {
-                    // Caster blinkt um Data1 Source-Pixel in Blickrichtung.
-                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    // Caster blinkt um Data1 FLARE-Tiles in Blickrichtung
+                    // (1 Tile = 1 m, kleine Ganzzahlen in der Datentabelle).
+                    float meters = SpellUtils.TilesToMeters((float)eff.Data1);
                     if (meters <= 0f) { return; }
                     Vector3 fwd = caster.Forward;
                     caster.ServerTeleportTo(caster.Position + fwd * meters);
@@ -435,8 +450,9 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.KnockBack:
                 {
                     // Target wird vom Caster weggeschoben.
-                    // Data1 = Distanz in Source-Pixeln, Data2 = Dauer in ms.
-                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    // Data1 = Distanz in FLARE-Tiles (1 Tile = 1 m),
+                    // Data2 = Dauer in ms (0 => 250ms Fallback).
+                    float meters = SpellUtils.TilesToMeters((float)eff.Data1);
                     float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.25f;
                     if (meters <= 0f || duration <= 0f) { return; }
                     Vector3 dir = target.Position - caster.Position;
@@ -447,7 +463,8 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.PullTo:
                 {
                     // Target wird zum Caster gezogen (Death-Grip).
-                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    // Data1 = Distanz in FLARE-Tiles (1 Tile = 1 m).
+                    float meters = SpellUtils.TilesToMeters((float)eff.Data1);
                     float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.3f;
                     if (meters <= 0f || duration <= 0f) { return; }
                     Vector3 dir = caster.Position - target.Position;
@@ -458,12 +475,13 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.Charge:
                 {
                     // Caster dasht zum Target. Distanz = aktueller Abstand, soweit
-                    // explizites Data1 fehlt; mit Data1 > 0 wird hart darauf gecappt.
+                    // explizites Data1 fehlt; mit Data1 > 0 wird auf Data1 Tiles
+                    // (1 Tile = 1 m) gecappt.
                     Vector3 dir = target.Position - caster.Position;
                     float dist = dir.magnitude;
                     if (dist < 1e-4f) { return; }
                     float maxMeters = eff.Data1 > 0
-                        ? SpellUtils.RangeToMeters((float)eff.Data1)
+                        ? SpellUtils.TilesToMeters((float)eff.Data1)
                         : dist;
                     float meters = Mathf.Min(dist, maxMeters);
                     float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.35f;
@@ -473,10 +491,97 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.SlideFrom:
                 {
                     // Caster gleitet in seine Blickrichtung (Dodge/Dash-Skill).
-                    float meters = SpellUtils.RangeToMeters((float)eff.Data1);
+                    // Data1 = Distanz in FLARE-Tiles (1 Tile = 1 m).
+                    float meters = SpellUtils.TilesToMeters((float)eff.Data1);
                     float duration = eff.Data2 > 0 ? (float)eff.Data2 / 1000f : 0.25f;
                     if (meters <= 0f || duration <= 0f) { return; }
                     caster.ServerApplyImpulse(caster.Forward, meters, duration);
+                    break;
+                }
+                case SpellEffect.MeleeAtk:
+                case SpellEffect.RangedAtk:
+                {
+                    // 1:1-Spiegel von NpcAI::performSpellCast (NpcAI.cpp:332ff):
+                    // Damage- und Atk-Effects laufen durch dieselbe physikalische
+                    // Schadens-Pipeline. Keine Schul-Resistenz, keine
+                    // SchoolImmunity (Physical-Schaden lehnt sich an Armor an).
+                    int meleeValue = SpellUtils.CalculateEffectValue(eff, caster);
+                    if (meleeValue <= 0) { return; }
+                    IUnitStats meleeAttackerStats = caster.Stats;
+                    IUnitStats meleeVictimStats = target.Stats;
+                    if (meleeAttackerStats == null || meleeVictimStats == null) { return; }
+                    DamageInfo meleeInfo = CombatFormulas.CalculateSpellDamage(
+                        meleeAttackerStats, meleeVictimStats, meleeValue, isMagical: false, resistValue: 0);
+                    if (meleeInfo.FinalDamage <= 0) { return; }
+                    target.TakeDamage(meleeInfo.FinalDamage, caster);
+                    totalDamage += meleeInfo.FinalDamage;
+                    break;
+                }
+                case SpellEffect.Dispel:
+                {
+                    // Spiegel von AuraManager::removeDispellableAuras (AuraSystem.cpp:289):
+                    // Dispel auf Gegnern entfernt Buffs (positive Auren), Dispel auf
+                    // Self/Allies entfernt Debuffs. CannotDispel-Flag schuetzt
+                    // ungezielt davon. Data1 = max. Anzahl entfernter Auren (0 = 1
+                    // Default, analog zu typischen Dispel-Templates).
+                    if (target.Auras == null) { return; }
+                    int dispelMax = eff.Data1 > 0 ? (int)eff.Data1 : 1;
+                    bool removePositiveAuras = caster.FactionId != target.FactionId;
+                    target.Auras.RemoveDispellable(removePositiveAuras, dispelMax);
+                    break;
+                }
+                case SpellEffect.InterruptCast:
+                {
+                    // Kick/Counterspell: bricht den laufenden Cast hart ab. Eine
+                    // begleitende Silence-Aura kommt &#8212; falls vorhanden &#8212; ueber
+                    // einen separaten ApplyAura-Effekteintrag im selben Spell.
+                    target.ServerInterruptCast();
+                    break;
+                }
+                case SpellEffect.Threat:
+                {
+                    // Spiegelt Threat-Spells (Taunt &amp; Co): legt fixen Threat-
+                    // Betrag (Data1) beim Ziel an. NPC-Ziele integrieren ihn in
+                    // ihre Threat-Tabelle; Spieler-Ziele ignorieren ihn.
+                    int threatAmount = (int)eff.Data1;
+                    if (threatAmount == 0) { return; }
+                    target.AddIncomingThreat(caster, threatAmount);
+                    break;
+                }
+                case SpellEffect.ManaBurn:
+                {
+                    // 1:1-Spiegel typischer ManaBurn-Spells: zieht bis zu Data1 Mana
+                    // vom Ziel ab und konvertiert den tatsaechlich gezogenen Anteil
+                    // in Schaden. Data2 = Schadens-Konversion in Prozent (0 oder
+                    // fehlend &#8594; 100% wie im Standard-Template).
+                    int burnAmount = SpellUtils.CalculateEffectValue(eff, caster);
+                    int drained = Mathf.Min(target.Mana, Mathf.Max(0, burnAmount));
+                    if (drained <= 0) { return; }
+                    target.SetMana(target.Mana - drained);
+                    int conversionPct = eff.Data2 > 0 ? (int)eff.Data2 : 100;
+                    int burnDmg = (int)((long)drained * conversionPct / 100);
+                    if (burnDmg > 0)
+                    {
+                        target.TakeDamage(burnDmg, caster);
+                        totalDamage += burnDmg;
+                    }
+                    break;
+                }
+                case SpellEffect.Resurrect:
+                {
+                    // Wiederbelebung: nur auf tote Ziele anwendbar. Data1 = Prozent
+                    // der MaxHealth, die das Ziel mit Aufwachen erhaelt (Fallback
+                    // 100%, falls leer). Die konkrete Reanimations-Pipeline (Body-
+                    // Reset, Sichtbarkeit) muss in einer Player-/NPC-spezifischen
+                    // Komponente erfolgen &#8212; hier wird nur das HP-Budget
+                    // bereitgestellt, damit das Aufwach-Event triggern kann.
+                    // TODO(steam-parity): Body-State-Reset siehe SpellCaster.cpp:259.
+                    if (!target.IsDead || target.MaxHealth <= 0) { return; }
+                    int resPct = eff.Data1 > 0 ? (int)eff.Data1 : 100;
+                    int resHp = (int)((long)target.MaxHealth * resPct / 100);
+                    if (resHp <= 0) { resHp = 1; }
+                    target.Heal(resHp, caster);
+                    totalHeal += resHp;
                     break;
                 }
                 default:

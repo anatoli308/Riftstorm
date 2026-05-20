@@ -136,29 +136,63 @@ namespace Riftstorm.Game.Spells
     /// <summary>
     /// Konkreter Mechanic-Subtyp einer <see cref="AuraType.InflictMechanic"/>-Aura.
     /// Steckt in <c>effectN_data2</c> (= <see cref="AuraEffect.MiscValue"/>).
-    /// Werte aus den vorhandenen Spell-Templates abgeleitet (Ice Blast=4 "freezes",
-    /// Chains of Ice=7 "reduces movement speed", Ice Shard=8 "stuns"); kompatibel
-    /// mit dem source_server-Mechanic-Enum.
+    /// 1:1 aus <c>source_server/Shared/SpellDefines.h</c> (<c>enum class Mechanics</c>).
     /// </summary>
+    /// <remarks>
+    /// Im Source-Original ist das Enum ein 32-Bit-Flagfeld (<c>1u &lt;&lt; n</c>);
+    /// die DB speichert pro Aura aber nur den Index (1..13) als <c>MiscValue</c>,
+    /// daher sind hier die Indizes definiert. Beispiele aus den Templates:
+    /// Ice Blast=4 (Root), Chains of Ice=7 (Snare), Ice Shard=8 (Stun).
+    /// </remarks>
     public enum Mechanic
     {
         None = 0,
-        Charm = 1,
-        Disorient = 2,
-        Disarm = 3,
-        /// <summary>Frozen / immobilisiert. Wirkt wie <see cref="AuraType.Root"/>.</summary>
-        Frozen = 4,
-        Fleeing = 5,
-        Grip = 6,
-        /// <summary>Snare / Slow. <c>BaseValue</c> (= <c>data3</c>) ist die Speed-Aenderung in %.</summary>
-        Snared = 7,
-        /// <summary>Stunned. Wirkt wie <see cref="AuraType.Stun"/>.</summary>
-        Stunned = 8,
-        Sleep = 9,
-        Shackle = 10,
-        Knockback = 11,
+        Confused = 1,
+        Pacify = 2,
+        Fear = 3,
+        /// <summary>Root / immobilisiert. Wirkt wie <see cref="AuraType.Root"/>.</summary>
+        Root = 4,
         /// <summary>Silenced. Wirkt wie <see cref="AuraType.Silence"/>.</summary>
-        Silenced = 12,
+        Silence = 5,
+        Sleep = 6,
+        /// <summary>Snare / Slow. <c>BaseValue</c> (= <c>data3</c>) ist die Speed-Aenderung in %.</summary>
+        Snare = 7,
+        /// <summary>Stunned. Wirkt wie <see cref="AuraType.Stun"/>.</summary>
+        Stun = 8,
+        /// <summary>
+        /// Incapacitated (Deep Freeze / Blindside). Verhindert Bewegung,
+        /// Angriffe und Casts. Bricht typischerweise auf erlittenen Schaden
+        /// (via <see cref="SpellTemplate.AuraInterruptFlags"/>
+        /// = <see cref="AuraInterruptFlag.OnDamageTaken"/>).
+        /// </summary>
+        Incapacitated = 9,
+        Disrupt = 10,
+        /// <summary>
+        /// Polymorph (Bind Spirit / Sheep). Verhindert Bewegung, Angriffe und
+        /// Casts; das Ziel ist effektiv "aus dem Spiel". Bricht auf erlittenen
+        /// Schaden (<see cref="AuraInterruptFlag.OnDamageTaken"/>).
+        /// </summary>
+        Polymorph = 11,
+        Charging = 12,
+        Stealth = 13,
+    }
+
+    /// <summary>
+    /// Bitmaske aus <c>spell_template.aura_interrupt_flags</c>. Steuert, bei
+    /// welchen Ereignissen eine aktive Aura vorzeitig entfernt wird.
+    /// </summary>
+    /// <remarks>
+    /// Aus den DB-Templates abgeleitet — bestaetigt: Wert <c>32</c> = Aura
+    /// bricht, sobald der Traeger Schaden erleidet (Bind Spirit "until struck
+    /// by damage", Blindside / Deep Freeze "any damage will remove the effect").
+    /// Weitere Flags werden ergaenzt, sobald sie in Templates auftauchen.
+    /// </remarks>
+    [Flags]
+    public enum AuraInterruptFlag
+    {
+        None = 0,
+        /// <summary>Aura wird entfernt, sobald der Traeger Schaden erleidet.</summary>
+        OnDamageTaken = 1 << 5,
     }
 
     /// <summary>

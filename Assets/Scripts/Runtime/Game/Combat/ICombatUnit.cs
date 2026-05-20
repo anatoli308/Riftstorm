@@ -100,5 +100,24 @@ namespace Riftstorm.Game.Combat
         /// der Dauer wird Eigen-Input ignoriert. Auf Clients ein No-Op.
         /// </summary>
         void ServerApplyImpulse(Vector3 direction, float meters, float durationSec);
+
+        /// <summary>
+        /// Server-only: bricht einen aktiven Cast hart ab (Kick/Counterspell).
+        /// Spiegelt <c>SpellCaster::interruptCast</c>: nur Cast-State wird
+        /// beendet, evtl. anliegende Silence-Auren werden separat per
+        /// <see cref="SpellEffect.ApplyAura"/>-Eintrag im selben Spell
+        /// appliziert. No-op, wenn die Unit gerade nichts castet oder keine
+        /// Cast-Komponente besitzt (NPCs ohne PlayerCombat).
+        /// </summary>
+        void ServerInterruptCast();
+
+        /// <summary>
+        /// Server-only: legt Threat auf diese Unit fuer das angegebene Quell-
+        /// Subjekt an (typischerweise der Caster eines Threat-Spells). Spiegelt
+        /// <c>NpcAI::addThreat</c>: nur NPCs verwalten ThreatTables, fuer
+        /// Spieler-Targets ist der Call ein No-op. Negative <paramref name="amount"/>
+        /// reduziert Threat.
+        /// </summary>
+        void AddIncomingThreat(ICombatUnit source, int amount);
     }
 }

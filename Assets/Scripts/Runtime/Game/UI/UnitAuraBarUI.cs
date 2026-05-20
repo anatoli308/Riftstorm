@@ -60,6 +60,14 @@ namespace Riftstorm.Game.UI
         [Tooltip("True = Icons rechtsbuendig (z. B. Target-Frame). False = linksbuendig (Player).")]
         [SerializeField] private bool m_RightAligned = false;
 
+        [Tooltip("Wenn aktiv, wird die Bar im CurrentTarget-Modus automatisch unter dem Target-Frame "
+            + "platziert (analog zur Player-Bar unter dem Player-Frame). Inspector-Anchor wird dann ignoriert.")]
+        [SerializeField] private bool m_AnchorUnderTargetFrame = true;
+
+        [Tooltip("Vertikaler Abstand zwischen Target-Frame-Unterkante und Aura-Bar in Pixel "
+            + "(nur relevant wenn AnchorUnderTargetFrame aktiv).")]
+        [SerializeField] private float m_TargetFrameSpacing = 6f;
+
         // -------------------------------------------------------------------------
         // Konstanten
         // -------------------------------------------------------------------------
@@ -144,20 +152,44 @@ namespace Riftstorm.Game.UI
 
             m_Container = new VisualElement { name = "aura-bar-container" };
             m_Container.style.position = Position.Absolute;
-            m_Container.style.top = m_AnchorTopLeft.y;
-            if (m_RightAligned)
+
+            // Im CurrentTarget-Modus optional automatisch unter den Target-Frame
+            // ankern (HudConfig liefert die exakte Frame-Geometrie). So liegt
+            // die Target-Aurenleiste direkt unter dem Portrait — analog zur
+            // Player-Bar unter dem Player-Frame — und nicht mehr oben rechts
+            // in der Bildschirmecke.
+            bool anchoredUnderTarget = false;
+            if (m_BindMode == AuraBarBindMode.CurrentTarget && m_AnchorUnderTargetFrame)
             {
-                m_Container.style.right = m_AnchorTopLeft.x;
+                HudConfig hud = HudConfigLoader.Load();
+                if (hud != null)
+                {
+                    m_Container.style.top = hud.anchorTop + hud.frameHeight + m_TargetFrameSpacing;
+                    m_Container.style.left = hud.targetAnchorLeft;
+                    anchoredUnderTarget = true;
+                }
             }
-            else
+
+            if (!anchoredUnderTarget)
             {
-                m_Container.style.left = m_AnchorTopLeft.x;
+                m_Container.style.top = m_AnchorTopLeft.y;
+                if (m_RightAligned)
+                {
+                    m_Container.style.right = m_AnchorTopLeft.x;
+                }
+                else
+                {
+                    m_Container.style.left = m_AnchorTopLeft.x;
+                }
             }
             m_Container.style.flexDirection = FlexDirection.Row;
             m_Container.style.flexWrap = Wrap.Wrap;
             m_Container.style.maxWidth = m_IconsPerRow * (m_IconSize + m_IconSpacing);
             // Bei rechts-ausgerichtetem Container Icons von rechts nach links flowen.
-            if (m_RightAligned)
+            // Im AnchorUnderTargetFrame-Pfad bleibt der Flow links→rechts, da
+            // wir am linken Rand des Target-Frames ankern (gleiches Layout wie
+            // der Player unter seinem Frame).
+            if (m_RightAligned && !anchoredUnderTarget)
             {
                 m_Container.style.flexDirection = FlexDirection.RowReverse;
             }

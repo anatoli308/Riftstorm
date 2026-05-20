@@ -75,5 +75,25 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>Resistenz gegen Holy-Schule.</summary>
         int ResistHoly => 0;
+
+        // ---------------------------------------------------------------------
+        // Aura-Modifier-Hooks (Phase-4-Erweiterung).
+        // Werden vom <see cref="CombatFormulas"/> multiplikativ auf den
+        // Endschaden / End-Heal angewendet. Default 0 → kein Modifier.
+        // Konkrete Implementationen (z.B. UnitStats) aggregieren ihre
+        // AuraManager-Werte fuer <c>AuraType.ModifyDamageDealtPct</c> etc.
+        // ---------------------------------------------------------------------
+
+        /// <summary>Summe aller <c>ModifyDamageDealtPct</c>-Auren auf dem Caster.</summary>
+        int DamageDealtPctMod => 0;
+
+        /// <summary>Summe aller <c>ModifyDamageReceivedPct</c>-Auren auf dem Opfer.</summary>
+        int DamageReceivedPctMod => 0;
+
+        /// <summary>Summe aller <c>ModifyHealingDealtPct</c>-Auren auf dem Heiler.</summary>
+        int HealingDealtPctMod => 0;
+
+        /// <summary>Summe aller <c>ModifyHealingRecvPct</c>-Auren auf dem Heilziel.</summary>
+        int HealingReceivedPctMod => 0;
     }
 }

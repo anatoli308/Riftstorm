@@ -129,6 +129,9 @@ namespace Riftstorm.Gameplay.Combat
                 _ => afterArmor,
             };
 
+            // 4b) Aura-Modifier (ModifyDamageDealtPct / ModifyDamageReceivedPct).
+            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim);
+
             // 5) Floor.
             finalDamage = Mathf.Max(MinDamage, finalDamage);
 
@@ -282,6 +285,9 @@ namespace Riftstorm.Gameplay.Combat
                 _ => afterMitigation,
             };
 
+            // 4b) Aura-Modifier (ModifyDamageDealtPct / ModifyDamageReceivedPct).
+            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim);
+
             // 5) Floor.
             finalDamage = Mathf.Max(MinDamage, finalDamage);
 
@@ -298,9 +304,11 @@ namespace Riftstorm.Gameplay.Combat
         /// Berechnet Heal-Betrag. <paramref name="effectValue"/> ist der bereits
         /// per <c>ScaleFormula</c> evaluierte Effekt-Wert. Skaliert mit Willpower
         /// (haupt) und Intelligence (sekundaer), rollt Crit, addiert Variance.
+        /// <paramref name="victim"/> wird nur fuer <c>ModifyHealingRecvPct</c>-Auren
+        /// benoetigt — darf <c>null</c> sein (Self-Heal, Tests).
         /// Overheal-Cap erfolgt im Caller (<c>Heal</c>-Pfad).
         /// </summary>
-        public static int CalculateSpellHeal(IUnitStats caster, int effectValue)
+        public static int CalculateSpellHeal(IUnitStats caster, IUnitStats victim, int effectValue)
         {
             if (effectValue <= 0) { return 0; }
 
@@ -316,7 +324,42 @@ namespace Riftstorm.Gameplay.Combat
                 afterVariance = Mathf.RoundToInt(afterVariance * CritMultiplier);
             }
 
+            // Aura-Modifier (ModifyHealingDealtPct / ModifyHealingRecvPct).
+            afterVariance = ApplyHealingAuraModifiers(afterVariance, caster, victim);
+
             return Mathf.Max(0, afterVariance);
+        }
+
+        /// <summary>
+        /// Wendet <c>ModifyDamageDealtPct</c> (Caster) und
+        /// <c>ModifyDamageReceivedPct</c> (Opfer) multiplikativ an. Beide
+        /// Modifier sind ganzzahlige Prozentwerte (z.B. <c>+25</c> = +25 %).
+        /// Stacking ist <em>multiplikativ</em> (Caster-Mod × Opfer-Mod), wie
+        /// im C++-Vorbild (<c>AuraSystem::getAuraModifier</c>).
+        /// </summary>
+        public static int ApplyDamageAuraModifiers(int damage, IUnitStats attacker, IUnitStats victim)
+        {
+            if (damage <= 0) { return damage; }
+            float mul = 1f;
+            if (attacker != null) { mul *= 1f + (attacker.DamageDealtPctMod / 100f); }
+            if (victim != null) { mul *= 1f + (victim.DamageReceivedPctMod / 100f); }
+            if (mul < 0f) { mul = 0f; }
+            return Mathf.RoundToInt(damage * mul);
+        }
+
+        /// <summary>
+        /// Wendet <c>ModifyHealingDealtPct</c> (Heiler) und
+        /// <c>ModifyHealingRecvPct</c> (Ziel) multiplikativ an. Beide
+        /// Modifier sind ganzzahlige Prozentwerte.
+        /// </summary>
+        public static int ApplyHealingAuraModifiers(int amount, IUnitStats caster, IUnitStats victim)
+        {
+            if (amount <= 0) { return amount; }
+            float mul = 1f;
+            if (caster != null) { mul *= 1f + (caster.HealingDealtPctMod / 100f); }
+            if (victim != null) { mul *= 1f + (victim.HealingReceivedPctMod / 100f); }
+            if (mul < 0f) { mul = 0f; }
+            return Mathf.RoundToInt(amount * mul);
         }
     }
 }

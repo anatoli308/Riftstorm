@@ -30,11 +30,11 @@ namespace Riftstorm.Game.UI
     /// </remarks>
     public sealed class TooltipPanel
     {
-        /// <summary>Maximale Breite des Tooltip-Panels (WoW-Klassik ~260px).</summary>
-        public const float DefaultWidth = 260f;
+        /// <summary>Maximale Breite des Tooltip-Panels (WoW-Klassik, etwas breiter fuer 1080p+).</summary>
+        public const float DefaultWidth = 340f;
 
         /// <summary>Vertikaler Abstand zwischen Anker und Tooltip.</summary>
-        public const float DefaultGap = 6f;
+        public const float DefaultGap = 8f;
 
         private readonly VisualElement m_Root;
         private readonly Label m_NameLabel;
@@ -52,10 +52,10 @@ namespace Riftstorm.Game.UI
             panel.style.left = 0f;
             panel.style.top = 0f;
             panel.style.width = width;
-            panel.style.paddingLeft = 8f;
-            panel.style.paddingRight = 8f;
-            panel.style.paddingTop = 6f;
-            panel.style.paddingBottom = 6f;
+            panel.style.paddingLeft = 12f;
+            panel.style.paddingRight = 12f;
+            panel.style.paddingTop = 10f;
+            panel.style.paddingBottom = 10f;
             panel.style.backgroundColor = new Color(0.03f, 0.03f, 0.05f, 0.95f);
             panel.style.borderLeftWidth = 1f;
             panel.style.borderRightWidth = 1f;
@@ -71,24 +71,24 @@ namespace Riftstorm.Game.UI
 
             m_NameLabel = new Label { name = "tooltip-name" };
             m_NameLabel.style.color = new Color(1f, 0.84f, 0.0f, 1f);
-            m_NameLabel.style.fontSize = 14;
+            m_NameLabel.style.fontSize = 18;
             m_NameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             m_NameLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_NameLabel, UIFonts.Body);
             panel.Add(m_NameLabel);
 
             m_MetaLabel = new Label { name = "tooltip-meta" };
-            m_MetaLabel.style.color = new Color(0.75f, 0.75f, 0.78f, 1f);
-            m_MetaLabel.style.fontSize = 11;
-            m_MetaLabel.style.marginTop = 2f;
+            m_MetaLabel.style.color = new Color(0.78f, 0.78f, 0.82f, 1f);
+            m_MetaLabel.style.fontSize = 14;
+            m_MetaLabel.style.marginTop = 4f;
             m_MetaLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_MetaLabel, UIFonts.Body);
             panel.Add(m_MetaLabel);
 
             m_DescLabel = new Label { name = "tooltip-description" };
             m_DescLabel.style.color = new Color(0.95f, 0.95f, 0.95f, 1f);
-            m_DescLabel.style.fontSize = 11;
-            m_DescLabel.style.marginTop = 4f;
+            m_DescLabel.style.fontSize = 14;
+            m_DescLabel.style.marginTop = 6f;
             m_DescLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_DescLabel, UIFonts.Body);
             panel.Add(m_DescLabel);
@@ -129,7 +129,7 @@ namespace Riftstorm.Game.UI
             }
             Rect panelBox = parent.worldBound;
             float w = m_Root.resolvedStyle.width > 0f ? m_Root.resolvedStyle.width : DefaultWidth;
-            float h = m_Root.resolvedStyle.height > 0f ? m_Root.resolvedStyle.height : 80f;
+            float h = m_Root.resolvedStyle.height > 0f ? m_Root.resolvedStyle.height : 110f;
 
             float left = Mathf.Clamp(anchorWorld.xMin - panelBox.xMin, 0f, Mathf.Max(0f, panelBox.width - w));
             float top = placement == TooltipPlacement.Above

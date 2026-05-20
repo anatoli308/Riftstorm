@@ -7,10 +7,12 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
     /// <summary>
     /// Statischer Per-Process-Cache, der Frame-<see cref="Sprite"/>s on-demand
     /// aus einer injizierten Texture-Resolver-Funktion aufbaut. Schlüssel ist
-    /// <c>"&lt;animName&gt;#&lt;frameIndex&gt;"</c>; die Sprites werden mit Pivot
-    /// (0.5, 0.5) und PPU aus <c>canvas_size</c> erzeugt, damit Skalierung über
-    /// das <c>scale</c>-Feld der <see cref="SpellAnimationDefinition"/> auf
-    /// jeder Animation gleich wirkt.
+    /// <c>"&lt;animName&gt;#&lt;frameIndex&gt;"</c>; die Sprites werden mit
+    /// einem pro Frame berechneten Pivot (auf das Canvas-Zentrum der
+    /// FLARE-<c>.sa</c>-Quelle ausgerichtet) und PPU aus <c>canvas_size</c>
+    /// erzeugt, damit Skalierung über das <c>scale</c>-Feld der
+    /// <see cref="SpellAnimationDefinition"/> auf jeder Animation gleich wirkt
+    /// und alle Frames um den gleichen Welt-Anker spielen.
     /// </summary>
     /// <remarks>
     /// Der Resolver wird von außen gesetzt (typisch im <c>ApplicationEntryPoint</c>,
@@ -65,10 +67,38 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             }
 
             float ppu = anim.CanvasSize > 0 ? anim.CanvasSize : 100f;
+
+            // Pivot pro Frame: PNGs sind tight-cropped, das FLARE-<c>.sa</c>
+            // liefert pro Frame nur den oberen-linken Blit-Offset (X, Y) in
+            // Source-Pixeln innerhalb einer (canvas_size / scale)-grossen
+            // Canvas-Box. Damit alle Frames um den gleichen <em>Welt</em>-
+            // Anker (Canvas-Zentrum) rotieren/animieren, wird der Pivot so
+            // gewaehlt, dass die Position (anchorX, anchorY) im Source-
+            // Koordinatensystem stets auf den gleichen Welt-Punkt faellt.
+            // Unity-Sprite-Pivot liegt im Normalbereich (0..1) gemessen
+            // vom unteren-linken Texture-Eck; daher die Y-Inversion.
+            Vector2 pivot = new(0.5f, 0.5f);
+            if (anim.Frames != null && frameIndex >= 0 && frameIndex < anim.Frames.Count
+                && anim.Frames[frameIndex] != null
+                && tex.width > 0 && tex.height > 0)
+            {
+                SpellAnimationFrame fr = anim.Frames[frameIndex];
+                float sourceSize = anim.Scale > 0f
+                    ? anim.CanvasSize / anim.Scale
+                    : anim.CanvasSize;
+                if (sourceSize > 0f)
+                {
+                    float anchor = sourceSize * 0.5f;
+                    pivot = new Vector2(
+                        (anchor - fr.X) / tex.width,
+                        1f - (anchor - fr.Y) / tex.height);
+                }
+            }
+
             Sprite sprite = Sprite.Create(
                 tex,
                 new Rect(0f, 0f, tex.width, tex.height),
-                new Vector2(0.5f, 0.5f),
+                pivot,
                 ppu);
             sprite.name = cacheKey;
             s_Sprites[cacheKey] = sprite;

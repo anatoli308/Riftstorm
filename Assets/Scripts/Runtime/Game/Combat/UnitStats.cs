@@ -168,6 +168,13 @@ namespace Riftstorm.Game.Combat
         private PlayerMovement m_PlayerMovement;
         private NpcController m_NpcController;
 
+        // Gecachte Cast-Komponente fuer den Interrupt-Pfad. Nur auf Spieler-
+        // Prefabs gesetzt &#8212; NPCs casten ueber NpcController/SpellCaster ohne
+        // PlayerCombat-Sibling. Wird in <see cref="OnNetworkSpawn"/> einmalig
+        // aufgeloest und vom <see cref="ICombatUnit.ServerInterruptCast"/>-Pfad
+        // konsumiert.
+        private PlayerCombat m_PlayerCombat;
+
         // -------------------------------------------------------------------------
         // IUnitStats
         // -------------------------------------------------------------------------
@@ -234,6 +241,22 @@ namespace Riftstorm.Game.Combat
 
         /// <inheritdoc/>
         public int ResistHoly => m_ResistHoly;
+
+        /// <inheritdoc/>
+        public int DamageDealtPctMod =>
+            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyDamageDealtPct) : 0;
+
+        /// <inheritdoc/>
+        public int DamageReceivedPctMod =>
+            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyDamageReceivedPct) : 0;
+
+        /// <inheritdoc/>
+        public int HealingDealtPctMod =>
+            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyHealingDealtPct) : 0;
+
+        /// <inheritdoc/>
+        public int HealingReceivedPctMod =>
+            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyHealingRecvPct) : 0;
 
         /// <summary>
         /// Radius der Körper-Hitbox in Metern. Wird vom Server-Hit-Resolve als
@@ -335,15 +358,45 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            // AbsorbDamage-Auren (Bubble, Power Word Shield) ziehen Schaden ab,
+            // bevor er auf die HP geht. Schild wird live im AuraManager
+            // gedraint und entfernt sich, sobald komplett verbraucht.
+            int incomingDamage = info.FinalDamage;
+            int absorbed = 0;
+            if (m_Auras != null && incomingDamage > 0)
+            {
+                absorbed = m_Auras.ConsumeAbsorbShield(incomingDamage);
+                if (absorbed > 0)
+                {
+                    incomingDamage -= absorbed;
+                }
+            }
+            if (incomingDamage <= 0)
+            {
+                // Komplett absorbiert — kein HP-Verlust, aber FX/Threat trotzdem
+                // mit dem absorbierten Betrag fanouten (Standard-MOBA-Verhalten).
+                BroadcastDamageClientRpc(0, (byte)info.HitResult);
+                return;
+            }
+
             int previousHp = m_CurrentHp.Value;
-            int newHp = Mathf.Max(0, previousHp - info.FinalDamage);
+            int newHp = Mathf.Max(0, previousHp - incomingDamage);
             m_CurrentHp.Value = newHp;
 
-            BroadcastDamageClientRpc(info.FinalDamage, (byte)info.HitResult);
+            // "Until struck by damage"-Auren (Bind Spirit, Deep Freeze,
+            // Blindside) brechen sobald ueberhaupt Schaden landet — vor
+            // dem Death-Pfad, damit auch toedlicher Hit konsistent das
+            // CC entfernt (relevant fuer Replays/Statesync).
+            if (m_Auras != null)
+            {
+                m_Auras.NotifyDamageTaken();
+            }
+
+            BroadcastDamageClientRpc(incomingDamage, (byte)info.HitResult);
 
             try
             {
-                OnServerDamaged?.Invoke(attacker, info.FinalDamage, info.HitResult);
+                OnServerDamaged?.Invoke(attacker, incomingDamage, info.HitResult);
             }
             catch (Exception ex)
             {
@@ -468,6 +521,7 @@ namespace Riftstorm.Game.Combat
             // den passenden Pfad zur Laufzeit.
             m_PlayerMovement = GetComponent<PlayerMovement>();
             m_NpcController = GetComponent<NpcController>();
+            m_PlayerCombat = GetComponent<PlayerCombat>();
             m_CurrentHp.OnValueChanged += OnHpValueChangedInternal;
             m_CurrentMana.OnValueChanged += OnManaValueChangedInternal;
             // Initialwerte einmal feuern, damit UI-Schichten korrekt initialisieren.
@@ -791,6 +845,30 @@ namespace Riftstorm.Game.Combat
                 "[UnitStats] ServerApplyImpulse ohne Movement-Sibling &#8212; " +
                 "Effekt wird verworfen.",
                 this);
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.ServerInterruptCast()
+        {
+            if (!IsServer) { return; }
+            // Spieler-Casts laufen ueber PlayerCombat &#8212; NPCs casten ohne
+            // diese Komponente und werden vom Interrupt-Effekt als No-op
+            // behandelt (Cast-Abort fuer NPCs kommt direkt aus deren AI).
+            if (m_PlayerCombat != null)
+            {
+                m_PlayerCombat.ServerInterruptCast();
+            }
+        }
+
+        /// <inheritdoc/>
+        void ICombatUnit.AddIncomingThreat(ICombatUnit source, int amount)
+        {
+            if (!IsServer || amount == 0 || source == null) { return; }
+            // Nur NPCs fuehren ThreatTables &#8212; Spieler ignorieren den Eintrag.
+            if (m_NpcController != null)
+            {
+                m_NpcController.AddIncomingThreat(source.Guid, amount);
+            }
         }
 
         /// <summary>

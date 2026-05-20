@@ -20,6 +20,18 @@ namespace Riftstorm.Game.Spells
         /// <summary>Source-Pixel-Range zu Unity-Metern.</summary>
         public static float RangeToMeters(float rangePixels) => rangePixels / PixelsPerMeter;
 
+        /// <summary>
+        /// Konvertiert FLARE-Tile-Distanz in Unity-Meter. Wird fuer
+        /// Movement-Effekte (KnockBack/PullTo/Charge/SlideFrom/TeleportForward)
+        /// genutzt, deren <c>Data1</c> in der Source-Datentabelle in Tiles
+        /// ausgedrueckt ist (kleine Ganzzahlen 1-4), nicht in Pixeln. 1 Tile
+        /// entspricht im Topdown-Grid 1 Meter.
+        /// </summary>
+        public const float MetersPerTile = 1f;
+
+        /// <summary>FLARE-Tile-Distanz zu Unity-Metern (1 Tile = 1 m).</summary>
+        public static float TilesToMeters(float tiles) => tiles * MetersPerTile;
+
         /// <summary>True wenn <see cref="SpellTemplate.CastTime"/> == 0.</summary>
         public static bool IsInstant(SpellTemplate spell) => spell != null && spell.CastTime <= 0;
 
@@ -118,6 +130,23 @@ namespace Riftstorm.Game.Spells
             int baseValue = (int)System.Math.Min(int.MaxValue, eff.Data1);
             SpellFormulaContext ctx = BuildContext(caster, baseValue);
             return SpellFormulaEvaluator.Evaluate(eff.ScaleFormula, ctx);
+        }
+
+        /// <summary>
+        /// Liefert die Aura-/Effekt-Dauer in Millisekunden. Bevorzugt
+        /// <see cref="SpellTemplate.DurationFormula"/> (mit Caster-Kontext);
+        /// faellt sonst auf den statischen <see cref="SpellTemplate.Duration"/>
+        /// zurueck. Rueckgabe <c>0</c> bedeutet permanent (kein Ablauf).
+        /// </summary>
+        public static int CalculateDuration(SpellTemplate spell, ICombatUnit caster)
+        {
+            if (spell == null) { return 0; }
+            if (!string.IsNullOrEmpty(spell.DurationFormula))
+            {
+                int evaluated = SpellFormulaEvaluator.Evaluate(spell.DurationFormula, BuildContext(caster));
+                if (evaluated > 0) { return evaluated; }
+            }
+            return Mathf.Max(0, spell.Duration);
         }
 
         // ---------------------------------------------------------------------

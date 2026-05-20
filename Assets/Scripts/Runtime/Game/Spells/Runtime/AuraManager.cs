@@ -14,8 +14,14 @@ namespace Riftstorm.Game.Spells
     /// Auren werden direkt aus <see cref="SpellTemplate"/>-Effekt-Slots
     /// instanziiert (kein separater Aura-Katalog mehr). Effekt-Slot-Konvention
     /// fuer <see cref="SpellEffect.ApplyAura"/>: <c>Data1 = AuraType</c>,
-    /// <c>Data2 = misc/stat mask</c>, <c>Data3 = base value</c>. Duration,
-    /// Stacks, Tick-Interval kommen vom Spell-Template selbst.
+    /// <c>Data2 = base value</c> (Per-Tick-Damage bei Periodic, Stat-/School-/
+    /// Mechanic-Index bzw. Prozentwert bei Modifier-Auren), <c>Data3 = misc</c>
+    /// (selten benutzt; bei <see cref="AuraType.ModifyStatPct"/> bspw. die
+    /// Stat-Maske, wenn Data2 den Wert haelt). Duration, Stacks, Tick-Interval
+    /// kommen vom Spell-Template selbst. Der finale Per-Tick-/Modifier-Wert
+    /// wird beim Apply einmal ueber <see cref="SpellUtils.CalculateEffectValue"/>
+    /// (inkl. <c>scale_formula</c>) berechnet und in
+    /// <see cref="AuraEffect.BaseValue"/> persistiert.
     /// </remarks>
     public sealed class AuraManager
     {
@@ -92,9 +98,10 @@ namespace Riftstorm.Game.Spells
                 SourceSpellEntry = spell.Entry,
                 CasterGuid = caster != null ? caster.Guid : 0UL,
                 EffectIndex = oneBasedEffectIndex,
-                MaxDurationMs = spell.Duration,
+                MaxDurationMs = SpellUtils.CalculateDuration(spell, caster),
                 MaxStacks = spell.StackAmount > 0 ? spell.StackAmount : 1,
                 DispelType = spell.Dispel,
+                InterruptFlags = (AuraInterruptFlag)spell.AuraInterruptFlags,
             };
             if (eff.Positive)
             {
@@ -108,11 +115,28 @@ namespace Riftstorm.Game.Spells
             {
                 aura.Flags |= AuraFlags.Persistent;
             }
+            // Per-Tick-/Modifier-Wert: wenn der Effekt eine scale_formula
+            // mitbringt (typisch Periodic-Damage/Heal: "clvl*2", "splvl+..."),
+            // wird der Wert beim Apply einmal evaluiert und persistiert.
+            // Auren ohne Formel (Snare/Modifier mit festem %, z.B. Cooldown-
+            // Reduktion oder Heal-Reduzierung) lesen den Wert direkt aus
+            // Data3 — Data2 bleibt das Misc-/Mechanic-/School-Feld
+            // (s. <see cref="HasMechanicImmunity"/>, Snare-Lookup in
+            // <see cref="GetMoveSpeedMultiplier"/>).
+            int baseValue;
+            if (!string.IsNullOrEmpty(eff.ScaleFormula))
+            {
+                baseValue = SpellUtils.CalculateEffectValue(eff, caster);
+            }
+            else
+            {
+                baseValue = (int)eff.Data3;
+            }
             aura.Effects.Add(new AuraEffect
             {
                 Effect = eff.Effect,
                 AuraType = auraType,
-                BaseValue = eff.Data3,
+                BaseValue = baseValue,
                 MiscValue = eff.Data2,
                 PerStackValue = 0,
                 PeriodicIntervalMs = spell.Interval,
@@ -167,6 +191,61 @@ namespace Riftstorm.Game.Spells
         {
             int removed = m_Auras.RemoveAll(a => a.CasterGuid == casterGuid);
             if (removed > 0) { MarkDirty(); }
+        }
+
+        /// <summary>
+        /// Entfernt alle Auren, deren <see cref="Aura.InterruptFlags"/> auf
+        /// erlittenen Schaden reagieren. Wird vom Damage-Pipeline-Hook
+        /// (<see cref="UnitStats.ApplyDamage(UnitStats, in DamageInfo)"/>)
+        /// aufgerufen, nachdem HP reduziert wurde. Implementiert das
+        /// "until struck by damage"-Verhalten von Bind Spirit, Deep Freeze,
+        /// Blindside &amp; Co. (DB-Flag <c>aura_interrupt_flags=32</c>).
+        /// </summary>
+        public void NotifyDamageTaken()
+        {
+            bool anyRemoved = false;
+            for (int i = m_Auras.Count - 1; i >= 0; i--)
+            {
+                if ((m_Auras[i].InterruptFlags & AuraInterruptFlag.OnDamageTaken) != 0)
+                {
+                    m_Auras.RemoveAt(i);
+                    anyRemoved = true;
+                }
+            }
+            if (anyRemoved) { MarkDirty(); }
+        }
+
+        /// <summary>
+        /// Entfernt dispellbare Auren des angegebenen Vorzeichens. Spiegelt
+        /// <c>AuraManager::removeDispellableAuras(bool positive)</c> aus
+        /// <c>AuraSystem.cpp</c>: <see cref="AuraFlags.CannotDispel"/>-Auren
+        /// bleiben unangetastet; nur Auren mit passendem Positive/Negative-Flag
+        /// werden geprueft. Gibt die Anzahl entfernter Auren zurueck, sodass
+        /// Caller (z. B. Dispel-SpellEffect) ein Cap auf die ersten N
+        /// dispellbaren Auren setzen koennen.
+        /// </summary>
+        /// <param name="removePositive">
+        /// <c>true</c> &#8212; entferne Buffs vom Gegner; <c>false</c> &#8212;
+        /// entferne Debuffs vom Verbuendeten/Self.
+        /// </param>
+        /// <param name="maxCount">
+        /// Maximale Anzahl entfernter Auren (0 oder negativ = unbegrenzt).
+        /// </param>
+        /// <returns>Anzahl tatsaechlich entfernter Auren.</returns>
+        public int RemoveDispellable(bool removePositive, int maxCount = 0)
+        {
+            int removed = 0;
+            for (int i = m_Auras.Count - 1; i >= 0; i--)
+            {
+                if (maxCount > 0 && removed >= maxCount) { break; }
+                Aura aura = m_Auras[i];
+                if (aura.IsPositive != removePositive) { continue; }
+                if ((aura.Flags & AuraFlags.CannotDispel) != 0) { continue; }
+                m_Auras.RemoveAt(i);
+                removed++;
+            }
+            if (removed > 0) { MarkDirty(); }
+            return removed;
         }
 
         /// <summary>Leert alle Auren (z. B. bei Tod).</summary>
@@ -238,21 +317,30 @@ namespace Riftstorm.Game.Spells
         /// <summary>
         /// True, wenn eine Stun-Aura aktiv ist. Beruecksichtigt direkte
         /// <see cref="AuraType.Stun"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
-        /// mit <see cref="Mechanic.Stunned"/> (Source-DB-Form).
+        /// mit <see cref="Mechanic.Stun"/> (Source-DB-Form).
         /// </summary>
-        public bool IsStunned => HasAuraType(AuraType.Stun) || HasMechanic(Mechanic.Stunned);
+        public bool IsStunned => HasAuraType(AuraType.Stun)
+            || HasMechanic(Mechanic.Stun)
+            || HasMechanic(Mechanic.Incapacitated)
+            || HasMechanic(Mechanic.Polymorph);
         /// <summary>
         /// True, wenn eine Silence-Aura aktiv ist. Beruecksichtigt direkte
         /// <see cref="AuraType.Silence"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
-        /// mit <see cref="Mechanic.Silenced"/>.
+        /// mit <see cref="Mechanic.Silence"/>.
         /// </summary>
-        public bool IsSilenced => HasAuraType(AuraType.Silence) || HasMechanic(Mechanic.Silenced);
+        public bool IsSilenced => HasAuraType(AuraType.Silence)
+            || HasMechanic(Mechanic.Silence)
+            || HasMechanic(Mechanic.Incapacitated)
+            || HasMechanic(Mechanic.Polymorph);
         /// <summary>
         /// True, wenn eine Root-Aura aktiv ist. Beruecksichtigt direkte
         /// <see cref="AuraType.Root"/>-Auren UND <see cref="AuraType.InflictMechanic"/>
-        /// mit <see cref="Mechanic.Frozen"/>.
+        /// mit <see cref="Mechanic.Root"/>.
         /// </summary>
-        public bool IsRooted => HasAuraType(AuraType.Root) || HasMechanic(Mechanic.Frozen);
+        public bool IsRooted => HasAuraType(AuraType.Root)
+            || HasMechanic(Mechanic.Root)
+            || HasMechanic(Mechanic.Incapacitated)
+            || HasMechanic(Mechanic.Polymorph);
 
         /// <summary>
         /// True, wenn mindestens eine <see cref="AuraType.InflictMechanic"/>-Aura
@@ -273,6 +361,50 @@ namespace Riftstorm.Game.Spells
             }
             return false;
         }
+
+        /// <summary>
+        /// True, wenn mindestens eine <see cref="AuraType.SchoolImmunity"/>-Aura
+        /// aktiv ist, deren <see cref="AuraEffect.MiscValue"/> die angefragte
+        /// <paramref name="school"/> abdeckt. Wird vom <c>SpellExecutor</c> vor
+        /// dem Anwenden von Damage-Effekten geprueft, damit Spells der gleichen
+        /// Schule am Ziel komplett verpuffen (z. B. Ice-Block).
+        /// </summary>
+        public bool HasSchoolImmunity(SpellSchool school)
+        {
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType == AuraType.SchoolImmunity && e.MiscValue == (long)school)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// True, wenn mindestens eine <see cref="AuraType.MechanicImmunity"/>-Aura
+        /// aktiv ist, deren <see cref="AuraEffect.MiscValue"/> die angefragte
+        /// <paramref name="mechanic"/> abdeckt. Wird vor dem Anwenden einer
+        /// <see cref="AuraType.InflictMechanic"/>-Aura geprueft, damit z. B. ein
+        /// Mechanic-Immunity-Buff den Stun komplett verschluckt.
+        /// </summary>
+        public bool HasMechanicImmunity(Mechanic mechanic)
+        {
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType == AuraType.MechanicImmunity && e.MiscValue == (long)mechanic)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         /// <summary>True, wenn Stun ODER Root aktiv ist (Bewegung verboten).</summary>
         public bool IsImmobilized => IsStunned || IsRooted;
 
@@ -280,7 +412,7 @@ namespace Riftstorm.Game.Spells
         /// Aggregierter Move-Speed-Multiplikator aus allen aktiven
         /// <see cref="AuraType.ModifyMoveSpeedPct"/>-Effekten sowie
         /// <see cref="AuraType.InflictMechanic"/>-Auren mit
-        /// <see cref="Mechanic.Snared"/> (BaseValue = Speed-Delta in %).
+        /// <see cref="Mechanic.Snare"/> (BaseValue = Speed-Delta in %).
         /// Additive Summation (SoF-/WoW-Style):
         /// <c>multiplier = 1 + sum(BaseValue + PerStackValue*(Stacks-1)) / 100</c>.
         /// Negative <c>BaseValue</c> = Snare/Slow, positive = Haste. Clamped auf
@@ -298,7 +430,7 @@ namespace Riftstorm.Game.Spells
                     {
                         bool isMoveSpeedMod = e.AuraType == AuraType.ModifyMoveSpeedPct
                             || (e.AuraType == AuraType.InflictMechanic
-                                && e.MiscValue == (long)Mechanic.Snared);
+                                && e.MiscValue == (long)Mechanic.Snare);
                         if (isMoveSpeedMod)
                         {
                             sumPct += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
@@ -310,6 +442,131 @@ namespace Riftstorm.Game.Spells
                 if (mult > 5f) { mult = 5f; }
                 return mult;
             }
+        }
+
+        // =====================================================================
+        // Modifier-Aggregation (Damage / Healing / Stat / Absorb)
+        // =====================================================================
+
+        /// <summary>
+        /// Summiert die effektiven Werte aller aktiven Auren-Effekte vom
+        /// angefragten <paramref name="auraType"/> (additiver Stack inkl.
+        /// <c>PerStackValue * (Stacks-1)</c>). Wird vom Damage-/Heal-Pfad
+        /// genutzt, um <see cref="AuraType.ModifyDamageDealtPct"/>,
+        /// <see cref="AuraType.ModifyDamageReceivedPct"/>,
+        /// <see cref="AuraType.ModifyHealingDealtPct"/>,
+        /// <see cref="AuraType.ModifyHealingRecvPct"/>,
+        /// <see cref="AuraType.ModifyMeleeSpeedPct"/> und
+        /// <see cref="AuraType.AbsorbDamage"/> zu lesen.
+        /// </summary>
+        /// <remarks>
+        /// Source-Aequivalent: <c>AuraSystem::getAuraModifier</c>
+        /// (<c>source_server/Server/src/Combat/AuraSystem.cpp</c>).
+        /// </remarks>
+        public int GetAuraModifierTotal(AuraType auraType)
+        {
+            long sum = 0;
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType == auraType)
+                    {
+                        sum += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
+                    }
+                }
+            }
+            if (sum > int.MaxValue) { return int.MaxValue; }
+            if (sum < int.MinValue) { return int.MinValue; }
+            return (int)sum;
+        }
+
+        /// <summary>
+        /// Summiert <see cref="AuraType.ModifyStat"/>-/
+        /// <see cref="AuraType.ModifyStatPct"/>-Effekte, deren
+        /// <see cref="AuraEffect.MiscValue"/> die angefragte
+        /// <paramref name="statMask"/> per Bitwise-AND abdeckt. <c>Data2</c>
+        /// im Source-Format ist eine Stat-Bitmask (z. B. <c>8192</c> =
+        /// Cooldown-Reduktion, <c>1</c> = Strength). Wird vom Stat-Lookup
+        /// (z. B. <c>PlayerCombat.GetSpellCooldownMultiplier</c>) aufgerufen.
+        /// </summary>
+        /// <remarks>
+        /// Source-Aequivalent: <c>AuraSystem::getStatModifier</c>
+        /// (<c>source_server/Server/src/Combat/AuraSystem.cpp</c>).
+        /// </remarks>
+        public int GetStatModifierTotal(int statMask)
+        {
+            if (statMask == 0) { return 0; }
+            long sum = 0;
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    bool isStatMod = e.AuraType == AuraType.ModifyStat
+                        || e.AuraType == AuraType.ModifyStatPct;
+                    if (isStatMod && (e.MiscValue & statMask) != 0)
+                    {
+                        sum += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
+                    }
+                }
+            }
+            if (sum > int.MaxValue) { return int.MaxValue; }
+            if (sum < int.MinValue) { return int.MinValue; }
+            return (int)sum;
+        }
+
+        /// <summary>
+        /// Verbraucht aus aktiven <see cref="AuraType.AbsorbDamage"/>-Auren
+        /// (Schilden) bis zu <paramref name="incomingDamage"/> Punkte und gibt
+        /// die absorbierte Menge zurueck. Aura-Effekte werden nach Verbrauch
+        /// dekrementiert; vollstaendig aufgezehrte Schilde werden entfernt.
+        /// Wird vom Damage-Pipeline-Hook in <see cref="UnitStats.ApplyDamage"/>
+        /// vor der HP-Reduktion aufgerufen.
+        /// </summary>
+        public int ConsumeAbsorbShield(int incomingDamage)
+        {
+            if (incomingDamage <= 0 || m_Auras.Count == 0) { return 0; }
+            int remaining = incomingDamage;
+            int absorbed = 0;
+            bool anyDepleted = false;
+            for (int ai = 0; ai < m_Auras.Count; ai++)
+            {
+                Aura a = m_Auras[ai];
+                for (int ei = 0; ei < a.Effects.Count; ei++)
+                {
+                    AuraEffect e = a.Effects[ei];
+                    if (e.AuraType != AuraType.AbsorbDamage || e.BaseValue <= 0) { continue; }
+                    long poolL = e.BaseValue + e.PerStackValue * (a.Stacks - 1);
+                    if (poolL <= 0) { continue; }
+                    int pool = poolL > int.MaxValue ? int.MaxValue : (int)poolL;
+                    int take = Mathf.Min(remaining, pool);
+                    e.BaseValue -= take;
+                    absorbed += take;
+                    remaining -= take;
+                    if (e.BaseValue <= 0)
+                    {
+                        anyDepleted = true;
+                    }
+                    if (remaining <= 0) { break; }
+                }
+                if (remaining <= 0) { break; }
+            }
+            if (anyDepleted)
+            {
+                m_Auras.RemoveAll(a =>
+                {
+                    foreach (AuraEffect e in a.Effects)
+                    {
+                        if (e.AuraType == AuraType.AbsorbDamage && e.BaseValue <= 0)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                MarkDirty();
+            }
+            return absorbed;
         }
 
         // =====================================================================

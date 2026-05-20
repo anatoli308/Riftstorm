@@ -152,6 +152,26 @@ namespace Riftstorm.Game.Combat
             DeadState = new PlayerCombatDeadState();
 
             InitializeStates(new PlayerCombatState[] { IdleState, AttackingState, CastingState, DeadState }, IdleState);
+
+            // Audio-Bridge fuer SpellVisualSpawner registrieren (Gameplay-
+            // Assembly darf SoundManager/ServiceLocator nicht direkt sehen).
+            SpellVisualAudioHook.ClipResolver ??= ResolveSpellVisualClip;
+        }
+
+        /// <summary>
+        /// Resolver fuer <see cref="SpellVisualAudioHook.ClipResolver"/>. Mappt
+        /// einen Sound-Dateinamen (inkl. Extension) auf einen <see cref="AudioClip"/>
+        /// via <see cref="SoundManager"/>. No-Op (<c>null</c>) wenn der Manager
+        /// noch nicht im ServiceLocator registriert ist.
+        /// </summary>
+        private AudioClip ResolveSpellVisualClip(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return null;
+            }
+            m_SoundManager ??= ServiceLocator.Get<SoundManager>();
+            return m_SoundManager != null ? m_SoundManager.GetClip(fileName) : null;
         }
 
         /// <inheritdoc/>
@@ -823,14 +843,14 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            ulong targetId = 0UL;
-            if (m_TargetSelection != null
-                && m_TargetSelection.CurrentTargetId != TargetSelection.NoTarget
-                && m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetObject, out _)
-                && targetObject != null)
-            {
-                targetId = targetObject.NetworkObjectId;
-            }
+            // Rohe TargetId weiterreichen — auch wenn das Ziel inzwischen tot ist.
+            // TryGetCurrentTarget filtert tote Targets raus; das wuerde clientseitig
+            // zu targetId=0 fuehren und serverseitig zur Selbst-Fallback-Logik
+            // verleiten ("Can't target self." statt "Target is dead."). Die echte
+            // Validierung passiert ohnehin serverseitig in SpellCaster.Validate.
+            ulong targetId = m_TargetSelection != null
+                ? m_TargetSelection.CurrentTargetId
+                : 0UL;
 
             RequestCastSpellServerRpc(spellEntry, targetId, Vector3.zero, false);
         }
@@ -856,14 +876,10 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            ulong targetId = 0UL;
-            if (m_TargetSelection != null
-                && m_TargetSelection.CurrentTargetId != TargetSelection.NoTarget
-                && m_TargetSelection.TryGetCurrentTarget(out NetworkObject targetObject, out _)
-                && targetObject != null)
-            {
-                targetId = targetObject.NetworkObjectId;
-            }
+            // Rohe TargetId weiterreichen — siehe Kommentar in TryRequestCastSpellAtSelection.
+            ulong targetId = m_TargetSelection != null
+                ? m_TargetSelection.CurrentTargetId
+                : 0UL;
 
             RequestCastSpellServerRpc(spellEntry, targetId, worldDestination, true);
         }
@@ -896,7 +912,7 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
-            ICombatUnit primaryTarget = m_Stats;
+            ICombatUnit primaryTarget = null;
             if (targetNetworkObjectId != 0UL
                 && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkObjectId, out NetworkObject targetObj)
                 && targetObj != null)
@@ -905,6 +921,35 @@ namespace Riftstorm.Game.Combat
                 if (targetStats != null)
                 {
                     primaryTarget = targetStats;
+                }
+            }
+
+            // Self-only Spells (z. B. Buff auf sich selbst) brauchen keinen externen
+            // Target-Pick — hier den Caster als Primaerziel einsetzen. Fuer alle
+            // anderen Spells bleibt primaryTarget==null, damit SpellCaster.CheckTarget
+            // sauber "No target" / "Target is dead" / "Invalid target" zurueckgibt
+            // statt das Self-Fallback faelschlich "Can't target self." zu triggern.
+            if (primaryTarget == null && SpellUtils.IsSelfOnly(spell))
+            {
+                primaryTarget = m_Stats;
+            }
+
+            // Smart-Self-Cast: Wenn der Spieler einen Buff/Friendly-Spell wirkt
+            // waehrend ein Gegner als Ziel ausgewaehlt ist, soll der Cast nicht
+            // scheitern. Stattdessen wird der Caster selbst als Ziel verwendet
+            // (WoW-Verhalten "Auto-self-cast on harm-target"). Greift nur fuer
+            // reine Friendly-Spells (kein Hostile-Targeting moeglich) — Spells,
+            // die sowohl Friendly als auch Hostile targeten koennen (z.B. Dispel),
+            // bleiben am ausgewaehlten Ziel.
+            if (primaryTarget != null
+                && primaryTarget != (ICombatUnit)m_Stats
+                && SpellUtils.CanTargetFriendly(spell)
+                && !SpellUtils.CanTargetHostile(spell))
+            {
+                ICombatUnit casterUnit = m_Stats;
+                if (casterUnit != null && primaryTarget.FactionId != casterUnit.FactionId)
+                {
+                    primaryTarget = m_Stats;
                 }
             }
 
@@ -1033,7 +1078,15 @@ namespace Riftstorm.Game.Combat
 
             ulong sourceNetId = NetworkObject != null ? NetworkObject.NetworkObjectId : 0UL;
             ulong resolvedTargetNetId = ReferenceEquals(primaryTarget, caster) ? 0UL : targetNetId;
-            PlaySpellCastClientRpc(spellEntry, sourceNetId, resolvedTargetNetId);
+
+            // Ground-Visual (FLARE go_kit) braucht die Cast-Destination + die
+            // resolvierte Auren-Dauer, damit z. B. der Ice-Patch bei Spell 30
+            // genau so lange am Boden liegt wie der Root-Aura. Wenn der Cast
+            // keine Destination hat (Single-Target, Self), faellt der Spawner
+            // auf One-Shot zurueck.
+            Vector3 groundPoint = destination.HasValue ? destination.Position : Vector3.zero;
+            int groundDurationMs = destination.HasValue ? SpellUtils.CalculateDuration(spell, caster) : 0;
+            PlaySpellCastClientRpc(spellEntry, sourceNetId, resolvedTargetNetId, groundPoint, destination.HasValue, groundDurationMs);
         }
 
         /// <summary>
@@ -1191,9 +1244,16 @@ namespace Riftstorm.Game.Combat
         /// <c>spell_visual</c> (Kit-Definitionen, <c>_visual_kits.json</c>) eine
         /// Phasen-Anim auf (Casting, Travel, Impact, Aura) und spawnt den
         /// <see cref="WorldSpellAnimation"/> ueber <see cref="SpellVisualSpawner"/>.
+        /// Wenn der Cast eine Boden-Destination hat
+        /// (<paramref name="hasGroundPoint"/> = true) und das Visual-Kit ein
+        /// <c>go_kit</c> definiert, wird zusaetzlich eine Ground-Animation
+        /// an <paramref name="groundPoint"/> platziert (FLARE-style Eis-Patch
+        /// bei Spell 30 / Ice Blast). <paramref name="groundDurationMs"/>
+        /// entspricht der server-seitig resolvten Auren-Dauer; bei 0 laeuft
+        /// die Anim als One-Shot.
         /// </summary>
         [ClientRpc]
-        private void PlaySpellCastClientRpc(int spellEntry, ulong sourceNetId, ulong targetNetId)
+        private void PlaySpellCastClientRpc(int spellEntry, ulong sourceNetId, ulong targetNetId, Vector3 groundPoint, bool hasGroundPoint, int groundDurationMs)
         {
             m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
             m_VisualKitDefinitionLoader ??= ServiceLocator.Get<SpellVisualKitDefinitionCatalogLoader>();
@@ -1228,35 +1288,35 @@ namespace Riftstorm.Game.Combat
                 : null;
 
             SpellVisualSpawner.Spawn(kit, anims, sourceTransform, targetTransform);
+
+            // Ground-Visual (FLARE go_kit) — nur wenn der Server eine Cast-
+            // Destination mitgeschickt hat UND das Visual-Kit eine Ground-Phase
+            // aufgeloest hat. Beispiel: Spell 30 / Ice Blast hat go_kit=35
+            // (nova_001.sa) und liefert eine TargetsGround-Destination.
+            if (hasGroundPoint && kit.Ground.HasAny)
+            {
+                float lifetime = groundDurationMs > 0 ? groundDurationMs * 0.001f : 0f;
+                SpellVisualSpawner.SpawnGround(kit.Ground, anims, groundPoint, lifetime);
+            }
         }
 
         /// <summary>
         /// Löst auf diesem Client die Cast-Pose des Casters (FLARE <c>[cast]</c>)
-        /// aus, sofern das Visual-Kit-Mapping des Spells eine Cast-Animation
-        /// vorgibt (<c>unit_cast_animation != 0</c>). Wird sowohl für Cast-Time-
-        /// als auch für Instant-Casts aus <see cref="BeginCastClientRpc"/>
-        /// aufgerufen — also bei Cast-START, nicht erst bei Cast-Resolve.
-        /// Pose-Trigger läuft via <see cref="UnitCombatVisuals.PlayCast"/> auf
-        /// dem PlayerCombat-GameObject (PlayerCombatVisuals sitzt per
-        /// <see cref="RequireComponent"/> garantiert daneben).
+        /// aus. Wird sowohl für Cast-Time- als auch für Instant-Casts aus
+        /// <see cref="BeginCastClientRpc"/> aufgerufen — also bei Cast-START,
+        /// nicht erst bei Cast-Resolve. Die Pose wird grundsätzlich für jeden
+        /// Spell-Cast gespielt, unabhängig vom <c>unit_cast_animation</c>-Index
+        /// im Visual-Kit-Mapping: FLARE-Charaktere haben nur eine generische
+        /// Cast-Animation (<see cref="UnitCombatVisuals.PlayCast"/>), der
+        /// Source-Index ist daher visuell bedeutungslos. So feuert die Pose
+        /// auch für Spells, deren Visual-Kit gar kein <c>unit_cast_animation</c>
+        /// vorgibt (z. B. Spell 30 / Ice Blast, kit-only-ground-effect).
         /// <c>uca_speed</c> wird bewusst ignoriert, bis
         /// <see cref="Sprites.FlareCharacter.Play"/> eine Speed-Übergabe
         /// unterstützt.
         /// </summary>
         private void TryTriggerCasterPose(int spellEntry)
         {
-            m_VisualKitMappingLoader ??= ServiceLocator.Get<SpellVisualKitMappingCatalogLoader>();
-            SpellVisualKitMappingCatalog mappings = m_VisualKitMappingLoader?.GetCached();
-            if (mappings == null)
-            {
-                return;
-            }
-            if (!mappings.TryGet(spellEntry, out SpellVisualKitMapping mapping)
-                || mapping == null
-                || mapping.UnitCastAnimation == 0)
-            {
-                return;
-            }
             UnitCombatVisuals visuals = m_Visuals != null
                 ? m_Visuals
                 : GetComponent<UnitCombatVisuals>();

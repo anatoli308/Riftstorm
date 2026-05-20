@@ -51,7 +51,7 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals
         /// <summary>0-basierter Loop-End-Index (inklusiv). 0 = kein Loop.</summary>
         [JsonProperty("loop_end")] public int LoopEnd;
 
-        /// <summary>Pro-Frame-Größen (Breite/Höhe in Pixeln) für korrektes Cropping.</summary>
+        /// <summary>Pro-Frame-Blit-Offsets (X/Y in Source-Pixeln) relativ zur Canvas-Box.</summary>
         [JsonProperty("frames")] public List<SpellAnimationFrame> Frames;
 
         /// <summary>True, wenn ein nicht-trivialer Loop-Bereich definiert ist.</summary>
@@ -59,15 +59,32 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals
     }
 
     /// <summary>
-    /// Größenangabe eines einzelnen Sprite-Frames in Pixeln.
+    /// Eintrag fuer einen einzelnen Sprite-Frame. Enthaelt die Top-Left-Blit-
+    /// Position innerhalb der Source-Canvas-Box, so wie sie das FLARE-
+    /// Original-<c>.sa</c>-Format pro Zeile <c>index,x,y</c> liefert. Die
+    /// tatsaechliche Frame-Groesse wird zur Laufzeit aus dem PNG (Texture
+    /// width/height) gezogen &#8212; <c>.sa</c>/JSON haelt nur den Offset.
     /// </summary>
+    /// <remarks>
+    /// Koordinaten sind in <em>Source-Pixeln</em> (FLARE-Down, Origin oben-
+    /// links) relativ zur Canvas-Box <c>canvas_size / scale</c>. Werden vom
+    /// <c>SpellSpriteCache</c> in den Unity-Sprite-Pivot umgerechnet, damit
+    /// der Anker stets auf dem Canvas-Zentrum sitzt (Spell-Zentrum bleibt
+    /// ueber alle Frames der Sequenz konsistent).
+    /// </remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public sealed class SpellAnimationFrame
     {
-        /// <summary>Frame-Breite in Pixeln.</summary>
-        [JsonProperty("w")] public int Width;
+        /// <summary>
+        /// X-Offset (in Source-Pixeln) des oberen-linken PNG-Ecks innerhalb
+        /// der quadratischen Canvas-Box.
+        /// </summary>
+        [JsonProperty("x")] public int X;
 
-        /// <summary>Frame-Höhe in Pixeln.</summary>
-        [JsonProperty("h")] public int Height;
+        /// <summary>
+        /// Y-Offset (in Source-Pixeln, FLARE-down: 0 = oben) des oberen-linken
+        /// PNG-Ecks innerhalb der quadratischen Canvas-Box.
+        /// </summary>
+        [JsonProperty("y")] public int Y;
     }
 }
