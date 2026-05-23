@@ -75,8 +75,8 @@ namespace Riftstorm.Gameplay.Combat
                 return HitResult.Dodge;
             }
 
-            // Angreifer mit höherem Level crittet häufiger.
-            int critChance = Mathf.Clamp(BaseCritChance + levelDiff, 0, 95);
+            // Angreifer mit höherem Level crittet häufiger; Melee-Schul-Crit additiv.
+            int critChance = Mathf.Clamp(BaseCritChance + attacker.MeleeCritChance + levelDiff, 0, 95);
             if (Roll100() < critChance)
             {
                 return HitResult.Crit;
@@ -109,8 +109,14 @@ namespace Riftstorm.Gameplay.Combat
                 };
             }
 
-            // 1) Grundschaden: Waffe + halber Strength-Bonus (vereinfacht).
-            int baseDamage = weapon.BaseDamage + (attacker.Strength / 2);
+            // 1) Grundschaden: Waffe + WeaponDamage-Bonus aus Item-Stats
+            //    (Original 'WeaponValue' / StatId.WeaponValue, Phase 16C) +
+            //    halber Strength-Bonus (vereinfachte Source-Parity-Formel).
+            //    <see cref="IUnitStats.WeaponDamage"/> wird bei Spielern aus
+            //    <c>PlayerStats.GetTotal(StatId.WeaponValue)</c> aggregiert
+            //    (UnitStats-Routing) — damit fliessen Waffen- und Ruestungs-
+            //    Item-Boni hier in den Melee-Schaden.
+            int baseDamage = weapon.BaseDamage + attacker.WeaponDamage + (attacker.Strength / 2);
 
             // 2) Variance (± DamageVariance).
             float varianceMul = 1f + Random.Range(-DamageVariance, DamageVariance);
@@ -211,7 +217,7 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>
         /// Wuerfelt das Hit-Ergebnis fuer einen Spell. Vereinfacht ggü. Melee:
         /// kein Dodge/Parry (Caster-Skills treffen normalerweise), aber Miss
-        /// durch Level-Diff und Crit durch <c>attacker.CritChance</c>.
+        /// durch Level-Diff und Crit durch <c>attacker.SpellCritChance</c>.
         /// </summary>
         public static HitResult RollSpellHit(IUnitStats attacker, IUnitStats victim)
         {
@@ -223,7 +229,7 @@ namespace Riftstorm.Gameplay.Combat
                 return HitResult.Miss;
             }
 
-            int critChance = Mathf.Clamp(BaseCritChance + attacker.CritChance + levelDiff, 0, 95);
+            int critChance = Mathf.Clamp(BaseCritChance + attacker.SpellCritChance + levelDiff, 0, 95);
             if (Roll100() < critChance)
             {
                 return HitResult.Crit;
@@ -241,8 +247,12 @@ namespace Riftstorm.Gameplay.Combat
         /// ist die schul-spezifische Resistenz des Opfers (z.B. <c>ResistFire</c>).
         /// <paramref name="weaponPercent"/> aktiviert die FLARE-kanonische
         /// <c>WeaponDamage</c>-Semantik: <paramref name="effectValue"/> ist dann
-        /// ein <b>Prozent-Multiplier</b> auf <see cref="IUnitStats.WeaponDamage"/>
-        /// (z.B. Aimed Shot 115 = 115% Waffenschaden), nicht ein flacher Bonus.
+        /// ein <b>Prozent-Multiplier</b> auf den effektiven Waffenschaden
+        /// (<c>weapon.BaseDamage + WeaponValue-Stat</c>), nicht ein flacher Bonus.
+        /// <paramref name="useRangedWeapon"/> entscheidet, ob die Ranged-Waffe
+        /// (Bow/Crossbow/Gun) oder die Melee-Waffe zur Skalierung herangezogen
+        /// wird (Aimed Shot vs. Sinister Strike); der Caller setzt das anhand
+        /// der equippten Waffe des Casters.
         /// </summary>
         public static DamageInfo CalculateSpellDamage(
             IUnitStats attacker,
@@ -250,7 +260,8 @@ namespace Riftstorm.Gameplay.Combat
             int effectValue,
             bool isMagical,
             int resistValue,
-            bool weaponPercent = false)
+            bool weaponPercent = false,
+            bool useRangedWeapon = false)
         {
             HitResult hit = RollSpellHit(attacker, victim);
 
@@ -267,13 +278,18 @@ namespace Riftstorm.Gameplay.Combat
 
             // 1) Grundschaden.
             //    a) WeaponDamage-Spell (weaponPercent=true): effectValue ist %
-            //       auf Waffenschaden, plus halbierter STR-Bonus (Skill-Anteil).
+            //       auf den effektiven Waffenschaden (BaseDamage des Items +
+            //       WeaponValue/RangedWeaponValue-Stat), plus halbierter
+            //       STR-Bonus (Skill-Anteil).
             //    b) Magic-Spell:        flat effectValue + INT/20.
             //    c) Phys-Flat-Spell:    flat effectValue + STR/10 + Waffenschaden.
             int baseDamage;
             if (weaponPercent && !isMagical)
             {
-                int weaponContribution = (int)((long)attacker.WeaponDamage * effectValue / 100);
+                int weaponBase = useRangedWeapon ? attacker.BaseRangedWeaponDamage : attacker.BaseWeaponDamage;
+                int weaponStat = useRangedWeapon ? attacker.RangedWeaponDamage : attacker.WeaponDamage;
+                int totalWeapon = weaponBase + weaponStat;
+                int weaponContribution = (int)((long)totalWeapon * effectValue / 100);
                 baseDamage = Mathf.Max(0, weaponContribution + (attacker.Strength / 10));
             }
             else
@@ -336,7 +352,7 @@ namespace Riftstorm.Gameplay.Combat
             float varianceMul = 1f + Random.Range(-HealVariance, HealVariance);
             int afterVariance = Mathf.RoundToInt(baseHeal * varianceMul);
 
-            int critChance = Mathf.Clamp(BaseCritChance + caster.CritChance, 0, 95);
+            int critChance = Mathf.Clamp(BaseCritChance + caster.SpellCritChance, 0, 95);
             if (Roll100() < critChance)
             {
                 afterVariance = Mathf.RoundToInt(afterVariance * CritMultiplier);

@@ -1,25 +1,28 @@
 {
-  "panelWidth": 380,
-  "panelHeight": 460,
-  "anchorRight": 16,
-  "anchorBottom": 220,
+  "panelWidth": 437,
+  "panelHeight": 523,
+  "anchorRight": 48,
+  "anchorBottom": 240,
 
   "columns": 7,
   "rows": 7,
-  "gridLeft": 22,
-  "gridTop": 60,
-  "slotSize": 40,
-  "slotSpacing": 4,
+  "gridLeft": 32,
+  "gridTop": 90,
+  "slotSize": 48,
+  "slotSpacing": 5,
+  "slotOffsetsX": [0, 0, 1, 2, 3, 4, 5],
+  "slotOffsetsY": [0, 0, 1, 2, 3, 4, 5],
 
   "backgroundTexture": "interface/inventory",
   "slotIdleTexture": "interface/icons/gameicon40_idle",
   "slotHoverTexture": "interface/icons/gameicon40_hover",
+  "slotPressTexture": "interface/icons/gameicon40_press",
 
-  "countFontSize": 11,
+  "countFontSize": 16,
 
-  "goldLeft": 22,
-  "goldBottom": 22,
-  "goldFontSize": 16,
+  "goldLeft": 30,
+  "goldBottom": 24,
+  "goldFontSize": 26,
 
   "toggleBinding": "<Keyboard>/i",
 

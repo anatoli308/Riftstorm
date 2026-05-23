@@ -45,6 +45,21 @@ namespace Riftstorm.Game.UI.Inventory
         /// <summary>Abstand zwischen zwei Slots in Pixeln.</summary>
         public float slotSpacing = 4f;
 
+        /// <summary>
+        /// Optionaler horizontaler Pixel-Offset pro Spalte (Laenge sollte
+        /// <see cref="columns"/> entsprechen). Wird per <c>style.translate</c>
+        /// angewandt und veraendert das Layout-Flow nicht. Leer = kein Offset.
+        /// Analog zu <c>hud_config.actionBarBottomSlotOffsetsX</c>.
+        /// </summary>
+        public float[] slotOffsetsX = System.Array.Empty<float>();
+
+        /// <summary>
+        /// Optionaler vertikaler Pixel-Offset pro Zeile (Laenge sollte
+        /// <see cref="rows"/> entsprechen). Wird per <c>style.translate</c>
+        /// angewandt und veraendert das Layout-Flow nicht. Leer = kein Offset.
+        /// </summary>
+        public float[] slotOffsetsY = System.Array.Empty<float>();
+
         // ---------------------------------------------------------------------
         // Texturen
         // ---------------------------------------------------------------------
@@ -55,6 +70,8 @@ namespace Riftstorm.Game.UI.Inventory
         public string slotIdleTexture = "interface/icons/gameicon40_idle";
         /// <summary>Hover-Frame, wird beim Mouseover ueber den Idle-Frame gelegt.</summary>
         public string slotHoverTexture = "interface/icons/gameicon40_hover";
+        /// <summary>Press-Frame, wird waehrend gedruecktem Pointer ueber Idle/Hover gelegt.</summary>
+        public string slotPressTexture = "interface/icons/gameicon40_press";
 
         // ---------------------------------------------------------------------
         // Stack-Count-Label

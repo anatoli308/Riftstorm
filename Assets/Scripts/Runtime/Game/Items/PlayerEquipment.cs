@@ -87,6 +87,43 @@ namespace Riftstorm.Game.Items
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
 
+        /// <summary>
+        /// Parallel zu <see cref="m_EquippedTemplates"/> indizierte Instanz-Daten
+        /// (Rarity + Affix-Slots + Gem-Sockets + Quality-Scores). Identische
+        /// Laenge und Index-Mapping; Index 0 ist reserviert
+        /// (<see cref="EquipSlot.None"/>) und enthaelt immer
+        /// <see cref="ItemInstance.Empty"/>. Jede Schreiboperation auf einen
+        /// Slot MUSS beide Listen aktualisieren — kanalisiert ueber
+        /// <see cref="SetSlotServer"/> / <see cref="ClearSlotServer"/>.
+        /// <para>
+        /// Bewusst zweite Liste statt komplettes Schema in einer einzigen
+        /// <c>NetworkList&lt;ItemInstance&gt;</c>: <see cref="GetEquipped"/>
+        /// und der HUD-/Combat-Pfad sind heute auf Template-Ids gebaut und
+        /// bleiben unveraendert lesbar. Phase 19 wird, wenn Inventory ebenfalls
+        /// auf Instanzen lebt, die Trennung wieder kollabieren koennen.
+        /// </para>
+        /// </summary>
+        private readonly NetworkList<ItemInstance> m_EquipInstances = new(
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
+        [Header("Default-Loadout")]
+        [Tooltip("Item-Template, das der Server jedem neu gespawnten Spieler in MainHand legt " +
+                 "(0 = leer). Default: 1018 = 'Vincent's Old Sword' (Longsword).")]
+        [SerializeField] private int m_DefaultMainHandTemplate = 1018;
+
+        [Tooltip("Rarity, mit der die Default-MainHand gerollt wird. Steuert Affix-Anzahl " +
+                 "(siehe RarityRules). Default: Rare (2 Affixe) — End-to-End-Proof fuer Phase 18.")]
+        [SerializeField] private ItemRarity m_DefaultMainHandRarity = ItemRarity.Rare;
+
+        [Tooltip("Item-Template, das der Server jedem neu gespawnten Spieler in Offhand legt " +
+                 "(0 = leer). Ignoriert, falls die Default-MainHand ein Zweihaender ist. " +
+                 "Default: 17 = 'Barricade' (Buckler).")]
+        [SerializeField] private int m_DefaultOffhandTemplate = 17;
+
+        [Tooltip("Rarity fuer die Default-Offhand. Default: Common (0 Affixe).")]
+        [SerializeField] private ItemRarity m_DefaultOffhandRarity = ItemRarity.Common;
+
         private PlayerInventory m_Inventory;
         private PlayerCombat m_Combat;
         private WeaponCatalogLoader m_WeaponCatalogLoader;
@@ -115,6 +152,22 @@ namespace Riftstorm.Game.Items
             return m_EquippedTemplates[idx];
         }
 
+        /// <summary>
+        /// Liefert die vollstaendige <see cref="ItemInstance"/> im angegebenen
+        /// Slot (inkl. Rarity, Affix-Ids und Scores). Bei leerem oder
+        /// out-of-range Slot wird <see cref="ItemInstance.Empty"/> zurueckgegeben.
+        /// Hauptkonsument: <c>PlayerStats</c> fuer die Affix-Aggregation.
+        /// </summary>
+        public ItemInstance GetEquippedInstance(EquipSlot slot)
+        {
+            int idx = (int)slot;
+            if (idx <= 0 || idx >= m_EquipInstances.Count)
+            {
+                return ItemInstance.Empty;
+            }
+            return m_EquipInstances[idx];
+        }
+
         /// <summary>True wenn der Slot mindestens einen gueltigen Template-Eintrag haelt.</summary>
         public bool IsEquipped(EquipSlot slot) => GetEquipped(slot) > 0;
 
@@ -137,14 +190,41 @@ namespace Riftstorm.Game.Items
 
             if (IsServer && m_EquippedTemplates.Count == 0)
             {
-                // Index 0..12; Index 0 (EquipSlot.None) ist reserviert und bleibt 0.
+                // Index 0..12; Index 0 (EquipSlot.None) ist reserviert und bleibt 0 / Empty.
                 for (int i = 0; i < k_ListLength; i++)
                 {
                     m_EquippedTemplates.Add(0);
+                    m_EquipInstances.Add(ItemInstance.Empty);
                 }
             }
 
             m_EquippedTemplates.OnListChanged += HandleListChanged;
+
+            // Default-Loadout NACH dem Subscriben setzen, damit
+            // HandleListChanged + ApplyServerSideBridge feuern und
+            // PlayerCombat.m_CurrentWeaponId/m_CurrentOffhandId
+            // sowie EquipChanged-Konsumenten (CharacterHUD, PlayerStats)
+            // automatisch in Sync gehen.
+            if (IsServer)
+            {
+                SeedDefaultLoadoutServer();
+            }
+            else
+            {
+                // Client: NGO synchronisiert die NetworkList VOR OnNetworkSpawn,
+                // OnListChanged feuert daher fuer die Initial-Sync nicht.
+                // Wir holen das hier nach, damit PlayerStats/CharacterHUD den
+                // initialen Equip-State sehen (sonst bleiben Equipment-Boni
+                // client-seitig auf 0 und das HUD zeigt nur die Base-Stats).
+                for (int i = 1; i <= SlotCount; i++)
+                {
+                    int templateId = m_EquippedTemplates[i];
+                    if (templateId != 0)
+                    {
+                        EquipChanged?.Invoke((EquipSlot)i, templateId);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -253,6 +333,7 @@ namespace Riftstorm.Game.Items
 
             int targetIndex = (int)target;
             int previouslyEquipped = m_EquippedTemplates[targetIndex];
+            ItemInstance previousInstance = m_EquipInstances[targetIndex];
 
             // Source-Parity: Zweihaender belegt MainHand + raeumt Offhand/Ranged.
             // Wir tauschen die Offhand zuerst zurueck ins Inventar; passt sie
@@ -276,14 +357,26 @@ namespace Riftstorm.Game.Items
             }
 
             // 2) Vorher ausgeruestetes Item 1:1 in den jetzt leeren Inventory-Slot.
+            //    Phase 19: wir schreiben die vollstaendige ItemInstance zurueck,
+            //    damit Affixe beim spaeteren Re-Equip nicht verloren gehen.
             //    Equipment-Items sind nicht stackable -> direkter Slot-Write ist sicher.
             if (previouslyEquipped > 0)
             {
-                m_Inventory.TrySetSlotServer(inventoryIndex, new InventoryItem(previouslyEquipped, 1));
+                m_Inventory.TrySetSlotServer(inventoryIndex, new InventoryItem(previousInstance, 1));
             }
 
             // 3) Neues Item in Equip-Slot schreiben — triggert OnListChanged → Bridge.
-            m_EquippedTemplates[targetIndex] = invItem.TemplateId;
+            //    Phase 19: Wenn der Inventory-Slot bereits eine echte Instanz
+            //    (Rarity + Affixe aus Loot/Unequip) traegt, nehmen wir die
+            //    direkt; nur Legacy-Slots ohne Roll-Daten erzeugen einen
+            //    Common-Roll als Fallback.
+            ItemInstance equipInstance = invItem.Instance;
+            if (equipInstance.IsEmpty || equipInstance.TemplateId != invItem.TemplateId)
+            {
+                ulong seed = ItemRoller.MakeSeed(OwnerClientId, (ulong)invItem.TemplateId, (ulong)targetIndex);
+                equipInstance = ItemRoller.Roll(invItem.TemplateId, ItemRarity.Common, seed);
+            }
+            SetSlotServer(targetIndex, equipInstance);
             return true;
         }
 
@@ -310,19 +403,125 @@ namespace Riftstorm.Game.Items
                 return false;
             }
 
-            if (!m_Inventory.TryAddItemServer(currentTemplate, 1))
+            // Phase 19: vollstaendige ItemInstance (Rarity + Affixe) ins
+            // Inventar zurueckschieben; legacy TryAddItemServer-Pfad bleibt
+            // fuer Stack-Consumables erhalten.
+            ItemInstance instance = m_EquipInstances[idx];
+            if (!m_Inventory.TryAddInstanceServer(instance))
             {
                 Debug.LogWarning($"[PlayerEquipment] Unequip {slot}: Inventar voll — Item bleibt equippt.");
                 return false;
             }
 
-            m_EquippedTemplates[idx] = 0;
+            ClearSlotServer(idx);
             return true;
         }
 
         // -------------------------------------------------------------------------
         // Internals
         // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Seedet beim ersten Spawn auf dem Server die im Inspector
+        /// konfigurierten Default-Templates (z. B. Longsword + Buckler) direkt
+        /// in MainHand/Offhand. Loopt bewusst durch den NetworkList-Setter,
+        /// damit <see cref="HandleListChanged"/> + <see cref="ApplyServerSideBridge"/>
+        /// feuern und PlayerCombat sowie alle <see cref="EquipChanged"/>-
+        /// Konsumenten (CharacterHUD, PlayerStats) automatisch in Sync gehen.
+        /// Ueberspringt Slots, in denen schon ein Item liegt — damit Respawn
+        /// oder spaeterer Loadout-Restore das Equipment nicht ueberschreibt.
+        /// </summary>
+        private void SeedDefaultLoadoutServer()
+        {
+            if (m_DefaultMainHandTemplate > 0
+                && m_EquippedTemplates[(int)EquipSlot.MainHand] == 0
+                && IsTemplateEquippableInSlot(m_DefaultMainHandTemplate, EquipSlot.MainHand))
+            {
+                ulong seed = ItemRoller.MakeSeed(OwnerClientId, (ulong)m_DefaultMainHandTemplate, (ulong)EquipSlot.MainHand);
+                ItemInstance rolled = ItemRoller.Roll(m_DefaultMainHandTemplate, m_DefaultMainHandRarity, seed);
+                SetSlotServer((int)EquipSlot.MainHand, rolled);
+                Debug.Log($"[PlayerEquipment] Default-Loadout: Template {m_DefaultMainHandTemplate} -> MainHand " +
+                          $"(Rarity={rolled.Rarity}, Affix1={rolled.Affix1Id}@{rolled.Affix1Score}, " +
+                          $"Affix2={rolled.Affix2Id}@{rolled.Affix2Score}).");
+            }
+
+            // Offhand nur wenn MainHand nicht Zweihaender ist — Source-Parity.
+            bool mainIsTwoHanded = ResolveIsTwoHandedByTemplateId(m_EquippedTemplates[(int)EquipSlot.MainHand]);
+            if (!mainIsTwoHanded
+                && m_DefaultOffhandTemplate > 0
+                && m_EquippedTemplates[(int)EquipSlot.Offhand] == 0
+                && IsTemplateEquippableInSlot(m_DefaultOffhandTemplate, EquipSlot.Offhand))
+            {
+                ulong seed = ItemRoller.MakeSeed(OwnerClientId, (ulong)m_DefaultOffhandTemplate, (ulong)EquipSlot.Offhand);
+                ItemInstance rolled = ItemRoller.Roll(m_DefaultOffhandTemplate, m_DefaultOffhandRarity, seed);
+                SetSlotServer((int)EquipSlot.Offhand, rolled);
+                Debug.Log($"[PlayerEquipment] Default-Loadout: Template {m_DefaultOffhandTemplate} -> Offhand " +
+                          $"(Rarity={rolled.Rarity}).");
+            }
+        }
+
+        /// <summary>
+        /// Atomare Schreib-Operation auf einen Equip-Slot: aktualisiert beide
+        /// parallelen NetworkLists. <paramref name="instance"/> muss bereits
+        /// die finale Roll-Information enthalten; die Template-Id wird aus
+        /// <see cref="ItemInstance.TemplateId"/> uebernommen, damit Liste #1
+        /// und Liste #2 konsistent bleiben.
+        /// </summary>
+        private void SetSlotServer(int idx, ItemInstance instance)
+        {
+            m_EquipInstances[idx] = instance;
+            m_EquippedTemplates[idx] = instance.TemplateId; // triggert OnListChanged + Bridge.
+        }
+
+        /// <summary>Schreibt beide Listen auf "leer" zurueck.</summary>
+        private void ClearSlotServer(int idx)
+        {
+            m_EquipInstances[idx] = ItemInstance.Empty;
+            m_EquippedTemplates[idx] = 0;
+        }
+
+        /// <summary>
+        /// Validiert, ob ein Template existiert, equippable ist und in den
+        /// erwarteten Slot gehoert. Verhindert, dass z. B. ein Ring als
+        /// Default-MainHand durchrutscht.
+        /// </summary>
+        private static bool IsTemplateEquippableInSlot(int templateId, EquipSlot expected)
+        {
+            if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null)
+            {
+                Debug.LogWarning($"[PlayerEquipment] Default-Loadout: Template {templateId} nicht im Catalog.");
+                return false;
+            }
+            if (!template.IsEquippable)
+            {
+                Debug.LogWarning($"[PlayerEquipment] Default-Loadout: Template {templateId} ist nicht equippable.");
+                return false;
+            }
+            if ((EquipSlot)template.EquipType != expected)
+            {
+                Debug.LogWarning($"[PlayerEquipment] Default-Loadout: Template {templateId} EquipType={template.EquipType}, erwartet {expected}.");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Wie <see cref="ResolveIsTwoHanded(ItemTemplate)"/>, aber direkt
+        /// ueber die Template-Id. Liefert <c>false</c> bei leerem Slot oder
+        /// unbekanntem Template.
+        /// </summary>
+        private bool ResolveIsTwoHandedByTemplateId(int templateId)
+        {
+            if (templateId <= 0)
+            {
+                return false;
+            }
+            if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null)
+            {
+                return false;
+            }
+            return ResolveIsTwoHanded(template);
+        }
 
         /// <summary>
         /// Verwendet die WeaponCatalog (Model-Bridge) um zu bestimmen, ob ein
@@ -362,11 +561,13 @@ namespace Riftstorm.Game.Items
             {
                 return true;
             }
-            if (!m_Inventory.TryAddItemServer(current, 1))
+            // Phase 19: Affix-Roll mitnehmen, nicht nur die Template-Id.
+            ItemInstance instance = m_EquipInstances[idx];
+            if (!m_Inventory.TryAddInstanceServer(instance))
             {
                 return false;
             }
-            m_EquippedTemplates[idx] = 0;
+            ClearSlotServer(idx);
             return true;
         }
 
@@ -389,8 +590,14 @@ namespace Riftstorm.Game.Items
                     m_Combat.Server_ApplyWeaponFromTemplate(newTemplateId);
                     break;
                 case EquipSlot.Offhand:
-                case EquipSlot.Ranged:
                     m_Combat.Server_ApplyOffhandFromTemplate(newTemplateId);
+                    break;
+                case EquipSlot.Ranged:
+                    // Source-Parity: Bows liegen im WeaponCatalog, nicht im
+                    // OffhandCatalog. Eigener Bridge-Pfad, damit der Ranged-
+                    // Slot in m_CurrentRangedId landet und Aimed Shot &Co. die
+                    // korrekte Bogen-Definition aus CurrentRangedWeapon lesen.
+                    m_Combat.Server_ApplyRangedFromTemplate(newTemplateId);
                     break;
             }
         }

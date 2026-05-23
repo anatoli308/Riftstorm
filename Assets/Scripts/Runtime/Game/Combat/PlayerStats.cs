@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Riftstorm.Game.Items;
 using UnityEngine;
 
@@ -116,9 +117,12 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Basis-Wert aus <see cref="UnitStats"/> (Inspector-konfiguriert, ggf.
-        /// per <c>UnitStats.ApplyBaseStats</c> ueberschrieben). Stats ohne
-        /// Mapping in UnitStats geben 0 zurueck — Aggregator faellt damit
-        /// implizit auf den Equipment-Bonus zurueck.
+        /// per <c>UnitStats.ApplyBaseStats</c> ueberschrieben). Liest gezielt
+        /// die <c>Raw*</c>-Accessoren, damit kein Zyklus entsteht: die
+        /// oeffentlichen <c>UnitStats</c>-Getter routen ihrerseits durch
+        /// <see cref="GetTotal"/>, das wiederum <c>GetBase</c> aufruft.
+        /// Stats ohne Mapping in UnitStats geben 0 zurueck — Aggregator faellt
+        /// damit implizit auf den Equipment-Bonus zurueck.
         /// </summary>
         public int GetBase(StatId stat)
         {
@@ -128,19 +132,22 @@ namespace Riftstorm.Game.Combat
             }
             switch (stat)
             {
-                case StatId.Health: return m_BaseStats.MaxHp;
-                case StatId.ArmorValue: return m_BaseStats.Armor;
-                case StatId.Strength: return m_BaseStats.Strength;
-                case StatId.Willpower: return m_BaseStats.Willpower;
-                case StatId.Intelligence: return m_BaseStats.Intelligence;
-                case StatId.WeaponValue: return m_BaseStats.WeaponDamage;
-                case StatId.MeleeCritical: return m_BaseStats.CritChance;
-                case StatId.DodgeRating: return m_BaseStats.DodgeChance;
-                case StatId.BlockRating: return m_BaseStats.BlockChance;
-                case StatId.ResistFire: return m_BaseStats.ResistFire;
-                case StatId.ResistFrost: return m_BaseStats.ResistFrost;
-                case StatId.ResistShadow: return m_BaseStats.ResistShadow;
-                case StatId.ResistHoly: return m_BaseStats.ResistHoly;
+                case StatId.Health: return m_BaseStats.RawMaxHp;
+                case StatId.ArmorValue: return m_BaseStats.RawArmor;
+                case StatId.Strength: return m_BaseStats.RawStrength;
+                case StatId.Willpower: return m_BaseStats.RawWillpower;
+                case StatId.Intelligence: return m_BaseStats.RawIntelligence;
+                case StatId.WeaponValue: return m_BaseStats.RawWeaponDamage;
+                case StatId.RangedWeaponValue: return m_BaseStats.RawRangedWeaponDamage;
+                case StatId.MeleeCritical: return m_BaseStats.RawMeleeCritChance;
+                case StatId.RangedCritical: return m_BaseStats.RawRangedCritChance;
+                case StatId.SpellCritical: return m_BaseStats.RawSpellCritChance;
+                case StatId.DodgeRating: return m_BaseStats.RawDodgeChance;
+                case StatId.BlockRating: return m_BaseStats.RawBlockChance;
+                case StatId.ResistFire: return m_BaseStats.RawResistFire;
+                case StatId.ResistFrost: return m_BaseStats.RawResistFrost;
+                case StatId.ResistShadow: return m_BaseStats.RawResistShadow;
+                case StatId.ResistHoly: return m_BaseStats.RawResistHoly;
                 default: return 0;
             }
         }
@@ -169,23 +176,50 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            int slotsRead = 0;
+            int slotsWithItem = 0;
+            int slotsResolved = 0;
             for (int slotIdx = 1; slotIdx <= PlayerEquipment.SlotCount; slotIdx++)
             {
                 EquipSlot slot = (EquipSlot)slotIdx;
                 int templateId = m_Equipment.GetEquipped(slot);
+                slotsRead++;
                 if (templateId <= 0)
                 {
                     continue;
                 }
+                slotsWithItem++;
                 if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null)
                 {
+                    Debug.LogWarning($"[PlayerStats] Recompute: Slot {slot} hat Template {templateId}, aber ItemCatalogLoader liefert null.");
                     continue;
                 }
+                slotsResolved++;
                 AccumulateStat(template.StatType1, template.StatValue1);
                 AccumulateStat(template.StatType2, template.StatValue2);
                 AccumulateStat(template.StatType3, template.StatValue3);
                 AccumulateStat(template.StatType4, template.StatValue4);
+                Debug.Log(
+                    $"[PlayerStats] Recompute: Slot {slot} Template {templateId} -> "
+                    + $"({template.StatType1}:{template.StatValue1}, {template.StatType2}:{template.StatValue2}, "
+                    + $"{template.StatType3}:{template.StatValue3}, {template.StatType4}:{template.StatValue4})");
+
+                // Affixe (Phase 18): zusaetzliche Stat-Boni aus den Rolls. Gems
+                // bleiben fuer Phase 19 ausgespart (separates Schema in _gems.json).
+                ItemInstance instance = m_Equipment.GetEquippedInstance(slot);
+                AccumulateAffixStats(instance, slot);
             }
+
+            // Aggregierte Summen als kompakte Zeile loggen, damit auf einen Blick
+            // sichtbar ist, ob die Equipment-Boni wirklich beim Aggregator
+            // ankommen. Wird in Phase 17 / nach dem Debugging wieder entfernt.
+            StringBuilder sums = new(64);
+            foreach (KeyValuePair<StatId, int> kv in m_EquipmentSums)
+            {
+                if (sums.Length > 0) sums.Append(", ");
+                sums.Append(kv.Key).Append('=').Append(kv.Value);
+            }
+            Debug.Log($"[PlayerStats] Recompute done (slots={slotsRead}, items={slotsWithItem}, resolved={slotsResolved}). Sums: [{sums}]");
 
             StatsChanged?.Invoke();
         }
@@ -204,6 +238,51 @@ namespace Riftstorm.Game.Combat
             else
             {
                 m_EquipmentSums[id] = statValue;
+            }
+        }
+
+        /// <summary>
+        /// Loest die beiden Affix-Slots einer <see cref="ItemInstance"/> ueber
+        /// den <see cref="AffixCatalogLoader"/> auf und summiert ihre vier
+        /// Stat-Paare in <see cref="m_EquipmentSums"/>. Score-Multiplikator:
+        /// <c>final = round(statValue * (0.5 + score/200))</c> \u2014 d. h.
+        /// Score 0 = 50 %, Score 100 = 100 %. Pure Daten, kein Round-Tripping
+        /// ueber NetCode; PlayerStats sieht denselben Snapshot wie das HUD.
+        /// </summary>
+        private void AccumulateAffixStats(ItemInstance instance, EquipSlot slot)
+        {
+            if (instance.IsEmpty)
+            {
+                return;
+            }
+            for (int affixSlot = 1; affixSlot <= 2; affixSlot++)
+            {
+                (ushort affixId, byte score) = instance.GetAffix(affixSlot);
+                if (affixId == 0)
+                {
+                    continue;
+                }
+                if (!AffixCatalogLoader.TryGetAffix(affixId, out ItemAffix affix) || affix == null)
+                {
+                    Debug.LogWarning($"[PlayerStats] Recompute: Slot {slot} Affix-Slot {affixSlot} verweist auf unbekannten Affix-Entry {affixId}.");
+                    continue;
+                }
+                float multiplier = 0.5f + (score / 200f);
+                for (int statSlot = 0; statSlot < 4; statSlot++)
+                {
+                    (int statType, float statValue) = affix.GetStat(statSlot);
+                    if (statType <= 0 || statValue == 0f)
+                    {
+                        continue;
+                    }
+                    int scaled = Mathf.RoundToInt(statValue * multiplier);
+                    if (scaled == 0)
+                    {
+                        continue;
+                    }
+                    AccumulateStat(statType, scaled);
+                }
+                Debug.Log($"[PlayerStats] Recompute: Slot {slot} Affix '{affix.Name}' (#{affixId}, score={score}, mult={multiplier:0.00}).");
             }
         }
     }

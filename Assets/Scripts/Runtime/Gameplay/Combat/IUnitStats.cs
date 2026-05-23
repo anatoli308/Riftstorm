@@ -46,8 +46,39 @@ namespace Riftstorm.Gameplay.Combat
         /// wenn kein konkretes <c>WeaponDefinition</c>-Asset vorliegt.</summary>
         int WeaponDamage => 0;
 
-        /// <summary>Crit-Chance in Prozent (additiv auf <c>BaseCritChance</c>).</summary>
-        int CritChance => 0;
+        /// <summary>Ranged-Waffenschaden — analog zu <see cref="WeaponDamage"/>,
+        /// aber fuer Fernkampf-Effekte (Bow/Crossbow/Gun). Im Spell-Pfad
+        /// konsumiert von <see cref="CombatFormulas.CalculateSpellDamage"/>
+        /// wenn <c>useRangedWeapon=true</c>.</summary>
+        int RangedWeaponDamage => 0;
+
+        /// <summary>Basis-Schaden der aktuell ausgeruesteten Melee-Waffe
+        /// (<c>weapon.BaseDamage</c>). 0, wenn keine Melee-Waffe equipped
+        /// oder keine <c>WeaponDefinition</c> aufgeloest werden konnte.
+        /// Wird im <see cref="CombatFormulas.CalculateSpellDamage"/>-Pfad
+        /// fuer <c>WeaponDamage</c>-Spells (z.B. Sinister Strike) zur
+        /// echten Waffenskalierung konsumiert.</summary>
+        int BaseWeaponDamage => 0;
+
+        /// <summary>Basis-Schaden der aktuell ausgeruesteten Ranged-Waffe
+        /// (Bow/Crossbow/Gun). 0, wenn keine Ranged-Waffe equipped ist.
+        /// Pendant zu <see cref="BaseWeaponDamage"/> fuer Ranged-Spells
+        /// (z.B. Aimed Shot).</summary>
+        int BaseRangedWeaponDamage => 0;
+
+        /// <summary>Melee-Crit-Chance in Prozent (additiv auf <c>BaseCritChance</c>),
+        /// konsumiert von <see cref="CombatFormulas.RollMeleeHit"/>.</summary>
+        int MeleeCritChance => 0;
+
+        /// <summary>Ranged-Crit-Chance in Prozent. Reserviert fuer einen kuenftigen
+        /// separaten Ranged-Hit-Pfad; aktuell laufen Ranged-Skills ueber den
+        /// Spell-Pfad und nutzen daher <see cref="SpellCritChance"/>.</summary>
+        int RangedCritChance => 0;
+
+        /// <summary>Spell-Crit-Chance in Prozent (additiv auf <c>BaseCritChance</c>),
+        /// konsumiert von <see cref="CombatFormulas.RollSpellHit"/> und
+        /// <see cref="CombatFormulas.CalculateSpellHeal"/>.</summary>
+        int SpellCritChance => 0;
 
         /// <summary>Dodge-Chance in Prozent (additiv auf <c>BaseDodgeChance</c>).</summary>
         int DodgeChance => 0;

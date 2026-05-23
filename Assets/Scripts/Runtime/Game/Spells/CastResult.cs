@@ -70,8 +70,14 @@ namespace Riftstorm.Game.Spells
         LineOfSight = 42,
 
         // Equipment
-        /// <summary>Falsche oder fehlende Waffe ausgerüstet.</summary>
+        /// <summary>Falsche oder fehlende Waffe ausgerüstet (Generic-Fallback).</summary>
         WrongEquipment = 50,
+        /// <summary>Spell verlangt eine Melee-Waffe, keine equipped.</summary>
+        NoMeleeWeapon = 51,
+        /// <summary>Spell verlangt ein Schild im Off-Hand, keines equipped.</summary>
+        NoShield = 52,
+        /// <summary>Spell verlangt eine Ranged-Waffe (Bow/Crossbow/Gun), keine equipped.</summary>
+        NoRangedWeapon = 53,
 
         // Area / Context
         /// <summary>Spell in diesem Gebiet nicht erlaubt (z. B. Stadt).</summary>
@@ -118,6 +124,9 @@ namespace Riftstorm.Game.Spells
             CastResult.TooClose           => "Target too close.",
             CastResult.LineOfSight        => "No line of sight.",
             CastResult.WrongEquipment     => "Wrong equipment.",
+            CastResult.NoMeleeWeapon      => "No melee weapon equipped.",
+            CastResult.NoShield           => "No shield equipped.",
+            CastResult.NoRangedWeapon     => "No ranged weapon equipped.",
             CastResult.AreaUnavailable    => "Can't do that here.",
             CastResult.CombatRequired     => "Only in combat.",
             CastResult.OutOfCombat        => "Not in combat.",

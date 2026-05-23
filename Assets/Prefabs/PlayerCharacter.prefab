@@ -29,6 +29,7 @@ GameObject:
   - component: {fileID: 3917187257102788864}
   - component: {fileID: -2832614196279754095}
   - component: {fileID: 8196984269171002894}
+  - component: {fileID: -6804158110703384957}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -140,7 +141,7 @@ MonoBehaviour:
   m_CombatVisuals: {fileID: -2700015800232922021}
   m_Combat: {fileID: -525944449724255899}
   m_TargetSelection: {fileID: 4317724205577696828}
-  m_Stats: {fileID: 0}
+  m_Stats: {fileID: 5708302143726135351}
   m_Speed: 4
   m_IdleAnimation: stance
   m_RunAnimation: run
@@ -206,10 +207,17 @@ MonoBehaviour:
   m_Strength: 5
   m_Armor: 5
   m_Level: 1
+  m_Fortitude: 5
+  m_Courage: 5
   m_Intelligence: 5
   m_Willpower: 5
   m_WeaponDamage: 5
-  m_CritChance: 0
+  m_RangedWeaponDamage: 0
+  m_HpRegen: 0
+  m_ManaRegen: 0
+  m_MeleeCritChance: 0
+  m_RangedCritChance: 0
+  m_SpellCritChance: 0
   m_DodgeChance: 0
   m_ParryChance: 0
   m_BlockChance: 0
@@ -228,6 +236,7 @@ MonoBehaviour:
   m_DisplayName: 
   m_FactionId: 1
   m_IsPlayer: 1
+  m_PlayerStats: {fileID: 8196984269171002894}
 --- !u!114 &6273741711409788343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,6 +435,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Items.PlayerEquipment
   ShowTopMostFoldoutHeaderGroup: 1
+  m_DefaultMainHandTemplate: 1018
+  m_DefaultOffhandTemplate: 17
 --- !u!114 &-2832614196279754095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +463,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.PlayerStats
   m_BaseStats: {fileID: 5708302143726135351}
   m_Equipment: {fileID: 3917187257102788864}
+--- !u!114 &-6804158110703384957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64fed826ef5d31749ad33b0f8df775d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Items.PlayerInventory
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

@@ -96,6 +96,55 @@ namespace Riftstorm.Game.UI.Character
         public int statsWidth = 170;
 
         // ---------------------------------------------------------------------
+        // Character Preview (Render-to-Texture Paper-Doll)
+        // ---------------------------------------------------------------------
+
+        /// <summary>True ⇒ Live-Preview des Spielers im Panel rendern.</summary>
+        public bool previewEnabled = true;
+
+        /// <summary>X-Offset im Panel fuer das Preview-Rechteck.</summary>
+        public int previewLeft = 170;
+
+        /// <summary>Y-Offset im Panel fuer das Preview-Rechteck.</summary>
+        public int previewTop = 16;
+
+        /// <summary>Breite des Preview-Rechtecks (UI px).</summary>
+        public int previewWidth = 160;
+
+        /// <summary>Hoehe des Preview-Rechtecks (UI px).</summary>
+        public int previewHeight = 220;
+
+        /// <summary>Aufloesung der RenderTexture (quadratisch, in Texel).</summary>
+        public int previewTextureSize = 256;
+
+        /// <summary>
+        /// Orthografische Halbhoehe der Preview-Kamera in World-Units. Bestimmt
+        /// wie stark der Spieler herangezoomt wird (kleiner = naeher).
+        /// </summary>
+        public float previewOrthoSize = 1.2f;
+
+        /// <summary>
+        /// Welt-Offset der Preview-Kamera relativ zur Spielerposition (Local-XYZ).
+        /// Default: leicht ueber Schulterhoehe vor dem Spieler, isometrisch nach
+        /// unten geneigt.
+        /// </summary>
+        public float previewCameraOffsetX = 0f;
+        public float previewCameraOffsetY = 1.6f;
+        public float previewCameraOffsetZ = -3.2f;
+
+        /// <summary>Pitch-Winkel der Preview-Kamera in Grad (0 = horizontal).</summary>
+        public float previewCameraPitchDeg = 15f;
+
+        /// <summary>
+        /// Hintergrundfarbe der Preview (RGBA 0..1). Alpha &lt; 1 erlaubt
+        /// Durchscheinen des Panel-Backgrounds.
+        /// </summary>
+        public float previewBackgroundR = 0.05f;
+        public float previewBackgroundG = 0.05f;
+        public float previewBackgroundB = 0.07f;
+        public float previewBackgroundA = 0.85f;
+
+        // ---------------------------------------------------------------------
         // Input
         // ---------------------------------------------------------------------
 

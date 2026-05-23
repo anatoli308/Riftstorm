@@ -134,7 +134,9 @@ namespace Riftstorm.Game.Items
                 return false;
             }
             int newCount = cur.Count - count;
-            m_Slots[slotIndex] = newCount > 0 ? new InventoryItem(cur.TemplateId, newCount) : InventoryItem.Empty;
+            // Phase 19: Instance erhalten, nicht aus TemplateId neu bauen
+            // (sonst gehen Rarity/Affixe bei Stack-Decrement verloren).
+            m_Slots[slotIndex] = newCount > 0 ? new InventoryItem(cur.Instance, newCount) : InventoryItem.Empty;
             return true;
         }
 
@@ -238,6 +240,32 @@ namespace Riftstorm.Game.Items
                 }
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Server-API (Phase 19): legt eine fertig gerollte
+        /// <see cref="ItemInstance"/> in den ersten freien Slot. Macht KEIN
+        /// Stack-Merge — Equipment-Items sind nicht stackable und jede
+        /// Instanz hat ihren eigenen Affix-Roll. Gibt <c>false</c> zurueck,
+        /// wenn das Inventar voll ist.
+        /// <para>
+        /// Hauptaufrufer: <c>PlayerEquipment.TryUnequipServer</c> — legt das
+        /// gerade ausgeruestete Item samt Affixen zurueck ins Inventar.
+        /// </para>
+        /// </summary>
+        public bool TryAddInstanceServer(ItemInstance instance)
+        {
+            if (!IsServer || instance.IsEmpty)
+            {
+                return false;
+            }
+            int slot = FindFirstEmptySlot();
+            if (slot < 0)
+            {
+                return false;
+            }
+            m_Slots[slot] = new InventoryItem(instance, 1);
+            return true;
         }
 
         /// <summary>

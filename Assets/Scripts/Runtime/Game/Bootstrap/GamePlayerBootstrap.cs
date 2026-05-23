@@ -109,10 +109,19 @@ namespace Riftstorm.Game.Bootstrap
             // Fallback, falls der Server keinen Default gesetzt hat.
             int mainHandOrder = bodyAtlasIds.Count;
             int offHandOrder = bodyAtlasIds.Count + 1;
+            int rangedOrder = bodyAtlasIds.Count + 2;
             FlareLayerAnimator mainHandLayer = CreateLayer(visualsRoot.transform, PlayerEquipmentVisuals.MainHandLayerName, mainHandOrder);
             character.RegisterLayer(mainHandLayer);
             FlareLayerAnimator offHandLayer = CreateLayer(visualsRoot.transform, PlayerEquipmentVisuals.OffHandLayerName, offHandOrder);
             character.RegisterLayer(offHandLayer);
+            // Ranged-Schicht (Bow/Crossbow/Gun) liegt ueber MainHand+OffHand, ist
+            // initial leer und wird von PlayerEquipmentVisuals.ShowRangedForCast
+            // waehrend eines Schuss-Casts mit dem Bogen-Atlas befuellt. Muss
+            // hier registriert werden, weil FlareCharacter.SetLayerAtlas eine
+            // bereits registrierte Schicht mit passendem GameObject-Namen
+            // braucht; ohne Registration bleibt der Bogen unsichtbar.
+            FlareLayerAnimator rangedLayer = CreateLayer(visualsRoot.transform, PlayerEquipmentVisuals.RangedLayerName, rangedOrder);
+            character.RegisterLayer(rangedLayer);
 
             character.Play(m_InitialAnimation, true);
             character.SetDirection(2); // FLARE 2 = Süd, Standard-Blickrichtung Topdown.

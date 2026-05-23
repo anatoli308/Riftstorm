@@ -27,6 +27,12 @@ namespace Riftstorm.Game.Spells
             r = CheckResources(caster, spell);
             if (r != CastResult.Success) { return r; }
 
+            r = CheckEquipment(caster, spell);
+            if (r != CastResult.Success) { return r; }
+
+            r = CheckRangedAgainstDeadTarget(spell, target);
+            if (r != CastResult.Success) { return r; }
+
             r = CheckTarget(caster, spell, target);
             if (r != CastResult.Success) { return r; }
 
@@ -74,6 +80,62 @@ namespace Riftstorm.Game.Spells
                     return CastResult.OnCooldown;
                 }
             }
+            return CastResult.Success;
+        }
+
+        /// <summary>
+        /// Validiert die ausgeruestete Waffe gegen <see cref="SpellTemplate.RequiredEquipment"/>.
+        /// Werte aus <c>_templates.json</c> (FLARE/MaNGOS-Konvention):
+        /// <list type="bullet">
+        ///   <item><description><c>0</c> — keine Anforderung.</description></item>
+        ///   <item><description><c>10</c> — Melee-Waffe (Sinister Strike, Blindside, ...).</description></item>
+        ///   <item><description><c>11</c> — Schild (Shield Block, Aegis of Valor) — aktuell nicht modelliert, durchgewunken.</description></item>
+        ///   <item><description><c>12</c> — Ranged-Waffe (Aimed Shot, Multi-Shot, ...).</description></item>
+        /// </list>
+        /// Detektion ueber <see cref="IUnitStats.BaseWeaponDamage"/> / <see cref="IUnitStats.BaseRangedWeaponDamage"/>:
+        /// <c>UnitStats</c> liefert hier den BaseDamage der aktuell equippten Waffe
+        /// nur dann zurueck, wenn die Waffenkategorie passt (siehe Fix Round 1).
+        /// Damit erkennt der Check sowohl "gar keine Waffe" als auch "falsche
+        /// Kategorie" (z. B. Aimed Shot mit blossen Faeusten — Unarmed-Fallback
+        /// liefert BaseWeaponDamage&gt;0 aber BaseRangedWeaponDamage=0).
+        /// </summary>
+        static CastResult CheckEquipment(ICombatUnit caster, SpellTemplate spell)
+        {
+            long req = spell.RequiredEquipment;
+            if (req == 0L) { return CastResult.Success; }
+
+            IUnitStats stats = caster.Stats;
+            if (stats == null) { return CastResult.Success; }
+
+            switch (req)
+            {
+                case 10L:
+                    if (stats.BaseWeaponDamage <= 0) { return CastResult.NoMeleeWeapon; }
+                    break;
+                case 12L:
+                    if (stats.BaseRangedWeaponDamage <= 0) { return CastResult.NoRangedWeapon; }
+                    break;
+                // 11 = Shield: noch nicht modelliert (kein OffHand-Stat), bewusst durchgewunken.
+                default:
+                    break;
+            }
+            return CastResult.Success;
+        }
+
+        /// <summary>
+        /// Harter Guard fuer Ranged-Spells (Aimed Shot / Multi-Shot / ...) auf
+        /// tote Ziele: ein Bogenschuss auf eine Leiche ergibt nie Sinn,
+        /// unabhaengig vom <see cref="SpellAttributes.CanTargetDead"/>-Flag in
+        /// den Source-Daten. Der allgemeine <c>CheckTarget</c>-Pfad blockt das
+        /// zwar schon \u2014 aber nur, wenn das Flag fehlt; <c>CanTargetDead</c>
+        /// existiert fuer Effekte wie Resurrect/Loot und darf bei Ranged nicht
+        /// versehentlich Schusswaffen freischalten.
+        /// </summary>
+        static CastResult CheckRangedAgainstDeadTarget(SpellTemplate spell, ICombatUnit target)
+        {
+            if (spell.RequiredEquipment != 12L) { return CastResult.Success; }
+            if (target == null) { return CastResult.Success; }
+            if (target.IsDead) { return CastResult.TargetDead; }
             return CastResult.Success;
         }
 

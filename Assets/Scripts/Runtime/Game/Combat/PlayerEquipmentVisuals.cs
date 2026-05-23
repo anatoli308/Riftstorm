@@ -33,6 +33,12 @@ namespace Riftstorm.Game.Combat
         /// <summary>Layer-Name fuer die Offhand (Buckler/Shield/Torch/...).</summary>
         public const string OffHandLayerName = "OffHand";
 
+        /// <summary>Layer-Name fuer die Ranged-Waffe (Bow/Crossbow/Gun) auf dem
+        /// Ranged-Slot. Eigene FLARE-Schicht, damit Bogen + Schwert/Schild
+        /// gleichzeitig modelliert sein koennen \u2014 der Renderer zeigt aber pro
+        /// Frame nur die "Stance"-Variante an (siehe Apply-Logik unten).</summary>
+        public const string RangedLayerName = "Ranged";
+
         private FlareCharacter m_Character;
         private FlareAtlasLoader m_Loader;
         private PlayerCombat m_Combat;
@@ -43,6 +49,9 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>Aktuell auf OffHand sichtbare Gear-Id (Cache fuer Idempotenz-Check).</summary>
         private string m_AppliedOffHandId = string.Empty;
+
+        /// <summary>Aktuell auf Ranged sichtbare Gear-Id (Cache fuer Idempotenz-Check).</summary>
+        private string m_AppliedRangedId = string.Empty;
 
         /// <summary>
         /// Verdrahtet die Komponente nach dem Visual-Aufbau. Muss vom
@@ -70,12 +79,17 @@ namespace Riftstorm.Game.Combat
 
             m_Combat.WeaponChanged += OnWeaponChanged;
             m_Combat.OffhandChanged += OnOffhandChanged;
+            // RangedChanged wird bewusst NICHT mehr abonniert: der Bogen ist
+            // ein Cast-getriggertes Visual (siehe ShowRangedForCast/
+            // HideRangedAfterCast), keine Dauer-Stance. MainHand + OffHand
+            // bleiben in jeder Frame sichtbar; der Bogen erscheint nur fuer
+            // die Dauer eines Shoot-Casts und verschwindet wieder.
 
-            // Aktuellen Stand sofort anwenden — die NetworkVariable haelt zum
+            // Aktuellen Stand sofort anwenden \u2014 die NetworkVariable haelt zum
             // Spawn-Zeitpunkt bereits den Server-Default (z. B. "longsword" /
             // "buckler"), und OnValueChanged feuert nur bei spaeteren Aenderungen.
-            ApplyAsync(MainHandLayerName, m_Combat.CurrentWeaponId, true);
-            ApplyAsync(OffHandLayerName, m_Combat.CurrentOffhandId, false);
+            ApplyAsync(MainHandLayerName, m_Combat.CurrentWeaponId, AppliedSlot.Main);
+            ApplyAsync(OffHandLayerName, m_Combat.CurrentOffhandId, AppliedSlot.Off);
         }
 
         private void OnDestroy()
@@ -98,16 +112,58 @@ namespace Riftstorm.Game.Combat
             }
         }
 
-        private void OnWeaponChanged(string _, string newId) => ApplyAsync(MainHandLayerName, newId, true);
+        private void OnWeaponChanged(string _, string newId) => ApplyAsync(MainHandLayerName, newId, AppliedSlot.Main);
 
-        private void OnOffhandChanged(string _, string newId) => ApplyAsync(OffHandLayerName, newId, false);
+        private void OnOffhandChanged(string _, string newId) => ApplyAsync(OffHandLayerName, newId, AppliedSlot.Off);
+
+        /// <summary>
+        /// Wechselt die Visuals fuer einen Shoot-Cast: MainHand + OffHand werden
+        /// kurzzeitig ausgeblendet und der Ranged-Atlas (Bow/Crossbow/Gun) auf der
+        /// <see cref="RangedLayerName"/>-Schicht eingeblendet. Wird vom
+        /// <see cref="PlayerCombat.BeginCastClientRpc"/> auf allen Peers gerufen,
+        /// sobald ein Spell mit <c>RequiredEquipment == 12</c> (Ranged) gestartet
+        /// wird. <see cref="HideRangedAfterCast"/> stellt am Cast-Ende den
+        /// MainHand/OffHand-Stand aus den server-autoritativen NetVars wieder her.
+        /// </summary>
+        public void ShowRangedForCast(string rangedId)
+        {
+            // Main/Offhand kurzzeitig ausblenden — der Bogen ist die einzige
+            // sichtbare Hand-Waffe waehrend des Schuss-Casts.
+            ApplyAsync(MainHandLayerName, string.Empty, AppliedSlot.Main);
+            ApplyAsync(OffHandLayerName, string.Empty, AppliedSlot.Off);
+            ApplyAsync(RangedLayerName, rangedId, AppliedSlot.Ranged);
+        }
+
+        /// <summary>
+        /// Entfernt den Ranged-Atlas und stellt MainHand + OffHand aus den
+        /// aktuellen <see cref="PlayerCombat"/>-NetVars wieder her. Idempotent —
+        /// wiederholte Aufrufe sind ein No-Op. Wird vom
+        /// <see cref="PlayerCombat.EndCastClientRpc"/> am Cast-Ende
+        /// (Erfolg ODER Abbruch) auf allen Peers gerufen.
+        /// </summary>
+        public void HideRangedAfterCast()
+        {
+            ApplyAsync(RangedLayerName, string.Empty, AppliedSlot.Ranged);
+            if (m_Combat != null)
+            {
+                ApplyAsync(MainHandLayerName, m_Combat.CurrentWeaponId, AppliedSlot.Main);
+                ApplyAsync(OffHandLayerName, m_Combat.CurrentOffhandId, AppliedSlot.Off);
+            }
+        }
+
+        /// <summary>
+        /// Drei Layer-Slots, deren Idempotenz-Cache getrennt gehalten wird.
+        /// Wird intern an <see cref="ApplyAsync"/> uebergeben, damit die
+        /// Race-Pruefung beim Async-Resume den richtigen Cache vergleicht.
+        /// </summary>
+        private enum AppliedSlot { Main, Off, Ranged }
 
         /// <summary>
         /// Laedt den Atlas asynchron und tauscht ihn auf der passenden FLARE-
         /// Schicht. Leere Id leert die Schicht (unsichtbar) — entspricht der
         /// <c>clearEquipmentModel(EquipSlot)</c>-Semantik des Originals.
         /// </summary>
-        private async void ApplyAsync(string layerName, string gearId, bool isMainHand)
+        private async void ApplyAsync(string layerName, string gearId, AppliedSlot slot)
         {
             if (m_Character == null || m_Loader == null)
             {
@@ -117,15 +173,20 @@ namespace Riftstorm.Game.Combat
             string id = gearId ?? string.Empty;
 
             // Idempotenz: wenn die Schicht bereits genau diese Id zeigt, ueberspringen.
-            if (isMainHand)
+            switch (slot)
             {
-                if (m_AppliedMainHandId == id) { return; }
-                m_AppliedMainHandId = id;
-            }
-            else
-            {
-                if (m_AppliedOffHandId == id) { return; }
-                m_AppliedOffHandId = id;
+                case AppliedSlot.Main:
+                    if (m_AppliedMainHandId == id) { return; }
+                    m_AppliedMainHandId = id;
+                    break;
+                case AppliedSlot.Off:
+                    if (m_AppliedOffHandId == id) { return; }
+                    m_AppliedOffHandId = id;
+                    break;
+                case AppliedSlot.Ranged:
+                    if (m_AppliedRangedId == id) { return; }
+                    m_AppliedRangedId = id;
+                    break;
             }
 
             if (string.IsNullOrEmpty(id))
@@ -155,7 +216,13 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            string stillCurrent = isMainHand ? m_AppliedMainHandId : m_AppliedOffHandId;
+            string stillCurrent = slot switch
+            {
+                AppliedSlot.Main => m_AppliedMainHandId,
+                AppliedSlot.Off => m_AppliedOffHandId,
+                AppliedSlot.Ranged => m_AppliedRangedId,
+                _ => string.Empty
+            };
             if (stillCurrent != id)
             {
                 return;

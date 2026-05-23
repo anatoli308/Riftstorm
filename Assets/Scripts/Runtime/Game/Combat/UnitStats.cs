@@ -44,16 +44,42 @@ namespace Riftstorm.Game.Combat
         [SerializeField, Min(0)] private int m_Armor = 0;
         [SerializeField, Min(1)] private int m_Level = 1;
 
+        [Header("Primary Attributes (Original-Stat-Set)")]
+        [Tooltip("Fortitude (FRT) — skaliert HP-Pool und (perspektivisch) Resistenz gegen " +
+                 "DOTs/CC. Aktuell reines Display-Stat; HP-Skalierung erfolgt im ExperienceSystem.")]
+        [SerializeField, Min(0)] private int m_Fortitude = 0;
+        [Tooltip("Courage (CRG) — fünftes Primary-Attribut aus dem Original. Klassen-spezifische " +
+                 "Wirkung (Paladin/Bishop). Aktuell reines Display-Stat.")]
+        [SerializeField, Min(0)] private int m_Courage = 0;
+
         [Header("Magic Stats")]
         [Tooltip("Skaliert magische Spell-Damage und (mit niedrigerer Gewichtung) Heals.")]
         [SerializeField, Min(0)] private int m_Intelligence = 0;
         [Tooltip("Skaliert Heals und (perspektivisch) Mana-Regeneration.")]
         [SerializeField, Min(0)] private int m_Willpower = 0;
-        [Tooltip("Grundschaden fuer WeaponDamage-Effekte ohne explizites Weapon-Asset.")]
+        [Tooltip("Grundschaden fuer WeaponDamage-Effekte ohne explizites Weapon-Asset (Melee).")]
         [SerializeField, Min(0)] private int m_WeaponDamage = 0;
+        [Tooltip("Grundschaden fuer Ranged-WeaponDamage-Effekte ohne explizites Weapon-Asset. " +
+                 "Entspricht 'RangedWeaponValue' aus dem Original-Stat-Enum.")]
+        [SerializeField, Min(0)] private int m_RangedWeaponDamage = 0;
+
+        [Header("Regeneration")]
+        [Tooltip("HP-Regeneration pro Tick (Server-Tick, siehe Regeneration-System). " +
+                 "Entspricht 'Regeneration' aus dem Original-Stat-Enum.")]
+        [SerializeField, Min(0)] private int m_HpRegen = 0;
+        [Tooltip("Mana-Regeneration pro Tick. Entspricht 'Meditate' aus dem Original-Stat-Enum.")]
+        [SerializeField, Min(0)] private int m_ManaRegen = 0;
 
         [Header("Hit-Modifiers (in Prozent)")]
-        [SerializeField, Range(0, 100)] private int m_CritChance = 0;
+        [Tooltip("Crit-Chance fuer Melee-Angriffe (Original 'MeleeCritical'). " +
+                 "Wird von CombatFormulas.RollMeleeHit konsumiert.")]
+        [SerializeField, Range(0, 100)] private int m_MeleeCritChance = 0;
+        [Tooltip("Crit-Chance fuer Ranged-Angriffe (Original 'RangedCritical'). Reserviert fuer einen " +
+                 "separaten Ranged-Hit-Pfad; aktuell laufen Ranged-Skills ueber RollSpellHit und nutzen SpellCrit.")]
+        [SerializeField, Range(0, 100)] private int m_RangedCritChance = 0;
+        [Tooltip("Crit-Chance fuer Spells (Original 'SpellCritical'). Wird von " +
+                 "CombatFormulas.RollSpellHit und CalculateSpellHeal konsumiert.")]
+        [SerializeField, Range(0, 100)] private int m_SpellCritChance = 0;
         [SerializeField, Range(0, 100)] private int m_DodgeChance = 0;
         [SerializeField, Range(0, 100)] private int m_ParryChance = 0;
         [SerializeField, Range(0, 100)] private int m_BlockChance = 0;
@@ -108,6 +134,14 @@ namespace Riftstorm.Game.Combat
         [Tooltip("True ⇒ diese Unit ist ein menschlicher Spieler. Aktiviert Cooldown- und " +
                  "GCD-Tracking im SpellExecutor (Mobs ignorieren beides).")]
         [SerializeField] private bool m_IsPlayer = false;
+
+        [Header("Stat Aggregator (Player only)")]
+        [Tooltip("Optional. Wird in Awake auf das eigene GameObject aufgeloest. Wenn gesetzt, " +
+                 "routen alle <see cref=\"IUnitStats\"/>-Getter (ausser MaxHp) durch " +
+                 "<c>PlayerStats.GetTotal(StatId.X)</c> — damit fliessen Item-Boni " +
+                 "(StatType1..4 / StatValue1..4 aus _templates.json) in Combat/Spell-Formeln " +
+                 "und das HUD. NPCs lassen das Feld leer und nutzen weiter die Raw-Inspector-Werte.")]
+        [SerializeField] private PlayerStats m_PlayerStats;
 
         // -------------------------------------------------------------------------
         // Netzwerk-State
@@ -183,7 +217,13 @@ namespace Riftstorm.Game.Combat
         public int CurrentHp => m_CurrentHp.Value;
 
         /// <inheritdoc/>
-        public int MaxHp => m_MaxHp;
+        /// <remarks>
+        /// Aggregiert Item-Boni ueber <see cref="PlayerStats"/> (StatId.Health),
+        /// damit Templates mit <c>stat_type=2</c> (z. B. Longsword +10 HP) das
+        /// HP-Cap tatsaechlich anheben. Faellt auf den Inspector-Wert zurueck,
+        /// solange kein PlayerStats gebunden ist (NPCs, Tests).
+        /// </remarks>
+        public int MaxHp => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Health) : m_MaxHp;
 
         /// <summary>Aktuelle Mana (0 falls die Einheit keine Mana hat).</summary>
         public int CurrentMana => m_CurrentMana.Value;
@@ -195,40 +235,100 @@ namespace Riftstorm.Game.Combat
         public bool HasMana => m_MaxMana > 0;
 
         /// <inheritdoc/>
-        public int Strength => m_Strength;
+        public int Strength => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Strength) : m_Strength;
 
         /// <inheritdoc/>
-        public int Armor => m_Armor;
+        public int Armor => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ArmorValue) : m_Armor;
 
         /// <inheritdoc/>
         public int Level => m_Level;
 
         /// <inheritdoc/>
-        public int Intelligence => m_Intelligence;
+        public int Intelligence => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Intelligence) : m_Intelligence;
 
         /// <inheritdoc/>
-        public int Willpower => m_Willpower;
+        public int Willpower => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Willpower) : m_Willpower;
 
         /// <inheritdoc/>
-        public int WeaponDamage => m_WeaponDamage;
+        public int WeaponDamage => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.WeaponValue) : m_WeaponDamage;
+
+        /// <summary>Ranged-Waffenschaden (Original 'RangedWeaponValue'). Aggregiert Item-Boni
+        /// ueber <see cref="PlayerStats"/>, sobald gesetzt — sonst Raw-Inspector-Wert.</summary>
+        public int RangedWeaponDamage => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.RangedWeaponValue) : m_RangedWeaponDamage;
 
         /// <inheritdoc/>
-        public int CritChance => m_CritChance;
+        /// <remarks>
+        /// Spieler: liest <c>PlayerCombat.CurrentWeapon.BaseDamage</c>, sofern eine
+        /// Melee-Waffe equipped ist (inkl. "unarmed"-Fallback). NPCs: 0, weil sie
+        /// ihren Schaden ueber den <see cref="WeaponDamage"/>-Stat modellieren.
+        /// </remarks>
+        public int BaseWeaponDamage
+        {
+            get
+            {
+                if (m_PlayerCombat == null) { return 0; }
+                WeaponDefinition w = m_PlayerCombat.CurrentWeapon;
+                if (w == null || w.IsRanged) { return 0; }
+                return w.BaseDamage;
+            }
+        }
 
         /// <inheritdoc/>
-        public int DodgeChance => m_DodgeChance;
+        /// <remarks>
+        /// Spieler: liest <c>PlayerCombat.CurrentRangedWeapon.BaseDamage</c> aus
+        /// dem dedizierten Ranged-Slot (Bow/Crossbow/Gun). Liegt im Slot keine
+        /// Ranged-Waffe, ist das Ergebnis 0 — damit blockt
+        /// <c>SpellCaster.CheckEquipment</c> Ranged-Spells
+        /// (<c>required_equipment=12</c>) mit <c>NoRangedWeapon</c> und das HUD
+        /// zeigt den Ranged-Schaden korrekt als 0. NPCs: 0 (siehe
+        /// <see cref="BaseWeaponDamage"/>).
+        /// </remarks>
+        public int BaseRangedWeaponDamage
+        {
+            get
+            {
+                if (m_PlayerCombat == null) { return 0; }
+                WeaponDefinition w = m_PlayerCombat.CurrentRangedWeapon;
+                if (w == null) { return 0; }
+                return w.BaseDamage;
+            }
+        }
+
+        /// <summary>Fortitude — fuenftes Primary-Attribut, skaliert HP. Reines Display.</summary>
+        public int Fortitude => m_Fortitude;
+
+        /// <summary>Courage — fuenftes Primary-Attribut, klassenspezifisch. Reines Display.</summary>
+        public int Courage => m_Courage;
+
+        /// <summary>HP-Regeneration pro Tick (Original 'Regeneration'). Reines Display.</summary>
+        public int HpRegen => m_HpRegen;
+
+        /// <summary>Mana-Regeneration pro Tick (Original 'Meditate'). Reines Display.</summary>
+        public int ManaRegen => m_ManaRegen;
+
+        /// <inheritdoc/>
+        public int MeleeCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.MeleeCritical) : m_MeleeCritChance;
+
+        /// <inheritdoc/>
+        public int RangedCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.RangedCritical) : m_RangedCritChance;
+
+        /// <inheritdoc/>
+        public int SpellCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.SpellCritical) : m_SpellCritChance;
+
+        /// <inheritdoc/>
+        public int DodgeChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.DodgeRating) : m_DodgeChance;
 
         /// <inheritdoc/>
         public int ParryChance => m_ParryChance;
 
         /// <inheritdoc/>
-        public int BlockChance => m_BlockChance;
+        public int BlockChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockRating) : m_BlockChance;
 
         /// <inheritdoc/>
-        public int ResistFire => m_ResistFire;
+        public int ResistFire => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ResistFire) : m_ResistFire;
 
         /// <inheritdoc/>
-        public int ResistFrost => m_ResistFrost;
+        public int ResistFrost => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ResistFrost) : m_ResistFrost;
 
         /// <inheritdoc/>
         public int ResistArcane => m_ResistArcane;
@@ -237,10 +337,34 @@ namespace Riftstorm.Game.Combat
         public int ResistNature => m_ResistNature;
 
         /// <inheritdoc/>
-        public int ResistShadow => m_ResistShadow;
+        public int ResistShadow => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ResistShadow) : m_ResistShadow;
 
         /// <inheritdoc/>
-        public int ResistHoly => m_ResistHoly;
+        public int ResistHoly => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ResistHoly) : m_ResistHoly;
+
+        // -------------------------------------------------------------------------
+        // Raw-Accessors fuer den Stat-Aggregator
+        // -------------------------------------------------------------------------
+        // <see cref="PlayerStats.GetBase"/> liest diese rohen Inspector-Werte,
+        // um den Zyklus PlayerStats → UnitStats.Strength → PlayerStats zu
+        // vermeiden. NPCs nutzen sie nicht — deren oeffentliche IUnitStats-
+        // Getter fallen ohnehin direkt auf <c>m_X</c> zurueck (m_PlayerStats=null).
+        internal int RawMaxHp => m_MaxHp;
+        internal int RawStrength => m_Strength;
+        internal int RawArmor => m_Armor;
+        internal int RawIntelligence => m_Intelligence;
+        internal int RawWillpower => m_Willpower;
+        internal int RawWeaponDamage => m_WeaponDamage;
+        internal int RawRangedWeaponDamage => m_RangedWeaponDamage;
+        internal int RawMeleeCritChance => m_MeleeCritChance;
+        internal int RawRangedCritChance => m_RangedCritChance;
+        internal int RawSpellCritChance => m_SpellCritChance;
+        internal int RawDodgeChance => m_DodgeChance;
+        internal int RawBlockChance => m_BlockChance;
+        internal int RawResistFire => m_ResistFire;
+        internal int RawResistFrost => m_ResistFrost;
+        internal int RawResistShadow => m_ResistShadow;
+        internal int RawResistHoly => m_ResistHoly;
 
         /// <inheritdoc/>
         public int DamageDealtPctMod =>
@@ -501,19 +625,50 @@ namespace Riftstorm.Game.Combat
         // Lifecycle
         // -------------------------------------------------------------------------
 
+        private void Awake()
+        {
+            // Stat-Aggregator (Spieler-only) automatisch aufloesen. NPCs haben
+            // keine PlayerStats-Component → bleibt null → Getter fallen auf
+            // Raw-Inspector-Werte zurueck.
+            if (m_PlayerStats == null)
+            {
+                m_PlayerStats = GetComponent<PlayerStats>();
+            }
+        }
+
         /// <inheritdoc/>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             if (IsServer)
             {
-                m_CurrentHp.Value = m_MaxHp;
+                // Wichtig: MaxHp (aggregiert) statt m_MaxHp, damit Equipment-HP-Boni
+                // (z. B. Longsword +10 HP) das Cap bereits beim Initial-Fill anheben.
+                m_CurrentHp.Value = MaxHp;
                 m_CurrentMana.Value = m_MaxMana;
                 // Owner setzen — AuraManager liest IsStunned/Silenced/Rooted vom Owner
                 // selbst nicht, aber Aura-Effekte greifen darüber auf die Unit zu.
                 m_Auras.SetOwner(this);
                 m_Auras.OnChanged += ServerOnAurasChanged;
                 m_LastTickTime = Time.time;
+                // PlayerStats kennt das Equipment-Aggregat &#8212; sobald sich Items
+                // aendern, faellt evtl. MaxHp anders aus. ServerOnStatsChanged
+                // klammert CurrentHp und feuert HpChanged neu, damit HUDs/Bars
+                // den neuen Cap sehen. NPCs haben kein PlayerStats &#8594; Subscription
+                // wird uebersprungen.
+                if (m_PlayerStats != null)
+                {
+                    m_PlayerStats.StatsChanged += ServerOnStatsChanged;
+                }
+            }
+            // Client: gleicher Refire-Pfad ohne Server-Mutationen. PlayerStats
+            // läuft auf jedem Peer (EquipChanged -> RecomputeEquipmentSums)
+            // und kennt damit den neuen MaxHp-Cap. Ohne diese Subscription
+            // bekommt das PlayerFrameUI nur HP-Value-Changes mit, nicht den
+            // geänderten Cap nach Equip/Unequip.
+            if (!IsServer && m_PlayerStats != null)
+            {
+                m_PlayerStats.StatsChanged += ClientOnStatsChanged;
             }
             // Movement-Siblings einmalig aufloesen. Spieler-Prefab: PlayerMovement.
             // NPC-Prefab: NpcController. Beide nie gleichzeitig vorhanden &#8212;
@@ -525,8 +680,41 @@ namespace Riftstorm.Game.Combat
             m_CurrentHp.OnValueChanged += OnHpValueChangedInternal;
             m_CurrentMana.OnValueChanged += OnManaValueChangedInternal;
             // Initialwerte einmal feuern, damit UI-Schichten korrekt initialisieren.
-            HpChanged?.Invoke(m_CurrentHp.Value, m_MaxHp);
+            HpChanged?.Invoke(m_CurrentHp.Value, MaxHp);
             ManaChanged?.Invoke(m_CurrentMana.Value, m_MaxMana);
+        }
+
+        /// <summary>
+        /// Server-only: reagiert auf Equip-/Stat-&#196;nderungen. Wenn das
+        /// neue MaxHp gewachsen ist, bleibt CurrentHp wie er ist (Heal nur via
+        /// expliziten Heal-Pfad); wenn es geschrumpft ist, klammern wir
+        /// CurrentHp herunter. In beiden F&#228;llen feuern wir HpChanged neu,
+        /// damit HUDs den ge&#228;nderten Cap rendern.
+        /// </summary>
+        private void ServerOnStatsChanged()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            int cap = MaxHp;
+            if (m_CurrentHp.Value > cap)
+            {
+                m_CurrentHp.Value = cap;
+                return; // OnHpValueChangedInternal feuert HpChanged bereits.
+            }
+            HpChanged?.Invoke(m_CurrentHp.Value, cap);
+        }
+
+        /// <summary>
+        /// Client-only Spiegel zu <see cref="ServerOnStatsChanged"/>: keine
+        /// HP-Mutation (das macht der Server via NetworkVariable), aber
+        /// HpChanged neu feuern, damit Portrait/Bar den geänderten MaxHp-Cap
+        /// nach Equip/Unequip sehen.
+        /// </summary>
+        private void ClientOnStatsChanged()
+        {
+            HpChanged?.Invoke(m_CurrentHp.Value, MaxHp);
         }
 
         // -------------------------------------------------------------------------
@@ -563,13 +751,21 @@ namespace Riftstorm.Game.Combat
             if (IsServer)
             {
                 m_Auras.OnChanged -= ServerOnAurasChanged;
+                if (m_PlayerStats != null)
+                {
+                    m_PlayerStats.StatsChanged -= ServerOnStatsChanged;
+                }
+            }
+            else if (m_PlayerStats != null)
+            {
+                m_PlayerStats.StatsChanged -= ClientOnStatsChanged;
             }
             base.OnNetworkDespawn();
         }
 
         private void OnHpValueChangedInternal(int previous, int current)
         {
-            HpChanged?.Invoke(current, m_MaxHp);
+            HpChanged?.Invoke(current, MaxHp);
         }
 
         private void OnManaValueChangedInternal(int previous, int current)
@@ -588,7 +784,7 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            m_CurrentHp.Value = m_MaxHp;
+            m_CurrentHp.Value = MaxHp;
         }
 
         /// <summary>Server-only: setzt die Mana zurück (z. B. bei Respawn).</summary>
@@ -662,7 +858,7 @@ namespace Riftstorm.Game.Combat
         int ICombatUnit.Health => m_CurrentHp.Value;
 
         /// <inheritdoc/>
-        int ICombatUnit.MaxHealth => m_MaxHp;
+        int ICombatUnit.MaxHealth => MaxHp;
 
         /// <inheritdoc/>
         int ICombatUnit.Mana => m_CurrentMana.Value;
@@ -773,7 +969,7 @@ namespace Riftstorm.Game.Combat
                 return;
             }
             int previousHp = m_CurrentHp.Value;
-            int newHp = Mathf.Min(m_MaxHp, previousHp + amount);
+            int newHp = Mathf.Min(MaxHp, previousHp + amount);
             if (newHp == previousHp)
             {
                 return;

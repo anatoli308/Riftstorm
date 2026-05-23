@@ -190,6 +190,7 @@ namespace Riftstorm.Game.UI.Inventory
 
             Texture2D idleFrame = InventoryConfigLoader.LoadTextureOrNull(m_Config.slotIdleTexture);
             Texture2D hoverFrame = InventoryConfigLoader.LoadTextureOrNull(m_Config.slotHoverTexture);
+            Texture2D pressFrame = InventoryConfigLoader.LoadTextureOrNull(m_Config.slotPressTexture);
 
             for (int i = 0; i < total; i++)
             {
@@ -205,6 +206,17 @@ namespace Riftstorm.Game.UI.Inventory
                 int row = i / m_Config.columns;
                 slot.style.marginRight = col == m_Config.columns - 1 ? 0 : m_Config.slotSpacing;
                 slot.style.marginBottom = row == m_Config.rows - 1 ? 0 : m_Config.slotSpacing;
+
+                // Per-Spalte/Zeile Pixel-Offsets via translate — beeinflusst nur
+                // die visuelle Position, nicht den Layout-Flow von flex-wrap.
+                float ox = (m_Config.slotOffsetsX != null && col < m_Config.slotOffsetsX.Length)
+                    ? m_Config.slotOffsetsX[col] : 0f;
+                float oy = (m_Config.slotOffsetsY != null && row < m_Config.slotOffsetsY.Length)
+                    ? m_Config.slotOffsetsY[row] : 0f;
+                if (ox != 0f || oy != 0f)
+                {
+                    slot.style.translate = new StyleTranslate(new Translate(ox, oy));
+                }
 
                 if (idleFrame != null)
                 {
@@ -235,11 +247,24 @@ namespace Riftstorm.Game.UI.Inventory
                 count.style.display = DisplayStyle.None;
                 slot.Add(count);
 
-                // Hover-Frame: Swap background on Pointer Enter/Leave (no-op wenn kein Hover-Asset).
-                if (hoverFrame != null && idleFrame != null)
+                // Frame-Swap idle/hover/press analog zu HudStyle.BuildTexturedActionSlot:
+                // Press-State haelt waehrend PointerDown, Hover/Idle wechseln am Enter/Leave.
+                // Lokale Capture-Variable, damit der Press-State nicht ueber alle Slots leakt.
+                if (idleFrame != null)
                 {
-                    slot.RegisterCallback<PointerEnterEvent>(_ => slot.style.backgroundImage = new StyleBackground(hoverFrame));
-                    slot.RegisterCallback<PointerLeaveEvent>(_ => slot.style.backgroundImage = new StyleBackground(idleFrame));
+                    bool pressed = false;
+                    bool hovering = false;
+                    void ApplyFrame()
+                    {
+                        Texture2D target = pressed && pressFrame != null
+                            ? pressFrame
+                            : (hovering && hoverFrame != null ? hoverFrame : idleFrame);
+                        slot.style.backgroundImage = new StyleBackground(target);
+                    }
+                    slot.RegisterCallback<PointerEnterEvent>(_ => { hovering = true; ApplyFrame(); });
+                    slot.RegisterCallback<PointerLeaveEvent>(_ => { hovering = false; pressed = false; ApplyFrame(); });
+                    slot.RegisterCallback<PointerDownEvent>(_ => { pressed = true; ApplyFrame(); });
+                    slot.RegisterCallback<PointerUpEvent>(_ => { pressed = false; ApplyFrame(); });
                 }
 
                 // Linksklick = Quick-Equip.

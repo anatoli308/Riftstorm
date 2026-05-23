@@ -412,8 +412,19 @@ namespace Riftstorm.Game.Spells
                     // SchoolDamage und sonstige phys. Spells: effValue bleibt flat.
                     bool weaponPercent = eff.Effect == SpellEffect.WeaponDamage;
 
+                    // Ranged- vs. Melee-Skalierung wird aus dem Spell-Template
+                    // abgeleitet (<c>required_equipment</c>): 12 = Ranged-Pflicht
+                    // (Aimed Shot, Multi-Shot, ...) ⇒ <c>BaseRangedWeaponDamage</c>
+                    // + <c>RangedWeaponDamage</c>; alles andere ⇒ Melee-Stats.
+                    // <b>Kein Silent-Fallback</b>: ein Ranged-Spell ohne Bogen
+                    // landet hier nur, wenn <c>SpellCaster.CheckEquipment</c>
+                    // umgangen wurde (z. B. AI/Trigger-Pfad); in dem Fall liefern
+                    // beide Ranged-Felder 0 und der Effekt verpufft sauber,
+                    // statt heimlich auf den Longsword-Schaden zu skalieren.
+                    bool useRangedWeapon = weaponPercent && spell.RequiredEquipment == 12L;
+
                     DamageInfo info = CombatFormulas.CalculateSpellDamage(
-                        attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent);
+                        attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent, useRangedWeapon);
                     if (info.FinalDamage <= 0) { return; }
                     target.TakeDamage(info.FinalDamage, caster);
                     totalDamage += info.FinalDamage;

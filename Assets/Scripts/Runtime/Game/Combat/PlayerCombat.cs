@@ -61,6 +61,11 @@ namespace Riftstorm.Game.Combat
                  "Leer = kein Offhand. Wird ignoriert, falls die Default-Waffe TwoHanded ist.")]
         [SerializeField] private string m_DefaultOffhandId = "buckler";
 
+        [Tooltip("Default-Ranged-Waffe (Bow/Crossbow/Gun), die der Server jedem neu gespawnten Spieler in den " +
+                 "Ranged-Slot legt. Leer = kein Bogen ausgeruestet (Aimed Shot / Multi-Shot etc. werden dann " +
+                 "von SpellCaster.CheckEquipment mit NoRangedWeapon abgelehnt).")]
+        [SerializeField] private string m_DefaultRangedId = string.Empty;
+
         [Header("Respawn")]
         [Tooltip("Sekunden zwischen Tod und automatischem Respawn am initialen Spawn-Punkt.")]
         [SerializeField] private float m_RespawnDelaySeconds = 5f;
@@ -81,6 +86,17 @@ namespace Riftstorm.Game.Combat
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
 
+        /// <summary>
+        /// Server-autoritative Ranged-Waffe (Bow/Crossbow/Gun). Leer = kein
+        /// Bogen ausgeruestet — Ranged-Spells (required_equipment=12) werden
+        /// dann von <c>SpellCaster.CheckEquipment</c> mit
+        /// <c>CastResult.NoRangedWeapon</c> abgelehnt.
+        /// </summary>
+        private readonly NetworkVariable<FixedString64Bytes> m_CurrentRangedId = new(
+            default,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
         // -------------------------------------------------------------------------
         // Equip-Lese-API (fuer PlayerEquipmentVisuals, HUD, Range-Indicator)
         // -------------------------------------------------------------------------
@@ -90,6 +106,9 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>Aktuell ausgeruestete Offhand (Id aus <c>combat/offhand_items.json</c>). Leer = keine Offhand.</summary>
         public string CurrentOffhandId => m_CurrentOffhandId.Value.ToString();
+
+        /// <summary>Aktuell ausgeruestete Ranged-Waffe (Id aus <c>combat/weapons.json</c>). Leer = kein Bogen.</summary>
+        public string CurrentRangedId => m_CurrentRangedId.Value.ToString();
 
         /// <summary>
         /// Feuert auf jedem Peer (Server + alle Clients), sobald die
@@ -105,6 +124,14 @@ namespace Riftstorm.Game.Combat
         /// Offhand wurde geleert (Unequip oder Verdraengung durch TwoHanded-Waffe).
         /// </summary>
         public event System.Action<string, string> OffhandChanged;
+
+        /// <summary>
+        /// Feuert auf jedem Peer, sobald die server-autoritative Ranged-Waffe
+        /// sich aendert. Payload: <c>(oldId, newId)</c>; leerer <c>newId</c>
+        /// bedeutet der Ranged-Slot wurde geleert (Unequip oder weil das Item
+        /// keine Ranged-Waffe ist).
+        /// </summary>
+        public event System.Action<string, string> RangedChanged;
 
         // -------------------------------------------------------------------------
         // States (öffentlich lesbar, damit States gegenseitig referenzieren können)
@@ -232,12 +259,22 @@ namespace Riftstorm.Game.Combat
                 }
             }
 
+            // Default-Ranged-Slot: leer ist explizit erlaubt (kein Bogen-Default).
+            // Server validiert keine Ranged-Kategorie hier, weil m_DefaultRangedId
+            // im Inspector vom Designer gesetzt wird; falsche Eintraege fallen
+            // beim ersten ResolveRangedWeapon() einfach auf null zurueck.
+            if (IsServer && m_CurrentRangedId.Value.Length == 0 && !string.IsNullOrEmpty(m_DefaultRangedId))
+            {
+                m_CurrentRangedId.Value = new FixedString64Bytes(m_DefaultRangedId);
+            }
+
             // Jeder Peer haengt sich an die Equip-NetworkVariables und leitet
             // Aenderungen als Plain-string-Events weiter — Source-treu trennt das
             // Equip-Daten (NetVar) von Equip-Visuals (PlayerEquipmentVisuals) und
             // erspart der UI direkten NetVar-Zugriff.
             m_CurrentWeaponId.OnValueChanged += OnNetWeaponChanged;
             m_CurrentOffhandId.OnValueChanged += OnNetOffhandChanged;
+            m_CurrentRangedId.OnValueChanged += OnNetRangedChanged;
 
             // Server abonniert das Todes-Event, um State-Wechsel + Client-Fanout der
             // Death-Animation auszulösen (Source-treu: kein Polling, eventbasiert).
@@ -267,6 +304,7 @@ namespace Riftstorm.Game.Combat
         {
             m_CurrentWeaponId.OnValueChanged -= OnNetWeaponChanged;
             m_CurrentOffhandId.OnValueChanged -= OnNetOffhandChanged;
+            m_CurrentRangedId.OnValueChanged -= OnNetRangedChanged;
 
             if (IsServer && m_Stats != null)
             {
@@ -293,6 +331,11 @@ namespace Riftstorm.Game.Combat
         private void OnNetOffhandChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue)
         {
             OffhandChanged?.Invoke(oldValue.ToString(), newValue.ToString());
+        }
+
+        private void OnNetRangedChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue)
+        {
+            RangedChanged?.Invoke(oldValue.ToString(), newValue.ToString());
         }
 
         // -------------------------------------------------------------------------
@@ -854,10 +897,6 @@ namespace Riftstorm.Game.Combat
 
         private WeaponDefinition ResolveCurrentWeapon()
         {
-            if (m_CurrentWeaponId.Value.Length == 0)
-            {
-                return null;
-            }
             m_WeaponCatalogLoader ??= ServiceLocator.Get<WeaponCatalogLoader>();
             WeaponCatalog catalog = m_WeaponCatalogLoader?.GetCached();
             if (catalog == null)
@@ -865,7 +904,71 @@ namespace Riftstorm.Game.Combat
                 Debug.LogWarning("[PlayerCombat] WeaponCatalog not loaded — attack ignored.");
                 return null;
             }
-            return catalog.Get(m_CurrentWeaponId.Value.ToString());
+            // Equipped Waffe bevorzugt; sonst Fallback auf "unarmed" (Faust-Kampf).
+            // Der "unarmed"-Eintrag liegt in Assets/StreamingAssets/combat/weapons.json
+            // und stellt sicher, dass Spieler ohne Item bewaffnung ueberhaupt
+            // zuschlagen koennen (Range 1.2, BaseDamage 4, cd 0.6s).
+            if (m_CurrentWeaponId.Value.Length > 0)
+            {
+                WeaponDefinition equipped = catalog.Get(m_CurrentWeaponId.Value.ToString());
+                if (equipped != null) { return equipped; }
+            }
+            return catalog.Get("unarmed");
+        }
+
+        /// <summary>
+        /// Aktuell ausgeruestete <see cref="WeaponDefinition"/> oder <c>null</c>,
+        /// wenn keine Waffe gesetzt ist bzw. der WeaponCatalog noch nicht
+        /// geladen wurde. Vom HUD genutzt, um den effektiven Angriffsschaden
+        /// (<c>weapon.BaseDamage + WeaponDamage + STR/2</c>) zu rendern.
+        /// </summary>
+        public WeaponDefinition CurrentWeapon => ResolveCurrentWeapon();
+
+        /// <summary>
+        /// Aufloesung der Ranged-Waffe (Bow/Crossbow/Gun) aus dem dedizierten
+        /// Ranged-Slot. Anders als <see cref="ResolveCurrentWeapon"/> gibt es
+        /// hier KEINEN <c>unarmed</c>-Fallback: ohne ausgeruesteten Bogen ist
+        /// das Ergebnis <c>null</c>, damit <c>UnitStats.BaseRangedWeaponDamage</c>
+        /// auf 0 faellt und <c>SpellCaster.CheckEquipment</c> Ranged-Spells
+        /// (<c>required_equipment=12</c>) blockt. Zusaetzlich wird ein im
+        /// Slot liegendes Nicht-Ranged-Modell (defensive Validierung, sollte
+        /// vom Equip-Pfad bereits abgefangen sein) auf <c>null</c> gemappt.
+        /// </summary>
+        private WeaponDefinition ResolveRangedWeapon()
+        {
+            if (m_CurrentRangedId.Value.Length == 0) { return null; }
+            m_WeaponCatalogLoader ??= ServiceLocator.Get<WeaponCatalogLoader>();
+            WeaponCatalog catalog = m_WeaponCatalogLoader?.GetCached();
+            if (catalog == null) { return null; }
+            WeaponDefinition equipped = catalog.Get(m_CurrentRangedId.Value.ToString());
+            if (equipped == null || !equipped.IsRanged) { return null; }
+            return equipped;
+        }
+
+        /// <summary>
+        /// Aktuell ausgeruestete Ranged-Waffe (Bow/Crossbow/Gun) oder <c>null</c>.
+        /// Wird von <see cref="UnitStats.BaseRangedWeaponDamage"/> gelesen und
+        /// von <see cref="ResolveWeaponFor"/>, um bei Ranged-Spells die
+        /// passende Waffe zu liefern.
+        /// </summary>
+        public WeaponDefinition CurrentRangedWeapon => ResolveRangedWeapon();
+
+        /// <summary>
+        /// Spell-aware Waffen-Aufloesung: Spells mit <c>required_equipment=12</c>
+        /// (Ranged) bekommen die Bogen-Definition aus dem Ranged-Slot — falls
+        /// keine vorhanden ist, <c>null</c> (kein <c>unarmed</c>-Fallback, weil
+        /// <c>SpellCaster.CheckEquipment</c> den Cast vorher bereits ablehnt).
+        /// Alle anderen Spells (Melee, Magie, Heal, Aura, ...) ziehen die
+        /// Main-Hand-Auflfoesung mit <c>unarmed</c>-Fallback, damit z. B.
+        /// Sinister Strike auch ohne Schwert eine Faust-Animation spielt.
+        /// </summary>
+        public WeaponDefinition ResolveWeaponFor(SpellTemplate spell)
+        {
+            if (spell != null && spell.RequiredEquipment == 12L)
+            {
+                return ResolveRangedWeapon();
+            }
+            return ResolveCurrentWeapon();
         }
 
         /// <summary>
@@ -1077,6 +1180,56 @@ namespace Riftstorm.Game.Combat
             {
                 m_CurrentOffhandId.Value = default;
             }
+        }
+
+        /// <summary>
+        /// Server-Bridge fuer <see cref="PlayerEquipment"/>: setzt die
+        /// Ranged-Waffe anhand eines <see cref="ItemTemplate"/>-Entries.
+        /// Aufloesung ueber <see cref="ItemTemplate.Model"/> → WeaponCatalog
+        /// (Bows liegen in <c>combat/weapons.json</c>, nicht im OffhandCatalog).
+        /// Bei <paramref name="templateId"/> &lt;= 0 wird der Ranged-Slot
+        /// geleert. Defensive Validierung: nur Modelle mit <c>IsRanged==true</c>
+        /// werden akzeptiert, damit ein Longsword nicht durch einen falsch
+        /// gemappten EquipType=Ranged-Item-Eintrag in den Ranged-Slot rutscht.
+        /// </summary>
+        internal void Server_ApplyRangedFromTemplate(int templateId)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (templateId <= 0)
+            {
+                if (m_CurrentRangedId.Value.Length > 0)
+                {
+                    m_CurrentRangedId.Value = default;
+                }
+                return;
+            }
+
+            if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null
+                || string.IsNullOrEmpty(template.Model) || template.Model == "0")
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyRangedFromTemplate: Template {templateId} hat kein gueltiges Model.");
+                return;
+            }
+
+            m_WeaponCatalogLoader ??= ServiceLocator.Get<WeaponCatalogLoader>();
+            WeaponCatalog catalog = m_WeaponCatalogLoader?.GetCached();
+            if (catalog == null || !catalog.TryGet(template.Model, out WeaponDefinition weaponDef))
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyRangedFromTemplate: Model '{template.Model}' nicht im WeaponCatalog.");
+                return;
+            }
+
+            if (!weaponDef.IsRanged)
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyRangedFromTemplate: Model '{template.Model}' ist keine Ranged-Waffe (Type={weaponDef.Type}).");
+                return;
+            }
+
+            m_CurrentRangedId.Value = new FixedString64Bytes(template.Model);
         }
 
         /// <summary>
@@ -1448,6 +1601,7 @@ namespace Riftstorm.Game.Combat
             TryTriggerCasterPose(spellEntry);
             TryTriggerCasterParticles(spellEntry);
             TryTriggerCasterSound(spellEntry);
+            TryShowRangedForCast(spellEntry);
 
             if (!IsOwner || castSeconds <= 0f)
             {
@@ -1473,11 +1627,53 @@ namespace Riftstorm.Game.Combat
                 CasterParticleSpawner.Stop(m_ActiveCasterParticles);
                 m_ActiveCasterParticles = null;
             }
+            TryHideRangedAfterCast();
             if (!IsOwner)
             {
                 return;
             }
             OwnerCastEnded?.Invoke(completed);
+        }
+
+        /// <summary>
+        /// Blendet die Ranged-Waffe (Bow/Crossbow/Gun) fuer die Dauer eines
+        /// Shoot-Casts auf der FLARE-Schicht <c>"Ranged"</c> ein. Wird auf
+        /// jedem Peer aus <see cref="BeginCastClientRpc"/> aufgerufen und ist
+        /// strikt an <c>SpellTemplate.RequiredEquipment == 12L</c> gebunden —
+        /// alle anderen Spells lassen MainHand/OffHand unangetastet.
+        /// MainHand + OffHand bleiben in jedem Frame sichtbar (das Visual ist
+        /// kein Stance-Override, sondern eine zusaetzliche Schicht), siehe
+        /// <see cref="PlayerEquipmentVisuals.ShowRangedForCast"/>.
+        /// </summary>
+        private void TryShowRangedForCast(int spellEntry)
+        {
+            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+            if (spell == null || spell.RequiredEquipment != 12L)
+            {
+                return;
+            }
+            PlayerEquipmentVisuals visuals = GetComponent<PlayerEquipmentVisuals>();
+            if (visuals == null)
+            {
+                return;
+            }
+            visuals.ShowRangedForCast(CurrentRangedId);
+        }
+
+        /// <summary>
+        /// Entfernt die Ranged-Waffe vom FLARE-Layer am Cast-Ende. Idempotent —
+        /// wird unkonditional aus <see cref="EndCastClientRpc"/> aufgerufen,
+        /// damit auch abgebrochene Casts (Move-cancel, Death-cancel) die Bogen-
+        /// Schicht wieder leeren.
+        /// </summary>
+        private void TryHideRangedAfterCast()
+        {
+            PlayerEquipmentVisuals visuals = GetComponent<PlayerEquipmentVisuals>();
+            if (visuals == null)
+            {
+                return;
+            }
+            visuals.HideRangedAfterCast();
         }
 
         /// <summary>
@@ -1615,16 +1811,23 @@ namespace Riftstorm.Game.Combat
         /// Löst auf diesem Client die Cast-Pose des Casters (FLARE <c>[cast]</c>)
         /// aus. Wird sowohl für Cast-Time- als auch für Instant-Casts aus
         /// <see cref="BeginCastClientRpc"/> aufgerufen — also bei Cast-START,
-        /// nicht erst bei Cast-Resolve. Die Pose wird grundsätzlich für jeden
-        /// Spell-Cast gespielt, unabhängig vom <c>unit_cast_animation</c>-Index
-        /// im Visual-Kit-Mapping: FLARE-Charaktere haben nur eine generische
-        /// Cast-Animation (<see cref="UnitCombatVisuals.PlayCast"/>), der
-        /// Source-Index ist daher visuell bedeutungslos. So feuert die Pose
-        /// auch für Spells, deren Visual-Kit gar kein <c>unit_cast_animation</c>
-        /// vorgibt (z. B. Spell 30 / Ice Blast, kit-only-ground-effect).
-        /// <c>uca_speed</c> wird bewusst ignoriert, bis
-        /// <see cref="Sprites.FlareCharacter.Play"/> eine Speed-Übergabe
-        /// unterstützt.
+        /// nicht erst bei Cast-Resolve.
+        /// <para>
+        /// Routing nach Spell-Typ + aktuell ausgeruesteter Waffe:
+        /// <list type="bullet">
+        ///   <item><description><see cref="SpellEffect.WeaponDamage"/>-Spells nutzen die
+        ///     Attack-Pose der equippten Waffe — Ranged-Waffe ⇒ <see cref="UnitCombatVisuals.PlayShoot"/>
+        ///     (Aimed Shot), Melee-Waffe ⇒ <see cref="UnitCombatVisuals.PlaySwing"/>
+        ///     (Sinister Strike). So liest der Spieler den Spell visuell als
+        ///     verstaerkten Auto-Attack statt als Magier-Cast.</description></item>
+        ///   <item><description>Alle anderen Spells (SchoolDamage, Heal, Aura, ...) fallen
+        ///     auf die generische Cast-Pose (<see cref="UnitCombatVisuals.PlayCast"/>)
+        ///     zurueck.</description></item>
+        /// </list>
+        /// FLARE-Charaktere haben nur eine generische Cast-Animation; der
+        /// <c>unit_cast_animation</c>-Index im Visual-Kit-Mapping ist daher
+        /// visuell bedeutungslos und wird hier bewusst nicht konsumiert.
+        /// </para>
         /// </summary>
         private void TryTriggerCasterPose(int spellEntry)
         {
@@ -1635,10 +1838,47 @@ namespace Riftstorm.Game.Combat
             {
                 visuals = GetComponentInChildren<UnitCombatVisuals>();
             }
-            if (visuals != null)
+            if (visuals == null)
             {
-                visuals.PlayCast();
+                return;
             }
+
+            // Spell-Effekte abfragen, um zu entscheiden, ob es ein
+            // Waffen-Spell ist (Pose folgt der Waffe) oder ein klassischer
+            // Cast (generische Cast-Pose).
+            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+            if (spell != null && SpellUsesWeaponAttack(spell))
+            {
+                // Spell-aware Auflfoesung: Ranged-Spells nutzen die Bogen-Waffe
+                // aus dem Ranged-Slot (CurrentRangedWeapon), alle anderen die
+                // Main-Hand. Damit spielt Aimed Shot zuverlaessig Shoot, auch
+                // wenn die Main-Hand ein Longsword fuehrt.
+                WeaponDefinition weapon = ResolveWeaponFor(spell);
+                if (weapon != null)
+                {
+                    if (weapon.IsRanged) { visuals.PlayShoot(); }
+                    else { visuals.PlaySwing(); }
+                    return;
+                }
+            }
+            visuals.PlayCast();
+        }
+
+        /// <summary>True, sobald der Spell mindestens einen aktiven Effekt-Slot
+        /// vom Typ <see cref="SpellEffect.WeaponDamage"/> hat. Solche Spells
+        /// skalieren mit dem Waffenschaden und sollen die Attack-Pose der
+        /// equippten Waffe statt der generischen Cast-Pose spielen.</summary>
+        private static bool SpellUsesWeaponAttack(SpellTemplate spell)
+        {
+            for (int slot = 1; slot <= 3; slot++)
+            {
+                SpellTemplateEffect eff = spell.GetEffect(slot);
+                if (eff.IsActive && eff.Effect == SpellEffect.WeaponDamage)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

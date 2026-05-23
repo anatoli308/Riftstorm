@@ -100,9 +100,12 @@ namespace Riftstorm.Game.Items
         [JsonProperty("stack_count")]
         public int StackCount { get; set; }
 
-        /// <summary>Vendor-Verkaufspreis in Kupfer.</summary>
+        /// <summary>Vendor-Verkaufspreis in Kupfer. Source-DB hat hier teilweise
+        /// Float-Werte (z. B. <c>5.32</c>), die migriert wurden — daher
+        /// <see cref="float"/> statt <see cref="int"/>, damit der Parser nicht
+        /// auf Legacy-Eintraegen kippt.</summary>
         [JsonProperty("sell_price")]
-        public int SellPrice { get; set; }
+        public float SellPrice { get; set; }
 
         /// <summary>Multiplikator fuer Vendor-Kaufpreis (Source: <c>buy_cost_ratio</c>).</summary>
         [JsonProperty("buy_cost_ratio")]

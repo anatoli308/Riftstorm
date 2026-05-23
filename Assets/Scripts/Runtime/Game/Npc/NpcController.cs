@@ -566,6 +566,24 @@ namespace Riftstorm.Game.Npc
                 return;
             }
 
+            // Riftstorm-Erweiterung gegenueber Source-Parity: solange ein
+            // gueltiges Combat-Target existiert, schaut der NPC IMMER zum
+            // Target — auch im Melee-Stand und waehrend eines Spell-Casts.
+            // Damit verhaelt sich der NPC analog zum Spieler, der sich beim
+            // Treffer/Attack-Aim zum Angreifer/Ziel ausrichtet. MoveTowardsEntity
+            // ueberschreibt diesen Vektor beim Chase mit demselben Wert, der
+            // Melee-Freeze (NpcAI.cpp Z.640-642) wird hier bewusst aufgeweicht,
+            // damit das Sprite auch bei umrundenden Spielern dreht.
+            if (IsValidTarget(m_CurrentTarget))
+            {
+                Vector3 toTarget = m_CurrentTarget.transform.position - transform.position;
+                toTarget.y = 0f;
+                if (toTarget.sqrMagnitude > 0.0001f)
+                {
+                    m_ServerFacingVec = toTarget;
+                }
+            }
+
             // CC-Gates: ein gestunnter NPC macht in diesem Tick gar nichts;
             // ein nur gerooteter / immobilisierter NPC darf weiter attackieren
             // und casten, kann sich aber nicht bewegen. Snare/Haste wirken

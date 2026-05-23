@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Riftstorm.Game.Combat;
+using Riftstorm.Gameplay.Combat;
 using Riftstorm.Game.Items;
 using Riftstorm.Game.UI;
 using Unity.Netcode;
@@ -19,7 +20,7 @@ namespace Riftstorm.Game.UI.Character
     /// Bindings spiegeln <see cref="Riftstorm.Game.UI.Inventory.InventoryHUD"/>:
     /// das HUD lebt auf einem MonoBehaviour mit <c>UIDocument</c>; lokaler
     /// Spieler wird in <see cref="Update"/> nach-gebunden, sobald NGO ein
-    /// <c>PlayerObject</c> geliefert hat. Rechtsklick auf belegten Slot
+    /// <c>PlayerObject</c> geliefert hat. Linksklick auf belegten Slot
     /// triggert <see cref="PlayerEquipment.RequestUnequipServerRpc"/>.
     /// </remarks>
     [DisallowMultipleComponent]
@@ -58,6 +59,12 @@ namespace Riftstorm.Game.UI.Character
         private PlayerInventory m_BoundInventory; // nur fuer Item-Catalog-Lookups
         private UnitStats m_BoundStats;
 
+        /// <summary>Aktuelle Waffen-/Offhand-Quelle. Wird für die DMG-Anzeige
+        /// (effektiver Melee-Schaden = <c>weapon.BaseDamage + WeaponDamage + STR/2</c>)
+        /// und für automatisches Refresh bei <see cref="PlayerCombat.WeaponChanged"/>
+        /// gebunden.</summary>
+        private PlayerCombat m_BoundCombat;
+
         /// <summary>Verhindert Log-Spam in <see cref="TryBindLocalPlayer"/>: nur
         /// ein Diagnose-Eintrag pro PlayerObject-Instanz, sobald ein Bind-Versuch
         /// scheitert (typisch fehlende <see cref="UnitStats"/> am Prefab).</summary>
@@ -68,6 +75,25 @@ namespace Riftstorm.Game.UI.Character
 
         /// <summary>Aktuell gehoverter Slot oder <see cref="EquipSlot.None"/>.</summary>
         private EquipSlot m_HoveredSlot = EquipSlot.None;
+
+        // ---------------------------------------------------------------------
+        // Character Preview (Paper-Doll via RenderTexture)
+        // ---------------------------------------------------------------------
+
+        /// <summary>UI-Element, das die Preview-RenderTexture im Panel anzeigt.</summary>
+        private VisualElement m_PreviewElement;
+
+        /// <summary>Off-Screen-Kamera, die den Spieler in <see cref="m_PreviewRT"/> rendert.</summary>
+        private Camera m_PreviewCam;
+
+        /// <summary>GameObject-Wrapper fuer <see cref="m_PreviewCam"/>, parent zum Spieler.</summary>
+        private GameObject m_PreviewCamGO;
+
+        /// <summary>RenderTexture, die als Background-Image des Preview-Elements dient.</summary>
+        private RenderTexture m_PreviewRT;
+
+        /// <summary>Aktuell verfolgter Spieler-Transform (parent der Preview-Cam).</summary>
+        private Transform m_PreviewTarget;
 
         // ---------------------------------------------------------------------
         // Unity-Lifecycle
@@ -100,6 +126,7 @@ namespace Riftstorm.Game.UI.Character
             }
 
             UnbindLocalPlayer();
+            TeardownPreview();
 
             m_Root = null;
             m_Panel = null;
@@ -109,11 +136,55 @@ namespace Riftstorm.Game.UI.Character
             m_HoveredSlot = EquipSlot.None;
         }
 
+        private void TeardownPreview()
+        {
+            if (m_PreviewCam != null)
+            {
+                m_PreviewCam.targetTexture = null;
+            }
+            if (m_PreviewCamGO != null)
+            {
+                // DestroyImmediate nur im Edit-Mode noetig; Runtime nutzt Destroy.
+                if (Application.isPlaying)
+                {
+                    Destroy(m_PreviewCamGO);
+                }
+                else
+                {
+                    DestroyImmediate(m_PreviewCamGO);
+                }
+                m_PreviewCamGO = null;
+                m_PreviewCam = null;
+            }
+            if (m_PreviewRT != null)
+            {
+                m_PreviewRT.Release();
+                if (Application.isPlaying)
+                {
+                    Destroy(m_PreviewRT);
+                }
+                else
+                {
+                    DestroyImmediate(m_PreviewRT);
+                }
+                m_PreviewRT = null;
+            }
+            m_PreviewElement = null;
+            m_PreviewTarget = null;
+        }
+
         private void Update()
         {
             if (m_BoundEquipment == null)
             {
                 TryBindLocalPlayer();
+            }
+            else if (m_BoundStats == null)
+            {
+                // Equipment/Inventory waren beim ersten Bind da, UnitStats noch
+                // nicht (z. B. NetworkBehaviour spawned spaeter). Stats nachziehen,
+                // ohne den Equipment-Bind anzufassen.
+                TryBindStats();
             }
         }
 
@@ -154,11 +225,40 @@ namespace Riftstorm.Game.UI.Character
             m_Root.Add(m_Panel);
 
             BuildSlots();
+            BuildPreview();
             BuildStatsLabel();
 
             // Tooltip-Overlay als letztes Kind, damit es per Z-Order ueber
             // Slots + Stats-Label liegt (gleiche Konvention wie ActionBarHUD).
             m_Tooltip = new(m_Root);
+        }
+
+        private void BuildPreview()
+        {
+            if (!m_Config.previewEnabled || m_Config.previewWidth <= 0 || m_Config.previewHeight <= 0)
+            {
+                return;
+            }
+
+            m_PreviewElement = new() { name = "character-preview" };
+            m_PreviewElement.style.position = Position.Absolute;
+            m_PreviewElement.style.left = m_Config.previewLeft;
+            m_PreviewElement.style.top = m_Config.previewTop;
+            m_PreviewElement.style.width = m_Config.previewWidth;
+            m_PreviewElement.style.height = m_Config.previewHeight;
+            m_PreviewElement.pickingMode = PickingMode.Ignore;
+            m_Panel.Add(m_PreviewElement);
+
+            int size = Mathf.Max(64, m_Config.previewTextureSize);
+            m_PreviewRT = new(size, size, depth: 24, RenderTextureFormat.ARGB32)
+            {
+                name = "CharacterPreviewRT",
+                antiAliasing = 2,
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
+            m_PreviewRT.Create();
+            m_PreviewElement.style.backgroundImage = Background.FromRenderTexture(m_PreviewRT);
         }
 
         private void BuildSlots()
@@ -230,7 +330,10 @@ namespace Riftstorm.Game.UI.Character
             m_StatsLabel.style.color = Color.white;
             m_StatsLabel.style.whiteSpace = WhiteSpace.Normal;
             m_StatsLabel.style.unityTextAlign = TextAnchor.UpperLeft;
-            m_StatsLabel.pickingMode = PickingMode.Ignore;
+            // Picking aktiviert, damit der UIToolkit-Tooltip mit der
+            // DMG-Aufschluesselung (siehe AppendMeleeDamageLine) auf Hover
+            // erscheint.
+            m_StatsLabel.pickingMode = PickingMode.Position;
             m_StatsLabel.text = string.Empty;
             m_Panel.Add(m_StatsLabel);
         }
@@ -289,12 +392,71 @@ namespace Riftstorm.Game.UI.Character
                 m_BoundStats.ManaChanged += OnHpOrManaChanged;
             }
 
+            // PlayerCombat bindet die aktuell ausgerüstete Waffe; über WeaponChanged
+            // / OffhandChanged wird die DMG-Zeile bei jedem Waffenwechsel
+            // (Console /weapon, Equip-Server-RPC, Loadout) neu gerendert.
+            m_BoundCombat = playerObj.GetComponent<PlayerCombat>()
+                ?? playerObj.GetComponentInChildren<PlayerCombat>();
+            if (m_BoundCombat != null)
+            {
+                m_BoundCombat.WeaponChanged += OnWeaponOrOffhandChanged;
+                m_BoundCombat.OffhandChanged += OnWeaponOrOffhandChanged;
+                m_BoundCombat.RangedChanged += OnWeaponOrOffhandChanged;
+            }
+
+            // Preview-Kamera an den Spieler haengen, sobald der Player-Transform
+            // verfuegbar ist; muss VOR ApplyVisibility(true) erfolgen, sonst
+            // bleibt das Render-Target schwarz beim ersten Toggle.
+            BindPreviewTarget(playerObj.transform);
+
             // Initiale Belegung: alle 12 Slots durchrendern + Stats-Snapshot.
             foreach (KeyValuePair<EquipSlot, VisualElement> pair in m_SlotIcons)
             {
                 RenderSlot(pair.Key, m_BoundEquipment.GetEquipped(pair.Key));
             }
             RefreshStats();
+        }
+
+        /// <summary>
+        /// Erzeugt die Preview-Kamera lazy und parented sie an den Spieler.
+        /// Kamera bleibt deaktiviert solange das Panel unsichtbar ist, damit
+        /// kein Rendern pro Frame anfaellt.
+        /// </summary>
+        private void BindPreviewTarget(Transform target)
+        {
+            if (target == null || m_PreviewRT == null || !m_Config.previewEnabled)
+            {
+                return;
+            }
+            m_PreviewTarget = target;
+
+            if (m_PreviewCamGO == null)
+            {
+                m_PreviewCamGO = new GameObject("CharacterPreviewCam");
+                m_PreviewCam = m_PreviewCamGO.AddComponent<Camera>();
+                m_PreviewCam.orthographic = true;
+                m_PreviewCam.orthographicSize = Mathf.Max(0.1f, m_Config.previewOrthoSize);
+                m_PreviewCam.clearFlags = CameraClearFlags.SolidColor;
+                m_PreviewCam.backgroundColor = new Color(
+                    m_Config.previewBackgroundR,
+                    m_Config.previewBackgroundG,
+                    m_Config.previewBackgroundB,
+                    m_Config.previewBackgroundA);
+                m_PreviewCam.cullingMask = ~0;
+                m_PreviewCam.targetTexture = m_PreviewRT;
+                m_PreviewCam.nearClipPlane = 0.05f;
+                m_PreviewCam.farClipPlane = 50f;
+                m_PreviewCam.enabled = m_Visible;
+            }
+
+            // Cam an den Spieler haengen, damit sie automatisch mitlaeuft.
+            // Local-Offset + Pitch konfigurierbar via JSON.
+            m_PreviewCamGO.transform.SetParent(target, worldPositionStays: false);
+            m_PreviewCamGO.transform.localPosition = new Vector3(
+                m_Config.previewCameraOffsetX,
+                m_Config.previewCameraOffsetY,
+                m_Config.previewCameraOffsetZ);
+            m_PreviewCamGO.transform.localRotation = Quaternion.Euler(m_Config.previewCameraPitchDeg, 0f, 0f);
         }
 
         private void UnbindLocalPlayer()
@@ -310,7 +472,44 @@ namespace Riftstorm.Game.UI.Character
                 m_BoundStats.ManaChanged -= OnHpOrManaChanged;
                 m_BoundStats = null;
             }
+            if (m_BoundCombat != null)
+            {
+                m_BoundCombat.WeaponChanged -= OnWeaponOrOffhandChanged;
+                m_BoundCombat.OffhandChanged -= OnWeaponOrOffhandChanged;
+                m_BoundCombat.RangedChanged -= OnWeaponOrOffhandChanged;
+                m_BoundCombat = null;
+            }
             m_BoundInventory = null;
+        }
+
+        /// <summary>Late-Bind fuer <see cref="UnitStats"/> falls die Komponente
+        /// erst nach Equipment/Inventory verfuegbar wird (z. B. NetworkBehaviour
+        /// spawnt verzoegert oder sitzt auf einem Child-GameObject das spaeter
+        /// aktiviert wird).</summary>
+        private void TryBindStats()
+        {
+            NetworkManager nm = NetworkManager.Singleton;
+            if (nm == null || !nm.IsClient)
+            {
+                return;
+            }
+            NetworkObject playerObj = nm.LocalClient?.PlayerObject;
+            if (playerObj == null)
+            {
+                return;
+            }
+            UnitStats stats = playerObj.GetComponent<UnitStats>()
+                ?? playerObj.GetComponentInChildren<UnitStats>();
+            if (stats == null)
+            {
+                return;
+            }
+
+            m_BoundStats = stats;
+            m_BoundStats.HpChanged += OnHpOrManaChanged;
+            m_BoundStats.ManaChanged += OnHpOrManaChanged;
+            RefreshStats();
+            Debug.Log($"[CharacterHUD] UnitStats late-bound on '{playerObj.name}'.");
         }
 
         // ---------------------------------------------------------------------
@@ -356,6 +555,66 @@ namespace Riftstorm.Game.UI.Character
 
         private void OnHpOrManaChanged(int previous, int current) => RefreshStats();
 
+        /// <summary>Refresh-Trigger fuer den DMG-Block bei Waffen-/Offhand-Wechsel.
+        /// Payload (oldId/newId) wird hier nicht gebraucht — die Zeile liest die
+        /// aktuelle <see cref="PlayerCombat.CurrentWeapon"/>-Definition direkt
+        /// und addiert <c>WeaponDamage</c> + <c>STR/2</c> aus den gebundenen Stats.</summary>
+        private void OnWeaponOrOffhandChanged(string previous, string current) => RefreshStats();
+
+        /// <summary>
+        /// Rendert die DMG-Zeile als effektiven Melee-Grundschaden
+        /// (<c>weapon.BaseDamage + WeaponDamage-Stat + STR/2</c>), so dass der
+        /// Spieler sieht, was die ausger\u00fcstete Waffe tats\u00e4chlich pro Swing
+        /// austeilt. Ohne gebundenen <see cref=\"PlayerCombat\"/> bzw. ohne
+        /// geladenen <see cref=\"WeaponCatalog\"/> faellt die Zeile auf den reinen
+        /// <c>WeaponDamage</c>-Stat zurueck (entspricht der alten Anzeige).
+        /// </summary>
+        private void AppendMeleeDamageLine(StringBuilder sb)
+        {
+            int weaponValueStat = m_BoundStats.WeaponDamage;
+            WeaponDefinition weapon = m_BoundCombat != null ? m_BoundCombat.CurrentWeapon : null;
+            if (weapon == null)
+            {
+                sb.Append("DMG  ").Append(weaponValueStat).Append('\n');
+                return;
+            }
+            int weaponBase = weapon.BaseDamage;
+            int strBonus = m_BoundStats.Strength / 2;
+            int effective = weaponBase + weaponValueStat + strBonus;
+            // Kompakte Zeile fuer das Stats-Panel — die Aufschluesselung
+            // (Wpn / Stat / STR/2) wandert in den Tooltip des Stats-Labels,
+            // damit das Panel ruhig bleibt.
+            sb.Append("DMG  ").Append(effective).Append('\n');
+            if (m_StatsLabel != null)
+            {
+                m_StatsLabel.tooltip =
+                    $"DMG {effective} = Wpn {weaponBase} + Stat {weaponValueStat} + STR/2 {strBonus}";
+            }
+        }
+
+        /// <summary>
+        /// Spiegelt <see cref="AppendMeleeDamageLine"/> fuer die Ranged-Waffe:
+        /// effektiver Grundschaden = <c>ranged.BaseDamage + RangedWeaponDamage-Stat</c>.
+        /// Anders als Melee gibt es <b>keinen Unarmed-Fallback</b> — ohne Bogen im
+        /// Ranged-Slot zeigt die Zeile bewusst <c>"-"</c>, damit das Panel
+        /// sichtbar macht, dass Ranged-Spells (Aimed Shot, Multi-Shot, ...)
+        /// gerade durch <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/>
+        /// mit <c>NoRangedWeapon</c> geblockt werden.
+        /// </summary>
+        private void AppendRangedDamageLine(StringBuilder sb)
+        {
+            WeaponDefinition ranged = m_BoundCombat != null ? m_BoundCombat.CurrentRangedWeapon : null;
+            if (ranged == null)
+            {
+                sb.Append("Rng  -\n");
+                return;
+            }
+            int rangedBase = ranged.BaseDamage;
+            int rangedStat = m_BoundStats.RangedWeaponDamage;
+            int effective = rangedBase + rangedStat;
+            sb.Append("Rng  ").Append(effective).Append('\n');
+        }
+
         private void RefreshStats()
         {
             if (m_StatsLabel == null)
@@ -369,13 +628,17 @@ namespace Riftstorm.Game.UI.Character
                 // keine Stats-Quelle" und decken sich mit der Diagnose im
                 // Bind-Pfad (siehe TryBindLocalPlayer).
                 m_StatsLabel.text =
-                    "Level -\nHP   -\n\nSTR  -\nINT  -\nWIL  -\nARM  -\nDMG  -\n"
-                    + "\nCrit  -\nDodge -\nParry -\nBlock -\n"
-                    + "\nFire   -\nFrost  -\nArcane -\nNature -\nShadow -";
+                    "Level -\nHP   -\n\n"
+                    + "STR  -\nINT  -\nWIL  -\nFRT  -\nCRG  -\n\n"
+                    + "ARM  -\nDMG  -\nRng  -\nSpell -\nHeal  -\n\n"
+                    + "Melee Crit  -\nRanged Crit -\nSpell Crit  -\n"
+                    + "Dodge -\nParry -\nBlock -\n\n"
+                    + "HP Regen -\nMP Regen -\n\n"
+                    + "Fire   -\nFrost  -\nShadow -\nHoly   -";
                 return;
             }
 
-            StringBuilder sb = new(256);
+            StringBuilder sb = new(512);
             sb.Append("Level ").Append(m_BoundStats.Level).Append('\n');
             sb.Append("HP   ").Append(m_BoundStats.CurrentHp).Append(" / ").Append(m_BoundStats.MaxHp).Append('\n');
             if (m_BoundStats.HasMana)
@@ -383,22 +646,69 @@ namespace Riftstorm.Game.UI.Character
                 sb.Append("MP   ").Append(m_BoundStats.CurrentMana).Append(" / ").Append(m_BoundStats.MaxMana).Append('\n');
             }
             sb.Append('\n');
+
+            // Primary Attributes (Original-Stat-Set: 5 Primaries)
             sb.Append("STR  ").Append(m_BoundStats.Strength).Append('\n');
             sb.Append("INT  ").Append(m_BoundStats.Intelligence).Append('\n');
             sb.Append("WIL  ").Append(m_BoundStats.Willpower).Append('\n');
-            sb.Append("ARM  ").Append(m_BoundStats.Armor).Append('\n');
-            sb.Append("DMG  ").Append(m_BoundStats.WeaponDamage).Append('\n');
+            sb.Append("FRT  ").Append(m_BoundStats.Fortitude).Append('\n');
+            sb.Append("CRG  ").Append(m_BoundStats.Courage).Append('\n');
             sb.Append('\n');
-            sb.Append("Crit  ").Append(m_BoundStats.CritChance).Append('%').Append('\n');
+
+            // Combat Stats: Armor + Waffenschaden (Melee + Ranged getrennt wie im Original).
+            sb.Append("ARM  ").Append(m_BoundStats.Armor).Append('\n');
+            AppendMeleeDamageLine(sb);
+            AppendRangedDamageLine(sb);
+
+            // Spell / Heal — Magic-Power-Wert, der direkt aus den Primary
+            // Attributes abgeleitet wird und im Spell-Executor flat auf den
+            // jeweiligen Effekt-Wert addiert wird (Scorch effectValue=4 +
+            // SpellPower => sichtbarer Schaden). 1:1-Mapping macht die Skalierung
+            // sofort lesbar: INT=5 -> Spell 5, WIL=5 -> Heal 5. Heal nimmt INT
+            // zusaetzlich anteilig mit (halbe Wirkung), weil Heilung im
+            // FLARE-Modell aus WIL primaer und INT sekundaer skaliert.
+            int spellPower = m_BoundStats.Intelligence;
+            int healPower = m_BoundStats.Willpower + (m_BoundStats.Intelligence / 2);
+            sb.Append("Spell ").Append(spellPower).Append('\n');
+            sb.Append("Heal  ").Append(healPower).Append('\n');
+            sb.Append('\n');
+
+            // Crit getrennt nach Schule (MeleeCritical / RangedCritical / SpellCritical),
+            // Avoidance bleibt vereint da das Original nur Rating-Werte hatte.
+            sb.Append("Melee Crit  ").Append(m_BoundStats.MeleeCritChance).Append('%').Append('\n');
+            sb.Append("Ranged Crit ").Append(m_BoundStats.RangedCritChance).Append('%').Append('\n');
+            sb.Append("Spell Crit  ").Append(m_BoundStats.SpellCritChance).Append('%').Append('\n');
             sb.Append("Dodge ").Append(m_BoundStats.DodgeChance).Append('%').Append('\n');
             sb.Append("Parry ").Append(m_BoundStats.ParryChance).Append('%').Append('\n');
             sb.Append("Block ").Append(m_BoundStats.BlockChance).Append('%').Append('\n');
             sb.Append('\n');
+
+            // Regeneration (Original "Regeneration") + Meditate (Mana-Regen).
+            sb.Append("HP Regen ").Append(m_BoundStats.HpRegen).Append('\n');
+            sb.Append("MP Regen ").Append(m_BoundStats.ManaRegen).Append('\n');
+            sb.Append('\n');
+
+            // Resistenzen — original-treu nur Fire/Frost/Shadow/Holy (kein Arcane/Nature im
+            // Original-Stat-Enum, siehe UnitDefines.h).
             sb.Append("Fire   ").Append(m_BoundStats.ResistFire).Append('\n');
             sb.Append("Frost  ").Append(m_BoundStats.ResistFrost).Append('\n');
-            sb.Append("Arcane ").Append(m_BoundStats.ResistArcane).Append('\n');
-            sb.Append("Nature ").Append(m_BoundStats.ResistNature).Append('\n');
-            sb.Append("Shadow ").Append(m_BoundStats.ResistShadow);
+            sb.Append("Shadow ").Append(m_BoundStats.ResistShadow).Append('\n');
+            sb.Append("Holy   ").Append(m_BoundStats.ResistHoly);
+
+            // Kampf-Modifikatoren aus Auren — nur einblenden wenn aktiv, damit
+            // der Block bei Default-Stats das Panel nicht mit Nullen flutet.
+            int dmgDealt = m_BoundStats.DamageDealtPctMod;
+            int dmgRecv = m_BoundStats.DamageReceivedPctMod;
+            int healDealt = m_BoundStats.HealingDealtPctMod;
+            int healRecv = m_BoundStats.HealingReceivedPctMod;
+            if (dmgDealt != 0 || dmgRecv != 0 || healDealt != 0 || healRecv != 0)
+            {
+                sb.Append('\n').Append('\n');
+                if (dmgDealt != 0)  sb.Append("Dmg+   ").Append(dmgDealt).Append('%').Append('\n');
+                if (dmgRecv != 0)   sb.Append("DmgRcv ").Append(dmgRecv).Append('%').Append('\n');
+                if (healDealt != 0) sb.Append("Heal+  ").Append(healDealt).Append('%').Append('\n');
+                if (healRecv != 0)  sb.Append("HealRc ").Append(healRecv).Append('%');
+            }
 
             m_StatsLabel.text = sb.ToString();
         }
@@ -419,6 +729,11 @@ namespace Riftstorm.Game.UI.Character
             {
                 m_Panel.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             }
+            // Preview-Kamera nur rendern wenn sichtbar — spart GPU-Last.
+            if (m_PreviewCam != null)
+            {
+                m_PreviewCam.enabled = visible;
+            }
             // Bei jedem Sichtbar-Werden Stats frischziehen, falls Werte still
             // (ohne Event) gewandert sind.
             if (visible)
@@ -429,8 +744,9 @@ namespace Riftstorm.Game.UI.Character
 
         private void OnSlotClicked(EquipSlot slot, ClickEvent evt)
         {
-            // Rechtsklick (button == 1) auf belegten Slot triggert Unequip.
-            if (evt.button != 1)
+            // Linksklick (button == 0) auf belegten Slot triggert Unequip —
+            // symmetrisch zum LMB-Equip im InventoryHUD.
+            if (evt.button != 0)
             {
                 return;
             }

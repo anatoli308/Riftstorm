@@ -4,6 +4,8 @@ using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Items;
 using Riftstorm.Game.Spells;
+using Riftstorm.Gameplay.Combat;
+using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -352,6 +354,7 @@ namespace Riftstorm.Game.UI
                 return string.Empty;
             }
             StringBuilder sb = new(160);
+            AppendWeaponDamageLine(sb, tpl);
             AppendItemStatLine(sb, tpl.StatType1, tpl.StatValue1);
             AppendItemStatLine(sb, tpl.StatType2, tpl.StatValue2);
             AppendItemStatLine(sb, tpl.StatType3, tpl.StatValue3);
@@ -412,6 +415,36 @@ namespace Riftstorm.Game.UI
             if (sb.Length > 0) { sb.Append('\n'); }
             string sign = value > 0 ? "+" : string.Empty;
             sb.Append(sign).Append(value).Append(' ').Append(label);
+        }
+
+        /// <summary>
+        /// Liest die Waffen-Definition aus dem <see cref="WeaponCatalog"/> ueber
+        /// <see cref="ItemTemplate.Model"/> und h&#228;ngt eine Damage-/Speed-
+        /// Zeile an den Tooltip an. Nur fuer Waffen-Slots (EquipType=Mainhand/
+        /// Ranged) und nur wenn der Catalog bereits via ServiceLocator
+        /// verfuegbar ist (sonst stillschweigend &#252;berspringen — der reine
+        /// Stat-Block bleibt darunter sichtbar).
+        /// </summary>
+        private static void AppendWeaponDamageLine(StringBuilder sb, ItemTemplate tpl)
+        {
+            if (tpl == null || tpl.WeaponType <= 0 || string.IsNullOrEmpty(tpl.Model))
+            {
+                return;
+            }
+            WeaponCatalogLoader loader = ServiceLocator.Get<WeaponCatalogLoader>();
+            WeaponCatalog catalog = loader?.GetCached();
+            if (catalog == null || !catalog.TryGet(tpl.Model, out WeaponDefinition weapon) || weapon == null)
+            {
+                return;
+            }
+            if (sb.Length > 0) { sb.Append('\n'); }
+            sb.Append(weapon.BaseDamage).Append(" Damage");
+            if (weapon.AttackCooldown > 0f)
+            {
+                sb.Append("  (").Append(weapon.AttackCooldown.ToString("0.00")).Append("s)");
+                float dps = weapon.BaseDamage / weapon.AttackCooldown;
+                sb.Append("  ").Append(dps.ToString("0.0")).Append(" DPS");
+            }
         }
 
         private static string GetItemStatLabel(StatId id, int rawId) => id switch
