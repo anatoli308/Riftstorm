@@ -109,9 +109,19 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals
         /// damit der Y-Faktor stabil bleibt, wenn unterschiedliche Frames
         /// unterschiedliche <c>h</c> haben.
         /// </summary>
+        /// <remarks>
+        /// <b>Topdown-Anpassung gegenueber Source:</b> Der X-Anteil von
+        /// <see cref="PrimaryOffsetPx"/> wird hier verworfen. In FLARE
+        /// definiert <c>spranim_x</c> den Pivot innerhalb der Sprite-Canvas
+        /// fuer die iso-2D-Rendering-Konvention &#8212; im topdown-billboarded
+        /// Riftstorm-Setup uebersetzt er sich faelschlich in einen
+        /// Welt-Seiten-Offset (z.B. Scorch-Impact landet 0.75 m neben dem
+        /// Ziel). Die Y-Komponente bleibt, da <c>heightp</c>-Faktoren echte
+        /// Hub-Hoehe oberhalb des Ziels kodieren.
+        /// </remarks>
         public Vector2 EffectivePrimaryOffsetPx(int animCanvasPx)
         {
-            return new Vector2(PrimaryOffsetPx.x, PrimaryOffsetPx.y + PrimaryOffsetYHeightFactor * animCanvasPx);
+            return new Vector2(0f, PrimaryOffsetPx.y + PrimaryOffsetYHeightFactor * animCanvasPx);
         }
 
         /// <summary>
@@ -119,9 +129,10 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals
         /// inklusive sprite-hoehen-relativem Anteil. Erwartet die Canvas-Hoehe
         /// (siehe <see cref="EffectivePrimaryOffsetPx(int)"/>).
         /// </summary>
+        /// <remarks>Siehe Hinweis in <see cref="EffectivePrimaryOffsetPx(int)"/> zur X-Null-Setzung.</remarks>
         public Vector2 EffectiveSecondaryOffsetPx(int animCanvasPx)
         {
-            return new Vector2(SecondaryOffsetPx.x, SecondaryOffsetPx.y + SecondaryOffsetYHeightFactor * animCanvasPx);
+            return new Vector2(0f, SecondaryOffsetPx.y + SecondaryOffsetYHeightFactor * animCanvasPx);
         }
     }
 }

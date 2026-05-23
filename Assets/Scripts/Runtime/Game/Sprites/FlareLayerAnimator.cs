@@ -67,6 +67,39 @@ namespace Riftstorm.Game.Sprites
         }
 
         /// <summary>
+        /// Atomarer Atlas-Wechsel: tauscht den Atlas, setzt optional die Blick-
+        /// richtung und startet sofort die angegebene Animation. Notwendig, weil
+        /// <see cref="SetAtlas"/> die laufende Animation verwirft und ein
+        /// nachgelagertes <see cref="Play"/> die in der Schicht gespeicherte
+        /// Richtung nicht erzwingt — neu gespawnte Equipment-Layer wuerden sonst
+        /// in Default-Richtung 0 (Ost) statt der aktuellen Charakter-Richtung
+        /// rendern. Wird vom <see cref="FlareCharacter.SetLayerAtlas"/> beim
+        /// Equip-Swap benutzt.
+        /// </summary>
+        /// <param name="atlas">Neuer Atlas oder <c>null</c> (Schicht wird unsichtbar).</param>
+        /// <param name="animationName">Anim, die nach dem Swap gespielt werden soll (z. B. Stance).</param>
+        /// <param name="flareDirection">Richtung 0..7, oder negativ zum Beibehalten.</param>
+        public void SwapAtlas(FlareAtlas atlas, string animationName, int flareDirection)
+        {
+            m_Atlas = atlas;
+            m_Current = null;
+            m_Elapsed = 0f;
+            m_Finished = false;
+            if (m_Renderer != null)
+            {
+                m_Renderer.sprite = null;
+            }
+            if (flareDirection >= 0)
+            {
+                m_Direction = flareDirection & 7;
+            }
+            if (atlas != null && !string.IsNullOrEmpty(animationName))
+            {
+                Play(animationName, true);
+            }
+        }
+
+        /// <summary>
         /// Wechselt zur Animation mit dem angegebenen Namen. Wird die Animation
         /// bereits abgespielt, hat der Aufruf keinen Effekt (außer <paramref name="force"/> ist gesetzt).
         /// </summary>

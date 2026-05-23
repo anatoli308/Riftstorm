@@ -239,13 +239,18 @@ namespace Riftstorm.Gameplay.Combat
         /// Resist-Reduktion (magisch) und Strength-Bonus + Armor-Reduktion
         /// (physikalisch, z.B. <c>WeaponDamage</c>-Effekt). <paramref name="resistValue"/>
         /// ist die schul-spezifische Resistenz des Opfers (z.B. <c>ResistFire</c>).
+        /// <paramref name="weaponPercent"/> aktiviert die FLARE-kanonische
+        /// <c>WeaponDamage</c>-Semantik: <paramref name="effectValue"/> ist dann
+        /// ein <b>Prozent-Multiplier</b> auf <see cref="IUnitStats.WeaponDamage"/>
+        /// (z.B. Aimed Shot 115 = 115% Waffenschaden), nicht ein flacher Bonus.
         /// </summary>
         public static DamageInfo CalculateSpellDamage(
             IUnitStats attacker,
             IUnitStats victim,
             int effectValue,
             bool isMagical,
-            int resistValue)
+            int resistValue,
+            bool weaponPercent = false)
         {
             HitResult hit = RollSpellHit(attacker, victim);
 
@@ -260,11 +265,24 @@ namespace Riftstorm.Gameplay.Combat
                 };
             }
 
-            // 1) Grundschaden = Effekt-Wert + Attribut-Bonus.
-            int attributeBonus = isMagical
-                ? (attacker.Intelligence / 20)
-                : (attacker.Strength / 10) + attacker.WeaponDamage;
-            int baseDamage = Mathf.Max(0, effectValue + attributeBonus);
+            // 1) Grundschaden.
+            //    a) WeaponDamage-Spell (weaponPercent=true): effectValue ist %
+            //       auf Waffenschaden, plus halbierter STR-Bonus (Skill-Anteil).
+            //    b) Magic-Spell:        flat effectValue + INT/20.
+            //    c) Phys-Flat-Spell:    flat effectValue + STR/10 + Waffenschaden.
+            int baseDamage;
+            if (weaponPercent && !isMagical)
+            {
+                int weaponContribution = (int)((long)attacker.WeaponDamage * effectValue / 100);
+                baseDamage = Mathf.Max(0, weaponContribution + (attacker.Strength / 10));
+            }
+            else
+            {
+                int attributeBonus = isMagical
+                    ? (attacker.Intelligence / 20)
+                    : (attacker.Strength / 10) + attacker.WeaponDamage;
+                baseDamage = Mathf.Max(0, effectValue + attributeBonus);
+            }
 
             // 2) Variance (± DamageVariance).
             float varianceMul = 1f + Random.Range(-DamageVariance, DamageVariance);

@@ -1,0 +1,27 @@
+{
+  "panelWidth": 380,
+  "panelHeight": 460,
+  "anchorRight": 16,
+  "anchorBottom": 220,
+
+  "columns": 7,
+  "rows": 7,
+  "gridLeft": 22,
+  "gridTop": 60,
+  "slotSize": 40,
+  "slotSpacing": 4,
+
+  "backgroundTexture": "interface/inventory",
+  "slotIdleTexture": "interface/icons/gameicon40_idle",
+  "slotHoverTexture": "interface/icons/gameicon40_hover",
+
+  "countFontSize": 11,
+
+  "goldLeft": 22,
+  "goldBottom": 22,
+  "goldFontSize": 16,
+
+  "toggleBinding": "<Keyboard>/i",
+
+  "itemIconKeyPrefix": "item_icons/"
+}

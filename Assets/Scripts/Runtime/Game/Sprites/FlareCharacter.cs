@@ -94,6 +94,34 @@ namespace Riftstorm.Game.Sprites
         }
 
         /// <summary>
+        /// Tauscht den Atlas einer per <c>GameObject.name</c> identifizierten Schicht
+        /// (z. B. <c>"MainHand"</c> / <c>"OffHand"</c>) zur Laufzeit. Nach dem Swap
+        /// wird die aktuell laufende Animation in der richtigen Blickrichtung
+        /// sofort neu gestartet, damit der frisch geladene Atlas direkt sichtbar
+        /// ist. <paramref name="atlas"/> = <c>null</c> macht die Schicht unsichtbar
+        /// (z. B. <c>/offhand none</c>). Liefert <c>false</c>, wenn keine Schicht
+        /// mit diesem Namen registriert ist.
+        /// </summary>
+        public bool SetLayerAtlas(string layerName, FlareAtlas atlas)
+        {
+            if (string.IsNullOrEmpty(layerName))
+            {
+                return false;
+            }
+            for (int i = 0; i < m_Layers.Count; i++)
+            {
+                FlareLayerAnimator layer = m_Layers[i];
+                if (layer == null || layer.gameObject.name != layerName)
+                {
+                    continue;
+                }
+                layer.SwapAtlas(atlas, m_CurrentAnimation, m_CurrentDirection);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Spielt auf allen Schichten dieselbe Animation ab. Schichten, die diese
         /// Animation nicht kennen, werden vom <see cref="FlareLayerAnimator"/> still geleert.
         /// </summary>

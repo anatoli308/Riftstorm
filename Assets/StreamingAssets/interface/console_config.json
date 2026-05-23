@@ -1,0 +1,63 @@
+{
+  "anchorLeft": 16,
+  "anchorBottom": 16,
+  "panelWidth": 720,
+  "panelHeight": 320,
+
+  "cornerTopLeftTexture": "interface/console/console_top_left",
+  "cornerTopRightTexture": "interface/console/console_top_right",
+  "cornerBottomLeftTexture": "interface/console/console_bottom_left",
+  "cornerBottomRightTexture": "interface/console/console_bottom_right",
+  "edgeTopTexture": "interface/console/console_top_across",
+  "edgeBottomTexture": "interface/console/console_bottom_across",
+  "edgeLeftTexture": "interface/console/console_left_up",
+  "edgeRightTexture": "interface/console/console_right_up",
+  "centerTexture": "interface/console/console_center",
+
+  "cornerWidth": 32,
+  "cornerHeight": 32,
+  "edgeThickness": 16,
+
+  "closeButtonIdleTexture": "interface/console/console_button_close_idle",
+  "closeButtonHoverTexture": "interface/console/console_button_close_hover",
+  "closeButtonPressTexture": "interface/console/console_button_close_press",
+  "closeButtonSize": 24,
+  "closeButtonInsetRight": 14,
+  "closeButtonInsetTop": 6,
+
+  "enterButtonIdleTexture": "interface/console/console_enter_button_idle",
+  "enterButtonHoverTexture": "interface/console/console_enter_button_hover",
+  "enterButtonPressTexture": "interface/console/console_enter_button_press",
+  "enterButtonWidth": 80,
+  "enterButtonHeight": 32,
+  "enterButtonInsetRight": 16,
+  "enterButtonInsetBottom": 14,
+
+  "scrollUpIdleTexture": "interface/console/console_scroll_up_idle",
+  "scrollUpHoverTexture": "interface/console/console_scroll_up_hover",
+  "scrollUpPressTexture": "interface/console/console_scroll_up_press",
+  "scrollDownIdleTexture": "interface/console/console_scroll_down_idle",
+  "scrollDownHoverTexture": "interface/console/console_scroll_down_hover",
+  "scrollDownPressTexture": "interface/console/console_scroll_down_press",
+  "scrollBarTexture": "interface/console/console_scroll_bar",
+  "scrollButtonSize": 20,
+  "scrollBarInsetRight": 18,
+  "scrollBarInsetTop": 34,
+  "scrollBarInsetBottom": 60,
+
+  "inputInsetLeft": 16,
+  "inputInsetRight": 104,
+  "inputInsetBottom": 14,
+  "inputHeight": 36,
+
+  "logInsetLeft": 16,
+  "logInsetRight": 48,
+  "logInsetTop": 30,
+  "logInsetBottom": 60,
+
+  "logFontSize": 16,
+  "inputFontSize": 18,
+  "logMaxLines": 200,
+  "openOnStart": false
+}
+

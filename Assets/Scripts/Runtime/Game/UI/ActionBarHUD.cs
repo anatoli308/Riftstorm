@@ -547,10 +547,15 @@ namespace Riftstorm.Game.UI
                 return;
             }
             string name = string.IsNullOrWhiteSpace(tpl.Name) ? $"#{tpl.Entry}" : tpl.Name;
+            // m_BoundStats (UnitStats) implementiert ICombatUnit — Cast direkt,
+            // damit der Tooltip-Formatter $E1min/$DUR/... mit echten Caster-Stats
+            // aufloesen kann. Vor dem LocalPlayer-Bind bleibt der Tooltip
+            // toleranter Fallback (Tokens literal).
+            ICombatUnit caster = m_BoundStats as ICombatUnit;
             m_Tooltip.Show(
                 name,
-                TooltipPanel.BuildSpellMeta(tpl),
-                TooltipPanel.GetSpellDescription(tpl),
+                TooltipPanel.BuildSpellMeta(tpl, caster),
+                TooltipPanel.GetSpellDescription(tpl, caster),
                 binding.SlotRoot.worldBound,
                 TooltipPlacement.Above);
         }

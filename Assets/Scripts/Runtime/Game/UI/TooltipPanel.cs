@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Text;
 using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Game.Combat;
+using Riftstorm.Game.Items;
 using Riftstorm.Game.Spells;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -31,7 +34,7 @@ namespace Riftstorm.Game.UI
     public sealed class TooltipPanel
     {
         /// <summary>Maximale Breite des Tooltip-Panels (WoW-Klassik, etwas breiter fuer 1080p+).</summary>
-        public const float DefaultWidth = 340f;
+        public const float DefaultWidth = 400f;
 
         /// <summary>Vertikaler Abstand zwischen Anker und Tooltip.</summary>
         public const float DefaultGap = 8f;
@@ -71,7 +74,7 @@ namespace Riftstorm.Game.UI
 
             m_NameLabel = new Label { name = "tooltip-name" };
             m_NameLabel.style.color = new Color(1f, 0.84f, 0.0f, 1f);
-            m_NameLabel.style.fontSize = 18;
+            m_NameLabel.style.fontSize = 22;
             m_NameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             m_NameLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_NameLabel, UIFonts.Body);
@@ -79,7 +82,7 @@ namespace Riftstorm.Game.UI
 
             m_MetaLabel = new Label { name = "tooltip-meta" };
             m_MetaLabel.style.color = new Color(0.78f, 0.78f, 0.82f, 1f);
-            m_MetaLabel.style.fontSize = 14;
+            m_MetaLabel.style.fontSize = 17;
             m_MetaLabel.style.marginTop = 4f;
             m_MetaLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_MetaLabel, UIFonts.Body);
@@ -87,7 +90,7 @@ namespace Riftstorm.Game.UI
 
             m_DescLabel = new Label { name = "tooltip-description" };
             m_DescLabel.style.color = new Color(0.95f, 0.95f, 0.95f, 1f);
-            m_DescLabel.style.fontSize = 14;
+            m_DescLabel.style.fontSize = 17;
             m_DescLabel.style.marginTop = 6f;
             m_DescLabel.style.whiteSpace = WhiteSpace.Normal;
             UIFonts.Apply(m_DescLabel, UIFonts.Body);
@@ -155,8 +158,20 @@ namespace Riftstorm.Game.UI
         /// <summary>
         /// Baut die Meta-Zeile fuer einen Action-Bar-Slot (Range / Mana / Cast / CD).
         /// Texte hart in Englisch — entsprechend der Source-Datenbasis.
+        /// Caster-loser Fallback: zeigt die Mana-Formel literal.
         /// </summary>
         public static string BuildSpellMeta(SpellTemplate tpl)
+        {
+            return BuildSpellMeta(tpl, null);
+        }
+
+        /// <summary>
+        /// Caster-bewusste Variante: loest <see cref="SpellTemplate.ManaFormula"/>
+        /// gegen den uebergebenen Caster auf (clvl/splvl/Stats), sodass im
+        /// Tooltip die echte Mana-Zahl steht statt einer Formel.
+        /// <paramref name="caster"/> = <c>null</c> faellt auf die Roh-Formel zurueck.
+        /// </summary>
+        public static string BuildSpellMeta(SpellTemplate tpl, ICombatUnit caster)
         {
             if (tpl == null)
             {
@@ -169,7 +184,18 @@ namespace Riftstorm.Game.UI
             }
             if (!string.IsNullOrWhiteSpace(tpl.ManaFormula) && tpl.ManaFormula != "0")
             {
-                parts.Add($"Mana {tpl.ManaFormula}");
+                if (caster != null)
+                {
+                    int mana = SpellUtils.CalculateManaCost(tpl, caster);
+                    if (mana > 0)
+                    {
+                        parts.Add($"{mana} Mana");
+                    }
+                }
+                else
+                {
+                    parts.Add($"Mana {tpl.ManaFormula}");
+                }
             }
             parts.Add(tpl.CastTime > 0 ? $"Cast {tpl.CastTime / 1000f:0.0}s" : "Instant");
             if (tpl.Cooldown > 0)
@@ -214,12 +240,21 @@ namespace Riftstorm.Game.UI
         /// </summary>
         public static string GetAuraDescription(SpellTemplate tpl)
         {
+            return GetAuraDescription(tpl, null);
+        }
+
+        /// <summary>
+        /// Caster-bewusste Variante: loest <c>$E&lt;N&gt;min</c>, <c>$DUR</c>
+        /// etc. gegen den uebergebenen <paramref name="caster"/> auf.
+        /// <paramref name="caster"/> = <c>null</c> haelt die Tokens literal.
+        /// </summary>
+        public static string GetAuraDescription(SpellTemplate tpl, ICombatUnit caster)
+        {
             if (tpl == null) { return string.Empty; }
-            if (!string.IsNullOrWhiteSpace(tpl.AuraDescription))
-            {
-                return tpl.AuraDescription;
-            }
-            return tpl.Description ?? string.Empty;
+            string raw = !string.IsNullOrWhiteSpace(tpl.AuraDescription)
+                ? tpl.AuraDescription
+                : (tpl.Description ?? string.Empty);
+            return caster != null ? SpellTooltipFormatter.Format(raw, tpl, caster) : raw;
         }
 
         /// <summary>
@@ -229,12 +264,176 @@ namespace Riftstorm.Game.UI
         /// </summary>
         public static string GetSpellDescription(SpellTemplate tpl)
         {
+            return GetSpellDescription(tpl, null);
+        }
+
+        /// <summary>
+        /// Caster-bewusste Variante: loest WoW-/FLARE-Platzhalter
+        /// (<c>$E1min</c>, <c>$E1max</c>, <c>$DUR</c>, ...) gegen den
+        /// uebergebenen <paramref name="caster"/> auf. <paramref name="caster"/>
+        /// = <c>null</c> haelt die Tokens literal stehen.
+        /// </summary>
+        public static string GetSpellDescription(SpellTemplate tpl, ICombatUnit caster)
+        {
             if (tpl == null) { return string.Empty; }
+            string raw = !string.IsNullOrWhiteSpace(tpl.Description)
+                ? tpl.Description
+                : (tpl.AuraDescription ?? string.Empty);
+            return caster != null ? SpellTooltipFormatter.Format(raw, tpl, caster) : raw;
+        }
+
+        // ---------------------------------------------------------------------
+        // Builder fuer Item-Tooltips (Inventory + Character)
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Liefert den Anzeige-Namen eines Items, mit Fallback auf <c>#Entry</c>
+        /// wenn der Template-Name leer ist.
+        /// </summary>
+        public static string GetItemDisplayName(ItemTemplate tpl)
+        {
+            if (tpl == null)
+            {
+                return "?";
+            }
+            return string.IsNullOrWhiteSpace(tpl.Name) ? $"#{tpl.Entry}" : tpl.Name;
+        }
+
+        /// <summary>
+        /// Baut die Meta-Zeile fuer ein Item: Quality - Slot/Type - iLvl -
+        /// Required-Level. Leere Felder werden uebersprungen. Bullet-Separator
+        /// identisch zu <see cref="BuildSpellMeta(SpellTemplate)"/>.
+        /// </summary>
+        public static string BuildItemMeta(ItemTemplate tpl)
+        {
+            if (tpl == null)
+            {
+                return string.Empty;
+            }
+            List<string> parts = new(5);
+            parts.Add(GetItemQualityLabel(tpl.Quality));
+            string slotLabel = GetItemSlotLabel(tpl);
+            if (!string.IsNullOrEmpty(slotLabel))
+            {
+                parts.Add(slotLabel);
+            }
+            if (tpl.ItemLevel > 0)
+            {
+                parts.Add($"iLvl {tpl.ItemLevel}");
+            }
+            if (tpl.RequiredLevel > 0)
+            {
+                parts.Add($"Requires Level {tpl.RequiredLevel}");
+            }
+            return string.Join(" \u2022 ", parts);
+        }
+
+        /// <summary>
+        /// Baut den Beschreibungs-Block fuer ein Item: Stat-Boni (eine Zeile
+        /// pro <see cref="ItemTemplate.StatType1"/>..<c>StatType4</c>),
+        /// optional Flavor-Description und Vendor-Sell-Price. <see cref="StackCount"/>
+        /// wird ueber den Caller mit der aktuellen Stueckzahl gemerged (siehe
+        /// optionale Overload).
+        /// </summary>
+        public static string GetItemDescription(ItemTemplate tpl)
+        {
+            return GetItemDescription(tpl, count: 0);
+        }
+
+        /// <summary>
+        /// Variante mit aktueller Stueckzahl (z. B. Inventory-Stack). Zeigt
+        /// bei stackbaren Items zusaetzlich "Stack: N / Max". <paramref name="count"/>
+        /// = 0 unterdrueckt die Zeile.
+        /// </summary>
+        public static string GetItemDescription(ItemTemplate tpl, int count)
+        {
+            if (tpl == null)
+            {
+                return string.Empty;
+            }
+            StringBuilder sb = new(160);
+            AppendItemStatLine(sb, tpl.StatType1, tpl.StatValue1);
+            AppendItemStatLine(sb, tpl.StatType2, tpl.StatValue2);
+            AppendItemStatLine(sb, tpl.StatType3, tpl.StatValue3);
+            AppendItemStatLine(sb, tpl.StatType4, tpl.StatValue4);
+            if (tpl.IsStackable && count > 1)
+            {
+                if (sb.Length > 0) { sb.Append('\n'); }
+                sb.Append("Stack: ").Append(count).Append(" / ").Append(tpl.StackCount);
+            }
             if (!string.IsNullOrWhiteSpace(tpl.Description))
             {
-                return tpl.Description;
+                if (sb.Length > 0) { sb.Append('\n'); }
+                sb.Append(tpl.Description);
             }
-            return tpl.AuraDescription ?? string.Empty;
+            if (tpl.SellPrice > 0)
+            {
+                if (sb.Length > 0) { sb.Append('\n'); }
+                sb.Append("Sell: ").Append(tpl.SellPrice).Append('c');
+            }
+            return sb.ToString();
         }
+
+        // ---- Item-Label-Helpers (Source: ItemDefines.h Quality + EquipSlot) ----
+
+        private static string GetItemQualityLabel(int quality) => quality switch
+        {
+            5 => "Legendary",
+            4 => "Epic",
+            3 => "Rare",
+            2 => "Uncommon",
+            1 => "Common",
+            _ => "Poor",
+        };
+
+        private static string GetItemSlotLabel(ItemTemplate tpl)
+        {
+            if (tpl.EquipType <= 0)
+            {
+                return string.Empty;
+            }
+            // EquipSlot-Enum spiegelt 1:1 Source-EquipType (Helm=1..Ranged=11),
+            // plus Ring2=12 als UI-Extra. Cast ist sicher fuer alle Werte
+            // > 0 — unbekannte Werte landen auf der int-Repraesentation.
+            EquipSlot slot = (EquipSlot)tpl.EquipType;
+            return System.Enum.IsDefined(typeof(EquipSlot), slot)
+                ? slot.ToString()
+                : $"Equip #{tpl.EquipType}";
+        }
+
+        private static void AppendItemStatLine(StringBuilder sb, int statTypeId, int value)
+        {
+            if (statTypeId <= 0 || value == 0)
+            {
+                return;
+            }
+            StatId id = (StatId)statTypeId;
+            string label = GetItemStatLabel(id, statTypeId);
+            if (sb.Length > 0) { sb.Append('\n'); }
+            string sign = value > 0 ? "+" : string.Empty;
+            sb.Append(sign).Append(value).Append(' ').Append(label);
+        }
+
+        private static string GetItemStatLabel(StatId id, int rawId) => id switch
+        {
+            StatId.Health => "Health",
+            StatId.ArmorValue => "Armor",
+            StatId.Strength => "Strength",
+            StatId.Agility => "Agility",
+            StatId.Willpower => "Willpower",
+            StatId.Intelligence => "Intelligence",
+            StatId.WeaponValue => "Weapon Damage",
+            StatId.RangedWeaponValue => "Ranged Damage",
+            StatId.MeleeCritical => "Melee Crit",
+            StatId.RangedCritical => "Ranged Crit",
+            StatId.SpellCritical => "Spell Crit",
+            StatId.DodgeRating => "Dodge",
+            StatId.BlockRating => "Block",
+            StatId.ResistFrost => "Frost Resist",
+            StatId.ResistFire => "Fire Resist",
+            StatId.ResistShadow => "Shadow Resist",
+            StatId.ResistHoly => "Holy Resist",
+            _ => $"Stat #{rawId}",
+        };
     }
 }

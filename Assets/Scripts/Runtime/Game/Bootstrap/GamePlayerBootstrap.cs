@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Riftstorm.Game.CameraRig;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Movement;
 using Riftstorm.Game.Sprites;
+using Riftstorm.Gameplay.Combat;
+using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -54,14 +57,63 @@ namespace Riftstorm.Game.Bootstrap
             FlareCharacter character = visualsRoot.AddComponent<FlareCharacter>();
 
             FlareAtlasLoader loader = BuildLoader();
+
+            // Equipment-Kataloge sicherstellen (idempotent — cache-first). Wir
+            // filtern damit aus m_LayerAtlases all jene Eintraege heraus, die
+            // tatsaechlich Waffe oder Offhand sind; sie werden NICHT als Body-
+            // Layer aufgebaut, sondern landen unten als initialer Inhalt der
+            // dedizierten MainHand-/OffHand-Schichten. So muss das Prefab nicht
+            // editiert werden, um den alten "longsword"+"buckler"-Default zu
+            // entkoppeln.
+            WeaponCatalog weaponCatalog = await EnsureCatalogAsync<WeaponCatalogLoader, WeaponCatalog>(l => l.LoadAsync());
+            OffhandCatalog offhandCatalog = await EnsureCatalogAsync<OffhandCatalogLoader, OffhandCatalog>(l => l.LoadAsync());
+
+            List<string> bodyAtlasIds = new(m_LayerAtlases.Length);
+            string legacyMainHandFromPrefab = null;
+            string legacyOffHandFromPrefab = null;
             for (int i = 0; i < m_LayerAtlases.Length; i++)
             {
-                string atlasName = m_LayerAtlases[i];
+                string id = m_LayerAtlases[i];
+                if (string.IsNullOrEmpty(id))
+                {
+                    continue;
+                }
+                if (weaponCatalog != null && weaponCatalog.TryGet(id, out _))
+                {
+                    if (string.IsNullOrEmpty(legacyMainHandFromPrefab)) { legacyMainHandFromPrefab = id; }
+                    continue;
+                }
+                if (offhandCatalog != null && offhandCatalog.TryGet(id, out _))
+                {
+                    if (string.IsNullOrEmpty(legacyOffHandFromPrefab)) { legacyOffHandFromPrefab = id; }
+                    continue;
+                }
+                bodyAtlasIds.Add(id);
+            }
+
+            // Body-Layer (Beine, Schuhe, Rumpf, Haende, Kopf) in Inspector-
+            // Reihenfolge aufbauen. Sorting-Order entspricht dem Body-Index.
+            for (int i = 0; i < bodyAtlasIds.Count; i++)
+            {
+                string atlasName = bodyAtlasIds[i];
                 FlareAtlas atlas = await loader.LoadAsync(atlasName);
                 FlareLayerAnimator layer = CreateLayer(visualsRoot.transform, atlasName, i);
                 layer.SetAtlas(atlas);
                 character.RegisterLayer(layer);
             }
+
+            // Equipment-Schichten als feste, namensbasierte Slots ueber den Body-
+            // Layern. Atlas ist initial leer und wird gleich von
+            // PlayerEquipmentVisuals.Bind aus den PlayerCombat-NetVars befuellt;
+            // legacyMainHand-/legacyOffHand-Werte aus dem Prefab dienen nur als
+            // Fallback, falls der Server keinen Default gesetzt hat.
+            int mainHandOrder = bodyAtlasIds.Count;
+            int offHandOrder = bodyAtlasIds.Count + 1;
+            FlareLayerAnimator mainHandLayer = CreateLayer(visualsRoot.transform, PlayerEquipmentVisuals.MainHandLayerName, mainHandOrder);
+            character.RegisterLayer(mainHandLayer);
+            FlareLayerAnimator offHandLayer = CreateLayer(visualsRoot.transform, PlayerEquipmentVisuals.OffHandLayerName, offHandOrder);
+            character.RegisterLayer(offHandLayer);
+
             character.Play(m_InitialAnimation, true);
             character.SetDirection(2); // FLARE 2 = Süd, Standard-Blickrichtung Topdown.
 
@@ -102,10 +154,36 @@ namespace Riftstorm.Game.Bootstrap
                 {
                     combat.BindInput(input);
                 }
+
+                // Equip-Visuals-Bruecke: lauscht auf PlayerCombat.WeaponChanged /
+                // OffhandChanged und tauscht die FLARE-Atlanten der MainHand-/
+                // OffHand-Schichten. Wird hier per AddComponent angehaengt, damit
+                // das Prefab nicht editiert werden muss; Bind versorgt sie sofort
+                // mit dem aktuellen NetVar-Stand (Server-Default).
+                PlayerEquipmentVisuals equipVisuals = GetComponent<PlayerEquipmentVisuals>();
+                if (equipVisuals == null)
+                {
+                    equipVisuals = gameObject.AddComponent<PlayerEquipmentVisuals>();
+                }
+                equipVisuals.Bind(character, loader, combat);
             }
             else
             {
                 Debug.LogWarning("[GamePlayerBootstrap] PlayerCombat nicht am Root — Attack-Input wird ignoriert.", this);
+
+                // Ohne PlayerCombat keine Equip-NetVars — wir muessen die Legacy-
+                // Werte aus dem Prefab manuell auf die Slot-Layer setzen, sonst
+                // bleiben MainHand/OffHand komplett leer.
+                if (!string.IsNullOrEmpty(legacyMainHandFromPrefab))
+                {
+                    FlareAtlas mainAtlas = await loader.LoadAsync(legacyMainHandFromPrefab);
+                    character.SetLayerAtlas(PlayerEquipmentVisuals.MainHandLayerName, mainAtlas);
+                }
+                if (!string.IsNullOrEmpty(legacyOffHandFromPrefab))
+                {
+                    FlareAtlas offAtlas = await loader.LoadAsync(legacyOffHandFromPrefab);
+                    character.SetLayerAtlas(PlayerEquipmentVisuals.OffHandLayerName, offAtlas);
+                }
             }
 
             // Kamera nur für den lokalen Spieler. Remote-Clients sollen den Owner nicht hijacken.
@@ -131,6 +209,23 @@ namespace Riftstorm.Game.Bootstrap
             {
                 gameObject.AddComponent<AttackRangeIndicator>();
             }
+        }
+
+        /// <summary>
+        /// Holt einen Catalog-Loader aus dem ServiceLocator und stellt sicher,
+        /// dass die JSON geladen ist. Liefert <c>null</c>, wenn der Loader fehlt
+        /// (z. B. in fruehen Editor-Playmodes ohne ApplicationEntryPoint).
+        /// </summary>
+        private static async Task<TCatalog> EnsureCatalogAsync<TLoader, TCatalog>(System.Func<TLoader, Task<TCatalog>> load)
+            where TLoader : class
+            where TCatalog : class
+        {
+            TLoader loader = ServiceLocator.Get<TLoader>();
+            if (loader == null)
+            {
+                return null;
+            }
+            return await load(loader);
         }
 
         private FlareAtlasLoader BuildLoader()

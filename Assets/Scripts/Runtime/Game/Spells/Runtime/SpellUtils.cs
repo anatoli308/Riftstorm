@@ -32,6 +32,25 @@ namespace Riftstorm.Game.Spells
         /// <summary>FLARE-Tile-Distanz zu Unity-Metern (1 Tile = 1 m).</summary>
         public static float TilesToMeters(float tiles) => tiles * MetersPerTile;
 
+        /// <summary>
+        /// Logische Source-Engine-Framerate, gegen die Projectile-Speeds
+        /// kalibriert sind. FLARE und vergleichbare 2D-Engines speichern
+        /// <c>speed</c> als <i>Pixel pro logischem Frame</i> bei 60 fps.
+        /// </summary>
+        public const float SourceFramesPerSecond = 60f;
+
+        /// <summary>
+        /// Konvertiert eine Source-Projectile-Geschwindigkeit
+        /// (<see cref="SpellTemplate.Speed"/>, Einheit: Pixel pro 60-fps-Frame)
+        /// in Unity-Meter/Sekunde. Liefert <c>0</c>, wenn der Eingabewert
+        /// nicht positiv ist (Spell ist dann nicht als Projectile zu behandeln).
+        /// </summary>
+        public static float ProjectileSpeedToMps(float speedPixelsPerFrame)
+        {
+            if (speedPixelsPerFrame <= 0f) { return 0f; }
+            return speedPixelsPerFrame * SourceFramesPerSecond / PixelsPerMeter;
+        }
+
         /// <summary>True wenn <see cref="SpellTemplate.CastTime"/> == 0.</summary>
         public static bool IsInstant(SpellTemplate spell) => spell != null && spell.CastTime <= 0;
 
@@ -112,24 +131,86 @@ namespace Riftstorm.Game.Spells
         }
 
         /// <summary>
-        /// Liefert den skalierten Effekt-Wert. Wenn <see cref="SpellTemplateEffect.ScaleFormula"/>
-        /// gesetzt ist, wird die Formel mit <c>value = Data1</c> evaluiert; sonst
-        /// faellt der Wert auf <c>Data1</c> zurueck. Negative Ergebnisse werden
-        /// nicht geclamped — Caller (z.B. Heal vs. Damage) entscheidet.
+        /// Liefert den skalierten Effekt-Wert nach Source-Konvention.
         /// </summary>
         /// <remarks>
-        /// Source-Aequivalent: <c>SpellMgr::calculateEffectValue</c>
-        /// (<c>source_server/Server/src/Combat/SpellMgr.cpp</c>).
+        /// <para>
+        /// Source-Aequivalent: <c>SpellUtils::calculateEffectValue</c>
+        /// (<c>source_server/Server/src/Combat/SpellUtils.cpp:193-209</c>).
+        /// </para>
+        /// <para>
+        /// Wenn <see cref="SpellTemplateEffect.ScaleFormula"/> gesetzt ist,
+        /// <b>ersetzt</b> deren Ergebnis den Wert vollstaendig — Data1/Data2
+        /// werden ignoriert, es gibt <b>keinen RNG-Roll</b>. Ohne Formel gilt
+        /// <c>data1 + data2 * clvl</c>. Variance (<c>±10%</c>) wird erst in
+        /// <c>CombatFormulas.CalculateSpellDamage</c> als finaler Schritt addiert,
+        /// genau wie in <c>CombatFormulas::applyDamageVariance</c> der Source.
+        /// </para>
         /// </remarks>
         public static int CalculateEffectValue(SpellTemplateEffect eff, ICombatUnit caster)
         {
-            if (string.IsNullOrEmpty(eff.ScaleFormula))
+            return EvaluateEffectFormula(eff, caster);
+        }
+
+        /// <summary>
+        /// Min-Variante fuer Tooltip-Anzeige (<c>$E&lt;N&gt;min</c>). Da Source
+        /// keine Data1/Data2-Range kennt, ist Min == Max == Server-Wert vor
+        /// Variance. Die ±10% Variance ist Damage-Roll-Logik und wird hier
+        /// bewusst nicht reflektiert.
+        /// </summary>
+        public static int CalculateEffectValueMin(SpellTemplateEffect eff, ICombatUnit caster)
+        {
+            return EvaluateEffectFormula(eff, caster);
+        }
+
+        /// <summary>
+        /// Max-Variante fuer Tooltip-Anzeige (<c>$E&lt;N&gt;max</c>). Identisch
+        /// zu <see cref="CalculateEffectValueMin"/> — siehe dort.
+        /// </summary>
+        public static int CalculateEffectValueMax(SpellTemplateEffect eff, ICombatUnit caster)
+        {
+            return EvaluateEffectFormula(eff, caster);
+        }
+
+        /// <summary>
+        /// Einheitliche Effekt-Wert-Berechnung: Formel ersetzt, sonst
+        /// <c>data1 + data2 * clvl</c>. FLARE-kanonische Semantik (volle
+        /// Formel-Unterstuetzung mit allen Tokens, nicht die abgespeckte
+        /// cpp-Port-Variante, die nur <c>clvl</c> kennt).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>Effekt-spezifischer <c>value</c>-Seed</b>: In den JSON-Templates
+        /// ist die Bedeutung des Tokens <c>value</c> in <c>scale_formula</c>
+        /// effektabhaengig:
+        /// </para>
+        /// <list type="bullet">
+        /// <item><description>
+        ///   Damage / Heal / Mana / Movement-Effekte (z.B.
+        ///   <see cref="SpellEffect.WeaponDamage"/>, <see cref="SpellEffect.SchoolDamage"/>,
+        ///   <see cref="SpellEffect.Heal"/>): <c>value = data2</c> (Basisbetrag,
+        ///   z.B. Aimed Shot data2=115 = 115% Waffenschaden).
+        /// </description></item>
+        /// <item><description>
+        ///   Aura-Effekte (<see cref="SpellEffect.ApplyAura"/>,
+        ///   <see cref="SpellEffect.ApplyAreaAura"/>): <c>value = data3</c>
+        ///   (Aura-Magnitude, z.B. Arrow Flurry data3=-50 = -50% Cooldown).
+        ///   data1=AuraType, data2=MiscValue/School-Bitmask &#8212; <i>nicht</i>
+        ///   der Skalar.
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        static int EvaluateEffectFormula(SpellTemplateEffect eff, ICombatUnit caster)
+        {
+            if (!string.IsNullOrEmpty(eff.ScaleFormula))
             {
-                return (int)System.Math.Min(int.MaxValue, eff.Data1);
+                int valueSeed = IsApplyAura(eff.Effect)
+                    ? (int)eff.Data3
+                    : (int)eff.Data2;
+                return SpellFormulaEvaluator.Evaluate(eff.ScaleFormula, BuildContext(caster, valueSeed));
             }
-            int baseValue = (int)System.Math.Min(int.MaxValue, eff.Data1);
-            SpellFormulaContext ctx = BuildContext(caster, baseValue);
-            return SpellFormulaEvaluator.Evaluate(eff.ScaleFormula, ctx);
+            int clvl = caster?.Level ?? 1;
+            return (int)eff.Data1 + (int)eff.Data2 * clvl;
         }
 
         /// <summary>

@@ -22,6 +22,16 @@ namespace Riftstorm.Gameplay.Combat
         [JsonConverter(typeof(StringEnumConverter))]
         public WeaponType Type;
 
+        /// <summary>
+        /// Beidhaendigkeit. Default <see cref="Handedness.OneHanded"/>. Server
+        /// verdraengt beim Equip einer <see cref="Handedness.TwoHanded"/>-Waffe
+        /// automatisch den Offhand-Slot und lehnt nachtraegliche Offhand-
+        /// Equip-Versuche ab. Bows sind in der Regel TwoHanded.
+        /// </summary>
+        [JsonProperty("handedness")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Handedness Handedness = Handedness.OneHanded;
+
         /// <summary>Cooldown zwischen zwei Attacken in Sekunden.</summary>
         [JsonProperty("attack_cooldown")] public float AttackCooldown = 1f;
 
@@ -49,6 +59,10 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>True, wenn die Attacke ein Fernkampfschuss ist (Bow / Crossbow / Gun).</summary>
         [JsonIgnore]
         public bool IsRanged => Type is WeaponType.Bow or WeaponType.Crossbow or WeaponType.Gun;
+
+        /// <summary>True, wenn die Waffe beidhaendig gefuehrt wird und damit den Offhand-Slot blockiert.</summary>
+        [JsonIgnore]
+        public bool IsTwoHanded => Handedness == Handedness.TwoHanded;
 
         /// <summary>
         /// Wählt die passende Attack-Animation für eine Waffenkategorie.

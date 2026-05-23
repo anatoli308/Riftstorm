@@ -1,0 +1,210 @@
+using System;
+using System.Collections.Generic;
+using Riftstorm.Game.Items;
+using UnityEngine;
+
+namespace Riftstorm.Game.Combat
+{
+    /// <summary>
+    /// Quellseitig nummerierte Stat-Ids — Subset aus
+    /// <c>Combat::Stat</c> der Source, der in Phase 16B von ItemTemplate
+    /// <c>StatType1..4</c>/<c>StatValue1..4</c> wirklich genutzt wird. Werte
+    /// matchen 1:1 die C++-Enum-Werte aus
+    /// <c>source_server/Shared/CombatStats.h</c>, damit JSON-Templates ohne
+    /// Mapping konsumiert werden koennen.
+    /// </summary>
+    public enum StatId
+    {
+        None = 0,
+        Health = 2,
+        ArmorValue = 3,
+        Strength = 4,
+        Agility = 5,
+        Willpower = 6,
+        Intelligence = 7,
+        WeaponValue = 11,
+        MeleeCooldown = 12,
+        RangedWeaponValue = 13,
+        RangedCooldown = 14,
+        MeleeCritical = 15,
+        RangedCritical = 16,
+        SpellCritical = 17,
+        DodgeRating = 18,
+        BlockRating = 19,
+        ResistFrost = 20,
+        ResistFire = 21,
+        ResistShadow = 22,
+        ResistHoly = 23,
+    }
+
+    /// <summary>
+    /// Read-only Aggregator ueber <see cref="UnitStats"/> (Base) +
+    /// <see cref="PlayerEquipment"/> (Item-Boni). Buffs/Auras kommen in
+    /// Phase 17. Liegt als MonoBehaviour (nicht NetworkBehaviour) auf dem
+    /// PlayerCharacter-Prefab; die replizierten Quellen sind UnitStats und
+    /// PlayerEquipment — diese Klasse rechnet rein lokal pro Peer.
+    ///
+    /// <para>
+    /// Lifecycle: rechnet die Equipment-Summe nur dann neu, wenn
+    /// <see cref="PlayerEquipment.EquipChanged"/> feuert (event-driven, kein
+    /// Polling). HUD/CombatFormulas haengen sich an <see cref="StatsChanged"/>.
+    /// </para>
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class PlayerStats : MonoBehaviour
+    {
+        [Tooltip("Quelle der Basis-Werte. Wird in Awake auf das eigene GameObject aufgeloest, wenn leer.")]
+        [SerializeField] private UnitStats m_BaseStats;
+
+        [Tooltip("Quelle der Equipment-Boni. Wird in Awake auf das eigene GameObject aufgeloest, wenn leer.")]
+        [SerializeField] private PlayerEquipment m_Equipment;
+
+        /// <summary>
+        /// Aggregierte Item-Boni je <see cref="StatId"/>. Wird komplett neu
+        /// gebaut bei jedem <see cref="PlayerEquipment.EquipChanged"/>. Buffs
+        /// sind in v1 nicht enthalten — TODO Phase 17.
+        /// </summary>
+        private readonly Dictionary<StatId, int> m_EquipmentSums = new();
+
+        /// <summary>
+        /// Feuert auf dem lokalen Peer, sobald die aggregierten Stats sich
+        /// geaendert haben (Equip/Unequip oder spaeter Buff-Up/Down). HUDs
+        /// koennen damit gezielt Bars/Tooltips refreshen.
+        /// </summary>
+        public event Action StatsChanged;
+
+        private void Awake()
+        {
+            if (m_BaseStats == null)
+            {
+                m_BaseStats = GetComponent<UnitStats>();
+            }
+            if (m_Equipment == null)
+            {
+                m_Equipment = GetComponent<PlayerEquipment>();
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (m_Equipment != null)
+            {
+                m_Equipment.EquipChanged += OnEquipChanged;
+            }
+            RecomputeEquipmentSums();
+        }
+
+        private void OnDisable()
+        {
+            if (m_Equipment != null)
+            {
+                m_Equipment.EquipChanged -= OnEquipChanged;
+            }
+        }
+
+        private void OnEquipChanged(EquipSlot _, int __)
+        {
+            RecomputeEquipmentSums();
+        }
+
+        // -------------------------------------------------------------------------
+        // Lese-API
+        // -------------------------------------------------------------------------
+
+        /// <summary>Equipment-Bonus auf einen Stat (nur Item-Boni, keine Base, keine Buffs).</summary>
+        public int GetEquipmentBonus(StatId stat) => m_EquipmentSums.TryGetValue(stat, out int v) ? v : 0;
+
+        /// <summary>
+        /// Basis-Wert aus <see cref="UnitStats"/> (Inspector-konfiguriert, ggf.
+        /// per <c>UnitStats.ApplyBaseStats</c> ueberschrieben). Stats ohne
+        /// Mapping in UnitStats geben 0 zurueck — Aggregator faellt damit
+        /// implizit auf den Equipment-Bonus zurueck.
+        /// </summary>
+        public int GetBase(StatId stat)
+        {
+            if (m_BaseStats == null)
+            {
+                return 0;
+            }
+            switch (stat)
+            {
+                case StatId.Health: return m_BaseStats.MaxHp;
+                case StatId.ArmorValue: return m_BaseStats.Armor;
+                case StatId.Strength: return m_BaseStats.Strength;
+                case StatId.Willpower: return m_BaseStats.Willpower;
+                case StatId.Intelligence: return m_BaseStats.Intelligence;
+                case StatId.WeaponValue: return m_BaseStats.WeaponDamage;
+                case StatId.MeleeCritical: return m_BaseStats.CritChance;
+                case StatId.DodgeRating: return m_BaseStats.DodgeChance;
+                case StatId.BlockRating: return m_BaseStats.BlockChance;
+                case StatId.ResistFire: return m_BaseStats.ResistFire;
+                case StatId.ResistFrost: return m_BaseStats.ResistFrost;
+                case StatId.ResistShadow: return m_BaseStats.ResistShadow;
+                case StatId.ResistHoly: return m_BaseStats.ResistHoly;
+                default: return 0;
+            }
+        }
+
+        /// <summary>Gesamtwert = Base + Equipment + Buffs (Buffs=0 in v1).</summary>
+        public int GetTotal(StatId stat) => GetBase(stat) + GetEquipmentBonus(stat);
+
+        // -------------------------------------------------------------------------
+        // Recompute
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Baut <see cref="m_EquipmentSums"/> neu auf, indem alle 11 Equip-Slots
+        /// gelesen, das jeweilige <see cref="ItemTemplate"/> ueber den
+        /// <see cref="ItemCatalogLoader"/> aufgeloest und die vier StatType/Value-
+        /// Paare pro Template summiert werden. Source-Parity: Templates
+        /// referenzieren bis zu 4 Statboni.
+        /// </summary>
+        public void RecomputeEquipmentSums()
+        {
+            m_EquipmentSums.Clear();
+
+            if (m_Equipment == null)
+            {
+                StatsChanged?.Invoke();
+                return;
+            }
+
+            for (int slotIdx = 1; slotIdx <= PlayerEquipment.SlotCount; slotIdx++)
+            {
+                EquipSlot slot = (EquipSlot)slotIdx;
+                int templateId = m_Equipment.GetEquipped(slot);
+                if (templateId <= 0)
+                {
+                    continue;
+                }
+                if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null)
+                {
+                    continue;
+                }
+                AccumulateStat(template.StatType1, template.StatValue1);
+                AccumulateStat(template.StatType2, template.StatValue2);
+                AccumulateStat(template.StatType3, template.StatValue3);
+                AccumulateStat(template.StatType4, template.StatValue4);
+            }
+
+            StatsChanged?.Invoke();
+        }
+
+        private void AccumulateStat(int statTypeId, int statValue)
+        {
+            if (statTypeId <= 0 || statValue == 0)
+            {
+                return;
+            }
+            StatId id = (StatId)statTypeId;
+            if (m_EquipmentSums.TryGetValue(id, out int current))
+            {
+                m_EquipmentSums[id] = current + statValue;
+            }
+            else
+            {
+                m_EquipmentSums[id] = statValue;
+            }
+        }
+    }
+}

@@ -26,6 +26,9 @@ GameObject:
   - component: {fileID: 2270049582356626853}
   - component: {fileID: -6740747972831955272}
   - component: {fileID: -758824109736128144}
+  - component: {fileID: 3917187257102788864}
+  - component: {fileID: -2832614196279754095}
+  - component: {fileID: 8196984269171002894}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -164,6 +167,7 @@ MonoBehaviour:
   m_Stats: {fileID: 5708302143726135351}
   m_Movement: {fileID: 5172720370931407651}
   m_DefaultWeaponId: longsword
+  m_DefaultOffhandId: buckler
   m_RespawnDelaySeconds: 3
 --- !u!114 &-2700015800232922021
 MonoBehaviour:
@@ -409,6 +413,45 @@ MonoBehaviour:
   m_RangeLineWidth: 0.08
   m_ReticleColor: {r: 0.4, g: 0.85, b: 1, a: 0.95}
   m_RangeColor: {r: 1, g: 0.85, b: 0.2, a: 0.6}
+--- !u!114 &3917187257102788864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20c6c9187e00a9244a7d04dc706690ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Items.PlayerEquipment
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &-2832614196279754095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c23091deddd1e4149a974fac23be1b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.PlayerEquipmentVisuals
+--- !u!114 &8196984269171002894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bc5b82f08cf8e94696cdcb675954d69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Combat.PlayerStats
+  m_BaseStats: {fileID: 5708302143726135351}
+  m_Equipment: {fileID: 3917187257102788864}
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Threading;
 using Riftstorm.Game.Combat.CombatStates;
 using Riftstorm.Game.Input;
+using Riftstorm.Game.Items;
 using Riftstorm.Game.Movement;
 using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
@@ -56,6 +57,10 @@ namespace Riftstorm.Game.Combat
                  "solange das Loadout-System noch nicht greift.")]
         [SerializeField] private string m_DefaultWeaponId = "longsword";
 
+        [Tooltip("Default-Offhand (Buckler/Shield/Torch/...), die der Server jedem neu gespawnten Spieler equippt. " +
+                 "Leer = kein Offhand. Wird ignoriert, falls die Default-Waffe TwoHanded ist.")]
+        [SerializeField] private string m_DefaultOffhandId = "buckler";
+
         [Header("Respawn")]
         [Tooltip("Sekunden zwischen Tod und automatischem Respawn am initialen Spawn-Punkt.")]
         [SerializeField] private float m_RespawnDelaySeconds = 5f;
@@ -77,6 +82,31 @@ namespace Riftstorm.Game.Combat
             writePerm: NetworkVariableWritePermission.Server);
 
         // -------------------------------------------------------------------------
+        // Equip-Lese-API (fuer PlayerEquipmentVisuals, HUD, Range-Indicator)
+        // -------------------------------------------------------------------------
+
+        /// <summary>Aktuell ausgeruestete Waffe (Id aus <c>combat/weapons.json</c>). Leer = unbewaffnet.</summary>
+        public string CurrentWeaponId => m_CurrentWeaponId.Value.ToString();
+
+        /// <summary>Aktuell ausgeruestete Offhand (Id aus <c>combat/offhand_items.json</c>). Leer = keine Offhand.</summary>
+        public string CurrentOffhandId => m_CurrentOffhandId.Value.ToString();
+
+        /// <summary>
+        /// Feuert auf jedem Peer (Server + alle Clients), sobald die
+        /// server-autoritative Waffe sich aendert. Payload: <c>(oldId, newId)</c>,
+        /// beide leer wenn ungesetzt. Wird vom <see cref="PlayerEquipmentVisuals"/>
+        /// abonniert, um den FLARE-MainHand-Layer-Atlas zu tauschen.
+        /// </summary>
+        public event System.Action<string, string> WeaponChanged;
+
+        /// <summary>
+        /// Feuert auf jedem Peer, sobald die server-autoritative Offhand sich
+        /// aendert. Payload: <c>(oldId, newId)</c>; leerer <c>newId</c> bedeutet
+        /// Offhand wurde geleert (Unequip oder Verdraengung durch TwoHanded-Waffe).
+        /// </summary>
+        public event System.Action<string, string> OffhandChanged;
+
+        // -------------------------------------------------------------------------
         // States (öffentlich lesbar, damit States gegenseitig referenzieren können)
         // -------------------------------------------------------------------------
 
@@ -90,6 +120,7 @@ namespace Riftstorm.Game.Combat
         // -------------------------------------------------------------------------
 
         private WeaponCatalogLoader m_WeaponCatalogLoader;
+        private OffhandCatalogLoader m_OffhandCatalogLoader;
         private SpellVisualKitMappingCatalogLoader m_VisualKitMappingLoader;
         private SpellVisualKitDefinitionCatalogLoader m_VisualKitDefinitionLoader;
         private SpellAnimationCatalogLoader m_AnimationCatalogLoader;
@@ -188,6 +219,26 @@ namespace Riftstorm.Game.Combat
                 m_CurrentWeaponId.Value = new FixedString64Bytes(m_DefaultWeaponId);
             }
 
+            // Server bestimmt die initiale Offhand. Wird beim Equip einer
+            // TwoHanded-Default-Waffe spaeter durch RequestEquipWeaponServerRpc
+            // geleert; hier setzen wir den Buckler-Default bedingungslos und
+            // ueberlassen die 2H-Verdraengung dem zentralen Equip-Pfad.
+            if (IsServer && m_CurrentOffhandId.Value.Length == 0 && !string.IsNullOrEmpty(m_DefaultOffhandId))
+            {
+                WeaponDefinition defaultWeapon = ResolveCurrentWeapon();
+                if (defaultWeapon == null || !defaultWeapon.IsTwoHanded)
+                {
+                    m_CurrentOffhandId.Value = new FixedString64Bytes(m_DefaultOffhandId);
+                }
+            }
+
+            // Jeder Peer haengt sich an die Equip-NetworkVariables und leitet
+            // Aenderungen als Plain-string-Events weiter — Source-treu trennt das
+            // Equip-Daten (NetVar) von Equip-Visuals (PlayerEquipmentVisuals) und
+            // erspart der UI direkten NetVar-Zugriff.
+            m_CurrentWeaponId.OnValueChanged += OnNetWeaponChanged;
+            m_CurrentOffhandId.OnValueChanged += OnNetOffhandChanged;
+
             // Server abonniert das Todes-Event, um State-Wechsel + Client-Fanout der
             // Death-Animation auszulösen (Source-treu: kein Polling, eventbasiert).
             if (IsServer && m_Stats != null)
@@ -214,6 +265,9 @@ namespace Riftstorm.Game.Combat
         /// <inheritdoc/>
         public override void OnNetworkDespawn()
         {
+            m_CurrentWeaponId.OnValueChanged -= OnNetWeaponChanged;
+            m_CurrentOffhandId.OnValueChanged -= OnNetOffhandChanged;
+
             if (IsServer && m_Stats != null)
             {
                 m_Stats.OnServerDied -= OnServerDied;
@@ -229,6 +283,16 @@ namespace Riftstorm.Game.Combat
                 m_RespawnCts = null;
             }
             base.OnNetworkDespawn();
+        }
+
+        private void OnNetWeaponChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue)
+        {
+            WeaponChanged?.Invoke(oldValue.ToString(), newValue.ToString());
+        }
+
+        private void OnNetOffhandChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue)
+        {
+            OffhandChanged?.Invoke(oldValue.ToString(), newValue.ToString());
         }
 
         // -------------------------------------------------------------------------
@@ -816,6 +880,253 @@ namespace Riftstorm.Game.Combat
                 WeaponDefinition weapon = ResolveCurrentWeapon();
                 return weapon != null ? weapon.Range : 0f;
             }
+        }
+
+        // -------------------------------------------------------------------------
+        // Weapon-Swap (Console-Command /weapon, später Loadout/Inventory)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Einstieg fuer einen Waffenwechsel. Wird aktuell vom
+        /// <see cref="UI.Console.Commands.WeaponCommand"/> aufgerufen, spaeter vom
+        /// Loadout-/Inventory-System. Lokale Sanity-Checks (Spawn + Owner), die
+        /// autoritative Katalog-Validierung und das Setzen des
+        /// <c>NetworkVariable</c> passieren serverseitig in
+        /// <see cref="RequestEquipWeaponServerRpc"/>.
+        /// </summary>
+        /// <param name="weaponId">Id aus <c>combat/weapons.json</c> (z.B. <c>"shortsword"</c>).</param>
+        public void TryRequestEquipWeapon(string weaponId)
+        {
+            if (!IsSpawned || !IsOwner || string.IsNullOrWhiteSpace(weaponId))
+            {
+                return;
+            }
+            RequestEquipWeaponServerRpc(new FixedString64Bytes(weaponId));
+        }
+
+        [ServerRpc]
+        private void RequestEquipWeaponServerRpc(FixedString64Bytes weaponId, ServerRpcParams _ = default)
+        {
+            if (weaponId.Length == 0)
+            {
+                return;
+            }
+
+            // Katalog-Validierung — unbekannte Ids werden verworfen, sonst wuerde
+            // ResolveCurrentWeapon dauerhaft null liefern und Attacks/Range-Indicator
+            // tot bleiben.
+            m_WeaponCatalogLoader ??= ServiceLocator.Get<WeaponCatalogLoader>();
+            WeaponCatalog catalog = m_WeaponCatalogLoader?.GetCached();
+            if (catalog == null)
+            {
+                Debug.LogWarning("[PlayerCombat] WeaponCatalog not loaded — equip ignored.");
+                return;
+            }
+            if (!catalog.TryGet(weaponId.ToString(), out WeaponDefinition weaponDef))
+            {
+                Debug.LogWarning($"[PlayerCombat] Unknown weapon id '{weaponId}' — equip ignored.");
+                return;
+            }
+
+            // Laufenden Swing/Recovery abbrechen, damit der neue Cooldown direkt
+            // aus der frisch ausgeruesteten Waffe greift, sobald der naechste
+            // Attack-Request eingeht.
+            if (m_CurrentState == AttackingState)
+            {
+                ChangeState(IdleState);
+                NotifyAttackCanceledClientRpc();
+            }
+
+            m_CurrentWeaponId.Value = weaponId;
+
+            // Source-Parity: TwoHanded-Waffen blockieren den Offhand-Slot. Schild/
+            // Buckler/Torch werden beim Equip eines Greatswords/Bows automatisch
+            // entfernt; das NetVar-Event fuer Offhand feuert anschliessend und
+            // raeumt die OffHand-FLARE-Schicht clientseitig leer.
+            if (weaponDef.IsTwoHanded && m_CurrentOffhandId.Value.Length > 0)
+            {
+                m_CurrentOffhandId.Value = default;
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // Offhand-Swap (Console-Command /offhand, später Loadout/Inventory)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Einstieg fuer einen Offhand-Wechsel. Akzeptiert <c>"none"</c>,
+        /// <c>"clear"</c> oder Leerstring zum Ausziehen. Lokale Sanity-Checks
+        /// (Spawn + Owner), autoritative Katalog-Validierung serverseitig in
+        /// <see cref="RequestEquipOffhandServerRpc"/>.
+        /// </summary>
+        /// <param name="offhandId">Id aus <c>combat/offhand_items.json</c> (z. B. <c>"buckler"</c>) oder <c>"none"</c>.</param>
+        public void TryRequestEquipOffhand(string offhandId)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+            string normalized = offhandId == null ? string.Empty : offhandId.Trim();
+            if (normalized.Equals("none", System.StringComparison.OrdinalIgnoreCase)
+                || normalized.Equals("clear", System.StringComparison.OrdinalIgnoreCase))
+            {
+                normalized = string.Empty;
+            }
+            RequestEquipOffhandServerRpc(new FixedString64Bytes(normalized));
+        }
+
+        [ServerRpc]
+        private void RequestEquipOffhandServerRpc(FixedString64Bytes offhandId, ServerRpcParams _ = default)
+        {
+            // Leere Id = ausziehen. Direkt setzen, ohne Katalog-Lookup.
+            if (offhandId.Length == 0)
+            {
+                if (m_CurrentOffhandId.Value.Length > 0)
+                {
+                    m_CurrentOffhandId.Value = default;
+                }
+                return;
+            }
+
+            // TwoHanded-Waffe blockiert Offhand komplett — Source-Parity zum
+            // Original (kein Buckler-Equip moeglich, solange Zweihaender gezogen).
+            WeaponDefinition currentWeapon = ResolveCurrentWeapon();
+            if (currentWeapon != null && currentWeapon.IsTwoHanded)
+            {
+                Debug.LogWarning($"[PlayerCombat] Cannot equip offhand '{offhandId}' while two-handed weapon '{currentWeapon.Id}' is wielded.");
+                return;
+            }
+
+            m_OffhandCatalogLoader ??= ServiceLocator.Get<OffhandCatalogLoader>();
+            OffhandCatalog catalog = m_OffhandCatalogLoader?.GetCached();
+            if (catalog == null)
+            {
+                Debug.LogWarning("[PlayerCombat] OffhandCatalog not loaded — equip ignored.");
+                return;
+            }
+            if (!catalog.TryGet(offhandId.ToString(), out OffhandDefinition _))
+            {
+                Debug.LogWarning($"[PlayerCombat] Unknown offhand id '{offhandId}' — equip ignored.");
+                return;
+            }
+
+            m_CurrentOffhandId.Value = offhandId;
+        }
+
+        // -------------------------------------------------------------------------
+        // Bridge fuer PlayerEquipment (Phase 16B)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Server-Bridge fuer <see cref="PlayerEquipment"/>: setzt die Waffe
+        /// anhand eines <see cref="ItemTemplate"/>-Entries. Aufloesung erfolgt
+        /// ueber <see cref="ItemTemplate.Model"/> → WeaponCatalog. Bei
+        /// <paramref name="templateId"/> &lt;= 0 wird die Waffe geleert.
+        /// </summary>
+        /// <remarks>
+        /// Wird ausschliesslich von <see cref="PlayerEquipment"/> aufgerufen,
+        /// nachdem dort der NetworkList-Slot serverseitig geschrieben wurde.
+        /// Logik (Katalog-Validierung, Attack-Cancel, Zweihaender-Offhand-Clear)
+        /// ist bewusst eine 1:1-Kopie von <c>RequestEquipWeaponServerRpc</c> —
+        /// kein Refactor in dieser Phase, damit der bestehende Console-Pfad
+        /// stabil bleibt.
+        /// </remarks>
+        internal void Server_ApplyWeaponFromTemplate(int templateId)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            // Leerer Slot: Waffe ausziehen — kein Default-Fallback hier, damit
+            // PlayerEquipment die alleinige Quelle der Wahrheit bleibt sobald
+            // ein Item drin liegt; Default greift weiter nur beim Spawn.
+            if (templateId <= 0)
+            {
+                if (m_CurrentWeaponId.Value.Length > 0)
+                {
+                    m_CurrentWeaponId.Value = default;
+                }
+                return;
+            }
+
+            if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null
+                || string.IsNullOrEmpty(template.Model) || template.Model == "0")
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyWeaponFromTemplate: Template {templateId} hat kein gueltiges Model.");
+                return;
+            }
+
+            m_WeaponCatalogLoader ??= ServiceLocator.Get<WeaponCatalogLoader>();
+            WeaponCatalog catalog = m_WeaponCatalogLoader?.GetCached();
+            if (catalog == null || !catalog.TryGet(template.Model, out WeaponDefinition weaponDef))
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyWeaponFromTemplate: Model '{template.Model}' nicht im WeaponCatalog.");
+                return;
+            }
+
+            if (m_CurrentState == AttackingState)
+            {
+                ChangeState(IdleState);
+                NotifyAttackCanceledClientRpc();
+            }
+
+            m_CurrentWeaponId.Value = new FixedString64Bytes(template.Model);
+
+            if (weaponDef.IsTwoHanded && m_CurrentOffhandId.Value.Length > 0)
+            {
+                m_CurrentOffhandId.Value = default;
+            }
+        }
+
+        /// <summary>
+        /// Server-Bridge fuer <see cref="PlayerEquipment"/>: setzt die Offhand
+        /// anhand eines <see cref="ItemTemplate"/>-Entries. Aufloesung ueber
+        /// <see cref="ItemTemplate.Model"/> → OffhandCatalog. Bei
+        /// <paramref name="templateId"/> &lt;= 0 wird die Offhand geleert.
+        /// </summary>
+        internal void Server_ApplyOffhandFromTemplate(int templateId)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (templateId <= 0)
+            {
+                if (m_CurrentOffhandId.Value.Length > 0)
+                {
+                    m_CurrentOffhandId.Value = default;
+                }
+                return;
+            }
+
+            // Zweihaender blockt Offhand — Source-Parity. PlayerEquipment
+            // raeumt vor einem 2H-Equip die Offhand-Slots leer; hier ist der
+            // Check nur die letzte Sicherung gegen Out-of-Order-Bridge-Calls.
+            WeaponDefinition currentWeapon = ResolveCurrentWeapon();
+            if (currentWeapon != null && currentWeapon.IsTwoHanded)
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyOffhandFromTemplate: Zweihaender '{currentWeapon.Id}' blockiert Offhand.");
+                return;
+            }
+
+            if (!ItemCatalogLoader.TryGetTemplate(templateId, out ItemTemplate template) || template == null
+                || string.IsNullOrEmpty(template.Model) || template.Model == "0")
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyOffhandFromTemplate: Template {templateId} hat kein gueltiges Model.");
+                return;
+            }
+
+            m_OffhandCatalogLoader ??= ServiceLocator.Get<OffhandCatalogLoader>();
+            OffhandCatalog catalog = m_OffhandCatalogLoader?.GetCached();
+            if (catalog == null || !catalog.TryGet(template.Model, out OffhandDefinition _))
+            {
+                Debug.LogWarning($"[PlayerCombat] Server_ApplyOffhandFromTemplate: Model '{template.Model}' nicht im OffhandCatalog.");
+                return;
+            }
+
+            m_CurrentOffhandId.Value = new FixedString64Bytes(template.Model);
         }
 
         // -------------------------------------------------------------------------

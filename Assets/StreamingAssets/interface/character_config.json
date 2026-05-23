@@ -1,0 +1,36 @@
+{
+  "panelWidth": 360,
+  "panelHeight": 380,
+  "anchorLeft": 16,
+  "anchorBottom": 220,
+
+  "backgroundTexture": "interface/equipment",
+  "slotIdleTexture": "interface/icons/gameicon40_idle",
+  "slotHoverTexture": "interface/icons/gameicon40_hover",
+  "slotPressTexture": "interface/icons/gameicon40_press",
+  "slotSize": 40,
+  "itemIconKeyPrefix": "item_icons/",
+
+  "slots": [
+    { "slot": "Helm",     "x": 16,  "y": 16  },
+    { "slot": "Amulet",   "x": 16,  "y": 66  },
+    { "slot": "Chest",    "x": 16,  "y": 116 },
+    { "slot": "Belt",     "x": 16,  "y": 166 },
+    { "slot": "Legs",     "x": 16,  "y": 216 },
+    { "slot": "Boots",    "x": 16,  "y": 266 },
+    { "slot": "Hands",    "x": 66,  "y": 16  },
+    { "slot": "Ring1",    "x": 66,  "y": 66  },
+    { "slot": "Ring2",    "x": 66,  "y": 116 },
+    { "slot": "MainHand", "x": 16,  "y": 316 },
+    { "slot": "Offhand",  "x": 66,  "y": 316 },
+    { "slot": "Ranged",   "x": 116, "y": 316 }
+  ],
+
+  "statsLeft": 180,
+  "statsTop": 16,
+  "statsLineHeight": 16,
+  "statsFontSize": 12,
+  "statsWidth": 170,
+
+  "toggleBinding": "<Keyboard>/c"
+}

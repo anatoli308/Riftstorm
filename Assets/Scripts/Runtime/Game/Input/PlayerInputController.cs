@@ -1,4 +1,5 @@
 using System;
+using Riftstorm.Game.UI.Console;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -219,33 +220,48 @@ namespace Riftstorm.Game.Input
             }
         }
 
+        /// <summary>
+        /// Globaler Suppress-Gate fuer Gameplay-Inputs, waehrend der Spieler im
+        /// Chat-Input tippt. Verhindert, dass z. B. eine "1" im Chatfenster den
+        /// Action-Bar-Slot 0 castet oder ESC zusaetzlich den Target-Lock loest.
+        /// Bewusst keine ActionMap.Disable() — die Map ist asset-shared (Owner +
+        /// Remotes); ein Disable wuerde alle Controller killen.
+        /// </summary>
+        private static bool IsSuppressedByChat() => ChatFocusState.IsTyping;
+
         private void OnAttackPerformed(InputAction.CallbackContext _)
         {
+            if (IsSuppressedByChat()) { return; }
             AttackPressed?.Invoke();
         }
 
         private void OnNextTargetPerformed(InputAction.CallbackContext _)
         {
+            if (IsSuppressedByChat()) { return; }
             NextTargetPressed?.Invoke();
         }
 
         private void OnClearTargetPerformed(InputAction.CallbackContext _)
         {
+            if (IsSuppressedByChat()) { return; }
             ClearTargetPressed?.Invoke();
         }
 
         private void OnAttackRangeIndicatorPerformed(InputAction.CallbackContext _)
         {
+            if (IsSuppressedByChat()) { return; }
             AttackRangeIndicatorPressed?.Invoke();
         }
 
         private void OnMoveCommandPerformed(InputAction.CallbackContext _)
         {
+            if (IsSuppressedByChat()) { return; }
             MoveCommandPressed?.Invoke();
         }
 
         private void OnSpellSlotPerformed(int slotIndex)
         {
+            if (IsSuppressedByChat()) { return; }
             SpellSlotPressed?.Invoke(slotIndex);
         }
     }

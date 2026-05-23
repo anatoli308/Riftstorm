@@ -121,8 +121,55 @@ namespace Riftstorm.Game.Spells
             ConsumeResources(caster, spell);
             StartCooldowns(caster, spell);
 
-            int totalDamage = 0;
-            int totalHeal = 0;
+            // Projectile-Pfad: bei Single-Target-Spells mit Speed > 0 wird die
+            // Effekt-Anwendung um die Travel-Zeit verzoegert (Server-Simulation).
+            // DamageDealt/HealingDone sind in dem Fall 0 — der Hit kommt nicht
+            // synchron, die UI/Stats lernen den Schaden via TakeDamage-Callback.
+            if (ShouldUseProjectile(spell, primaryTarget))
+            {
+                Projectiles.ServerProjectile.Spawn(caster, spell, primaryTarget, destination);
+                return new SpellExecutionResult(CastResult.Success);
+            }
+
+
+            ApplyAllEffects(caster, spell, primaryTarget, destination, out int totalDamage, out int totalHeal);
+            return new SpellExecutionResult(CastResult.Success, totalDamage, totalHeal);
+        }
+
+        /// <summary>
+        /// Fuehrt nur den Effekt-Slot-Loop aus (kein Validate/Resource/CD).
+        /// Wird vom <see cref="Projectiles.ServerProjectile"/> beim Impact
+        /// aufgerufen, nachdem die Travel-Zeit abgelaufen ist und das Ziel
+        /// noch lebt.
+        /// </summary>
+        /// <remarks>
+        /// Ressourcen wurden bereits beim Spell-Start abgezogen
+        /// (<see cref="Execute"/>); ein Re-Validate findet hier bewusst nicht
+        /// statt, damit Out-Of-Range/Out-Of-LoS-Reaktionen klar Projectile-
+        /// Verantwortung bleiben (Caller darf vor dem Aufruf entscheiden,
+        /// nicht zu rufen, falls Ziel tot/weg ist).
+        /// </remarks>
+        public static SpellExecutionResult ApplyAllEffectsAtImpact(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            ICombatUnit primaryTarget,
+            CastDestination destination)
+        {
+            if (caster == null || spell == null) { return new SpellExecutionResult(CastResult.InternalError); }
+            ApplyAllEffects(caster, spell, primaryTarget, destination, out int totalDamage, out int totalHeal);
+            return new SpellExecutionResult(CastResult.Success, totalDamage, totalHeal);
+        }
+
+        static void ApplyAllEffects(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            ICombatUnit primaryTarget,
+            CastDestination destination,
+            out int totalDamage,
+            out int totalHeal)
+        {
+            totalDamage = 0;
+            totalHeal = 0;
             for (int slot = 1; slot <= 3; slot++)
             {
                 SpellTemplateEffect eff = spell.GetEffect(slot);
@@ -137,9 +184,29 @@ namespace Riftstorm.Game.Spells
                 }
                 s_TargetBuffer.Clear();
             }
-
-            return new SpellExecutionResult(CastResult.Success, totalDamage, totalHeal);
         }
+
+        /// <summary>
+        /// Auto-Detect: Spell soll als Projectile fliegen statt sofort zu
+        /// treffen. Kriterien: <c>spell.Speed &gt; 0</c>, primaeres Ziel
+        /// existiert und ist nicht der Caster selbst, primaerer Effekt-Slot
+        /// adressiert eine einzelne Unit (kein AoE, kein Self, kein
+        /// Ground-Only).
+        /// </summary>
+        static bool ShouldUseProjectile(SpellTemplate spell, ICombatUnit primaryTarget)
+        {
+            if (spell == null || spell.Speed <= 0) { return false; }
+            if (primaryTarget == null || primaryTarget.IsDead) { return false; }
+
+            SpellTemplateEffect primary = spell.GetEffect(1);
+            if (!primary.IsActive) { return false; }
+            return IsSingleUnitTargetType(primary.TargetType);
+        }
+
+        static bool IsSingleUnitTargetType(SpellTargetType t)
+            => t == SpellTargetType.UnitFriendly
+            || t == SpellTargetType.UnitHostile
+            || t == SpellTargetType.UnitAny;
 
         // ---------------------------------------------------------------------
 
@@ -340,8 +407,13 @@ namespace Riftstorm.Game.Spells
                         ? ResolveResist(victimStats, spell.MagicRollSchool)
                         : 0;
 
+                    // WeaponDamage-Effekt: effValue ist Prozent-Multiplier auf
+                    // Waffenschaden (FLARE-Konvention; Aimed Shot 115 = 115%).
+                    // SchoolDamage und sonstige phys. Spells: effValue bleibt flat.
+                    bool weaponPercent = eff.Effect == SpellEffect.WeaponDamage;
+
                     DamageInfo info = CombatFormulas.CalculateSpellDamage(
-                        attackerStats, victimStats, effValue, isMagical, resistValue);
+                        attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent);
                     if (info.FinalDamage <= 0) { return; }
                     target.TakeDamage(info.FinalDamage, caster);
                     totalDamage += info.FinalDamage;
