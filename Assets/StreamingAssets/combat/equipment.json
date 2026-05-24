@@ -1,0 +1,166 @@
+{
+    "version": 1,
+    "equipment": [
+        {
+            "id": "leather_chest",
+            "type": "LightArmor",
+            "iconPrefix": "icon_item_lt_torso_",
+            "armor": 5,
+            "weight": 10.0
+        },
+        {
+            "id": "leather_gloves",
+            "type": "LightArmor",
+            "iconPrefix": "icon_item_lt_glove_",
+            "armor": 5,
+            "weight": 10.0
+        },
+        {
+            "id": "leather_hood",
+            "type": "LightArmor",
+            "iconPrefix": "icon_item_lt_head_",
+            "armor": 5,
+            "weight": 10.0
+        },
+        {
+            "id": "leather_pants",
+            "type": "LightArmor",
+            "iconPrefix": "icon_item_lt_pants_",
+            "armor": 5,
+            "weight": 10.0
+        },
+        {
+            "id": "leather_boots",
+            "type": "LightArmor",
+            "iconPrefix": "icon_item_lt_shoes_",
+            "armor": 5,
+            "weight": 10.0
+        },
+        {
+            "id": "chain_gloves",
+            "type": "MediumArmor",
+            "iconPrefix": "icon_item_ch_glove_",
+            "armor": 6,
+            "weight": 12.0
+        },
+        {
+            "id": "chain_coif",
+            "type": "MediumArmor",
+            "iconPrefix": "icon_item_ch_head_",
+            "armor": 6,
+            "weight": 12.0
+        },
+        {
+            "id": "chain_greaves",
+            "type": "MediumArmor",
+            "iconPrefix": "icon_item_ch_pants_",
+            "armor": 6,
+            "weight": 12.0
+        },
+        {
+            "id": "chain_boots",
+            "type": "MediumArmor",
+            "iconPrefix": "icon_item_ch_shoes_",
+            "armor": 6,
+            "weight": 12.0
+        },
+        {
+            "id": "chain_cuirass",
+            "type": "MediumArmor",
+            "iconPrefix": "icon_item_ch_torso_",
+            "armor": 6,
+            "weight": 12.0
+        },
+        {
+            "id": "plate_gauntlets",
+            "type": "HeavyArmor",
+            "iconPrefix": "icon_item_pl_glove_",
+            "armor": 8,
+            "weight": 15.0
+        },
+        {
+            "id": "plate_greaves",
+            "type": "HeavyArmor",
+            "iconPrefix": "icon_item_pl_pants_",
+            "armor": 8,
+            "weight": 15.0
+        },
+        {
+            "id": "plate_boots",
+            "type": "HeavyArmor",
+            "iconPrefix": "icon_item_pl_shoes_",
+            "armor": 8,
+            "weight": 15.0
+        },
+        {
+            "id": "plate_helm",
+            "type": "HeavyArmor",
+            "iconPrefix": "icon_item_pl_head_",
+            "armor": 8,
+            "weight": 15.0
+        },
+        {
+            "id": "plate_cuirass",
+            "type": "HeavyArmor",
+            "iconPrefix": "icon_item_pl_torso_",
+            "armor": 8,
+            "weight": 15.0
+        },
+        {
+            "id":"cloth_gloves",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_glove_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"cloth_pants",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_pants_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"cloth_sandals",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_shoes_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"cloth_shirt",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_torso_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"mage_hood",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_head_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"mage_skirt",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_pants_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"mage_boots",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_shoes_",
+            "armor": 3,
+            "weight": 5.0
+        },
+        {
+            "id":"mage_vest",
+            "type":"LightArmor",
+            "iconPrefix":"icon_item_rb_torso_",
+            "armor": 3,
+            "weight": 5.0
+        }
+    ]
+}

@@ -310,3 +310,13 @@ Missing dazwischen.
 # allgemeine todos
 
 1. healing floating text.
+2. refactor interfec jsons
+3. mouse click muss nur gedruckt gehalten werden zum laufen nicht mehrfach klicken.
+4. wenn man während des laufens einen skill castet soll das laufen unterbrochen werden und man soll den skill casten können, aktuell 
+läuft der character erst zum target versucht während des laufens zu casten macht es nicht und läuft zum ziel. er soll abrechen zu laufen sobald man einen skill castet und dann den skill casten können.
+5. Der Flare_NPC Lone Howler hat irgendwie 120/110 HP ist das korrekt laut _template.json? ne oder.
+6. Warum hat der Lone Howler so eine hohe auto attack range ? bzw. hohen aggro check?  ist es korrekt laut _template.json? ne oder. ich habe das selbst gebaut anstatt wie source oder hat source das überhaupt? ist vielleicht eine korrekte flare -> unity konvertierung notwendig ? 
+7. channeling spells gibt es sowas überhaupt?
+8. skill shots bzw. projectiles gibt es sowas überhaupt? z.b. fireball soll ja ein projectile sein, das von caster zum target fliegt, das soll auch in der animation sichtbar sein, aktuell ist es so das der damage direkt gemacht wird. es soll aber so sein das der damage erst gemacht wird wenn das projectile das target erreicht, also mit travel time. und während des travel time soll man das projectile auch sehen können, also die animation von fireball soll sichtbar sein und das projectile soll von caster zum target fliegen, wenn es das target erreicht soll der damage gemacht werden. das soll auch für andere skills gelten die projectiles haben sollen, z.b. multi-shot, shoot bow, etc.
+9. Aoe spells (channeling, cast und aoe) gibt es sowas überhaupt? z.b. blizzard soll ein aoe spell sein, der eine area auf dem boden markiert und dann nach x sekunden die damage macht, während der markierung.
+10. 
