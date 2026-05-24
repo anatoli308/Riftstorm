@@ -16,6 +16,11 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>Stärke-Attribut (skaliert Melee-Grundschaden).</summary>
         int Strength { get; }
 
+        /// <summary>Agility-Attribut — skaliert Ranged-Grundschaden (AGI/14),
+        /// Ranged-Crit (+1 % pro 53 AGI) und Dodge (+1 % pro 20 AGI,
+        /// Original-Formel aus <c>CombatFormulas.cpp</c> L149-150).</summary>
+        int Agility => 0;
+
         /// <summary>Rüstungswert (siehe <c>CombatFormulas.ApplyArmorReduction</c>).</summary>
         int Armor { get; }
 
@@ -88,6 +93,56 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>Block-Chance in Prozent (additiv auf Basis 0).</summary>
         int BlockChance => 0;
+
+        // ---------------------------------------------------------------------
+        // Parry/Block-Rating + Bonus-Stats (Source-Parity Phase 16D).
+        // Werden von <see cref="CombatFormulas.GetParryChance"/> /
+        // <see cref="CombatFormulas.GetBlockChance"/> konsumiert und im
+        // <see cref="CombatFormulas.RollMeleeHit"/>-Pfad gewürfelt.
+        // Default 0 → bestehende Mocks/Tests bleiben unberührt.
+        // ---------------------------------------------------------------------
+
+        /// <summary>Parry-Rating aus Gear/Talenten (Source <c>Stat::ParryRating=40</c>).
+        /// Wird zur <c>BASE_PARRY_CHANCE</c> addiert.</summary>
+        int ParryRating => 0;
+
+        /// <summary>Direkter Parry-Chance-Bonus aus Gear/Auras
+        /// (Source <c>Stat::ParryChanceBonus=37</c>). Wird zusätzlich zur
+        /// <see cref="ParryRating"/> addiert.</summary>
+        int ParryChanceBonus => 0;
+
+        /// <summary>Block-Rating aus Gear/Talenten (Source <c>Stat::BlockRating=19</c>).
+        /// Bildet die Basis der Block-Chance — Source addiert <em>kein</em>
+        /// <c>BASE_BLOCK_CHANCE</c>, Schild ist Pflicht.</summary>
+        int BlockRating => 0;
+
+        /// <summary>Direkter Block-Chance-Bonus aus Gear/Auras
+        /// (Source <c>Stat::BlockChanceBonus=38</c>).</summary>
+        int BlockChanceBonus => 0;
+
+        /// <summary>Schild-Skill (Source <c>Stat::ShieldSkill=34</c>). Trägt
+        /// <c>ShieldSkill/5 %</c> zur Block-Chance bei. Für NPCs gleichzeitig
+        /// das Proxy-Signal "hat Schild" (siehe <see cref="HasShield"/>).</summary>
+        int ShieldSkill => 0;
+
+        /// <summary>Fortitude (FRT). Skaliert HP-Pool — Riftstorm-Erweiterung:
+        /// trägt zusätzlich <c>FRT/30 %</c> zur Block-Chance bei, damit das
+        /// Display-Attribut Combat-relevant wird.</summary>
+        int Fortitude => 0;
+
+        /// <summary>Courage (CRG). Klassen-Stat — Riftstorm-Erweiterung: trägt
+        /// <c>CRG/30 %</c> zur Parry-Chance bei.</summary>
+        int Courage => 0;
+
+        /// <summary>True, wenn die Einheit überhaupt parieren <em>könnte</em>
+        /// (Waffe equipped). NPCs default <c>true</c> (Source erlaubt NPC-
+        /// Parry ohne Equipment-Check), Spieler-Pfad prüft <c>CurrentWeapon</c>.</summary>
+        bool HasWeapon => true;
+
+        /// <summary>True, wenn die Einheit blocken <em>könnte</em> (Schild).
+        /// Default <c>false</c>: Source verlangt explizit Schild-Equip; NPCs
+        /// nutzen <see cref="ShieldSkill"/> als Proxy, Spieler ihren Offhand-Slot.</summary>
+        bool HasShield => false;
 
         /// <summary>Resistenz gegen Fire-Schule.</summary>
         int ResistFire => 0;

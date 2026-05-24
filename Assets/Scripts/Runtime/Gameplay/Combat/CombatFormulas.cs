@@ -43,6 +43,14 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>Basis-Dodge-Chance in Prozent (C++: <c>BASE_DODGE_CHANCE</c>).</summary>
         public const int BaseDodgeChance = 5;
 
+        /// <summary>Basis-Parry-Chance in Prozent (C++: <c>BASE_PARRY_CHANCE</c>,
+        /// <c>CombatFormulas.h</c> L95). Wird in <see cref="GetParryChance"/>
+        /// nur addiert, wenn der Verteidiger überhaupt eine Waffe trägt.</summary>
+        public const int BaseParryChance = 5;
+
+        /// <summary>Cap fuer Parry- bzw. Block-Chance (Source: <c>clamp(0, 75)</c>).</summary>
+        public const int MaxAvoidanceChance = 75;
+
         /// <summary>Maximale Level-Differenz, die Hit/Crit/Resist beeinflusst.</summary>
         public const int MaxLevelDiff = 10;
 
@@ -55,7 +63,8 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>
         /// Würfelt das Hit-Ergebnis für einen Melee-Angriff. Reihenfolge:
-        /// Miss → Dodge → Crit → Hit (vereinfachte C++-Pipeline).
+        /// Miss → Dodge → Parry → Block → Crit → Hit. Spiegelt die Source-
+        /// Pipeline aus <c>CombatFormulas.cpp</c> (<c>getHitResult</c>) wider.
         /// </summary>
         public static HitResult RollMeleeHit(IUnitStats attacker, IUnitStats victim)
         {
@@ -68,11 +77,35 @@ namespace Riftstorm.Gameplay.Combat
                 return HitResult.Miss;
             }
 
-            // Opfer mit höherem Level dodged häufiger.
-            int dodgeChance = Mathf.Clamp(BaseDodgeChance - levelDiff, 0, 95);
+            // Opfer mit höherem Level dodged häufiger. Zusätzlich AGI/20 (Original-Formel
+            // aus CombatFormulas.cpp L149-150: 1 % Dodge pro 20 Agility) und der Gear-/Talent-
+            // DodgeRating-Wert. Cap bei 75 % wie im Source (clamp(0, 75)).
+            int dodgeChance = Mathf.Clamp(
+                BaseDodgeChance - levelDiff + (victim.Agility / 20) + victim.DodgeChance,
+                0,
+                MaxAvoidanceChance);
             if (Roll100() < dodgeChance)
             {
                 return HitResult.Dodge;
+            }
+
+            // Parry erfordert eine Waffe (Source: Player-Pfad checkt hasWeaponEquipped,
+            // NPC-Pfad lässt es zu). <see cref="GetParryChance"/> kapselt Base+Rating+Bonus+
+            // CRG/30 und Cap 75 %. Liefert 0, wenn keine Waffe vorhanden.
+            int parryChance = GetParryChance(victim, victim.HasWeapon);
+            if (parryChance > 0 && Roll100() < parryChance)
+            {
+                return HitResult.Parry;
+            }
+
+            // Block erfordert ein Schild — siehe Source <c>hasShieldEquipped</c> bzw.
+            // <c>ShieldSkill > 0</c> für NPCs. Aggregat aus BlockRating+Bonus+SLD/5+FRT/30,
+            // Cap 75 %. Block setzt den Angriff nicht ab, reduziert ihn aber in
+            // <see cref="CalculateMeleeDamage"/> (Block-Anteil).
+            int blockChance = GetBlockChance(victim, victim.HasShield);
+            if (blockChance > 0 && Roll100() < blockChance)
+            {
+                return HitResult.Block;
             }
 
             // Angreifer mit höherem Level crittet häufiger; Melee-Schul-Crit additiv.
@@ -83,6 +116,56 @@ namespace Riftstorm.Gameplay.Combat
             }
 
             return HitResult.Hit;
+        }
+
+        // ---------------------------------------------------------------------
+        // Parry/Block — Avoidance-Helpers (Phase 16D, Source-faithful + FRT/CRG)
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// Aggregierte Parry-Chance fuer einen Verteidiger. Source-Pipeline aus
+        /// <c>CombatFormulas.cpp</c> L162-184 (<c>getParryChance</c>):
+        /// <c>BASE_PARRY_CHANCE + ParryRating + ParryChanceBonus</c>, geclamped auf 0..75.
+        /// Riftstorm-Erweiterung: zusaetzlich <c>CRG/30 %</c>, damit das Courage-
+        /// Attribut Combat-relevant wird.
+        /// </summary>
+        /// <param name="victim">Der potentielle Parrier.</param>
+        /// <param name="hasWeapon">
+        /// Ob der Verteidiger eine Waffe traegt. Falls <c>false</c>, liefert die
+        /// Methode 0 (Source: Player-Pfad checkt <c>hasWeaponEquipped</c>; NPCs
+        /// rufen die Methode nur mit <c>true</c> auf).
+        /// </param>
+        /// <returns>Parry-Chance in Prozent, 0..75.</returns>
+        public static int GetParryChance(IUnitStats victim, bool hasWeapon)
+        {
+            if (victim == null || !hasWeapon) { return 0; }
+            int raw = BaseParryChance
+                      + victim.ParryRating
+                      + victim.ParryChanceBonus
+                      + (victim.Courage / 30);
+            return Mathf.Clamp(raw, 0, MaxAvoidanceChance);
+        }
+
+        /// <summary>
+        /// Aggregierte Block-Chance fuer einen Verteidiger. Source-Pipeline aus
+        /// <c>CombatFormulas.cpp</c> L186-222 (<c>getBlockChance</c>):
+        /// <c>BlockRating + BlockChanceBonus + ShieldSkill/5</c>, geclamped auf 0..75.
+        /// Source hat <em>kein</em> Base-Block — Schild ist Pflicht (Player:
+        /// <c>hasShieldEquipped</c>, NPC: <c>ShieldSkill > 0</c>). Riftstorm-
+        /// Erweiterung: <c>FRT/30 %</c>, damit Fortitude jenseits des HP-Pools
+        /// einen Defense-Nutzen hat.
+        /// </summary>
+        /// <param name="victim">Der potentielle Blocker.</param>
+        /// <param name="hasShield">Ob ein Schild verfuegbar ist.</param>
+        /// <returns>Block-Chance in Prozent, 0..75.</returns>
+        public static int GetBlockChance(IUnitStats victim, bool hasShield)
+        {
+            if (victim == null || !hasShield) { return 0; }
+            int raw = victim.BlockRating
+                      + victim.BlockChanceBonus
+                      + (victim.ShieldSkill / 5)
+                      + (victim.Fortitude / 30);
+            return Mathf.Clamp(raw, 0, MaxAvoidanceChance);
         }
 
         // ---------------------------------------------------------------------
@@ -290,7 +373,13 @@ namespace Riftstorm.Gameplay.Combat
                 int weaponStat = useRangedWeapon ? attacker.RangedWeaponDamage : attacker.WeaponDamage;
                 int totalWeapon = weaponBase + weaponStat;
                 int weaponContribution = (int)((long)totalWeapon * effectValue / 100);
-                baseDamage = Mathf.Max(0, weaponContribution + (attacker.Strength / 10));
+                // Skill-Bonus: Melee skaliert mit STR/10 (Original CombatFormulas.cpp L417),
+                // Ranged mit AGI/14 (Riftstorm-Erweiterung, Classic-Hunter-RAP-Faktor).
+                // Im Source-Original gab es keinen Ranged-eigenen Stat-Pfad — Bogenschuetzen
+                // skalierten ueber dieselbe STR-Formel. Wir trennen das hier bewusst, damit
+                // AGI-Builds mechanisch sinnvoll sind.
+                int skillBonus = useRangedWeapon ? (attacker.Agility / 14) : (attacker.Strength / 10);
+                baseDamage = Mathf.Max(0, weaponContribution + skillBonus);
             }
             else
             {
@@ -337,10 +426,12 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>
         /// Berechnet Heal-Betrag. <paramref name="effectValue"/> ist der bereits
         /// per <c>ScaleFormula</c> evaluierte Effekt-Wert. Skaliert mit Willpower
-        /// (haupt) und Intelligence (sekundaer), rollt Crit, addiert Variance.
-        /// <paramref name="victim"/> wird nur fuer <c>ModifyHealingRecvPct</c>-Auren
-        /// benoetigt — darf <c>null</c> sein (Self-Heal, Tests).
-        /// Overheal-Cap erfolgt im Caller (<c>Heal</c>-Pfad).
+        /// (haupt) und Intelligence (sekundaer), rollt Crit
+        /// (<c>SpellCritChance</c> inkl. <c>INT/30</c> + <c>WIL/40</c> aus diesem
+        /// Heal-Pfad — Heal-only, damit WIL nicht auf Spell-Damage-Crit leakt),
+        /// addiert Variance. <paramref name="victim"/> wird nur fuer
+        /// <c>ModifyHealingRecvPct</c>-Auren benoetigt — darf <c>null</c> sein
+        /// (Self-Heal, Tests). Overheal-Cap erfolgt im Caller (<c>Heal</c>-Pfad).
         /// </summary>
         public static int CalculateSpellHeal(IUnitStats caster, IUnitStats victim, int effectValue)
         {
@@ -352,7 +443,7 @@ namespace Riftstorm.Gameplay.Combat
             float varianceMul = 1f + Random.Range(-HealVariance, HealVariance);
             int afterVariance = Mathf.RoundToInt(baseHeal * varianceMul);
 
-            int critChance = Mathf.Clamp(BaseCritChance + caster.SpellCritChance, 0, 95);
+            int critChance = Mathf.Clamp(BaseCritChance + caster.SpellCritChance + (caster.Willpower / 40), 0, 95);
             if (Roll100() < critChance)
             {
                 afterVariance = Mathf.RoundToInt(afterVariance * CritMultiplier);

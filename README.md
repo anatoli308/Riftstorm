@@ -23,7 +23,7 @@ Match-Länge: **15–25 Minuten**. Zugänglich, streamerfreundlich, build-tief.
 1. **PvE erzeugt PvP** — Horden sind Ressource, Druckmittel und Zonen-Kontrolle gleichzeitig.
 2. **Build-Evolution als Dopamin** — Synergien aus Survivor-Auto-Weapons + aktiven MOBA-Skills.
 3. **Readability First** — Klare Silhouetten, lesbare FX, identifizierbare Build-Identitäten trotz Chaos.
-4. **Server-authoritative Performance** — 10 Spieler, hunderte Gegner, stabile 60 FPS.
+4. **Server-authoritative Performance** — 10-15 Spieler, hunderte Gegner, stabile 60 FPS.
 5. **Teamrollen mit Identität** — Tank, DPS, Support, Controller, Summoner, Assassin.
 
 ---
@@ -53,28 +53,6 @@ Spawn → Farm Horden → Skill leveln → Evolution freischalten
 
 ---
 
-## Architektur
-
-```
-Assets/Scripts/
-├── Editor/                       # BuildHelpers, BuildProcessor, SceneBootstrapper
-└── Runtime/
-    ├── ApplicationLifecycle/     # ApplicationEntryPoint, ServiceLocator, ServerCommandListener
-    ├── Core/                     # MVC Base (BaseApplication, Element, Model, View, Controller)
-    │                             # State Machine Base (StateMachine<T,S>, State<T>)
-    │                             # EventManager (typsichere Events)
-    ├── Management/               # MonoBehaviour Manager (Connection, Auth, Console, PlayerSkin, ...)
-    ├── AI/                       # Enemy AI, Boss-Logik (GOAP optional)
-    ├── Game/                     # GameApplication (Match-Scene, NGO-Integration)
-    │   ├── Bootstrap/            # GamePlayerBootstrap
-    │   ├── Characters/           # Player + Enemy Prefabs (NetworkBehaviour)
-    │   ├── Controllers/          # Input, Movement, Camera Controller
-    │   ├── Networked/            # NetworkBehaviours, ServerRpc/ClientRpc, NetworkVariables
-    │   ├── Models/  Views/       # MVC innerhalb Game-Scene
-    ├── Metagame/                 # MetagameApplication (Lobby, Hero-Auswahl, Loadout)
-    └── Shared/                   # Cross-Scene Daten / DTOs, AvatarActions
-```
-
 **Patterns:**
 
 - **Single Source of Truth** — Manager halten State, Events triggern nur, Views lesen vom Manager.
@@ -100,7 +78,7 @@ Assets/Scripts/
 
 1. **Visual Noise** — Hauptproblem aller Survivor-Multiplayer-Hybriden.
 2. **PvP-Balance bei eskalierten Builds** — Synergien dürfen sich nicht One-Shotten.
-3. **Server-Sim-Kosten** bei 10 Spielern × hunderten Entities.
+3. **Server-Sim-Kosten** bei 10-15 Spielern × hunderten Entities.
 4. **Onboarding-Komplexität** — MOBA-Tiefe ohne MOBA-Frust kommunizieren.
 
 ---

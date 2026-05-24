@@ -615,6 +615,29 @@ namespace Riftstorm.Game.UI.Character
             sb.Append("Rng  ").Append(effective).Append('\n');
         }
 
+        /// <summary>
+        /// Zeigt effektive Ranged-Crit-% an — analog zur Rng-Damage-Zeile mit
+        /// "-" wenn keine Ranged-Waffe equipped ist, weil
+        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/> Ranged-Spells
+        /// dann ohnehin via <c>NoRangedWeapon</c> blockt.
+        /// Effektiver Wert: <c>BASE_CRIT(5) + RangedCritChance</c> (RangedCritChance
+        /// liefert bereits Rating + <c>AGI/53</c>), Cap 0..95 wie in CombatFormulas.
+        /// </summary>
+        private void AppendRangedCritLine(StringBuilder sb)
+        {
+            WeaponDefinition ranged = m_BoundCombat != null ? m_BoundCombat.CurrentRangedWeapon : null;
+            if (ranged == null)
+            {
+                sb.Append("Ranged Crit -\n");
+                return;
+            }
+            int rangedCritEff = Mathf.Clamp(
+                CombatFormulas.BaseCritChance + m_BoundStats.RangedCritChance,
+                0,
+                95);
+            sb.Append("Ranged Crit ").Append(rangedCritEff).Append('%').Append('\n');
+        }
+
         private void RefreshStats()
         {
             if (m_StatsLabel == null)
@@ -629,9 +652,9 @@ namespace Riftstorm.Game.UI.Character
                 // Bind-Pfad (siehe TryBindLocalPlayer).
                 m_StatsLabel.text =
                     "Level -\nHP   -\n\n"
-                    + "STR  -\nINT  -\nWIL  -\nFRT  -\nCRG  -\n\n"
+                    + "STR  -\nAGI  -\nINT  -\nWIL  -\nFRT  -\nCRG  -\n\n"
                     + "ARM  -\nDMG  -\nRng  -\nSpell -\nHeal  -\n\n"
-                    + "Melee Crit  -\nRanged Crit -\nSpell Crit  -\n"
+                    + "Melee Crit  -\nRanged Crit -\nSpell Crit  -\nHeal Crit   -\n"
                     + "Dodge -\nParry -\nBlock -\n\n"
                     + "HP Regen -\nMP Regen -\n\n"
                     + "Fire   -\nFrost  -\nShadow -\nHoly   -";
@@ -647,8 +670,11 @@ namespace Riftstorm.Game.UI.Character
             }
             sb.Append('\n');
 
-            // Primary Attributes (Original-Stat-Set: 5 Primaries)
+            // Primary Attributes (Original-Stat-Enum-Reihenfolge: STR=4, AGI=5, WIL=6, INT=7;
+            // FRT/CRG sind die Riftstorm-Erweiterung). AGI skaliert Ranged-Damage,
+            // Ranged-Crit und Dodge — Details siehe UnitStats.Agility / CombatFormulas.
             sb.Append("STR  ").Append(m_BoundStats.Strength).Append('\n');
+            sb.Append("AGI  ").Append(m_BoundStats.Agility).Append('\n');
             sb.Append("INT  ").Append(m_BoundStats.Intelligence).Append('\n');
             sb.Append("WIL  ").Append(m_BoundStats.Willpower).Append('\n');
             sb.Append("FRT  ").Append(m_BoundStats.Fortitude).Append('\n');
@@ -675,10 +701,28 @@ namespace Riftstorm.Game.UI.Character
 
             // Crit getrennt nach Schule (MeleeCritical / RangedCritical / SpellCritical),
             // Avoidance bleibt vereint da das Original nur Rating-Werte hatte.
-            sb.Append("Melee Crit  ").Append(m_BoundStats.MeleeCritChance).Append('%').Append('\n');
-            sb.Append("Ranged Crit ").Append(m_BoundStats.RangedCritChance).Append('%').Append('\n');
-            sb.Append("Spell Crit  ").Append(m_BoundStats.SpellCritChance).Append('%').Append('\n');
-            sb.Append("Dodge ").Append(m_BoundStats.DodgeChance).Append('%').Append('\n');
+            // Anzeige als *effektive* Roll-% gegen einen Gleich-Level-Gegner
+            // (levelDiff=0): inklusive Source-Basen (BASE_CRIT=5, BASE_DODGE=5)
+            // und gleichen Caps wie in CombatFormulas (Crit 0..95, Avoidance 0..75).
+            // Damit liest das HUD denselben Wert ab, der in RollMeleeHit/Spell
+            // tatsaechlich gewuerfelt wird — keine Asymmetrie mehr zwischen
+            // Dodge/Crit (Rating-only) und Parry/Block (bereits aggregiert).
+            int meleeCritEff = Mathf.Clamp(CombatFormulas.BaseCritChance + m_BoundStats.MeleeCritChance, 0, 95);
+            int spellCritEff = Mathf.Clamp(CombatFormulas.BaseCritChance + m_BoundStats.SpellCritChance, 0, 95);
+            int healCritEff = Mathf.Clamp(
+                CombatFormulas.BaseCritChance + m_BoundStats.SpellCritChance + (m_BoundStats.Willpower / 40),
+                0,
+                95);
+            int dodgeEff = Mathf.Clamp(
+                CombatFormulas.BaseDodgeChance + (m_BoundStats.Agility / 20) + m_BoundStats.DodgeChance,
+                0,
+                CombatFormulas.MaxAvoidanceChance);
+
+            sb.Append("Melee Crit  ").Append(meleeCritEff).Append('%').Append('\n');
+            AppendRangedCritLine(sb);
+            sb.Append("Spell Crit  ").Append(spellCritEff).Append('%').Append('\n');
+            sb.Append("Heal Crit   ").Append(healCritEff).Append('%').Append('\n');
+            sb.Append("Dodge ").Append(dodgeEff).Append('%').Append('\n');
             sb.Append("Parry ").Append(m_BoundStats.ParryChance).Append('%').Append('\n');
             sb.Append("Block ").Append(m_BoundStats.BlockChance).Append('%').Append('\n');
             sb.Append('\n');

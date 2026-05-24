@@ -36,6 +36,10 @@ namespace Riftstorm.Game.Combat
         ResistFire = 21,
         ResistShadow = 22,
         ResistHoly = 23,
+        ShieldSkill = 34,
+        ParryChanceBonus = 37,
+        BlockChanceBonus = 38,
+        ParryRating = 40,
     }
 
     /// <summary>
@@ -135,6 +139,7 @@ namespace Riftstorm.Game.Combat
                 case StatId.Health: return m_BaseStats.RawMaxHp;
                 case StatId.ArmorValue: return m_BaseStats.RawArmor;
                 case StatId.Strength: return m_BaseStats.RawStrength;
+                case StatId.Agility: return m_BaseStats.RawAgility;
                 case StatId.Willpower: return m_BaseStats.RawWillpower;
                 case StatId.Intelligence: return m_BaseStats.RawIntelligence;
                 case StatId.WeaponValue: return m_BaseStats.RawWeaponDamage;
@@ -144,6 +149,10 @@ namespace Riftstorm.Game.Combat
                 case StatId.SpellCritical: return m_BaseStats.RawSpellCritChance;
                 case StatId.DodgeRating: return m_BaseStats.RawDodgeChance;
                 case StatId.BlockRating: return m_BaseStats.RawBlockChance;
+                case StatId.ParryRating: return m_BaseStats.RawParryChance;
+                case StatId.ParryChanceBonus: return m_BaseStats.RawParryChanceBonus;
+                case StatId.BlockChanceBonus: return m_BaseStats.RawBlockChanceBonus;
+                case StatId.ShieldSkill: return m_BaseStats.RawShieldSkill;
                 case StatId.ResistFire: return m_BaseStats.RawResistFire;
                 case StatId.ResistFrost: return m_BaseStats.RawResistFrost;
                 case StatId.ResistShadow: return m_BaseStats.RawResistShadow;

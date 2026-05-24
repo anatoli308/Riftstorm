@@ -194,6 +194,7 @@ namespace Riftstorm.Game.Npc
                 mana = 0;
             }
             int strength = Mathf.Max(0, tpl.Strength);
+            int agility = Mathf.Max(0, tpl.Agility);
             int armor = Mathf.Max(0, tpl.Armor);
 
             // UnitStats uebernimmt Speed-/Range-Parameter nur, wenn > 0. Source haelt
@@ -221,7 +222,8 @@ namespace Riftstorm.Game.Npc
                 attackRange: m_AttackRange,
                 projectileRange: 0f,
                 displayName: tpl.Name,
-                factionId: faction);
+                factionId: faction,
+                agility: agility);
         }
 
         private async Task BuildAsync()

@@ -169,6 +169,7 @@ MonoBehaviour:
   m_Movement: {fileID: 5172720370931407651}
   m_DefaultWeaponId: longsword
   m_DefaultOffhandId: buckler
+  m_DefaultRangedId: 
   m_RespawnDelaySeconds: 3
 --- !u!114 &-2700015800232922021
 MonoBehaviour:
@@ -205,6 +206,7 @@ MonoBehaviour:
   m_MaxHp: 100
   m_MaxMana: 100
   m_Strength: 5
+  m_Agility: 5
   m_Armor: 5
   m_Level: 1
   m_Fortitude: 5
@@ -220,7 +222,10 @@ MonoBehaviour:
   m_SpellCritChance: 0
   m_DodgeChance: 0
   m_ParryChance: 0
+  m_ParryChanceBonus: 0
   m_BlockChance: 0
+  m_BlockChanceBonus: 0
+  m_ShieldSkill: 0
   m_ResistFire: 0
   m_ResistFrost: 0
   m_ResistArcane: 0
@@ -396,7 +401,7 @@ MonoBehaviour:
   m_Input: {fileID: 3229784933833492351}
   m_Combat: {fileID: -525944449724255899}
   m_GroundPicker: {fileID: -758824109736128144}
-  m_SlotSpellEntries: 280000001e0000002000000021000000240000002500000027000000290000002a0000002b000000
+  m_SlotSpellEntries: 900100009a0100000000000000000000000000000000000000000000000000000000000000000000
 --- !u!114 &-758824109736128144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,7 +441,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Items.PlayerEquipment
   ShowTopMostFoldoutHeaderGroup: 1
   m_DefaultMainHandTemplate: 1018
+  m_DefaultMainHandRarity: 2
   m_DefaultOffhandTemplate: 17
+  m_DefaultOffhandRarity: 0
 --- !u!114 &-2832614196279754095
 MonoBehaviour:
   m_ObjectHideFlags: 0

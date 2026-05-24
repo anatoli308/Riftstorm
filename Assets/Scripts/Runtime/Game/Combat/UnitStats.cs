@@ -41,6 +41,10 @@ namespace Riftstorm.Game.Combat
                  "die Mana-Bar im Target-Frame wird dann ausgeblendet.")]
         [SerializeField, Min(0)] private int m_MaxMana = 100;
         [SerializeField, Min(0)] private int m_Strength = 5;
+        [Tooltip("Agility (AGI) — skaliert Ranged-Grundschaden (AGI/14 statt STR/10 im Ranged-Pfad), " +
+                 "Ranged-Crit (+1% pro 53 AGI, Classic-Hunter-Faktor) und Dodge (+1% pro 20 AGI, " +
+                 "Original-Formel aus CombatFormulas.cpp L149-150).")]
+        [SerializeField, Min(0)] private int m_Agility = 0;
         [SerializeField, Min(0)] private int m_Armor = 0;
         [SerializeField, Min(1)] private int m_Level = 1;
 
@@ -81,8 +85,21 @@ namespace Riftstorm.Game.Combat
                  "CombatFormulas.RollSpellHit und CalculateSpellHeal konsumiert.")]
         [SerializeField, Range(0, 100)] private int m_SpellCritChance = 0;
         [SerializeField, Range(0, 100)] private int m_DodgeChance = 0;
+        [Tooltip("Parry-Rating (Source 'ParryRating'). Wird in CombatFormulas.GetParryChance " +
+                 "zur BASE_PARRY_CHANCE=5 addiert und mit ParryChanceBonus + CRG/30 zur " +
+                 "finalen Parry-Chance kombiniert (Cap 75%). Pflicht: Waffe equipped.")]
         [SerializeField, Range(0, 100)] private int m_ParryChance = 0;
+        [Tooltip("Direkter Parry-Chance-Bonus (Source 'ParryChanceBonus'=37). Additiv auf Parry-Rating.")]
+        [SerializeField, Range(0, 100)] private int m_ParryChanceBonus = 0;
+        [Tooltip("Block-Rating (Source 'BlockRating'=19). Bildet die Basis der Block-Chance — " +
+                 "Source hat KEIN Base-Block, Schild ist Pflicht. Wird mit BlockChanceBonus + " +
+                 "ShieldSkill/5 + FRT/30 kombiniert (Cap 75%).")]
         [SerializeField, Range(0, 100)] private int m_BlockChance = 0;
+        [Tooltip("Direkter Block-Chance-Bonus (Source 'BlockChanceBonus'=38). Additiv auf Block-Rating.")]
+        [SerializeField, Range(0, 100)] private int m_BlockChanceBonus = 0;
+        [Tooltip("Schild-Skill (Source 'ShieldSkill'=34). Trägt SLD/5 % zur Block-Chance bei. " +
+                 "Für NPCs Proxy-Signal 'hat Schild' (>0 ⇒ HasShield=true).")]
+        [SerializeField, Min(0)] private int m_ShieldSkill = 0;
 
         [Header("Resistenzen")]
         [SerializeField, Min(0)] private int m_ResistFire = 0;
@@ -238,6 +255,9 @@ namespace Riftstorm.Game.Combat
         public int Strength => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Strength) : m_Strength;
 
         /// <inheritdoc/>
+        public int Agility => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Agility) : m_Agility;
+
+        /// <inheritdoc/>
         public int Armor => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ArmorValue) : m_Armor;
 
         /// <inheritdoc/>
@@ -307,22 +327,113 @@ namespace Riftstorm.Game.Combat
         public int ManaRegen => m_ManaRegen;
 
         /// <inheritdoc/>
-        public int MeleeCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.MeleeCritical) : m_MeleeCritChance;
+        /// <remarks>
+        /// Setzt sich aus dem reinen Rating (Gear/Talente) + STR-Skill-Bonus
+        /// (+1 % pro 20 STR, WoW-Classic-Faktor) zusammen. Damit lohnt sich
+        /// STR fuer Melee-Builds doppelt: mehr Grundschaden (STR/2 in
+        /// <c>CalculateMeleeDamage</c>) und mehr Crit.
+        /// </remarks>
+        public int MeleeCritChance
+        {
+            get
+            {
+                int rating = m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.MeleeCritical) : m_MeleeCritChance;
+                return rating + (Strength / 20);
+            }
+        }
 
         /// <inheritdoc/>
-        public int RangedCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.RangedCritical) : m_RangedCritChance;
+        /// <remarks>
+        /// Setzt sich zusammen aus dem reinen Rating (Gear/Talente) UND einem
+        /// AGI-abhaengigen Skill-Bonus (+1 % pro 53 AGI, Classic-Hunter-Faktor).
+        /// Dadurch lohnt sich AGI fuer Ranged-Builds doppelt: mehr Grundschaden
+        /// (siehe <c>CombatFormulas.CalculateSpellDamage</c> Ranged-Branch) und
+        /// mehr Crit. Im HUD wird der finale Wert angezeigt.
+        /// </remarks>
+        public int RangedCritChance
+        {
+            get
+            {
+                int rating = m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.RangedCritical) : m_RangedCritChance;
+                return rating + (Agility / 53);
+            }
+        }
 
         /// <inheritdoc/>
-        public int SpellCritChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.SpellCritical) : m_SpellCritChance;
+        /// <remarks>
+        /// Rohes Rating (Gear/Talente) + INT-Skill-Bonus (+1 % pro 30 INT,
+        /// WoW-Classic-Faktor). INT skaliert damit Spell-Damage doppelt:
+        /// Grundschaden (INT/20 in <c>CalculateSpellDamage</c>) und Crit.
+        /// Heal-Crit nutzt zusätzlich Willpower/40 — direkt in
+        /// <see cref="CombatFormulas.CalculateSpellHeal"/> verrechnet,
+        /// nicht über diese Property (sonst würde WIL auf Spell-Damage-Crit
+        /// "leaken").
+        /// </remarks>
+        public int SpellCritChance
+        {
+            get
+            {
+                int rating = m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.SpellCritical) : m_SpellCritChance;
+                return rating + (Intelligence / 30);
+            }
+        }
 
         /// <inheritdoc/>
         public int DodgeChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.DodgeRating) : m_DodgeChance;
 
         /// <inheritdoc/>
-        public int ParryChance => m_ParryChance;
+        /// <remarks>
+        /// Aggregierte finale Parry-% — geht durch
+        /// <see cref="CombatFormulas.GetParryChance"/>, das aus
+        /// <see cref="ParryRating"/> + <see cref="ParryChanceBonus"/> +
+        /// <c>CRG/30</c> + <c>BASE_PARRY_CHANCE</c> kombiniert (Cap 75 %).
+        /// Liefert 0, wenn <see cref="HasWeapon"/> false ist.
+        /// </remarks>
+        public int ParryChance => CombatFormulas.GetParryChance(this, HasWeapon);
 
         /// <inheritdoc/>
-        public int BlockChance => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockRating) : m_BlockChance;
+        public int ParryRating => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ParryRating) : m_ParryChance;
+
+        /// <inheritdoc/>
+        public int ParryChanceBonus => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ParryChanceBonus) : m_ParryChanceBonus;
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Aggregierte finale Block-% — geht durch
+        /// <see cref="CombatFormulas.GetBlockChance"/>, das aus
+        /// <see cref="BlockRating"/> + <see cref="BlockChanceBonus"/> +
+        /// <c>ShieldSkill/5</c> + <c>FRT/30</c> kombiniert (Cap 75 %).
+        /// Liefert 0, wenn <see cref="HasShield"/> false ist.
+        /// </remarks>
+        public int BlockChance => CombatFormulas.GetBlockChance(this, HasShield);
+
+        /// <inheritdoc/>
+        public int BlockRating => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockRating) : m_BlockChance;
+
+        /// <inheritdoc/>
+        public int BlockChanceBonus => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockChanceBonus) : m_BlockChanceBonus;
+
+        /// <inheritdoc/>
+        public int ShieldSkill => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ShieldSkill) : m_ShieldSkill;
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Spieler: <c>true</c>, sobald <see cref="PlayerCombat.CurrentWeapon"/>
+        /// nicht null ist (Default-Weapon zählt — Faust ist auch eine Waffe).
+        /// NPCs (kein PlayerCombat-Sibling): immer <c>true</c>, weil das
+        /// C++-Vorbild den Weapon-Check nur für <c>Player*</c> macht.
+        /// </remarks>
+        public bool HasWeapon => m_PlayerCombat == null || m_PlayerCombat.CurrentWeapon != null;
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Proxy via <see cref="ShieldSkill"/> &gt; 0 — gilt für Spieler
+        /// (Schild-Items granten Shield-Skill als Item-Bonus) und NPCs
+        /// (Source: <c>getStatValue(victim, ShieldSkill) == 0 ⇒ kein Block</c>,
+        /// <c>CombatFormulas.cpp</c> L208-209). Sobald ein dedizierter
+        /// Offhand-Shield-Typ existiert, kann das hier verfeinert werden.
+        /// </remarks>
+        public bool HasShield => ShieldSkill > 0;
 
         /// <inheritdoc/>
         public int ResistFire => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ResistFire) : m_ResistFire;
@@ -351,6 +462,7 @@ namespace Riftstorm.Game.Combat
         // Getter fallen ohnehin direkt auf <c>m_X</c> zurueck (m_PlayerStats=null).
         internal int RawMaxHp => m_MaxHp;
         internal int RawStrength => m_Strength;
+        internal int RawAgility => m_Agility;
         internal int RawArmor => m_Armor;
         internal int RawIntelligence => m_Intelligence;
         internal int RawWillpower => m_Willpower;
@@ -360,7 +472,11 @@ namespace Riftstorm.Game.Combat
         internal int RawRangedCritChance => m_RangedCritChance;
         internal int RawSpellCritChance => m_SpellCritChance;
         internal int RawDodgeChance => m_DodgeChance;
+        internal int RawParryChance => m_ParryChance;
+        internal int RawParryChanceBonus => m_ParryChanceBonus;
         internal int RawBlockChance => m_BlockChance;
+        internal int RawBlockChanceBonus => m_BlockChanceBonus;
+        internal int RawShieldSkill => m_ShieldSkill;
         internal int RawResistFire => m_ResistFire;
         internal int RawResistFrost => m_ResistFrost;
         internal int RawResistShadow => m_ResistShadow;
@@ -569,7 +685,8 @@ namespace Riftstorm.Game.Combat
             float attackRange = 0f,
             float projectileRange = 0f,
             string displayName = null,
-            int factionId = -1)
+            int factionId = -1,
+            int agility = 0)
         {
             if (IsSpawned)
             {
@@ -590,6 +707,7 @@ namespace Riftstorm.Game.Combat
             m_MaxHp = Mathf.Max(1, maxHp);
             m_MaxMana = Mathf.Max(0, maxMana);
             m_Strength = Mathf.Max(0, strength);
+            m_Agility = Mathf.Max(0, agility);
             m_Armor = Mathf.Max(0, armor);
             if (hitRadius > 0f)
             {
