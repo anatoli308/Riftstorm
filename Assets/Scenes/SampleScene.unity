@@ -170,8 +170,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbec907de02dfb4aaee84f7ddd01519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.MugenNpcSpawner
-  m_StreamingSubFolder: Custom_Characters/Mudpenis
-  m_AtlasName: Mudpenis
+  m_StreamingSubFolder: Custom_Characters/Minotaur
+  m_AtlasName: Minotaur
   m_InitialAnimation: stance
   m_InitialFlareDirection: 4
   m_SortingOrder: 0

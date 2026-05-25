@@ -38,6 +38,162 @@ Direction modes (--directions, default 2):
   * 8 -> klassisches Verhalten: per-direction MUGEN-Frames werden gelesen,
     fehlende Richtungen fallen über die Mugen-Kette auf E zurück. Nur
     sinnvoll bei tatsächlich 8-dir-animierten Quellen (sehr selten).
+
+Character Reserved Action Numbers
+
+M.U.G.E.N's common state engine (data/common1.cns) requires several animation actions to be present in your character (a warning will be logged if not all required animations are present). There are also some actions that are optional, which will be made use of if present in your character.
+
+If you are unsure of how any of these actions should look, take a look at chars/kfm/kfm.air.
+
+All action numbers in the 5000-5999 range not listed below are reserved for possible future use, so avoid using those numbers for custom actions.
+
+An "opt" besides the number means the animation is optional.
+Number 	Description 	Comments
+0 	Standing 	 
+5 	Stand turning 	Must have finite looptime
+6 	Crouch turning 	Must have finite looptime
+10 	Stand to crouch 	Finite looptime
+11 	Crouching 	 
+12 	Crouch to stand 	Finite looptime
+20 	Walking forwards 	 
+21 	Walking backwards 	 
+40 	Jump start (on ground) 	Shown just before player leaves ground
+41 	Jump neutral (upwards) 	Shown when player is going up
+42 	Jump forwards (upwards) 	Shown when player is going up-towards
+43 	Jump back (upwards) 	Shown when player is going up-back
+44 opt 	Jump neutral (downwards) 	Activated when Y-velocity > -2
+45 opt 	Jump fwd (downwards) 	Same as above
+46 opt 	Jump back (downwards) 	Same as above
+47 	Jump landing 	Shown as player lands on ground
+100 	Run fwd/hop forward 	 
+105 	Hop back 	 
+120 	Start guarding (stand) 	Finite looptime
+121 	Start guarding (crouch) 	Finite looptime
+122 	Start guarding (air) 	Finite looptime
+130 	Guard (stand) 	 
+131 	Guard (crouch) 	 
+132 	Guard (air) 	 
+140 	Stop guarding (stand) 	Finite looptime
+141 	Stop guarding (crouch) 	Finite looptime
+142 	Stop guarding (air) 	Finite looptime
+150 	Guarding a hit (stand) 	Finite looptime
+151 	Guarding a hit (crouch) 	Finite looptime
+152 	Guarding a hit (air) 	No loop
+170 opt 	Lose 	(See Note 1)
+175 opt 	Time Over drawgame 	(See Note 1)
+180 opt 	Win 	No loop (181-189 for multiple) (See Note 1)
+190 opt 	Intro 	No loop (See Note 1)
+195 opt 	Taunt 	Finite looptime (See Note 1)
+5000 	Stand/Air Hit high (light) 	Looptime around 10-20
+5001 	Stand/Air Hit high (medium) 	" (See Note 2)
+5002 	Stand/Air Hit high (hard) 	"
+5005 	Stand Recover high (light) 	No loop (See Note 3)
+5006 	Stand Recover high (medium) 	"
+5007 	Stand Recover high (hard) 	"
+5010 	Stand/Air Hit low (light) 	Looptime around 10-20
+5011 	Stand/Air Hit low (medium) 	"
+5012 	Stand/Air Hit low (hard) 	"
+5015 	Stand Recover low (light) 	No loop
+5016 	Stand Recover low (medium) 	"
+5017 	Stand Recover low (hard) 	"
+5020 	Crouch Hit (light) 	Looptime around 10-20
+5021 	Crouch Hit (medium) 	"
+5022 	Crouch Hit (hard) 	"
+5025 	Crouch Recover (light) 	No loop
+5026 	Crouch Recover (medium) 	"
+5027 	Crouch Recover (hard) 	"
+5030 	Stand/Air Hit back 	Looptime around 10-20
+5035 opt 	Stand/Air Hit transition 	Looptime around 5-15 (See Note 3)
+5040 	Air Recover 	No loop
+5050 	Air Fall 	No loop
+5060 opt 	Air Fall (coming down) 	No loop
+5070 	Tripped 	 
+5080 	LieDown Hit (stay down) 	(See Note 4)
+5090 	LieDown Hit (hit up into air) 	 
+5100 	Hitting ground from fall 	Looptime around 3
+5160 	Bounce into air 	 
+5170 	Hit ground from bounce 	Looptime around 3 or 4
+5110 	LieDown 	 
+5120 	Get up from LieDown 	 
+5140 opt 	LieDead (first rounds) 	 
+5150 opt 	LieDead (final round) 	 
+5200 	Fall-recovery near ground 	 
+5210 	Fall-recovery in mid-air 	 
+5300 	Dizzy 	 
+5500 opt 	"Continue?" screen 	If omitted, plays dizzy anim
+5510 opt 	"Yes" to "Continue" 	If omitted, plays first win anim (not yet implemented)
+5520 opt 	"No" to "Continue" 	(not yet implemented)
+
+Optional Hit Up animations (see Note 5):
+Number 	Description 	Comments
+5051 opt 	Air fall -- hit up 	 
+5061 opt 	Coming down from hit up 	 
+5081 opt 	LieDown Hit (stay down) 	 
+5101 opt 	Bounce from ground into air 	Looptime around 3
+5161 opt 	Bounce into air 	 
+5171 opt 	Hit ground from bounce 	Looptime around 3 or 4
+5111 opt 	LieDown 	 
+5121 opt 	Get up from LieDown 	 
+5151 opt 	LieDead (first rounds) 	 
+5156 opt 	LieDead (final round) 	 
+
+Optional Hit Up-Diagonal animations (see Note 6):
+Number 	Description 	Comments
+5052 opt 	Air fall -- hit up 	 
+5062 opt 	Coming down from hit up 	 
+5082 opt 	LieDown Hit (stay down) 	 
+5102 opt 	Bounce from ground into air 	Looptime around 3
+5162 opt 	Bounce into air 	 
+5172 opt 	Hit ground from bounce 	Looptime around 3 or 4
+5112 opt 	LieDown 	 
+5122 opt 	Get up from LieDown 	 
+5152 opt 	LieDead (first rounds) 	 
+5157 opt 	LieDead (final round) 	 
+
+Note 1
+    These do not actually have to use only the stated numbers. If is
+    more of a recommended number than a M.U.G.E.N one. If necessary, feel free to use any other action numbers.
+
+Note 2: If medium and heavy hits are omitted, they default to the light hits
+
+Note 3
+    "No loop" means last frame has a time of -1.
+    For recover animation, the first frame of each recovery should be the last frame of the corresponding hit. Eg. If action 5000 has frame 5000,0 and 5000,1, then action 5005 should start with frame 5000,1. This is because the animation will be locked in the first frame of the recovery after the hit animation is over, but before the player has recovered from the hit. If you have a Stand/Air Hit transition animation, then the first frame of Air Recover and Air Fall should be the last frame of the transition animation.
+Note 4
+    The Stand/Air Hit transition animation is played back after each
+    hit animation in (or into) the air, but before the Air Recover and Air Fall animations.
+Note 5
+    You can loop the LieDown Hit if you want the player to look like he
+    is "twitching" while being hit
+Note 6
+    This set of animations is optional. It is an alternate set of
+    falling animations, which is used if hit by a HitDef with "Up" as the animtype.
+Note 7
+    This set of animations is optional. It is an alternate set of
+    falling animations, which is used if hit by a HitDef with "DiagUp" as the animtype.
+    
+    Recommended Action Numbers
+
+You do not have to follow this exactly, but it should serve as a guideline.
+In general, the states in the CNS should have the same numbers as the animation they use, to reduce confusion.
+
+You might want space out your animation and state numbers. 
+This gives room for you to add in more actions as necessary
+(some attacks can use multiple states and animations).
+For instance, Standing Light Kick and Standing 
+Strong Kick could have action numbers 200 and 210 respectively.
+Number 	Description
+0-199 	reserved
+200-299 	Standing attacks
+300-399 	More standing attacks, running attacks
+400-499 	Crouch attacks
+500-599 	More crouch attacks
+600-699 	Air attacks
+700-799 	More air attacks
+800-999 	Unused - use if you need more states
+1000-2999 	All special attacks
+3000-4999 	All hyper attacks
+5000-5999 	reserved
 """
 
 from __future__ import annotations
@@ -69,81 +225,81 @@ _FLARE_DIR_TO_MUGEN: list[tuple[str, ...]] = [
 _ACTION_ALIASES: dict[int, str] = {
     # Idle / movement
     0:    "stance",
-    20:   "walk",
-    21:   "walk_back",
-    100:  "run",
-    105:  "run_back",
+    #20:   "walk",
+    #21:   "walk_back",
+    #100:  "run",
+    #105:  "run_back",
     # Crouch
-    10:   "crouch_down",
-    11:   "crouch",
-    12:   "crouch_up",
+    #10:   "crouch_down",
+    #11:   "crouch",
+    #12:   "crouch_up",
     # Jump
-    40:   "jump_start",
-    41:   "jump",
-    50:   "jump_land",
+    #40:   "jump_start",
+    #41:   "jump",
+    #50:   "jump_land",
     # Guard / block
-    120:  "guard_start",
-    130:  "guard",
-    131:  "crouch_guard",
-    132:  "air_guard",
-    140:  "guard_end",
-    150:  "guard_hit_stand",
-    151:  "guard_hit_crouch",
-    152:  "guard_hit_air",
+    #120:  "guard_start",
+    #130:  "guard",
+    #131:  "crouch_guard",
+    #132:  "air_guard",
+    #140:  "guard_end",
+    #150:  "guard_hit_stand",
+    #151:  "guard_hit_crouch",
+    #152:  "guard_hit_air",
     # Stand attacks (light/medium/heavy punches + kicks).
     # "swing" = primary stand light attack so it is plug-compatible with the
     # PlayerCombatVisuals m_AnimSwing default.
-    200:  "swing",
-    210:  "swing_medium",
-    220:  "swing_heavy",
-    230:  "crouch_swing",
-    240:  "crouch_swing_medium",
-    250:  "crouch_swing_heavy",
-    400:  "kick",
-    410:  "kick_medium",
-    420:  "kick_heavy",
-    430:  "crouch_kick",
-    440:  "crouch_kick_medium",
-    450:  "crouch_kick_heavy",
+    #200:  "swing",
+    #210:  "swing_medium",
+    #220:  "swing_heavy",
+    #230:  "crouch_swing",
+    #240:  "crouch_swing_medium",
+    #250:  "crouch_swing_heavy",
+    #400:  "kick",
+    #410:  "kick_medium",
+    #420:  "kick_heavy",
+    #430:  "crouch_kick",
+    #440:  "crouch_kick_medium",
+    #450:  "crouch_kick_heavy",
     # Air attacks
-    600:  "air_swing",
-    610:  "air_swing_medium",
-    620:  "air_swing_heavy",
-    630:  "air_kick",
-    640:  "air_kick_medium",
-    650:  "air_kick_heavy",
+    #600:  "air_swing",
+    #610:  "air_swing_medium",
+    #620:  "air_swing_heavy",
+    #630:  "air_kick",
+    #640:  "air_kick_medium",
+    #650:  "air_kick_heavy",
     # Get-hit / fall / die (5xxx range)
-    5000: "hit",
-    5001: "hit",
-    5010: "hit_mid",
-    5011: "hit_mid",
-    5020: "hit_high",
-    5021: "hit_high",
-    5030: "hit_low",
-    5031: "hit_low",
-    5040: "hit_crouch",
-    5050: "fall",
-    5060: "fall",
-    5070: "trip",
-    5080: "fall",
-    5090: "fall",
-    5100: "land",
-    5110: "liedown",
-    5120: "getup",
-    5150: "die",
-    5160: "die",
-    5170: "die",
-    5200: "stand_recover",
-    5210: "crouch_recover",
-    5300: "getup",
+    #5000: "hit",
+    #5001: "hit",
+    #5010: "hit_mid",
+    #5011: "hit_mid",
+    #5020: "hit_high",
+    #5021: "hit_high",
+    #5030: "hit_low",
+    #5031: "hit_low",
+    #5040: "hit_crouch",
+    #5050: "fall",
+    #5060: "fall",
+    #5070: "trip",
+    #5080: "fall",
+    #5090: "fall",
+    #5100: "land",
+    #5110: "liedown",
+    #5120: "getup",
+    #5150: "die",
+    #5160: "die",
+    #5170: "die",
+    #5200: "stand_recover",
+    #5210: "crouch_recover",
+    #5300: "getup",
     # Throws / hold (3xxx)
-    800:  "throw",
-    810:  "throw",
-    820:  "thrown",
+    #800:  "throw",
+    #810:  "throw",
+    #820:  "thrown",
     # KO / victory / continue
-    180:  "victory",
-    181:  "victory",
-    5900: "continue",
+    #180:  "victory",
+    #181:  "victory",
+    #5900: "continue",
 }
 
 
@@ -586,7 +742,7 @@ def convert_character(
         number = action.get("number")
         if not isinstance(number, int):
             continue
-        if number < 0 or number > MUGEN_MAX_VALID_ACTION:
+        if number < 0: #or number > MUGEN_MAX_VALID_ACTION:
             out_of_range.append(number)
             continue
         anim = _build_animation(action, sprite_index, directions_mode=directions_mode)
