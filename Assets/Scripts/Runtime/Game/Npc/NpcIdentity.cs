@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Npc
 {
+[DisallowMultipleComponent]
     /// <summary>
     /// NPC-Pendant zu <see cref="Riftstorm.Game.Player.PlayerIdentity"/>: liefert einen
     /// <see cref="INameSource"/> f&#252;r Nametag / FloatingCombatText / Logger ohne
@@ -12,7 +13,7 @@ namespace Riftstorm.Game.Npc
     /// derselben StreamingAssets-JSON-Stat-Sidecar in <see cref="UnitStats.DisplayName"/>
     /// schreibt &#8212; ein <c>NetworkVariable</c> w&#228;re reine Bandbreitenverschwendung.
     /// </summary>
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(UnitStats))]
     public sealed class NpcIdentity : MonoBehaviour, INameSource
     {
         [SerializeField] private UnitStats m_Stats;

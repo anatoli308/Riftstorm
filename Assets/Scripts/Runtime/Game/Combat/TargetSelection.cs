@@ -157,8 +157,7 @@ namespace Riftstorm.Game.Combat
             {
                 return false;
             }
-            UnitStats stats = no.GetComponent<UnitStats>();
-            if (stats == null)
+            if (!no.TryGetComponent<UnitStats>(out var stats))
             {
                 stats = no.GetComponentInChildren<UnitStats>();
             }

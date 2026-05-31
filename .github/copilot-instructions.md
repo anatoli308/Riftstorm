@@ -6,6 +6,7 @@ Riftstorm is a **Multiplayer Dark-Fantasy PvPvE Topdown Survivor-MOBA/MMO**. The
 ## Decision-Making Principles
 - For background tasks or long decision tasks use Python and not PowerShell. PowerShell is only for short scripts and quick fixes, not for complex logic or data processing.
 - Always prefer clear, maintainable code over clever one-liners. Readability is more important than brevity.
+- RPC's minimal halten. Events statt vollständiger Object-Sync wo möglich. Server-Authoritative Logik, Clients senden nur Intentionen.
 
 ## Important Developer Coding Rules
 - Prefer explicit types when they improve readability.

@@ -1,8 +1,7 @@
 # 07 – UI Font System (StreamingAssets + JSON)
 
-> **Status:** Umgesetzt am 2026-05-17.
 > **Pattern-Vorbild:** `HudConfigLoader` (`Assets/Scripts/Runtime/Game/UI/HudConfigLoader.cs`).
-> **Architektur-Regel:** JSON in `StreamingAssets/` > ScriptableObjects. Kein `Resources/`.
+> **Architektur-Regel:** JSON in `StreamingAssets/` keine ScriptableObjects. Kein `Resources/`.
 
 ---
 
@@ -275,61 +274,3 @@ für jegliche neue UI/Gameplay-Konfiguration in Riftstorm. Schema:
 - `ScriptableObject` für reine Daten
 - `Resources/`-Ordner
 - Custom Asset-Loader die nicht über `ServiceLocator` registriert sind
-
----
-
-## 8. Setup-Schritte im Unity Editor (einmalig)
-
-1. **Boot-Scene öffnen**, das GameObject mit `ApplicationEntryPoint`
-   selektieren.
-2. Unter dem neuen **`UI Fonts`**-Header das Array `m_UIFonts` aufklappen,
-   Größe auf `11` setzen (oder beliebige Teilmenge, je nachdem welche Fonts
-   wirklich gebraucht werden).
-3. Alle `.ttf`-Assets aus `Assets/Fonts/` per Drag & Drop in die Slots
-   ziehen. Reihenfolge egal, der Lookup geht über `Font.name`.
-4. Scene speichern.
-5. **PlayMode starten** → im Console-Log nach
-   `[ApplicationEntryPoint] FontRegistry mit X Font-Asset(s) registriert.`
-   suchen. `X` muss > 0 sein, sonst greifen überall die Unity-Defaults.
-6. **JSON anpassen falls gewünscht:** `Assets/StreamingAssets/interface/ui_fonts.json`
-   editieren. Cache wird beim nächsten PlayMode-Run neu geladen.
-
----
-
-## 9. Fehlerdiagnose
-
-| Symptom                                              | Ursache & Fix                                                                                                  |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Alle Labels nutzen weiterhin Unity-Default-Font      | `m_UIFonts`-Array auf `ApplicationEntryPoint` ist leer → Fonts im Inspector zuweisen.                          |
-| Nur einzelne Rollen fallen auf Default zurück        | Font-Name im JSON matcht kein Asset in `m_UIFonts` (Tippfehler / `Font.name` ≠ Dateiname).                     |
-| `[UIFontConfigLoader] Fehler beim Laden …`           | JSON-Syntaxfehler. JSON validieren, Datei muss reines JSON sein (kein BOM, keine Kommentare).                  |
-| Build hat den Font nicht                             | Font-Asset wurde nicht referenziert → in keiner Scene/Prefab. Inspector-Slot auf `ApplicationEntryPoint` reicht. |
-| `FontRegistry mit 0 Font-Asset(s) registriert`       | Inspector-Slots leer **oder** Singleton-Guard hat das GameObject zerstört (zweite Instanz im Scene-Reload).    |
-
----
-
-## 10. Konversations-Verlauf (Kurzform)
-
-1. **HUD-Bugfixes vorher** (außerhalb dieses Dokuments).
-2. **Font-Recherche**: `Assets/Fonts/` enthält 11 TTFs. Source-Dumps von
-   steam-main wurden als Hinweis-Quelle durchsucht → bestätigte ARPG-typische
-   Rollen-Aufteilung (Friz Quadrata für Title/Heading, Helvetica für
-   Numeric/Chat, etc.).
-3. **Erster Architektur-Vorschlag**: ScriptableObject + Resources →
-   **vom Nutzer abgelehnt** als nicht-idiomatisch für Riftstorm.
-4. **Re-Plan**: JSON in `StreamingAssets/` mirror von `HudConfigLoader`,
-   `FontRegistry` als Pure Service, `[SerializeField] Font[]` auf
-   `ApplicationEntryPoint`.
-5. **Implementierung**: 5 neue Files + 5 modifizierte Files + 1 JSON +
-   2 neue Regeln in `copilot-instructions.md`.
-6. **Validation**: `get_errors` über alle 10 berührten Files → 0 Fehler.
-7. **Diese Doku** (`07-ui-fonts-streamingassets.md`).
-
----
-
-## 11. Verwandte Referenzen
-
-- [01-architektur-kontext.md](01-architektur-kontext.md) — MVC, ServiceLocator, Pure Services
-- `Assets/Scripts/Runtime/Game/UI/HudConfigLoader.cs` — Pattern-Vorbild
-- `Assets/Scripts/Runtime/Management/TextureManagement/TextureManager.cs` — analoger Pure Service für Texturen
-- `.github/copilot-instructions.md` — verbindliche Projektregeln

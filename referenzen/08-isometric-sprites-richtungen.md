@@ -5,39 +5,6 @@ Beantwortet: "Wie viele Rotations-Frames pro Asset, und warum?"
 
 ---
 
-## 1. Perspektive ≠ Richtungen
-
-Zwei unabhängige Konzepte, die oft verwechselt werden:
-
-### Perspektive (Kamera-Blickwinkel)
-- **Definiert durch die Kamera-Achse**, nicht durch Sprites
-- Isometrisch: ~30° Höhenwinkel, 45° Drehung (klassisch Diablo/Flare/SoF)
-- Top-Down: 90° von oben
-- Side-Scroller: 0°, horizontal
-- **Die Perspektive bleibt gleich, egal wie viele Richtungen ein Sprite hat.**
-
-### Richtungen (Rotations-Frames)
-- **Wie viele Winkel-Varianten** eines Sprites gezeichnet sind
-- Beeinflusst **Bewegungs-Smoothness** und **Asset-Aufwand**
-- Hat nichts mit der Perspektive zu tun
-
-**Faustregel:** Sprite-Stil muss zur Kamera-Perspektive passen. Anzahl Richtungen ist davon entkoppelt.
-
----
-
-## 2. Richtungs-Stufen
-
-| Richtungen | Winkel-Schritt | Look beim Drehen | Typischer Use-Case |
-|---|---|---|---|
-| 1 (fixed) | — | Sprite dreht sich nie | Pickups, Effekte, Deko, Decals |
-| 2 | 180° | Links/Rechts | Symmetrische Objekte, simple NPCs |
-| 4 | 90° | Sichtbar grob bei Diagonal-Bewegung | Alte Pixel-RPGs, statische NPCs |
-| **8** | **45°** | **Standard für Iso/Action-RPG** | **Spieler, Gegner, Projektile** |
-| 16 | 22.5° | Sehr smooth | Cinematic Bosse, Fahrzeuge |
-| 32+ | <12° | Fast 3D-like | Vorzeige-Units, Premium-Assets |
-
----
-
 ## 3. Richtungen nach Asset-Typ
 
 ### Bewegliche Einheiten (immer 8+)
@@ -158,7 +125,7 @@ Bewegt sich das Asset?
 ## 9. Relevant für Riftstorm
 
 - Spieler-Sprites erwarten 8 Richtungen (oder 1/4 je nach Kategorie aus Abschnitt 7)
-- `PrefabManager` lädt Sprite-Atlas-Prefabs via Addressables —
+- `TextureManager` lädt Sprite-Atlas-Prefabs via Addressables —
   Asset-Layout pro Atlas folgt Flare-Konvention
 - `Assets/Art/` strukturiert nach Asset-Typ; pro Asset eigenes Spritesheet mit
   Richtungs-Variante als horizontaler Streifen, Frames vertikal

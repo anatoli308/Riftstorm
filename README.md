@@ -1,128 +1,126 @@
 # Riftstorm
 
-> **Multiplayer Dark-Fantasy PvPvE Topdown-Action**, in dem die Build-Eskalation von *Vampire Survivors* / *Megabonk*, die Teamfights & Pacing von *League of Legends* und die Synergie-Tiefe eines ARPGs (à la *Path of Exile* / *Diablo*) zu einem Survivor-MOBA/MMO-Hybriden im WoW-Look verschmelzen.
+> **Multiplayer Dark-Fantasy PvPvE isometric Topdown-Action MOBA/MMO/ARPG-Hybrid**
 
-**Kernidee in einem Satz:** *Das PvE erzeugt das PvP.*
-
----
-
-## Vision
-
-Riftstorm ist kein weiterer MOBA-Klon und kein weiterer Survivor-Klon. Spieler farmen Horden, evolvieren Builds, kontrollieren Objectives — und treffen im Endgame mit voll eskalierten Synergie-Builds in chaotischen Teamfights aufeinander. Das Setting ist **Dark Fantasy** (Untote, Dämonen, Ritualmagie), die Welt fokussiert, die Sessions kurz und streamerfreundlich.
-
-- **Earlygame** → Farmen, Skill-Aufbau, kleine Objectives (Vampire-Survivors / Megabonk-Auto-Combat)
-- **Midgame** → Map Control, Bosse, erste PvP-Skirmishes (LoL-Pacing)
-- **Endgame** → Map schrumpft, Horden eskalieren, voll evolvierte Builds clashen (ARPG-Synergie-Tiefe)
-
-Match-Länge: **15–25 Minuten**. Zugänglich, streamerfreundlich, build-tief.
+- Iso-Sprite-Konvention, 8-Richtungs-Asset-Layout
+- **Dedicated Server**, **server-authoritativ**. (Server-Only / Client-Only)
+- **Reconnect-Support** erwünscht (NGO unterstützt das nativ via Persistent-Session-Pattern).
+- Jeweils data-driven via JSON in `StreamingAssets/` + StateMachine, wo passend.
+-
 
 ---
 
-## Pillars
+## Netcode- & Authority-Modell
 
-1. **PvE erzeugt PvP** — Horden sind Ressource, Druckmittel und Zonen-Kontrolle gleichzeitig.
-2. **Build-Evolution als Dopamin** — Synergien aus Survivor-Auto-Weapons + aktiven MOBA-Skills.
-3. **Readability First** — Klare Silhouetten, lesbare FX, identifizierbare Build-Identitäten trotz Chaos.
-4. **Server-authoritative Performance** — 10-15 Spieler, hunderte Gegner, stabile 60 FPS.
-5. **Teamrollen mit Identität** — Tank, DPS, Support, Controller, Summoner, Assassin.
-
----
-
-## Core Gameplay Loop
-
-```
-Spawn → Farm Horden → Skill leveln → Evolution freischalten
-      → Objective contesten → Boss + PvP Skirmish
-      → Map Shrink → Voll eskalierter Endgame-Teamfight → Loot / Meta Progression
-```
+- **Server ist Single Source of Truth** für alle gameplay-relevanten Entscheidungen
+  (Damage, Cooldowns, Hit-Validation, Movement-Validation, Loot-Drops).
+- **Clients senden nur Inputs / Intentions** (Move-Targets, Cast-Requests).
+- **Client-Prediction** für eigene Bewegung; **Reconciliation** bei Server-Korrektur.
+- **Enemies werden nicht als individuelle NetworkObjects repliziert.** Snapshot-Sync
+  + AOI-Culling (Area-of-Interest) bzw. Fog of War + Performance. Enemies haben Server-Only-IDs, Clients tracken sie lokal. Ähnlich wie LoL für Minions.
+- **RPCs minimal halten.** Events statt vollständiger Object-Sync wo möglich.
+- **Visuelle Effekte** laufen client-seitig (kein Sync für jeden Partikel).
 
 ---
 
-## Tech Stack
+## Art Direction
 
-| Bereich | Wahl | Warum |
-|---|---|---|
-| Engine | **Unity 6 + URP** | Topdown-tauglich, große Toolchain, performant |
-| Gameplay | **Klassische MonoBehaviours** + Object Pooling | Schnelle Iteration, ausreichend für ~15 Spieler / hunderte Enemies |
-| Networking | **Netcode for GameObjects (NGO)** + Dedicated Server | Server-authoritative, Unity-nativ, Server-/Client-Build-Split |
-| Input | **Unity Input System** | bereits eingebunden |
-| Assets | **Addressables** | Cache-first Loading via `PrefabManager` |
-| Architektur | **MVC + State Machines + EventManager + ServiceLocator** | Modulare, datengetriebene In-House-Architektur |
-
-> Aktuell installiert: `com.unity.netcode.gameobjects 2.11.2`, `com.unity.dedicated-server 2.0.2`, `com.unity.addressables`, `com.unity.inputsystem`, URP 17.3.0. ECS/DOTS wurde bewusst entfernt.
+- **Dark Fantasy**, gothic/diablo-leaning, gedeckte Palette mit gezielten Akzentfarben.
+- **Topdown Iso-Sprites**, 8 Richtungen, FLARE-Konvention.
+- **Lesbarkeit > Fidelity.** In Horde-Combat müssen Enemy-Silhouetten und Telegraphs sofort erkennbar bleiben.
+- **Color-Coding**:
+  - Fraktion / Team → harte, konsistente Farben
+  - Damage-Type → konsistente Tönungen
+  - Danger-Zones → reservierte Warn-Farben (rot/orange)
 
 ---
 
-**Patterns:**
+## 4. FLARE 8-Direction Sprites
 
-- **Single Source of Truth** — Manager halten State, Events triggern nur, Views lesen vom Manager.
-- **Service Decomposition** — Manager orchestriert, interne Loader laden Daten, Applier wendet an.
-- **Cache-First** — alles über `PrefabManager` / `TextureManager` via `ServiceLocator.Get<T>()`.
-- **State Machines statt Polling** — keine `Update`-Flag-Checks, keine Coroutines für Ablaufsteuerung.
+### Direction-Konvention (Atlas-Spalten-Reihenfolge)
+| Index | Richtung |
+|-------|----------|
+| 0     | W        |
+| 1     | SW       |
+| 2     | S        |
+| 3     | SE       |
+| 4     | E        |
+| 5     | NE       |
+| 6     | N        |
+| 7     | NW       |
 
----
+→ Siehe `FlareDirection.cs` (Index ↔ Vector2-Lookup).
 
-## Performance-Ziele (MVP)
+### Z-Achsen-Inversion (FLARE vs. Unity)
+FLARE-N entspricht Unity **−Z**. Unity-N ist **+Z**. Daher *exakt einmal* invertieren — beim Mapping von World-Velocity auf Visual-Direction in 
+`UpdateVisuals()`:
 
-| Metrik | Ziel |
-|---|---|
-| Spieler pro Match | ~15 (Default-Target, skalierbar nach oben/unten) |
-| Gleichzeitige Enemies | 200–400 |
-| Frame Rate | >60 FPS stabil |
-| Server Tickrate | 20–30 Hz |
-| Bandwidth pro Client | < 64 kbit/s |
-
----
-
-## Bigger Risks
-
-1. **Visual Noise** — Hauptproblem aller Survivor-Multiplayer-Hybriden.
-2. **PvP-Balance bei eskalierten Builds** — Synergien dürfen sich nicht One-Shotten.
-3. **Server-Sim-Kosten** bei 10-15 Spielern × hunderten Entities.
-4. **Onboarding-Komplexität** — MOBA-Tiefe ohne MOBA-Frust kommunizieren.
-
----
-
-## Scene-Flow (Boot → Metagame → Game)
-
-```
-Boot.unity                    Metagame.unity                    Game.unity
-─────────────                 ───────────────                   ──────────
-NetworkManager        ─┐      MetagameApplication               GameApplication
- + UnityTransport      │       + MetagameModel                    + GameModel
-ApplicationEntryPoint  │       + MetagameView                     + GameView
- + ConnectionManager   │       + MetagameController               + GameController
-DontDestroyOnLoad ─────┘             │                                 ▲
-                                     ▼                                 │
-                          ConnectionManager.StartClient(ip,port)       │
-                                     │                                 │
-                                     ▼                                 │
-                            NGO StartClient → Approval ───────────────►│
-                                                  (NGO SceneManager
-                                                   syncs Client into Game)
+```csharp
+Vector2 visualDir = new(diff.x, -diff.z);
 ```
 
-- **Server-Build** (`UNITY_SERVER`) → `ApplicationEntryPoint` ruft `ConnectionManager.StartServer(0.0.0.0, --port)`, lädt nach `OnServerStarted` via `NetworkManager.Singleton.SceneManager.LoadScene("Game")`.
-- **Client-Build** → lädt `Metagame`, User triggert Connect, `ConnectionManager.StartClient(...)`, NGO synced Client automatisch in `Game`.
-- **Disconnect / Server-Down** → Client kehrt automatisch zurück nach `Metagame`.
+**Nicht** in der Physik invertieren — sonst kippt die Steuerung gegenüber der Kamera.
 
-Einrichtung im Editor: siehe [`referenzen/02-scene-setup.md`](referenzen/02-scene-setup.md).
+Ergebnis: WASD bewegt physisch +Z = north, und das Sprite zeigt Atlas-Index 6 (N). Ohne den `-diff.z` würden N und S vertauscht (FLARE-Sprite zeigt nach S obwohl Spieler nach N läuft).
 
 ---
 
-## Repo-Konventionen
+## Sprite-Asset-Pipeline (FLARE → JSON)
 
-Siehe [`.github/copilot-instructions.md`](.github/copilot-instructions.md) für vollständige Coding-, Architektur- und Networking-Standards.
+### Format
+```
+image=foo.png
 
-**Kurz:**
-- Immer `new()` Syntax statt `new TypeName()`
-- XML-Doku auf öffentliche APIs
-- Kein Polling, keine Coroutines für Ablaufsteuerung → State Machines / Events
-- Kein `Time.deltaTime` in autoritativer Gameplay-Sim → Fixed Tick
-- Server ist immer authoritativ, Clients schicken nur Inputs
+[stance]
+frames=4
+duration=800ms
+type=back_forth
+frame=ANIM_IDX,DIR_IDX,x,y,w,h,ox,oy
+...
+```
+
+### Ziel-Schema (matcht `player_male/*.json`)
+```json
+{
+  "image": "foo.png",
+  "animations": {
+    "stance": {
+      "frames_count": 4,
+      "duration_ms": 800,
+      "type": "back_forth",
+      "frames": [           // outer length = frames_count
+        [ {x,y,w,h,ox,oy}, ..., {...} ],   // inner length = 8 (eine pro Direction)
+        ...
+      ]
+    }
+  }
+}
+```
+
+- **Indexierung**: txt `frame=A,B,...` → json `frames[A][B]` (A = anim-frame, B = direction).
+- **Padding**: fehlende Direction-Slots werden `null`. Bei Player-Items selten relevant (immer 8 Richtungen), bei NPCs häufiger (nur 4 Frontal-Sprites).
+- **Duration**: `"800ms"` → `800` (int, ms abgeschnitten).
+
+### Konverter-Tool
+**Pfad**: [Tools/Scripts/flare_txt_to_json.py](./Tools/Scripts/flare_txt_to_json.py)
 
 ---
 
-## License
+## Anti-Patterns (NICHT machen)
 
-TBD
+- ❌ Coroutines für Gameplay-Flow (stattdessen State Machines)
+- ❌ `Update()` mit Polling-Checks (stattdessen Events)
+- ❌ Singleton-Zugriffe über `ApplicationEntryPoint.Singleton` für Services (stattdessen `ServiceLocator.Get<T>()`)
+- ❌ Magic Numbers / Strings (stattdessen Konstanten/DTOs + JSON-Data)
+- ❌ Monolithische Skill-Klassen (stattdessen Effect-Composition)
+- ❌ Client-Side Damage/Hit-Detection (immer Server-Authoritative)
+- ❌ LINQ in Gameplay-Hot-Paths
+- ❌ Per-Frame Heap-Allocations in Gameplay-Loops (Object Pools!)
+- ❌ Reflection in Runtime-Gameplay-Systems
+- ❌ Jede Kugel / jedes Partikel als `NetworkObject` synchronisieren — nur Events/Seeds senden
+- ❌ NGO-RPCs für hochfrequente Streams (NetworkVariables oder Custom Snapshot-System nutzen)
+- ❌ Eigene `PlayerInput`-Component pro Player, die das Asset clonen würde — bricht NGO-Ownership-Modell.
+- ❌ `map.Enable()` in jedem `OnEnable()` — Race mit anderen Instanzen.
+
+# other ideas:
+- ECS architecture wird eingebaut, um die Performance zu verbessern und die Entwicklung zu erleichtern.

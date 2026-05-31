@@ -127,8 +127,7 @@ namespace Riftstorm.Game.UI
             {
                 return;
             }
-            PlayerCombat combat = po.GetComponent<PlayerCombat>();
-            if (combat == null)
+            if (!po.TryGetComponent<PlayerCombat>(out var combat))
             {
                 return;
             }

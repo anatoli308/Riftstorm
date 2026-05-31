@@ -1,11 +1,5 @@
 # 12 – Nächste Phasen: Melee · Spell · Shoot · Aura
 
-Konkreter, priorisierter Phasenplan, um die vier Combat-Pipelines client-sichtbar fertigzustellen. IST-Stand ist evidenzbasiert in [`10-spell-pipeline.md`](10-spell-pipeline.md) und [`11-spell-visuals-pipeline.md`](11-spell-visuals-pipeline.md) dokumentiert.
-
-> **Ehrliche Antwort auf "Spell-Setup zu 100 % fertig?":** Nein. Funktional fertig sind **Instant + Cast-Time × Self + Single-Target × Direct-Damage / Heal / Aura**. AoE, Skillshot, Ground-Target, Channel, Sound, ~38 von 47 `SpellEffect`-Handlern und alle Bewegungs-Effekte (Charge / KnockBack / PullTo / Teleport) fehlen.
-
----
-
 ## 1. Status-Matrix (Spell-Typen × Pipeline-Stufen)
 
 Legende: ✅ verdrahtet · 🟡 teilweise · ❌ fehlt · n/a nicht relevant

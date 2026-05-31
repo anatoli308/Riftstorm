@@ -1,11 +1,5 @@
 # 10 – Spell-Pipeline (Server-autoritativ)
 
-End-to-End-Beschreibung der Spell-Cast-Kette vom Input bis zur Effect-Anwendung. Stand: aktueller Code, keine Wunschvorstellung.
-
-> Vorbild: `source_server/Server/src/Combat/SpellCaster.cpp` + `Shared/SpellDefines.h` aus dem C++-Server-Dump (`referenzen/` oder lokaler Steam-Main-Dump).
-
----
-
 ## 1. Datenfluss (1 Cast)
 
 ```
@@ -79,7 +73,7 @@ Ein Spell hat bis zu **drei Effect-Slots** (`effect1..3`, jeweils mit `targetTyp
 
 | Effekt | Status | Bemerkung |
 |---|---|---|
-| `SchoolDamage` | ✅ | `data1` = Flatdamage. **Keine** Damage-Formel/Stat-Skalierung (TODO Phase 4). |
+| `SchoolDamage` | ✅ | `data1` = Flatdamage. **Keine** Damage-Formel/Stat-Skalierung. |
 | `WeaponDamage` | ✅ | Behandelt wie `SchoolDamage`. |
 | `Heal` | ✅ | `data1` = Flatheal. |
 | `HealPct` | ✅ | `data1` = Prozent vom Target-MaxHP. |

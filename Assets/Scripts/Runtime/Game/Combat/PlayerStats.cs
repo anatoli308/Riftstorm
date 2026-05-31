@@ -41,6 +41,7 @@ namespace Riftstorm.Game.Combat
         BlockChanceBonus = 38,
         ParryRating = 40,
     }
+[DisallowMultipleComponent]
 
     /// <summary>
     /// Read-only Aggregator ueber <see cref="UnitStats"/> (Base) +
@@ -55,7 +56,7 @@ namespace Riftstorm.Game.Combat
     /// Polling). HUD/CombatFormulas haengen sich an <see cref="StatsChanged"/>.
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(UnitStats))]
     public sealed class PlayerStats : MonoBehaviour
     {
         [Tooltip("Quelle der Basis-Werte. Wird in Awake auf das eigene GameObject aufgeloest, wenn leer.")]

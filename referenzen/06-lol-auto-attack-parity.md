@@ -1,14 +1,3 @@
-# 06 — LoL-Style Auto-Attack Parity (Melee)
-
-Stand: Mai 2026. Dieser Abschnitt fasst alle Änderungen zusammen, die nötig
-waren, um den Auto-Attack-Flow auf League-of-Legends-Niveau (Melee) zu
-heben — und welche Verträge dabei zwischen Input, Combat, Movement,
-Targeting und Visuals gelten. Bezieht sich auf die vorherigen Dokumente
-01 – 05; ändert dort beschriebene Architektur nicht, sondern verfeinert das
-Gameplay-Feel.
-
-## Ja, LoL macht genau das
-
 - Champion folgt einem **gelockten Ziel dauerhaft**, bis er entweder in
   Range ist (dann Auto-Attack-Loop) oder ein neuer Befehl kommt.
 - Auto-Attack läuft als **Loop**: sobald der Cooldown durch ist und das
@@ -152,29 +141,3 @@ Felder, die das Feeling steuern:
 Beim Tuning gilt: **erst `HitResolveProgress` justieren**, wenn der Damage
 sich „zu früh" oder „zu spät" anfühlt, **dann erst `AttackCooldown`**,
 wenn das Tempo des gesamten Loops nicht passt.
-
-## Was bewusst NICHT drin ist
-
-- **Combo / AA-Queue**: zweite Anfrage während `AttackingState` wird
-  verworfen. Eingeplant für eine spätere Phase.
-- **Animation-hard-cancel auf Client-Visual**: nach `NotifyAttackCanceledClientRpc`
-  läuft die FLARE-Swing-Anim noch kurz aus. LoL macht das genauso.
-- **Coroutines / Update-Timer**: bewusst nicht — Awaitable + CTS +
-  State-Machine. Einzige Ausnahme bleibt `PlayerMovement.Update` für
-  Visuals (in 03 dokumentiert).
-
-## Berührte Dateien dieser Phase
-
-- `Assets/Scripts/Runtime/Game/Input/PlayerTargetingInput.cs`
-  — LMB-auf-Boden clearet Lock; LMB-auf-Gegner selektiert nur.
-- `Assets/Scripts/Runtime/Game/Input/MobaCommandController.cs`
-  — RMB-Cancel ist jetzt zielabhängig (nur bei Target-Switch oder Move).
-- `Assets/Scripts/Runtime/Game/Combat/PlayerCombat.cs`
-  — `FaceCurrentTarget()` in `BeginAttack` **und** in `ServerResolveMeleeHit`;
-    `m_TargetSelection` SerializeField + Fallback.
-- `Assets/Scripts/Runtime/Game/Combat/CombatStates/PlayerCombatAttackingState.cs`
-  — zweiphasiger Awaitable-Cycle (Windup → Resolve → Backswing), Cancel
-    via CTS in `Exit()`.
-- `Assets/Scripts/Runtime/Game/Movement/PlayerMovement.cs`
-  — `m_TargetSelection` SerializeField + Fallback; `UpdateVisuals`
-    überschreibt FLARE-Direction während `combatBusy` auf Target-Richtung.

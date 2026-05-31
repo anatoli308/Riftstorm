@@ -311,7 +311,7 @@ Missing dazwischen.
 
 1. healing floating text.
 2. refactor interfec jsons
-3. mouse click muss nur gedruckt gehalten werden zum laufen nicht mehrfach klicken.
+3. mouse click muss nur gedruckt gehalten werden können zum laufen nicht mehrfach klicken.
 4. wenn man während des laufens einen skill castet soll das laufen unterbrochen werden und man soll den skill casten können, aktuell 
 läuft der character erst zum target versucht während des laufens zu casten macht es nicht und läuft zum ziel. er soll abrechen zu laufen sobald man einen skill castet und dann den skill casten können.
 5. Der Flare_NPC Lone Howler hat irgendwie 120/110 HP ist das korrekt laut _template.json? ne oder.
@@ -320,3 +320,39 @@ läuft der character erst zum target versucht während des laufens zu casten mac
 8. skill shots bzw. projectiles gibt es sowas überhaupt? z.b. fireball soll ja ein projectile sein, das von caster zum target fliegt, das soll auch in der animation sichtbar sein, aktuell ist es so das der damage direkt gemacht wird. es soll aber so sein das der damage erst gemacht wird wenn das projectile das target erreicht, also mit travel time. und während des travel time soll man das projectile auch sehen können, also die animation von fireball soll sichtbar sein und das projectile soll von caster zum target fliegen, wenn es das target erreicht soll der damage gemacht werden. das soll auch für andere skills gelten die projectiles haben sollen, z.b. multi-shot, shoot bow, etc.
 9. Aoe spells (channeling, cast und aoe) gibt es sowas überhaupt? z.b. blizzard soll ein aoe spell sein, der eine area auf dem boden markiert und dann nach x sekunden die damage macht, während der markierung.
 10. es müssen particle fliegen bei casts. z.b. bei auto shots müssten arrows fliegen. oder fireball ein fireball projectile usw. oder multi-shot drei arrows usw. das soll auch bei npc attacks funktionieren, z.b. shoot bow, etc.
+11. equipment.json einpflegen. 
+12. Source NpcAI: NPC_MOVE_SPEED=100 px/s. Bei FLARE PPU=64 = 1.56 m/s. Wird in UnitStats.WalkSpeed geschrieben. Muss dann alles was es noch so gibt korrekt skaliert werden ?
+13. Buffs sind in v1 nicht enthalten — TODO Phase 17.
+
+
+# fehlt noch vermutlich:
+
+
+- **Combo / AA-Queue**: zweite Anfrage während `AttackingState` wird
+  verworfen. Eingeplant für eine spätere Phase.
+- **Animation-hard-cancel auf Client-Visual**: nach `NotifyAttackCanceledClientRpc`
+  läuft die FLARE-Swing-Anim noch kurz aus. LoL macht das genauso.
+- **Coroutines / Update-Timer**: bewusst nicht — Awaitable + CTS +
+  State-Machine. Einzige Ausnahme bleibt `PlayerMovement.Update` für
+  Visuals (in 03 dokumentiert).
+
+  siehe 06-lol-auto-attack-parity.md für Details zu diesen Punkten.
+
+
+  ## eventuell noch fehlend:
+| Spell-Typ | Status | Was zu tun |
+| **Instant Self-Cast** (z. B. Buff auf sich selbst, Heal-on-Self) | ✅ funktioniert | – |
+| **Cast-Time Self-Cast** (Buff mit Wind-up) | ✅ funktioniert | – |
+| **Instant Single-Target** (Direct-Damage Snap, Heal-Other) | ✅ funktioniert | – |
+| **Cast-Time Single-Target** (Fireball-Stil mit Wind-up, Hitscan-Resolve) | ✅ funktioniert | – |
+  | **AoE (Source/Dest)** (Nova, Konsekration, Ground-Pulse) | ❌ trifft nur Primärziel | Phase 2.4: `Physics.OverlapSphereNonAlloc` in `ResolveTarget`, `MaxTargets`/`Radius` ehren, multi-Apply pro Effect-Slot. |
+| **Skillshot / Projectile** (Fireball mit Reisezeit, Lineshot) | ❌ kein Projektil-System | Phase 2.5: `Projectile : NetworkBehaviour` mit `spell.Speed`-Travel, On-Hit-Trigger → `SpellExecutor.Execute(caster, spell, hit)`. |
+| **Ground-Target** (Reticle, Welt-Klick als Cast-Parameter) | ❌ Flag nicht ausgewertet | Phase 2.6: Reticle-State im `PlayerSpellInput`, Welt-Position über `RequestCastGroundServerRpc(entry, worldPos)` mitschicken. |
+| **Channeled** (Tick-Spells über mehrere Sekunden) | ❌ kein Channel-State | Phase 2.7: Variante von `CastingState` mit Tick-Loop, `aura_interrupt_flags` ehren. |
+| **Charge / KnockBack / PullTo / Slide / Teleport** | ❌ default-Branch | Phase 3.x: Bewegungs-Effekte über `PlayerMovement.ServerApplyImpulse` o. ä. |
+| **Sound** | ❌ nicht verdrahtet | Phase 2.3: `SpellVisualKitDefinition.Sound` → `AudioSource.PlayClipAtPoint` oder pooled AudioSource am Caster. |
+
+- ❌ **Radial / Tangential Acceleration** — geparst (`def.RadialAccelMin/Max`, `def.TangentialAccelMin/Max`), aber im `ConfigureForce` nicht verdrahtet. Source-Semantik: pro Tick auf `Velocity` aufmultipliziert, `/PixelsPerUnit`. Lösung: Custom-Force-Module mit `ParticleSystem.CustomData` oder ein zweites `ParticleSystemForceField`. Auswirkung bisher: Partikel fallen nur unter Gravity, drift in Casting-Effekten fehlt.
+- ❌ **Echtes `particles.png`** — falls je gefunden, würde der prozedurale Atlas durch das Original ersetzt. Code-Pfad: `s_FallbackAtlas` durch geladene `Texture2D` aus `Art/spells/particles.png` ersetzen (ServiceLocator-Loader hinzufügen).
+
+- siehe 12-naechste-phasen-melee-spell-shoot-aura.md

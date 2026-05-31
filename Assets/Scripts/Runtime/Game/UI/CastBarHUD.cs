@@ -168,8 +168,7 @@ namespace Riftstorm.Game.UI
                 return;
             }
 
-            PlayerCombat combat = playerObj.GetComponent<PlayerCombat>();
-            if (combat == null)
+            if (!playerObj.TryGetComponent<PlayerCombat>(out var combat))
             {
                 combat = playerObj.GetComponentInChildren<PlayerCombat>();
             }

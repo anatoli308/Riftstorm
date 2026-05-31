@@ -16,6 +16,8 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Combat
 {
+[DisallowMultipleComponent]
+    [RequireComponent(typeof(PlayerCombatVisuals))]
     /// <summary>
     /// Autoritative Combat-Statemachine pro Spieler.
     ///
@@ -38,8 +40,7 @@ namespace Riftstorm.Game.Combat
     /// Projektregeln: No Polling, No Coroutines).
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
-    [RequireComponent(typeof(PlayerCombatVisuals))]
+    [RequireComponent(typeof(UnitStats))]
     public sealed class PlayerCombat : NetworkStateMachine<PlayerCombatState, PlayerCombat>
     {
         // -------------------------------------------------------------------------
@@ -1381,8 +1382,7 @@ namespace Riftstorm.Game.Combat
                 && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkObjectId, out NetworkObject targetObj)
                 && targetObj != null)
             {
-                UnitStats targetStats = targetObj.GetComponent<UnitStats>();
-                if (targetStats != null)
+                if (targetObj.TryGetComponent<UnitStats>(out var targetStats))
                 {
                     primaryTarget = targetStats;
                 }
@@ -1652,8 +1652,7 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
-            PlayerEquipmentVisuals visuals = GetComponent<PlayerEquipmentVisuals>();
-            if (visuals == null)
+            if (!TryGetComponent<PlayerEquipmentVisuals>(out var visuals))
             {
                 return;
             }
@@ -1668,8 +1667,7 @@ namespace Riftstorm.Game.Combat
         /// </summary>
         private void TryHideRangedAfterCast()
         {
-            PlayerEquipmentVisuals visuals = GetComponent<PlayerEquipmentVisuals>();
-            if (visuals == null)
+            if (!TryGetComponent<PlayerEquipmentVisuals>(out var visuals))
             {
                 return;
             }

@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Combat
 {
+[DisallowMultipleComponent]
     /// <summary>
     /// Server-autoritative HP- und Combat-Stats-Komponente. Hängt auf jeder
     /// Einheit (Spieler, NPC) und ist die einzige Stelle, an der HP-Werte
@@ -28,7 +29,7 @@ namespace Riftstorm.Game.Combat
     /// Phase, das Server-Event <see cref="OnServerDied"/> ist bereits da).
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(PlayerStats))]
     public sealed class UnitStats : NetworkBehaviour, IDamageable, IUnitStats, ICombatUnit
     {
         // -------------------------------------------------------------------------

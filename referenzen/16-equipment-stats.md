@@ -74,7 +74,7 @@ Equip-Abort).
 
 ### Stat-Aggregation
 `PlayerStats.GetTotal(StatId) = GetBase(StatId) + GetEquipmentBonus(StatId)`.
-Buffs/Auras fehlen — der `+ 0`-Term ist als TODO Phase 17 markiert. `StatId`
+Buffs/Auras fehlen — der `+ 0`-Term ist als markiert. `StatId`
 ist eine Subset-Kopie der Source-`Stat`-Enum mit identischen numerischen
 Werten, damit `ItemTemplate.StatTypeN` ohne Mapping konsumiert wird.
 

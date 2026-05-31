@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Riftstorm.Game.Player
 {
+[DisallowMultipleComponent]
     /// <summary>
     /// Zeichnet den aktuellen <see cref="INameSource.DisplayName"/> als 2D-Label
     /// &#252;ber dem Kopf einer Einheit (Spieler oder NPC) via IMGUI. Bewusst ohne
@@ -22,7 +23,7 @@ namespace Riftstorm.Game.Player
     /// f&#252;gen <see cref="UnitNameTag"/> direkt an ihrem Prefab an.
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(INameSource))]
     public class UnitNameTag : MonoBehaviour
     {
         [Tooltip("Komponente, die INameSource implementiert (PlayerIdentity, NpcIdentity, ...). " +

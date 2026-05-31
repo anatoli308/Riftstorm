@@ -148,7 +148,7 @@ Source hat einen `hasLineOfSight`-Stub der immer `true` liefert. Bis Maps Wände
 
 ### Lücke 6 — Reagent / Equipment-Check (optional)
 
-Beide sind in Source TODO/auskommentiert. Erst relevant wenn Inventar steht.
+Beide sind in Source auskommentiert. Erst relevant wenn Inventar steht.
 
 ---
 

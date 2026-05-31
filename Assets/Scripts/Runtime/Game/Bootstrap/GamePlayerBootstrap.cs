@@ -127,8 +127,7 @@ namespace Riftstorm.Game.Bootstrap
             character.SetDirection(2); // FLARE 2 = Süd, Standard-Blickrichtung Topdown.
 
             // PlayerMovement liegt direkt am Root (NetworkBehaviour-Host). Visuals injizieren.
-            PlayerMovement movement = GetComponent<PlayerMovement>();
-            if (movement != null)
+            if (TryGetComponent<PlayerMovement>(out var movement))
             {
                 movement.BindVisuals(character);
             }
@@ -141,8 +140,7 @@ namespace Riftstorm.Game.Bootstrap
             // sind beide am Root. Visuals an die FLARE-Layer binden, Manager die Visuals + Input
             // injizieren. Beide Komponenten MÜSSEN auf dem PlayerCharacter-Prefab liegen, weil
             // NetworkBehaviours nicht zur Laufzeit nach OnNetworkSpawn hinzugefügt werden können.
-            PlayerCombatVisuals combatVisuals = GetComponent<PlayerCombatVisuals>();
-            if (combatVisuals != null)
+            if (TryGetComponent<PlayerCombatVisuals>(out var combatVisuals))
             {
                 combatVisuals.BindCharacter(character);
             }
@@ -151,15 +149,13 @@ namespace Riftstorm.Game.Bootstrap
                 Debug.LogWarning("[GamePlayerBootstrap] PlayerCombatVisuals nicht am Root — Combat-Animationen werden nicht abgespielt.", this);
             }
 
-            PlayerCombat combat = GetComponent<PlayerCombat>();
-            if (combat != null)
+            if (TryGetComponent<PlayerCombat>(out var combat))
             {
                 if (combatVisuals != null)
                 {
                     combat.BindVisuals(combatVisuals);
                 }
-                PlayerInputController input = GetComponent<PlayerInputController>();
-                if (input != null)
+                if (TryGetComponent<PlayerInputController>(out var input))
                 {
                     combat.BindInput(input);
                 }
@@ -169,8 +165,7 @@ namespace Riftstorm.Game.Bootstrap
                 // OffHand-Schichten. Wird hier per AddComponent angehaengt, damit
                 // das Prefab nicht editiert werden muss; Bind versorgt sie sofort
                 // mit dem aktuellen NetVar-Stand (Server-Default).
-                PlayerEquipmentVisuals equipVisuals = GetComponent<PlayerEquipmentVisuals>();
-                if (equipVisuals == null)
+                if (!TryGetComponent<PlayerEquipmentVisuals>(out var equipVisuals))
                 {
                     equipVisuals = gameObject.AddComponent<PlayerEquipmentVisuals>();
                 }
@@ -205,8 +200,7 @@ namespace Riftstorm.Game.Bootstrap
             // anderen anhovern können muss. Auto-add hier, damit das Prefab nicht händisch
             // gepflegt werden muss. RefreshRenderers() ist Pflicht — der HoverHighlight-Awake
             // hat oben (vor BuildVisualsAsync) gefeuert, da gab es die SpriteRenderer noch nicht.
-            HoverHighlight hover = GetComponent<HoverHighlight>();
-            if (hover == null)
+            if (!TryGetComponent<HoverHighlight>(out var hover))
             {
                 hover = gameObject.AddComponent<HoverHighlight>();
             }
@@ -274,8 +268,7 @@ namespace Riftstorm.Game.Bootstrap
             {
                 camGo = cam.gameObject;
             }
-            TopdownCameraFollow follow = camGo.GetComponent<TopdownCameraFollow>();
-            if (follow == null)
+            if (!camGo.TryGetComponent<TopdownCameraFollow>(out var follow))
             {
                 follow = camGo.AddComponent<TopdownCameraFollow>();
             }

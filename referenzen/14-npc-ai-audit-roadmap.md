@@ -51,10 +51,10 @@ Source-Header: `Server/src/AI/NpcAI.h` + `ThreatManager.h`.
 | `ThreatManager::clear` | — | ❌ |
 | `ThreatManager::hasThreat` | — | ❌ |
 
-### Bemerkenswert: Retaliation-TODO im Code
+### Bemerkenswert: Retaliation  im Code
 
-`NpcController.UpdateIdle` hat bereits einen TODO-Kommentar:
-> *„Neutral/Friendly bleiben Idle, bis sie per Retaliation in `HandleClientDamageReceived` auf Combat geschaltet werden (TODO: Attacker-Identitaet im Damage-Event)."*
+`NpcController.UpdateIdle` hat bereits einen Kommentar:
+> *„Neutral/Friendly bleiben Idle, bis sie per Retaliation in `HandleClientDamageReceived` auf Combat geschaltet werden (Attacker-Identitaet im Damage-Event)."*
 
 Das ist genau der Punkt — der Damage-Event hat keinen Attacker. Das löst Sprint A1 gleich mit, weil ThreatManager den Attacker sowieso braucht.
 

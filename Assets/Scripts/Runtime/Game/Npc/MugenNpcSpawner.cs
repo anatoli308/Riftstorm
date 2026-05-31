@@ -104,8 +104,7 @@ namespace Riftstorm.Game.Npc
                 m_VisualScaleOverride = scale;
             }
 
-            UnitStats unitStats = GetComponent<UnitStats>();
-            if (unitStats != null)
+            if (TryGetComponent<UnitStats>(out var unitStats))
             {
                 unitStats.ApplyBaseStats(
                     maxHp: stats.MaxHp,
@@ -182,8 +181,7 @@ namespace Riftstorm.Game.Npc
             // Combat-Adapter für per-Frame MUGEN-Hitboxen. Reines MonoBehaviour, kein
             // NetworkBehaviour: liest nur transform.position + FlareCharacter-State und
             // wird vom NpcController server-seitig via Physics.OverlapBox abgefragt.
-            MugenHitboxRuntime hitboxRuntime = GetComponent<MugenHitboxRuntime>();
-            if (hitboxRuntime == null)
+            if (!TryGetComponent<MugenHitboxRuntime>(out var hitboxRuntime))
             {
                 hitboxRuntime = gameObject.AddComponent<MugenHitboxRuntime>();
             }
@@ -197,8 +195,7 @@ namespace Riftstorm.Game.Npc
             // gesehen (GetComponentInChildren liefert null vor BuildAsync). Ohne dieses
             // Wire-Up bleibt UpdateVisuals/CombatVisuals stumm und der NPC steht in der
             // initialen Richtung/Anim fest.
-            NpcController controller = GetComponent<NpcController>();
-            if (controller != null)
+            if (TryGetComponent<NpcController>(out var controller))
             {
                 controller.BindCharacter(character);
                 // Mugen-Skill-Pool wurde mit dem FLARE-Port aus NpcController entfernt.
@@ -208,8 +205,7 @@ namespace Riftstorm.Game.Npc
             {
                 // Kein NpcController -> dennoch CombatVisuals direkt anbinden, falls
                 // vorhanden (z. B. fuer Test-Dummies ohne AI).
-                UnitCombatVisuals visuals = GetComponent<UnitCombatVisuals>();
-                if (visuals != null)
+                if (TryGetComponent<UnitCombatVisuals>(out var visuals))
                 {
                     visuals.BindCharacter(character);
                 }

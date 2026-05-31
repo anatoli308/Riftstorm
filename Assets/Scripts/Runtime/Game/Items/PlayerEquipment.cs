@@ -42,6 +42,7 @@ namespace Riftstorm.Game.Items
         /// <summary>UI-/Gameplay-Extra ohne Source-Parity; gleicher EquipType=8 wie <see cref="Ring1"/>.</summary>
         Ring2 = 12,
     }
+[DisallowMultipleComponent]
 
     /// <summary>
     /// Server-autoritatives Equipment des Spielers — eine
@@ -74,7 +75,7 @@ namespace Riftstorm.Game.Items
     /// Network-Spawn auf dem Prefab existieren.
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(PlayerInventory))]
     public sealed class PlayerEquipment : NetworkBehaviour
     {
         /// <summary>Anzahl echter Equip-Slots (1..12). Index 0 ist <see cref="EquipSlot.None"/> und ungenutzt.</summary>

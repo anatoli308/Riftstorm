@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 namespace Riftstorm.Game.Npc
 {
+[DefaultExecutionOrder(100)]
+    [DisallowMultipleComponent]
     /// <summary>
     /// Test-/Debug-Komponente, die nacheinander <b>alle</b> Animationen des
     /// geladenen FLARE-Atlas auf einem <see cref="FlareCharacter"/> abspielt.
@@ -38,8 +40,7 @@ namespace Riftstorm.Game.Npc
     /// </list>
     /// </para>
     /// </remarks>
-    [DefaultExecutionOrder(100)]
-    [DisallowMultipleComponent]
+    [RequireComponent(typeof(MugenNpcSpawner))]
     public sealed class MugenAnimationShowcase : MonoBehaviour
     {
         // -------------------------------------------------------------------------
@@ -204,13 +205,11 @@ namespace Riftstorm.Game.Npc
             }
             m_ConflictingComponentsDisabled = true;
 
-            NpcController controller = GetComponent<NpcController>();
-            if (controller != null)
+            if (TryGetComponent<NpcController>(out var controller))
             {
                 controller.enabled = false;
             }
-            UnitCombatVisuals visuals = GetComponent<UnitCombatVisuals>();
-            if (visuals != null)
+            if (TryGetComponent<UnitCombatVisuals>(out var visuals))
             {
                 visuals.enabled = false;
             }

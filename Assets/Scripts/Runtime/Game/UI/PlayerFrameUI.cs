@@ -183,8 +183,7 @@ namespace Riftstorm.Game.UI
                 return;
             }
 
-            UnitStats stats = playerObj.GetComponent<UnitStats>();
-            if (stats == null)
+            if (!playerObj.TryGetComponent<UnitStats>(out var stats))
             {
                 stats = playerObj.GetComponentInChildren<UnitStats>();
             }
@@ -193,8 +192,7 @@ namespace Riftstorm.Game.UI
                 return;
             }
 
-            PlayerIdentity identity = playerObj.GetComponent<PlayerIdentity>();
-            if (identity == null)
+            if (!playerObj.TryGetComponent<PlayerIdentity>(out var identity))
             {
                 identity = playerObj.GetComponentInChildren<PlayerIdentity>();
             }

@@ -235,8 +235,7 @@ namespace Riftstorm.Game.UI
             {
                 return;
             }
-            TargetSelection sel = playerObj.GetComponent<TargetSelection>();
-            if (sel == null)
+            if (!playerObj.TryGetComponent<TargetSelection>(out var sel))
             {
                 sel = playerObj.GetComponentInChildren<TargetSelection>();
             }
@@ -276,8 +275,7 @@ namespace Riftstorm.Game.UI
                 return;
             }
 
-            UnitStats stats = no.GetComponent<UnitStats>();
-            if (stats == null)
+            if (!no.TryGetComponent<UnitStats>(out var stats))
             {
                 stats = no.GetComponentInChildren<UnitStats>();
             }
@@ -286,8 +284,7 @@ namespace Riftstorm.Game.UI
                 HideFrame();
                 return;
             }
-            PlayerIdentity identity = no.GetComponent<PlayerIdentity>();
-            if (identity == null)
+            if (!no.TryGetComponent<PlayerIdentity>(out var identity))
             {
                 identity = no.GetComponentInChildren<PlayerIdentity>();
             }

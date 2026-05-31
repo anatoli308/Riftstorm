@@ -180,8 +180,7 @@ namespace Riftstorm.Game.Input
                 return;
             }
 
-            UnitStats hitStats = hitNo.GetComponent<UnitStats>();
-            if (hitStats == null)
+            if (!hitNo.TryGetComponent<UnitStats>(out var hitStats))
             {
                 hitStats = hitNo.GetComponentInChildren<UnitStats>();
             }
@@ -192,8 +191,7 @@ namespace Riftstorm.Game.Input
             }
 
             CurrentHoveredTargetId = hitNo.NetworkObjectId;
-            HoverHighlight nextHover = hitNo.GetComponent<HoverHighlight>();
-            if (nextHover == null)
+            if (!hitNo.TryGetComponent<HoverHighlight>(out var nextHover))
             {
                 nextHover = hitNo.GetComponentInChildren<HoverHighlight>();
             }
@@ -267,8 +265,7 @@ namespace Riftstorm.Game.Input
                 {
                     continue;
                 }
-                NetworkObject candidateNo = candidate.GetComponent<NetworkObject>();
-                if (candidateNo == null)
+                if (!candidate.TryGetComponent<NetworkObject>(out var candidateNo))
                 {
                     candidateNo = candidate.GetComponentInParent<NetworkObject>();
                 }
@@ -306,8 +303,7 @@ namespace Riftstorm.Game.Input
             {
                 for (int i = 0; i < m_CycleBuffer.Count; i++)
                 {
-                    NetworkObject no = m_CycleBuffer[i].GetComponent<NetworkObject>();
-                    if (no == null)
+                    if (!m_CycleBuffer[i].TryGetComponent<NetworkObject>(out var no))
                     {
                         no = m_CycleBuffer[i].GetComponentInParent<NetworkObject>();
                     }
@@ -321,8 +317,7 @@ namespace Riftstorm.Game.Input
 
             int nextIndex = (currentIndex + 1) % m_CycleBuffer.Count;
             UnitStats next = m_CycleBuffer[nextIndex];
-            NetworkObject nextNo = next.GetComponent<NetworkObject>();
-            if (nextNo == null)
+            if (!next.TryGetComponent<NetworkObject>(out var nextNo))
             {
                 nextNo = next.GetComponentInParent<NetworkObject>();
             }

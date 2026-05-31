@@ -23,6 +23,7 @@ namespace Riftstorm.Game.Movement
     ///
     /// FLARE-Animation/Richtung leitet jeder Peer aus der lokalen Transform-Bewegung ab.
     /// </summary>
+    [RequireComponent(typeof(MobaCommandController))]
     public sealed class PlayerMovement : NetworkBehaviour
     {
         // -------------------------------------------------------------------------

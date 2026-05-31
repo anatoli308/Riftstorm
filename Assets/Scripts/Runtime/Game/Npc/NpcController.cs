@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Npc
 {
+[DisallowMultipleComponent]
+    [RequireComponent(typeof(UnitStats))]
     /// <summary>
     /// Server-autoritative AI-Steuerung fuer NPC-Einheiten. Reiner Port der
     /// FLARE source-server-AI (<c>Server/src/AI/NpcAI.cpp</c>):
@@ -30,8 +32,7 @@ namespace Riftstorm.Game.Npc
     /// <see cref="NpcTemplate.Faction"/> == 3.
     /// </para>
     /// </summary>
-    [DisallowMultipleComponent]
-    [RequireComponent(typeof(UnitStats))]
+    [RequireComponent(typeof(UnitCombatVisuals))]
     public sealed class NpcController : NetworkBehaviour
     {
         // -------------------------------------------------------------------

@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Npc
 {
+[DefaultExecutionOrder(-50)]
     /// <summary>
     /// Spawnt einen datengetriebenen FLARE-NPC anhand einer
     /// <see cref="NpcTemplate.Entry"/>-ID aus
@@ -36,7 +37,7 @@ namespace Riftstorm.Game.Npc
     /// bleibt unveraendert fuer MUGEN-Single-Atlas-Charaktere.
     /// </para>
     /// </remarks>
-    [DefaultExecutionOrder(-50)]
+    [RequireComponent(typeof(NpcController))]
     public sealed class FlareNpcSpawner : MonoBehaviour
     {
         // ---- Konfiguration ---------------------------------------------
@@ -129,8 +130,7 @@ namespace Riftstorm.Game.Npc
             // die Combat-AI. Visuals laufen weiter.
             if (m_Template.IsPureTalker)
             {
-                NpcController controller = GetComponent<NpcController>();
-                if (controller != null)
+                if (TryGetComponent<NpcController>(out var controller))
                 {
                     controller.enabled = false;
                 }
@@ -150,8 +150,7 @@ namespace Riftstorm.Game.Npc
 
         private void ApplyStatsToUnitStats(NpcTemplate tpl, NpcModel model)
         {
-            UnitStats unitStats = GetComponent<UnitStats>();
-            if (unitStats == null)
+            if (!TryGetComponent<UnitStats>(out var unitStats))
             {
                 Debug.LogWarning(
                     $"[FlareNpcSpawner] Kein UnitStats am GameObject '{name}' — " +
@@ -279,8 +278,7 @@ namespace Riftstorm.Game.Npc
             {
                 // Pure-Talker oder Prefab ohne Controller -> CombatVisuals direkt
                 // anbinden, falls vorhanden, damit Schwingungen/Visuals laufen.
-                UnitCombatVisuals visuals = GetComponent<UnitCombatVisuals>();
-                if (visuals != null)
+                if (TryGetComponent<UnitCombatVisuals>(out var visuals))
                 {
                     visuals.BindCharacter(character);
                 }
