@@ -121,6 +121,15 @@ namespace Riftstorm.Game.Spells
             ConsumeResources(caster, spell);
             StartCooldowns(caster, spell);
 
+            // Skillshot-Pfad: gerichtetes Projektil (FLARE-Stil) fliegt in
+            // Cursor-/Blickrichtung und trifft das erste valide Ziel auf der
+            // Bahn — kein vorab gewaehltes Unit-Ziel noetig.
+            if (spell.IsSkillshot)
+            {
+                Projectiles.ServerProjectile.SpawnDirectional(caster, spell, destination);
+                return new SpellExecutionResult(CastResult.Success);
+            }
+
             // Projectile-Pfad: bei Single-Target-Spells mit Speed > 0 wird die
             // Effekt-Anwendung um die Travel-Zeit verzoegert (Server-Simulation).
             // DamageDealt/HealingDone sind in dem Fall 0 — der Hit kommt nicht
@@ -170,7 +179,8 @@ namespace Riftstorm.Game.Spells
         {
             totalDamage = 0;
             totalHeal = 0;
-            for (int slot = 1; slot <= 3; slot++)
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
             {
                 SpellTemplateEffect eff = spell.GetEffect(slot);
                 if (!eff.IsActive) { continue; }
@@ -373,6 +383,36 @@ namespace Riftstorm.Game.Spells
             || t == SpellTargetType.UnitAreaDstHostile
             || t == SpellTargetType.UnitAreaDstHostileFromDst;
 
+        static void ExecuteTriggeredSpell(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            ICombatUnit primaryTarget,
+            CastDestination destination,
+            ref int totalDamage,
+            ref int totalHeal)
+        {
+            if (caster == null || spell == null)
+            {
+                return;
+            }
+
+            CastResult validation = SpellCaster.ValidateTriggered(caster, spell, primaryTarget);
+            if (validation != CastResult.Success)
+            {
+                return;
+            }
+
+            if (ShouldUseProjectile(spell, primaryTarget))
+            {
+                Projectiles.ServerProjectile.Spawn(caster, spell, primaryTarget, destination);
+                return;
+            }
+
+            ApplyAllEffects(caster, spell, primaryTarget, destination, out int triggeredDamage, out int triggeredHeal);
+            totalDamage += triggeredDamage;
+            totalHeal += triggeredHeal;
+        }
+
         static void ApplyEffect(
             ICombatUnit caster,
             SpellTemplate spell,
@@ -399,9 +439,15 @@ namespace Riftstorm.Game.Spells
                                      && spell.MagicRollSchool != SpellSchool.Physical;
 
                     // SchoolImmunity: Ziel ist gegen diese Schule komplett immun
-                    // (z. B. Ice-Block gegen Frost). Damage verpufft vollstaendig.
+                    // (z. B. Ice-Block gegen Frost). Damage verpufft vollstaendig,
+                    // aber ein "Immune"-Floating-Text wird trotzdem fanout.
                     SpellSchool damageSchool = isMagical ? spell.MagicRollSchool : SpellSchool.Physical;
-                    if (target.Auras != null && target.Auras.HasSchoolImmunity(damageSchool)) { return; }
+                    if (target.Auras != null && target.Auras.HasSchoolImmunity(damageSchool))
+                    {
+                        target.ApplyDamageInfo(
+                            new DamageInfo { HitResult = HitResult.Immune }, caster);
+                        return;
+                    }
 
                     int resistValue = isMagical
                         ? ResolveResist(victimStats, spell.MagicRollSchool)
@@ -425,9 +471,15 @@ namespace Riftstorm.Game.Spells
 
                     DamageInfo info = CombatFormulas.CalculateSpellDamage(
                         attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent, useRangedWeapon);
-                    if (info.FinalDamage <= 0) { return; }
-                    target.TakeDamage(info.FinalDamage, caster);
-                    totalDamage += info.FinalDamage;
+                    // ApplyDamageInfo: erhaelt Crit/Resist-Klassifikation und
+                    // fanoutet auch geschluckte/voll-resistete Treffer (0 Schaden)
+                    // als Floating-Text. TakeDamage wuerde HitResult auf Hit
+                    // zwingen und 0-Treffer verwerfen.
+                    target.ApplyDamageInfo(in info, caster);
+                    if (info.FinalDamage > 0)
+                    {
+                        totalDamage += info.FinalDamage;
+                    }
                     break;
                 }
                 case SpellEffect.Heal:
@@ -489,7 +541,7 @@ namespace Riftstorm.Game.Spells
                     SpellTemplate triggered = SpellCatalogLoader.GetTemplateOrNull(triggeredEntry);
                     if (triggered != null)
                     {
-                        Execute(caster, triggered, target);
+                        ExecuteTriggeredSpell(caster, triggered, target, destination, ref totalDamage, ref totalHeal);
                     }
                     break;
                 }
@@ -584,33 +636,80 @@ namespace Riftstorm.Game.Spells
                 case SpellEffect.MeleeAtk:
                 case SpellEffect.RangedAtk:
                 {
-                    // 1:1-Spiegel von NpcAI::performSpellCast (NpcAI.cpp:332ff):
-                    // Damage- und Atk-Effects laufen durch dieselbe physikalische
-                    // Schadens-Pipeline. Keine Schul-Resistenz, keine
-                    // SchoolImmunity (Physical-Schaden lehnt sich an Armor an).
-                    int meleeValue = SpellUtils.CalculateEffectValue(eff, caster);
-                    if (meleeValue <= 0) { return; }
+                    // Atk-Effects laufen durch dieselbe physikalische Schadens-
+                    // Pipeline wie WeaponDamage (Armor-basiert, kein Schul-Resist).
+                    //
+                    // Zwei Semantiken teilen sich denselben Effekt:
+                    //  a) NPC-Cast (NpcAI::performSpellCast, NpcAI.cpp:332ff):
+                    //     expliziter flacher Schadenswert aus Data2/ScaleFormula.
+                    //  b) Spieler-Basis-Auto-Attack (Melee Swing 81 / Ranged
+                    //     Attack 82): kein Data hinterlegt ⇒ 100% Waffenschaden.
+                    //     MeleeAtk skaliert mit der Melee-Waffe, RangedAtk mit
+                    //     der Ranged-Waffe (BaseRangedWeaponDamage + Stat).
                     IUnitStats meleeAttackerStats = caster.Stats;
                     IUnitStats meleeVictimStats = target.Stats;
                     if (meleeAttackerStats == null || meleeVictimStats == null) { return; }
-                    DamageInfo meleeInfo = CombatFormulas.CalculateSpellDamage(
-                        meleeAttackerStats, meleeVictimStats, meleeValue, isMagical: false, resistValue: 0);
-                    if (meleeInfo.FinalDamage <= 0) { return; }
-                    target.TakeDamage(meleeInfo.FinalDamage, caster);
-                    totalDamage += meleeInfo.FinalDamage;
+
+                    // Focused-Evasion-Gate: Hat das Ziel eine physische
+                    // SchoolImmunity (Spell 48), schluckt sie genau diesen
+                    // Auto-Attack. Der HolderWasImmune-Proc verbraucht danach
+                    // die Ladung (RemoveCharge) und loest die Immunitaet auf —
+                    // 1:1 die Source-Semantik "evade next physical attack".
+                    if (target.Auras != null
+                        && target.Auras.HasSchoolImmunity(SpellSchool.Physical))
+                    {
+                        target.Auras.TriggerImmuneProc();
+                        // Avoidance-Fanout: dem Opfer ein "Immune"-Floating-Text
+                        // schicken (0 Schaden, HitResult.Immune), damit der
+                        // geschluckte Auto-Attack sichtbar bleibt.
+                        target.ApplyDamageInfo(
+                            new DamageInfo { HitResult = HitResult.Immune }, caster);
+                        break;
+                    }
+
+                    int meleeValue = SpellUtils.CalculateEffectValue(eff, caster);
+                    DamageInfo meleeInfo;
+                    if (meleeValue > 0)
+                    {
+                        // a) NPC-Pfad: flacher, explizit gerollter Schaden.
+                        //    Auto-Attacks sind ausweichbar (Dodge/Parry/Block)
+                        //    wie der direkte Waffenschlag im Source.
+                        meleeInfo = CombatFormulas.CalculateSpellDamage(
+                            meleeAttackerStats, meleeVictimStats, meleeValue, isMagical: false, resistValue: 0,
+                            useMeleeAvoidance: true);
+                    }
+                    else
+                    {
+                        // b) Spieler-Auto-Attack: 100% Waffenschaden, Ranged- vs.
+                        //    Melee-Skalierung anhand des Effekt-Typs; ebenfalls
+                        //    ausweichbar (Spieler-/NPC-Paritaet).
+                        bool useRangedWeapon = eff.Effect == SpellEffect.RangedAtk;
+                        meleeInfo = CombatFormulas.CalculateSpellDamage(
+                            meleeAttackerStats, meleeVictimStats, 100, isMagical: false, resistValue: 0,
+                            weaponPercent: true, useRangedWeapon: useRangedWeapon,
+                            useMeleeAvoidance: true);
+                    }
+                    // ApplyDamageInfo statt TakeDamage: erhaelt die HitResult-
+                    // Klassifikation (Crit/Block) und fanoutet AUCH ausgewichene
+                    // Treffer (Miss/Dodge/Parry, FinalDamage == 0) als Floating-
+                    // Text. TakeDamage wuerde beides verwerfen.
+                    target.ApplyDamageInfo(in meleeInfo, caster);
+                    if (meleeInfo.FinalDamage > 0)
+                    {
+                        totalDamage += meleeInfo.FinalDamage;
+                    }
                     break;
                 }
                 case SpellEffect.Dispel:
                 {
-                    // Spiegel von AuraManager::removeDispellableAuras (AuraSystem.cpp:289):
-                    // Dispel auf Gegnern entfernt Buffs (positive Auren), Dispel auf
-                    // Self/Allies entfernt Debuffs. CannotDispel-Flag schuetzt
-                    // ungezielt davon. Data1 = max. Anzahl entfernter Auren (0 = 1
-                    // Default, analog zu typischen Dispel-Templates).
+                    // Dispel auf Gegnern entfernt Buffs, auf Self/Allies Debuffs.
+                    // Data1 = DispelType-Bitmaske (z. B. 12 = Disease|Poison),
+                    // Data2 = maximale Anzahl entfernter Auren (0 = 1 Default).
                     if (target.Auras == null) { return; }
-                    int dispelMax = eff.Data1 > 0 ? (int)eff.Data1 : 1;
+                    int dispelMask = (int)eff.Data1;
+                    int dispelMax = eff.Data2 > 0 ? (int)eff.Data2 : 1;
                     bool removePositiveAuras = caster.FactionId != target.FactionId;
-                    target.Auras.RemoveDispellable(removePositiveAuras, dispelMax);
+                    target.Auras.RemoveDispellable(removePositiveAuras, dispelMask, dispelMax);
                     break;
                 }
                 case SpellEffect.InterruptCast:
@@ -652,18 +751,24 @@ namespace Riftstorm.Game.Spells
                 }
                 case SpellEffect.Resurrect:
                 {
-                    // Wiederbelebung: nur auf tote Ziele anwendbar. Data1 = Prozent
-                    // der MaxHealth, die das Ziel mit Aufwachen erhaelt (Fallback
-                    // 100%, falls leer). Die konkrete Reanimations-Pipeline (Body-
-                    // Reset, Sichtbarkeit) muss in einer Player-/NPC-spezifischen
-                    // Komponente erfolgen &#8212; hier wird nur das HP-Budget
-                    // bereitgestellt, damit das Aufwach-Event triggern kann.
-                    // TODO(steam-parity): Body-State-Reset siehe SpellCaster.cpp:259.
+                    // Resurrect: Data1 = Health-Prozent, Data2 = Mana-Prozent.
+                    // Fehlende Werte fallen auf 100% zurueck.
                     if (!target.IsDead || target.MaxHealth <= 0) { return; }
                     int resPct = eff.Data1 > 0 ? (int)eff.Data1 : 100;
+                    int manaPct = eff.Data2 > 0 ? (int)eff.Data2 : 100;
                     int resHp = (int)((long)target.MaxHealth * resPct / 100);
                     if (resHp <= 0) { resHp = 1; }
-                    target.Heal(resHp, caster);
+                    int resMana = 0;
+                    if (target.MaxMana > 0)
+                    {
+                        resMana = (int)((long)target.MaxMana * manaPct / 100);
+                    }
+
+                    if (!target.ServerRevive(resHp, resMana))
+                    {
+                        return;
+                    }
+
                     totalHeal += resHp;
                     break;
                 }

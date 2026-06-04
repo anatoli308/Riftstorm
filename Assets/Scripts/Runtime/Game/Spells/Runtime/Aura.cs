@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Riftstorm.Game.Combat;
 
 namespace Riftstorm.Game.Spells
 {
@@ -62,6 +63,12 @@ namespace Riftstorm.Game.Spells
 
         /// <summary>Guid des Casters, der die Aura angewandt hat. 0 = ohne Quelle.</summary>
         public ulong CasterGuid;
+
+        /// <summary>
+        /// Laufzeit-Cache der gecasteten Unit fuer Periodic-Ticks. Vermeidet
+        /// teure NetworkObject-/Component-Lookups bei jedem Tick.
+        /// </summary>
+        public UnitStats CachedCaster;
 
         /// <summary>Effekt-Slot-Index am Quell-Spell (1..3).</summary>
         public int EffectIndex;

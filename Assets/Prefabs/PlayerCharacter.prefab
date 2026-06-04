@@ -167,6 +167,7 @@ MonoBehaviour:
   m_TargetSelection: {fileID: 4317724205577696828}
   m_Stats: {fileID: 5708302143726135351}
   m_Movement: {fileID: 5172720370931407651}
+  m_MoveCommands: {fileID: 0}
   m_DefaultWeaponId: longsword
   m_DefaultOffhandId: buckler
   m_DefaultRangedId: 
@@ -343,6 +344,7 @@ MonoBehaviour:
   m_HitColor: {r: 1, g: 0.92, b: 0.4, a: 1}
   m_CritColor: {r: 1, g: 0.45, b: 0.2, a: 1}
   m_MitigatedColor: {r: 0.8, g: 0.8, b: 0.85, a: 1}
+  m_HealColor: {r: 0.45, g: 1, b: 0.6, a: 1}
 --- !u!114 &-6858420798198050943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,7 +403,7 @@ MonoBehaviour:
   m_Input: {fileID: 3229784933833492351}
   m_Combat: {fileID: -525944449724255899}
   m_GroundPicker: {fileID: -758824109736128144}
-  m_SlotSpellEntries: 900100009a0100000000000000000000000000000000000000000000000000000000000000000000
+  m_SlotSpellEntries: 1d000000520000002e00000051000000050000000a0000000b0000001b000000300000004f000000
 --- !u!114 &-758824109736128144
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -41,6 +41,12 @@ namespace Riftstorm.Game.Spells.Projectiles
     {
         const float k_HitRadiusMeters = 0.4f;
         const float k_FallbackFlightSeconds = 5f;
+        const float k_SkillshotHitRadiusMeters = 0.5f;
+        const float k_FallbackSkillshotRangeMeters = 15f;
+
+        // Reusable Physics-Query-Buffer fuer den Skillshot-Hit-Test —
+        // vermeidet Per-Frame-Allocs in OverlapSphereNonAlloc.
+        static readonly Collider[] s_SkillshotHitBuffer = new Collider[16];
 
         ICombatUnit m_Caster;
         ICombatUnit m_Target;
@@ -50,6 +56,14 @@ namespace Riftstorm.Game.Spells.Projectiles
         float m_MaxFlightSeconds;
         float m_ElapsedSeconds;
         bool m_Detonated;
+
+        // -- Directional / Skillshot-Modus --
+        bool m_Directional;
+        Vector3 m_Direction;
+        Vector3 m_Origin;
+        float m_MaxRangeMeters;
+        bool m_WantHostile;
+        bool m_WantFriendly;
 
         /// <summary>
         /// Erstellt und initialisiert eine neue Projectile-Instanz am Caster.
@@ -69,6 +83,37 @@ namespace Riftstorm.Game.Spells.Projectiles
 
             ServerProjectile p = go.AddComponent<ServerProjectile>();
             p.Initialize(caster, spell, target, destination, origin);
+            return p;
+        }
+
+        /// <summary>
+        /// Erstellt ein gerichtetes Skillshot-Projektil (FLARE-Stil). Fliegt
+        /// geradlinig vom Caster in Richtung des Cast-Destinationspunkts
+        /// (Cursor) bzw. der Blickrichtung und trifft das erste valide Ziel
+        /// auf der Bahn. Server-Only — Aufruf nur aus <see cref="SpellExecutor"/>.
+        /// </summary>
+        public static ServerProjectile SpawnDirectional(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            CastDestination destination)
+        {
+            if (caster == null || spell == null) { return null; }
+
+            Vector3 origin = caster.Position;
+
+            // Richtung: bevorzugt zum Cast-Destinationspunkt (Cursor),
+            // ansonsten Blickrichtung des Casters. Topdown → Y ignorieren.
+            Vector3 dir = destination.HasValue ? destination.Position - origin : caster.Forward;
+            dir.y = 0f;
+            if (dir.sqrMagnitude < 0.0001f) { dir = caster.Forward; dir.y = 0f; }
+            if (dir.sqrMagnitude < 0.0001f) { dir = Vector3.forward; }
+            dir.Normalize();
+
+            GameObject go = new($"ServerProjectile_{spell.Entry}");
+            go.transform.position = origin;
+
+            ServerProjectile p = go.AddComponent<ServerProjectile>();
+            p.InitializeDirectional(caster, spell, destination, origin, dir);
             return p;
         }
 
@@ -101,11 +146,63 @@ namespace Riftstorm.Game.Spells.Projectiles
             }
         }
 
+        /// <summary>
+        /// Initialisiert den gerichteten Skillshot-Modus: feste Flugrichtung,
+        /// Reichweiten-Limit und Faction-Filter (aus dem primaeren Effekt-Slot).
+        /// </summary>
+        void InitializeDirectional(
+            ICombatUnit caster,
+            SpellTemplate spell,
+            CastDestination destination,
+            Vector3 origin,
+            Vector3 direction)
+        {
+            m_Caster = caster;
+            m_Spell = spell;
+            m_Target = null;
+            m_Destination = destination;
+            m_Directional = true;
+            m_Origin = origin;
+            m_Direction = direction;
+
+            m_SpeedMps = SpellUtils.ProjectileSpeedToMps(spell.Speed);
+
+            float maxRangeM = SpellUtils.RangeToMeters(spell.Range);
+            m_MaxRangeMeters = maxRangeM > 0f ? maxRangeM : k_FallbackSkillshotRangeMeters;
+
+            // Faction-Filter aus dem primaeren Effekt-Ziel-Typ ableiten.
+            SpellTemplateEffect primary = spell.GetEffect(1);
+            SpellTargetType tt = primary.TargetType;
+            m_WantHostile = tt == SpellTargetType.UnitHostile
+                || tt == SpellTargetType.UnitAny
+                || tt == SpellTargetType.UnitAreaSrcHostile
+                || tt == SpellTargetType.UnitAreaDstHostile
+                || tt == SpellTargetType.UnitAreaDstHostileFromDst;
+            m_WantFriendly = tt == SpellTargetType.UnitFriendly
+                || tt == SpellTargetType.UnitAny
+                || tt == SpellTargetType.UnitAreaSrcFriendly
+                || tt == SpellTargetType.UnitAreaDstFriendly
+                || tt == SpellTargetType.UnitAreaDstFriendlyFromDst;
+            // Default: Hostile, falls der Slot keine eindeutige Faction vorgibt.
+            if (!m_WantHostile && !m_WantFriendly) { m_WantHostile = true; }
+
+            // Fail-Safe-Flugzeit aus Reichweite + 50% Toleranz.
+            m_MaxFlightSeconds = m_SpeedMps > 0f
+                ? (m_MaxRangeMeters / m_SpeedMps) * 1.5f
+                : k_FallbackFlightSeconds;
+        }
+
         void Update()
         {
             if (m_Detonated) { return; }
 
             m_ElapsedSeconds += Time.deltaTime;
+
+            if (m_Directional)
+            {
+                UpdateDirectional();
+                return;
+            }
 
             // Ziel verloren → Projectile verfaellt ohne Hit.
             if (m_Target == null || m_Target.IsDead)
@@ -138,6 +235,93 @@ namespace Riftstorm.Game.Spells.Projectiles
             }
 
             transform.position = currentPos + toTarget.normalized * step;
+        }
+
+        /// <summary>
+        /// Geradlinige Skillshot-Simulation: bewegt das Projektil pro Frame in
+        /// <see cref="m_Direction"/>, testet am neuen Punkt auf das erste valide
+        /// Ziel und detoniert dort. Verfaellt ohne Hit bei Ueberschreiten der
+        /// Reichweite oder Fail-Safe-Flugzeit.
+        /// </summary>
+        void UpdateDirectional()
+        {
+            if (m_Caster == null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            float step = m_SpeedMps * Time.deltaTime;
+            Vector3 nextPos = transform.position + m_Direction * step;
+            transform.position = nextPos;
+
+            ICombatUnit hit = FindFirstHit(nextPos);
+            if (hit != null)
+            {
+                DetonateDirectional(hit, nextPos);
+                return;
+            }
+
+            // Reichweite/Flugzeit ueberschritten → ohne Hit verfallen.
+            float traveled = (nextPos - m_Origin).magnitude;
+            if (traveled >= m_MaxRangeMeters || m_ElapsedSeconds >= m_MaxFlightSeconds)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Sucht am Punkt <paramref name="pos"/> das naechstgelegene valide Ziel
+        /// (Faction-gefiltert, lebendig, nicht der Caster). Allokationsfrei ueber
+        /// <see cref="s_SkillshotHitBuffer"/>.
+        /// </summary>
+        ICombatUnit FindFirstHit(Vector3 pos)
+        {
+            int hits = Physics.OverlapSphereNonAlloc(
+                pos,
+                k_SkillshotHitRadiusMeters,
+                s_SkillshotHitBuffer,
+                Physics.AllLayers,
+                QueryTriggerInteraction.Collide);
+
+            int casterFaction = m_Caster?.FactionId ?? -1;
+            ICombatUnit best = null;
+            float bestSqr = float.MaxValue;
+
+            for (int i = 0; i < hits; i++)
+            {
+                Collider col = s_SkillshotHitBuffer[i];
+                s_SkillshotHitBuffer[i] = null;
+                if (col == null) { continue; }
+
+                UnitStats stats = col.GetComponentInParent<UnitStats>();
+                if (stats == null) { continue; }
+                ICombatUnit candidate = stats;
+                if (candidate.IsDead) { continue; }
+                if (ReferenceEquals(candidate, m_Caster)) { continue; }
+
+                bool sameFaction = candidate.FactionId == casterFaction;
+                if (m_WantHostile && !m_WantFriendly && sameFaction) { continue; }
+                if (m_WantFriendly && !m_WantHostile && !sameFaction) { continue; }
+
+                float sqr = (candidate.Position - pos).sqrMagnitude;
+                if (sqr < bestSqr) { bestSqr = sqr; best = candidate; }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Wendet die Spell-Effekte am getroffenen Ziel an; der Impact-Punkt
+        /// dient als AoE-Center fuer <c>UnitAreaDst*</c>-Effekte.
+        /// </summary>
+        void DetonateDirectional(ICombatUnit hit, Vector3 impactPos)
+        {
+            m_Detonated = true;
+            if (m_Caster != null && hit != null && !hit.IsDead)
+            {
+                SpellExecutor.ApplyAllEffectsAtImpact(m_Caster, m_Spell, hit, CastDestination.At(impactPos));
+            }
+            Destroy(gameObject);
         }
 
         void Detonate()

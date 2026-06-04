@@ -1,6 +1,6 @@
 # Riftstorm
 
-> **Multiplayer Dark-Fantasy PvPvE isometric Topdown-Action MOBA/MMO/ARPG-Hybrid**
+> **Multiplayer Dark-Fantasy PvPvE isometric Topdown-Action MOBA/MMO/ARPG-Hybrid Old School Runescape-Inspired**
 
 - Iso-Sprite-Konvention, 8-Richtungs-Asset-Layout
 - **Dedicated Server**, **server-authoritativ**. (Server-Only / Client-Only)
@@ -8,6 +8,32 @@
 - Jeweils data-driven via JSON in `StreamingAssets/` + StateMachine, wo passend.
 -
 
+---
+
+# notizen
+Geparst, aber NICHT konsumiert (tote Felder):
+
+cast_interrupt_flags (240/242=12, 272=8) — deklariert, nirgends ausgewertet.
+prevention_type (8208/16) — deklariert, nirgends ausgewertet.
+InterruptCast(22) gegen NPCs = No-op: UnitStats.ServerInterruptCast delegiert nur an PlayerCombat → der Spieler kann einen NPC-Cast nicht per Kick/Interrupt-Spell unterbrechen. NPC-Casts brechen nur durch Stun oder Zielverlust ab.
+
+Nicht implementierte SpellEffects (fallen in default: und werden still übersprungen): ManaDrain(5), HealthDrain(8), SummonNpc(10), CreateItem(12), SummonObject(23), ScriptEffect(26), LootEffect(32), Kill(33), Gossip(34), Inspect(35), ApplyGemSocket(36), Duel(38), ApplyOrbEnchant(40/47), LearnSpell(41), NearestWp(42), DestroyGems(44), CombineItem(45), ExtractOrb(46). Tombshiver nutzt keinen davon — für ihn also irrelevant.
+
+Bit	Wert	Mechanic
+0	1	Confused
+1	2	Pacify
+2	4	Fear
+3	8	Root
+4	16	Silence
+5	32	Sleep
+6	64	Snare
+7	128	Stun
+8	256	Incapacitated
+9	512	Disrupt
+10	1024	Polymorph
+11	2048	Charging
+12	4096	Stealth
+Tombshiver = 13751 = Confused + Pacify + Fear + Silence + Sleep + Stun + Incapacitated + Polymorph + Stealth + 8192.
 ---
 
 ## Netcode- & Authority-Modell

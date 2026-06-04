@@ -101,8 +101,15 @@ namespace Riftstorm.Game.UI
                 return true;
             }
 
+            // $INVL fuer periodische Tick-Abstaende.
+            if (EqualsIgnoreCase(token, "INVL"))
+            {
+                value = FormatDuration(spell.Interval);
+                return true;
+            }
+
             // $E<N>min | $E<N>max | $E<N>D<K> | $E<N>
-            if ((token[0] == 'E' || token[0] == 'e') && token.Length >= 2 && token[1] >= '1' && token[1] <= '3')
+            if ((token[0] == 'E' || token[0] == 'e') && token.Length >= 2 && token[1] >= '1' && token[1] <= '9')
             {
                 int slot = token[1] - '0';
                 SpellTemplateEffect eff = spell.GetEffect(slot);

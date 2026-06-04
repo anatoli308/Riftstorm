@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Riftstorm.Game.Combat;
-using Riftstorm.Gameplay.Combat;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Riftstorm.Game.Spells
@@ -97,6 +97,7 @@ namespace Riftstorm.Game.Spells
             {
                 SourceSpellEntry = spell.Entry,
                 CasterGuid = caster != null ? caster.Guid : 0UL,
+                CachedCaster = caster as UnitStats,
                 EffectIndex = oneBasedEffectIndex,
                 MaxDurationMs = SpellUtils.CalculateDuration(spell, caster),
                 MaxStacks = spell.StackAmount > 0 ? spell.StackAmount : 1,
@@ -115,29 +116,17 @@ namespace Riftstorm.Game.Spells
             {
                 aura.Flags |= AuraFlags.Persistent;
             }
-            // Per-Tick-/Modifier-Wert: wenn der Effekt eine scale_formula
-            // mitbringt (typisch Periodic-Damage/Heal: "clvl*2", "splvl+..."),
-            // wird der Wert beim Apply einmal evaluiert und persistiert.
-            // Auren ohne Formel (Snare/Modifier mit festem %, z.B. Cooldown-
-            // Reduktion oder Heal-Reduzierung) lesen den Wert direkt aus
-            // Data3 — Data2 bleibt das Misc-/Mechanic-/School-Feld
-            // (s. <see cref="HasMechanicImmunity"/>, Snare-Lookup in
-            // <see cref="GetMoveSpeedMultiplier"/>).
-            int baseValue;
-            if (!string.IsNullOrEmpty(eff.ScaleFormula))
-            {
-                baseValue = SpellUtils.CalculateEffectValue(eff, caster);
-            }
-            else
-            {
-                baseValue = (int)eff.Data3;
-            }
+            // Aura-Werte sind DB-typabhaengig: periodische Payload-Auren
+            // tragen ihren Betrag in data2, klassische Modifier/Mechanics in
+            // data3. SpellUtils kapselt diese Zuordnung, damit Tooltip und
+            // Runtime dieselbe Semantik verwenden.
+            int baseValue = SpellUtils.CalculateEffectValue(eff, caster);
             aura.Effects.Add(new AuraEffect
             {
                 Effect = eff.Effect,
                 AuraType = auraType,
                 BaseValue = baseValue,
-                MiscValue = eff.Data2,
+                MiscValue = SpellUtils.GetAuraMiscValue(eff),
                 PerStackValue = 0,
                 PeriodicIntervalMs = spell.Interval,
             });
@@ -216,23 +205,22 @@ namespace Riftstorm.Game.Spells
         }
 
         /// <summary>
-        /// Entfernt dispellbare Auren des angegebenen Vorzeichens. Spiegelt
-        /// <c>AuraManager::removeDispellableAuras(bool positive)</c> aus
-        /// <c>AuraSystem.cpp</c>: <see cref="AuraFlags.CannotDispel"/>-Auren
-        /// bleiben unangetastet; nur Auren mit passendem Positive/Negative-Flag
-        /// werden geprueft. Gibt die Anzahl entfernter Auren zurueck, sodass
-        /// Caller (z. B. Dispel-SpellEffect) ein Cap auf die ersten N
-        /// dispellbaren Auren setzen koennen.
+        /// Entfernt dispellbare Auren des angegebenen Vorzeichens. Optional
+        /// kann auf bestimmte <see cref="DispelType"/>-Kategorien gefiltert werden.
         /// </summary>
         /// <param name="removePositive">
         /// <c>true</c> &#8212; entferne Buffs vom Gegner; <c>false</c> &#8212;
         /// entferne Debuffs vom Verbuendeten/Self.
         /// </param>
+        /// <param name="dispelMask">
+        /// Bitmaske der erlaubten <see cref="DispelType"/>-Kategorien.
+        /// 0 oder kleiner = jede Kategorie zulassen.
+        /// </param>
         /// <param name="maxCount">
         /// Maximale Anzahl entfernter Auren (0 oder negativ = unbegrenzt).
         /// </param>
         /// <returns>Anzahl tatsaechlich entfernter Auren.</returns>
-        public int RemoveDispellable(bool removePositive, int maxCount = 0)
+        public int RemoveDispellable(bool removePositive, int dispelMask = 0, int maxCount = 0)
         {
             int removed = 0;
             for (int i = m_Auras.Count - 1; i >= 0; i--)
@@ -241,6 +229,7 @@ namespace Riftstorm.Game.Spells
                 Aura aura = m_Auras[i];
                 if (aura.IsPositive != removePositive) { continue; }
                 if ((aura.Flags & AuraFlags.CannotDispel) != 0) { continue; }
+                if (!MatchesDispelMask(aura.DispelType, dispelMask)) { continue; }
                 m_Auras.RemoveAt(i);
                 removed++;
             }
@@ -261,6 +250,22 @@ namespace Riftstorm.Game.Spells
                 m_Auras.RemoveAll(a => (a.Flags & AuraFlags.Persistent) == 0);
             }
             if (m_Auras.Count != before) { MarkDirty(); }
+        }
+
+        private static bool MatchesDispelMask(DispelType dispelType, int dispelMask)
+        {
+            if (dispelMask <= 0)
+            {
+                return true;
+            }
+
+            if (dispelType == DispelType.None)
+            {
+                return false;
+            }
+
+            int bit = 1 << ((int)dispelType - 1);
+            return (dispelMask & bit) != 0;
         }
 
         // =====================================================================
@@ -371,17 +376,60 @@ namespace Riftstorm.Game.Spells
         /// </summary>
         public bool HasSchoolImmunity(SpellSchool school)
         {
+            long schoolMask = 1L << (int)school;
             foreach (Aura a in m_Auras)
             {
                 foreach (AuraEffect e in a.Effects)
                 {
-                    if (e.AuraType == AuraType.SchoolImmunity && e.MiscValue == (long)school)
+                    if (e.AuraType != AuraType.SchoolImmunity)
+                    {
+                        continue;
+                    }
+
+                    if (e.MiscValue == (long)school || (e.MiscValue & schoolMask) != 0)
                     {
                         return true;
                     }
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Loest die <see cref="ProcFlags.HolderWasImmune"/>-Procs aus: wird
+        /// gerufen, nachdem eine Immunitaet (z. B. physische
+        /// <see cref="AuraType.SchoolImmunity"/>) einen Angriff geschluckt hat.
+        /// Jede <see cref="AuraType.Proc"/>-Aura, deren
+        /// <see cref="AuraEffect.MiscValue"/> das HolderWasImmune-Bit traegt,
+        /// verbraucht eine Ladung (<see cref="ProcType.RemoveCharge"/>) und wird
+        /// damit entfernt — exakt die Focused-Evasion-Mechanik "evade next
+        /// physical attack, then drop". Die Ladungszahl ist im Datenstand 1,
+        /// daher entfernt RemoveCharge die gesamte Quell-Aura.
+        /// </summary>
+        public void TriggerImmuneProc()
+        {
+            // Erst sammeln, dann entfernen — RemoveAura mutiert m_Auras.
+            List<(int spellEntry, ulong casterGuid)> consumed = null;
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType != AuraType.Proc
+                        || (e.MiscValue & (long)ProcFlags.HolderWasImmune) == 0)
+                    {
+                        continue;
+                    }
+                    consumed ??= new List<(int, ulong)>();
+                    consumed.Add((a.SourceSpellEntry, a.CasterGuid));
+                    break;
+                }
+            }
+
+            if (consumed == null) { return; }
+            foreach ((int spellEntry, ulong casterGuid) in consumed)
+            {
+                RemoveAura(spellEntry, casterGuid);
+            }
         }
 
         /// <summary>
@@ -393,11 +441,19 @@ namespace Riftstorm.Game.Spells
         /// </summary>
         public bool HasMechanicImmunity(Mechanic mechanic)
         {
+            long mechanicMask = mechanic != Mechanic.None
+                ? 1L << ((int)mechanic - 1)
+                : 0L;
             foreach (Aura a in m_Auras)
             {
                 foreach (AuraEffect e in a.Effects)
                 {
-                    if (e.AuraType == AuraType.MechanicImmunity && e.MiscValue == (long)mechanic)
+                    if (e.AuraType != AuraType.MechanicImmunity)
+                    {
+                        continue;
+                    }
+
+                    if (e.MiscValue == (long)mechanic || (mechanicMask != 0L && (e.MiscValue & mechanicMask) != 0))
                     {
                         return true;
                     }
@@ -496,14 +552,58 @@ namespace Riftstorm.Game.Spells
         /// </remarks>
         public int GetStatModifierTotal(int statMask)
         {
+            return SumStatModifier(statMask, includeFlat: true, includePct: true);
+        }
+
+        /// <summary>
+        /// Summiert ausschliesslich <b>flache</b>
+        /// <see cref="AuraType.ModifyStat"/>-Effekte (additive Punkte, z. B.
+        /// <c>-1 Strength</c>), deren <see cref="AuraEffect.MiscValue"/> die
+        /// angefragte <paramref name="statMask"/> abdeckt. Wird vom
+        /// effektiven Attribut-Lookup in <see cref="UnitStats"/> getrennt von
+        /// den prozentualen Modifikatoren konsumiert, damit die Reihenfolge
+        /// <c>(Basis + Flat) * (1 + Pct/100)</c> sauber eingehalten wird.
+        /// </summary>
+        public int GetStatFlatModifierTotal(int statMask)
+        {
+            return SumStatModifier(statMask, includeFlat: true, includePct: false);
+        }
+
+        /// <summary>
+        /// Summiert ausschliesslich <b>prozentuale</b>
+        /// <see cref="AuraType.ModifyStatPct"/>-Effekte (z. B. <c>-2 %</c> auf
+        /// alle Primaerattribute), deren <see cref="AuraEffect.MiscValue"/> die
+        /// angefragte <paramref name="statMask"/> abdeckt. Gegenstueck zu
+        /// <see cref="GetStatFlatModifierTotal"/>.
+        /// </summary>
+        public int GetStatPctModifierTotal(int statMask)
+        {
+            return SumStatModifier(statMask, includeFlat: false, includePct: true);
+        }
+
+        /// <summary>
+        /// Gemeinsamer Summierungs-Kern fuer flache und/oder prozentuale
+        /// Stat-Modifier-Auren. Beruecksichtigt nur Effekte, deren
+        /// <see cref="AuraEffect.MiscValue"/> mindestens ein Bit der
+        /// <paramref name="statMask"/> traegt, und addiert deren
+        /// stack-skalierten Wert.
+        /// </summary>
+        /// <param name="statMask">Stat-Bitmaske nach Source-Konvention
+        /// (<c>1 &lt;&lt; (StatId - 1)</c>).</param>
+        /// <param name="includeFlat">True, um <see cref="AuraType.ModifyStat"/>
+        /// (additive Punkte) einzurechnen.</param>
+        /// <param name="includePct">True, um <see cref="AuraType.ModifyStatPct"/>
+        /// (Prozentwerte) einzurechnen.</param>
+        private int SumStatModifier(int statMask, bool includeFlat, bool includePct)
+        {
             if (statMask == 0) { return 0; }
             long sum = 0;
             foreach (Aura a in m_Auras)
             {
                 foreach (AuraEffect e in a.Effects)
                 {
-                    bool isStatMod = e.AuraType == AuraType.ModifyStat
-                        || e.AuraType == AuraType.ModifyStatPct;
+                    bool isStatMod = (includeFlat && e.AuraType == AuraType.ModifyStat)
+                        || (includePct && e.AuraType == AuraType.ModifyStatPct);
                     if (isStatMod && (e.MiscValue & statMask) != 0)
                     {
                         sum += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
@@ -582,16 +682,26 @@ namespace Riftstorm.Game.Spells
             for (int i = 0; i < m_Auras.Count; i++)
             {
                 Aura a = m_Auras[i];
+                int periodicDeltaMs = deltaTimeMs;
+                if (a.MaxDurationMs > 0)
+                {
+                    int remainingMs = Math.Max(0, a.MaxDurationMs - a.ElapsedMs);
+                    periodicDeltaMs = Math.Min(periodicDeltaMs, remainingMs);
+                }
+
+                if (periodicDeltaMs > 0)
+                {
+                    ProcessPeriodicEffects(a, periodicDeltaMs);
+                }
+
                 if (a.MaxDurationMs > 0)
                 {
                     a.ElapsedMs += deltaTimeMs;
                     if (a.IsExpired)
                     {
                         anyExpired = true;
-                        continue;
                     }
                 }
-                ProcessPeriodicEffects(a, deltaTimeMs);
             }
 
             if (anyExpired)
@@ -607,9 +717,73 @@ namespace Riftstorm.Game.Spells
 
         bool CanApplyAura(Aura aura)
         {
+            if (IsImmuneToAuraMechanic(aura))
+            {
+                return false;
+            }
             int buffs = BuffCount;
             int debuffs = m_Auras.Count - buffs;
             return aura.IsPositive ? buffs < MaxBuffs : debuffs < MaxDebuffs;
+        }
+
+        /// <summary>
+        /// True, wenn der Besitzer per <see cref="UnitStats.MechanicImmuneMask"/> gegen
+        /// eine in <paramref name="aura"/> getragene Crowd-Control-Mechanik immun ist.
+        /// Mappt sowohl <see cref="AuraType.InflictMechanic"/> (Mechanik in
+        /// <see cref="AuraEffect.MiscValue"/>) als auch die direkten CC-Aura-Typen
+        /// (<see cref="AuraType.Stun"/>/<see cref="AuraType.Root"/>/<see cref="AuraType.Silence"/>)
+        /// auf das passende <see cref="Mechanic"/>-Bit. Source-Pendant: das in
+        /// GameData geladene, aber nie geprueffte <c>mechanicImmuneMask</c> — hier
+        /// erstmals scharfgeschaltet.
+        /// </summary>
+        bool IsImmuneToAuraMechanic(Aura aura)
+        {
+            if (aura == null || aura.IsPositive)
+            {
+                return false;
+            }
+            int immuneMask = (m_Owner as UnitStats)?.MechanicImmuneMask ?? 0;
+            if (immuneMask == 0)
+            {
+                return false;
+            }
+            for (int i = 0; i < aura.Effects.Count; i++)
+            {
+                Mechanic mechanic = ResolveEffectMechanic(aura.Effects[i]);
+                if (mechanic == Mechanic.None)
+                {
+                    continue;
+                }
+                int bit = 1 << ((int)mechanic - 1);
+                if ((immuneMask & bit) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Bestimmt die Crowd-Control-Mechanik eines Aura-Effekts fuer den
+        /// Immunitaets-Check. <see cref="AuraType.InflictMechanic"/> traegt den
+        /// <see cref="Mechanic"/>-Index in <see cref="AuraEffect.MiscValue"/>; die
+        /// dedizierten CC-Typen mappen direkt.
+        /// </summary>
+        static Mechanic ResolveEffectMechanic(AuraEffect effect)
+        {
+            switch (effect.AuraType)
+            {
+                case AuraType.InflictMechanic:
+                    return (Mechanic)effect.MiscValue;
+                case AuraType.Stun:
+                    return Mechanic.Stun;
+                case AuraType.Root:
+                    return Mechanic.Root;
+                case AuraType.Silence:
+                    return Mechanic.Silence;
+                default:
+                    return Mechanic.None;
+            }
         }
 
         Aura FindStackableAura(int sourceSpellEntry, ulong casterGuid)
@@ -655,13 +829,13 @@ namespace Riftstorm.Game.Spells
             {
                 case AuraType.PeriodicDamage:
                 case AuraType.PeriodicMeleeDamage:
-                    m_Owner.TakeDamage((int)value, null);
+                    ApplyPeriodicDamage(aura, e, (int)value);
                     break;
                 case AuraType.PeriodicHeal:
-                    m_Owner.Heal((int)value, null);
+                    ApplyPeriodicHeal(aura, (int)value);
                     break;
                 case AuraType.PeriodicHealPct:
-                    m_Owner.Heal((int)(m_Owner.MaxHealth * value / 100), null);
+                    ApplyPeriodicHeal(aura, (int)(m_Owner.MaxHealth * value / 100));
                     break;
                 case AuraType.PeriodicRestoreMana:
                     m_Owner.SetMana(Mathf.Min(m_Owner.MaxMana, m_Owner.Mana + (int)value));
@@ -673,6 +847,64 @@ namespace Riftstorm.Game.Spells
                     m_Owner.SetMana(Mathf.Max(0, m_Owner.Mana - (int)value));
                     break;
             }
+        }
+
+        void ApplyPeriodicDamage(Aura aura, AuraEffect effect, int baseValue)
+        {
+            if (m_Owner == null || baseValue <= 0)
+            {
+                return;
+            }
+
+            ICombatUnit caster = ResolveAuraCaster(aura);
+            m_Owner.TakeDamage(baseValue, caster);
+        }
+
+        void ApplyPeriodicHeal(Aura aura, int baseValue)
+        {
+            if (m_Owner == null || baseValue <= 0)
+            {
+                return;
+            }
+
+            ICombatUnit caster = ResolveAuraCaster(aura);
+            m_Owner.Heal(baseValue, caster);
+        }
+
+        static ICombatUnit ResolveAuraCaster(Aura aura)
+        {
+            if (aura == null || aura.CasterGuid == 0UL)
+            {
+                return null;
+            }
+
+            if (aura.CachedCaster != null)
+            {
+                UnityEngine.Object cachedObject = aura.CachedCaster;
+                if (cachedObject != null)
+                {
+                    return aura.CachedCaster;
+                }
+
+                aura.CachedCaster = null;
+            }
+
+            NetworkManager network = NetworkManager.Singleton;
+            if (network == null || network.SpawnManager == null)
+            {
+                return null;
+            }
+
+            if (!network.SpawnManager.SpawnedObjects.TryGetValue(aura.CasterGuid, out NetworkObject sourceObject)
+                || sourceObject == null)
+            {
+                return null;
+            }
+
+            UnitStats resolved = sourceObject.GetComponent<UnitStats>()
+                ?? sourceObject.GetComponentInChildren<UnitStats>();
+            aura.CachedCaster = resolved;
+            return resolved;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Player;
+using Riftstorm.Game.Spells;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,14 +33,18 @@ namespace Riftstorm.Game.UI
         // Texturen sowie den Rarity-Border.
         private HudConfig m_Config;
         private Texture2D m_FrameBackground;
+        private Texture2D m_FrameBackgroundBoss;
+        private Texture2D m_FrameBackgroundElite;
         private Texture2D m_HpFillTexture;
         private Texture2D m_ManaFillTexture;
         private Texture2D m_LevelBadgeBackground;
-        private Texture2D m_BorderOverlay;
+        private Texture2D m_CastBarBackground;
+        private Texture2D m_CastBarFill;
 
         // Visual-Tree
         private VisualElement m_Root;
         private VisualElement m_Frame;
+        private VisualElement m_RankBorder;
         private Label m_NameLabel;
         private Label m_LevelLabel;
         private VisualElement m_HpFill;
@@ -47,13 +52,24 @@ namespace Riftstorm.Game.UI
         private VisualElement m_ManaRow;
         private VisualElement m_ManaFill;
         private Label m_ManaValueLabel;
+        private Label m_TargetOfTargetLabel;
+
+        // Cast-Bar des Ziels (unter dem Portrait). Fortschritt wird lokal aus
+        // Start + Dauer interpoliert (UIToolkit-Scheduler, kein Update-Polling).
+        private VisualElement m_CastRow;
+        private VisualElement m_CastFill;
+        private Label m_CastNameLabel;
+        private IVisualElementScheduledItem m_CastTick;
+        private float m_CastStartUnscaled;
+        private float m_CastDurationSeconds;
 
         // Lokaler Spieler
         private TargetSelection m_LocalSelection;
 
         // Aktuelles Ziel-Abo
         private UnitStats m_BoundStats;
-        private PlayerIdentity m_BoundIdentity;
+        private INameSource m_BoundIdentity;
+        private Npc.NpcController m_BoundNpc;
 
         private void Awake()
         {
@@ -76,10 +92,13 @@ namespace Riftstorm.Game.UI
         private void ResolveTextures()
         {
             m_FrameBackground = HudConfigLoader.LoadTextureOrNull(m_Config.frameTextureReverse);
+            m_FrameBackgroundBoss = HudConfigLoader.LoadTextureOrNull(m_Config.frameTextureBoss);
+            m_FrameBackgroundElite = HudConfigLoader.LoadTextureOrNull(m_Config.frameTextureElite);
             m_HpFillTexture = HudConfigLoader.LoadTextureOrNull(m_Config.hpFillTextureReverse);
             m_ManaFillTexture = HudConfigLoader.LoadTextureOrNull(m_Config.manaFillTextureReverse);
             m_LevelBadgeBackground = HudConfigLoader.LoadTextureOrNull(m_Config.levelBadgeTexture);
-            m_BorderOverlay = HudConfigLoader.LoadTextureOrNull(m_Config.targetBorderTexture);
+            m_CastBarBackground = HudConfigLoader.LoadTextureOrNull(m_Config.castBarBackgroundTexture);
+            m_CastBarFill = HudConfigLoader.LoadTextureOrNull(m_Config.castBarFillTexture);
         }
 
         private void OnDisable()
@@ -177,25 +196,64 @@ namespace Riftstorm.Game.UI
             m_ManaRow.style.top = c.manaTop;
             m_Frame.Add(m_ManaRow);
 
-            // Optionaler Border-Overlay (z. B. Bronze-Rarity-Rahmen). Liegt NUR
-            // um das Portrait herum (leicht groesser, zentriert + leicht nach unten
-            // versetzt) und ignoriert Input. Das Level-Badge wird danach
-            // hinzugefuegt, damit es vor dem Ring sitzt.
-            if (m_BorderOverlay != null)
-            {
-                float borderSize = c.portraitSize * c.targetBorderScale;
-                float borderOffset = (borderSize - c.portraitSize) * 0.5f;
+            m_TargetOfTargetLabel = new Label(string.Empty) { name = "target-frame-target-of-target" };
+            m_TargetOfTargetLabel.style.position = Position.Absolute;
+            m_TargetOfTargetLabel.style.right = c.hpBarInset;
+            m_TargetOfTargetLabel.style.top = c.manaTop + c.manaBarHeight + 4f;
+            m_TargetOfTargetLabel.style.width = c.hpBarWidth;
+            m_TargetOfTargetLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+            m_TargetOfTargetLabel.style.color = new Color(0.95f, 0.78f, 0.3f, 1f);
+            m_TargetOfTargetLabel.style.fontSize = Mathf.Max(10, c.nameFontSize - 4);
+            m_TargetOfTargetLabel.style.display = DisplayStyle.None;
+            UIFonts.Apply(m_TargetOfTargetLabel, UIFonts.Body);
+            m_Frame.Add(m_TargetOfTargetLabel);
 
-                VisualElement border = new() { name = "target-frame-border" };
-                border.pickingMode = PickingMode.Ignore;
-                border.style.position = Position.Absolute;
-                border.style.right = c.portraitInset - borderOffset;
-                border.style.top = c.portraitTop - borderOffset + c.targetBorderYOffset;
-                border.style.width = borderSize;
-                border.style.height = borderSize;
-                border.style.backgroundImage = new StyleBackground(m_BorderOverlay);
-                m_Frame.Add(border);
+            // Cast-Bar des Ziels, UNTER dem Frame. Standardmaessig versteckt; wird
+            // nur waehrend eines Cast-Time-Spells eingeblendet und client-seitig aus
+            // Start + Dauer interpoliert.
+            // Breite = volle HP-Bar-Breite, rechtsbuendig wie HP/Mana-Bar, damit die
+            // Bar den gesamten schwarzen Castbar-Bereich ausfuellt statt nur das
+            // Portrait zu ueberspannen.
+            float castWidth = c.hpBarWidth;
+            float castHeight = c.castBarHeight;
+            m_CastRow = HudStyle.BuildTexturedBar(
+                "target-frame-cast",
+                m_CastBarFill,
+                castWidth,
+                castHeight,
+                fillFromRight: false,
+                out m_CastFill,
+                out m_CastNameLabel);
+            if (m_CastBarBackground != null)
+            {
+                m_CastRow.style.backgroundImage = new StyleBackground(m_CastBarBackground);
             }
+            // Rechtsbuendig wie HP/Mana-Bar — Cast-Bar fuellt den vollen Balkenbereich.
+            m_CastRow.style.right = c.hpBarInset;
+            m_CastRow.style.top = c.portraitTop + c.portraitSize + 4f;
+            m_CastNameLabel.style.fontSize = c.castBarNameFontSize;
+            m_CastNameLabel.text = string.Empty;
+            m_CastRow.style.display = DisplayStyle.None;
+            m_Frame.Add(m_CastRow);
+
+            // Rang-Rahmen (Boss/Elite) als korrekt positionierter Overlay-Ring um
+            // das Portrait (leicht groesser, zentriert + leicht nach unten
+            // versetzt). Texturlos und versteckt erzeugt — ApplyRankFrame() setzt
+            // Boss-/Elite-Textur und Sichtbarkeit nach NPC-Rang (Spec: Boss >
+            // Elite > "sonst keins"). Ignoriert Input; das Level-Badge wird danach
+            // angehaengt, damit es vor dem Ring sitzt.
+            float rankBorderSize = c.portraitSize * c.targetBorderScale;
+            float rankBorderOffset = (rankBorderSize - c.portraitSize) * 0.5f;
+
+            m_RankBorder = new() { name = "target-frame-rank" };
+            m_RankBorder.pickingMode = PickingMode.Ignore;
+            m_RankBorder.style.position = Position.Absolute;
+            m_RankBorder.style.right = c.portraitInset - rankBorderOffset;
+            m_RankBorder.style.top = c.portraitTop - rankBorderOffset + c.targetBorderYOffset;
+            m_RankBorder.style.width = rankBorderSize;
+            m_RankBorder.style.height = rankBorderSize;
+            m_RankBorder.style.display = DisplayStyle.None;
+            m_Frame.Add(m_RankBorder);
 
             // Level-Badge ZULETZT anhaengen -> liegt vor dem Border-Ring.
             m_Frame.Add(levelBadge);
@@ -284,9 +342,14 @@ namespace Riftstorm.Game.UI
                 HideFrame();
                 return;
             }
-            if (!no.TryGetComponent<PlayerIdentity>(out var identity))
+            // INameSource statt konkret PlayerIdentity: Spieler liefern den Namen
+            // ueber PlayerIdentity (NetworkVariable), NPCs ueber NpcIdentity
+            // (UnitStats.DisplayName aus dem npc_template). Ohne diese Aufloesung
+            // fiel das Frame fuer NPCs auf sourceObj.name (Prefab "Flare_NPC") zurueck.
+            INameSource identity = no.GetComponent<INameSource>();
+            if (identity == null)
             {
-                identity = no.GetComponentInChildren<PlayerIdentity>();
+                identity = no.GetComponentInChildren<INameSource>();
             }
 
             AttachToTarget(stats, identity, no);
@@ -297,11 +360,46 @@ namespace Riftstorm.Game.UI
         // Ziel-Abo: HP / Mana / Name
         // -------------------------------------------------------------------------
 
-        private void AttachToTarget(UnitStats stats, PlayerIdentity identity, NetworkObject sourceObj)
+        private void AttachToTarget(UnitStats stats, INameSource identity, NetworkObject sourceObj)
         {
             m_BoundStats = stats;
             m_BoundStats.HpChanged += OnTargetHpChanged;
             m_BoundStats.ManaChanged += OnTargetManaChanged;
+
+            if (!sourceObj.TryGetComponent<Npc.NpcController>(out var npc))
+            {
+                npc = sourceObj.GetComponentInChildren<Npc.NpcController>();
+            }
+            m_BoundNpc = npc;
+            if (m_BoundNpc != null)
+            {
+                m_BoundNpc.CurrentTargetChanged += OnTargetOfTargetChanged;
+                UpdateTargetOfTargetVisual(m_BoundNpc.CurrentTargetNetworkId);
+
+                // Cast-Bar des Ziels anbinden. Laeuft bereits ein Cast (spaetes
+                // Anvisieren), sofort mit dem vorhandenen Snapshot starten.
+                m_BoundNpc.LocalCastStarted += OnTargetCastStarted;
+                m_BoundNpc.LocalCastEnded += OnTargetCastEnded;
+                if (m_BoundNpc.LocalCastActive)
+                {
+                    BeginCastVisual(
+                        m_BoundNpc.LocalCastSpellId,
+                        m_BoundNpc.LocalCastStartUnscaled,
+                        m_BoundNpc.LocalCastDurationSeconds);
+                }
+                else
+                {
+                    HideCastBar();
+                }
+            }
+            else
+            {
+                UpdateTargetOfTargetVisual(0UL);
+                HideCastBar();
+            }
+
+            // Rahmen nach NPC-Rang waehlen (Boss > Elite > Default).
+            ApplyRankFrame();
 
             // Mana-Reihe nur einblenden, wenn die Einheit ueberhaupt eine Mana-Resource hat.
             if (m_ManaRow != null)
@@ -349,10 +447,60 @@ namespace Riftstorm.Game.UI
                 m_BoundIdentity.DisplayNameChanged -= OnTargetNameChanged;
                 m_BoundIdentity = null;
             }
+            if (m_BoundNpc != null)
+            {
+                m_BoundNpc.CurrentTargetChanged -= OnTargetOfTargetChanged;
+                m_BoundNpc.LocalCastStarted -= OnTargetCastStarted;
+                m_BoundNpc.LocalCastEnded -= OnTargetCastEnded;
+                m_BoundNpc = null;
+            }
+            HideCastBar();
+            // Rahmen auf Default zuruecksetzen, damit ein Boss/Elite-Rahmen nicht
+            // beim naechsten Ziel kurz nachhaengt.
+            ApplyRankFrame();
+            UpdateTargetOfTargetVisual(0UL);
+        }
+
+        /// <summary>
+        /// Setzt den korrekt positionierten Rang-Overlay-Ring (<see cref="m_RankBorder"/>)
+        /// nach NPC-Rang: Boss &gt; Elite &gt; "sonst keins". Boss zeigt
+        /// <c>unit_frame_boss</c>, Elite <c>unit_frame_elite</c>; bei normalem Rang
+        /// (oder fehlender/nicht ladbarer Rang-Textur) wird der Ring versteckt.
+        /// Der Frame-Hintergrund selbst bleibt unveraendert.
+        /// </summary>
+        private void ApplyRankFrame()
+        {
+            if (m_RankBorder == null)
+            {
+                return;
+            }
+            Texture2D tex = null;
+            if (m_BoundNpc != null)
+            {
+                if (m_BoundNpc.IsBoss && m_FrameBackgroundBoss != null)
+                {
+                    tex = m_FrameBackgroundBoss;
+                }
+                else if (m_BoundNpc.IsElite && m_FrameBackgroundElite != null)
+                {
+                    tex = m_FrameBackgroundElite;
+                }
+            }
+            if (tex != null)
+            {
+                m_RankBorder.style.backgroundImage = new StyleBackground(tex);
+                m_RankBorder.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                m_RankBorder.style.backgroundImage = new StyleBackground();
+                m_RankBorder.style.display = DisplayStyle.None;
+            }
         }
 
         private void OnTargetHpChanged(int current, int max) => UpdateHpVisual(current, max);
         private void OnTargetManaChanged(int current, int max) => UpdateManaVisual(current, max);
+        private void OnTargetOfTargetChanged(ulong targetId) => UpdateTargetOfTargetVisual(targetId);
         private void OnTargetNameChanged(string name)
         {
             if (m_NameLabel != null)
@@ -381,6 +529,148 @@ namespace Riftstorm.Game.UI
             float pct = max > 0 ? Mathf.Clamp01(current / (float)max) * 100f : 0f;
             m_ManaFill.style.width = new StyleLength(new Length(pct, LengthUnit.Percent));
             m_ManaValueLabel.text = current + " / " + max;
+        }
+
+        /// <summary>
+        /// Zeigt den Namen des aktuellen Ziels des anvisierten NPCs an
+        /// ("Target-of-Target"). Bei <paramref name="targetId"/> == 0 (kein Ziel)
+        /// wird das Label ausgeblendet. Der Name wird client-seitig aus dem
+        /// replizierten <see cref="NetworkObject"/> aufgel&#246;st.
+        /// </summary>
+        /// <param name="targetId">Replizierte <c>NetworkObjectId</c> des NPC-Ziels; 0 = kein Ziel.</param>
+        private void UpdateTargetOfTargetVisual(ulong targetId)
+        {
+            if (m_TargetOfTargetLabel == null)
+            {
+                return;
+            }
+
+            if (targetId == 0UL)
+            {
+                m_TargetOfTargetLabel.style.display = DisplayStyle.None;
+                m_TargetOfTargetLabel.text = string.Empty;
+                return;
+            }
+
+            string name = ResolveTargetName(targetId);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                m_TargetOfTargetLabel.style.display = DisplayStyle.None;
+                m_TargetOfTargetLabel.text = string.Empty;
+                return;
+            }
+
+            m_TargetOfTargetLabel.style.display = DisplayStyle.Flex;
+            m_TargetOfTargetLabel.text = name;
+        }
+
+        /// <summary>
+        /// L&#246;st den Anzeigenamen eines replizierten Ziels &#252;ber dessen
+        /// <c>NetworkObjectId</c> auf. Bevorzugt <see cref="INameSource.DisplayName"/>,
+        /// f&#228;llt sonst auf den GameObject-Namen zur&#252;ck.
+        /// </summary>
+        /// <param name="targetId">Replizierte <c>NetworkObjectId</c> des Ziels.</param>
+        /// <returns>Anzeigename oder leerer String, falls nicht aufl&#246;sbar.</returns>
+        private static string ResolveTargetName(ulong targetId)
+        {
+            NetworkManager nm = NetworkManager.Singleton;
+            if (nm == null || nm.SpawnManager == null)
+            {
+                return string.Empty;
+            }
+            if (!nm.SpawnManager.SpawnedObjects.TryGetValue(targetId, out NetworkObject obj) || obj == null)
+            {
+                return string.Empty;
+            }
+            if (obj.TryGetComponent<INameSource>(out var nameSource)
+                && !string.IsNullOrWhiteSpace(nameSource.DisplayName))
+            {
+                return nameSource.DisplayName;
+            }
+            INameSource childSource = obj.GetComponentInChildren<INameSource>();
+            if (childSource != null && !string.IsNullOrWhiteSpace(childSource.DisplayName))
+            {
+                return childSource.DisplayName;
+            }
+            return obj.name;
+        }
+
+        // -------------------------------------------------------------------------
+        // Cast-Bar des Ziels (unter dem Portrait)
+        // -------------------------------------------------------------------------
+
+        /// <summary>Cast-Start des Ziels: Bar mit aktueller Zeit als Startpunkt einblenden.</summary>
+        private void OnTargetCastStarted(int spellId, float durationSeconds)
+            => BeginCastVisual(spellId, Time.unscaledTime, durationSeconds);
+
+        /// <summary>Cast-Ende des Ziels (Abschluss/Abbruch/Interrupt): Bar ausblenden.</summary>
+        private void OnTargetCastEnded() => HideCastBar();
+
+        /// <summary>
+        /// Blendet die Cast-Bar ein und startet den lokalen Fortschritts-Tick.
+        /// <paramref name="startUnscaled"/> erlaubt das exakte Andocken an einen
+        /// bereits laufenden Cast (spaetes Anvisieren).
+        /// </summary>
+        private void BeginCastVisual(int spellId, float startUnscaled, float durationSeconds)
+        {
+            if (m_CastRow == null || m_CastFill == null)
+            {
+                return;
+            }
+            m_CastStartUnscaled = startUnscaled;
+            m_CastDurationSeconds = Mathf.Max(0.01f, durationSeconds);
+
+            if (m_CastNameLabel != null)
+            {
+                m_CastNameLabel.text = ResolveSpellName(spellId);
+            }
+            m_CastRow.style.display = DisplayStyle.Flex;
+            UpdateCastProgress();
+
+            // UIToolkit-Scheduler statt Update()-Polling: ~60 Hz.
+            if (m_CastTick == null)
+            {
+                m_CastTick = m_CastRow.schedule.Execute(UpdateCastProgress).Every(16);
+            }
+            else
+            {
+                m_CastTick.Resume();
+            }
+        }
+
+        /// <summary>Stoppt den Fortschritts-Tick und versteckt die Cast-Bar.</summary>
+        private void HideCastBar()
+        {
+            if (m_CastTick != null)
+            {
+                m_CastTick.Pause();
+            }
+            if (m_CastRow != null)
+            {
+                m_CastRow.style.display = DisplayStyle.None;
+            }
+        }
+
+        /// <summary>Interpoliert den Cast-Fortschritt lokal aus Start + Dauer.</summary>
+        private void UpdateCastProgress()
+        {
+            if (m_CastFill == null)
+            {
+                return;
+            }
+            float t = Mathf.Clamp01((Time.unscaledTime - m_CastStartUnscaled) / m_CastDurationSeconds);
+            m_CastFill.style.width = new StyleLength(new Length(t * 100f, LengthUnit.Percent));
+        }
+
+        /// <summary>Loest den Spell-Namen aus dem Katalog auf (Fallback: "Spell N").</summary>
+        private static string ResolveSpellName(int spellId)
+        {
+            SpellTemplate template = SpellCatalogLoader.GetTemplateOrNull(spellId);
+            if (template == null || string.IsNullOrWhiteSpace(template.Name))
+            {
+                return "Spell " + spellId;
+            }
+            return template.Name;
         }
     }
 }

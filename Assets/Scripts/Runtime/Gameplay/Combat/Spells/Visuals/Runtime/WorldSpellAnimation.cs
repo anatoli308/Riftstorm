@@ -44,6 +44,10 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
         private Transform m_Source;
         private Transform m_Target;
 
+        /// <summary>Optionaler Partikel-Katalog zum Aufloesen der Phasen-
+        ///   Partikelsysteme (Travel/Impact). <c>null</c> = nur Sprites + Sound.</summary>
+        private ParticleSystemCatalog m_Particles;
+
         private SpellAnimationPlayer m_Primary;
         private SpellAnimationPlayer m_Secondary;
         private SpriteRenderer m_PrimaryRenderer;
@@ -52,11 +56,20 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
         private Transform m_SecondaryRoot;
         private GameObject m_GlowLight;
         private GameObject m_AuraRoot;
+        private GameObject m_OwnedEndpoint;
 
         private Phase m_Phase = Phase.None;
         private Vector3 m_TravelFrom;
         private Vector3 m_TravelTo;
         private float m_TravelSpeed;
+
+        /// <summary>True, wenn dieses Visual ein gerichteter Skillshot ist und das
+        ///   Travel-Sprite entlang der Flugrichtung ausgerichtet werden soll.</summary>
+        private bool m_Directional;
+
+        /// <summary>Normierte horizontale Flugrichtung (Welt-XZ) fuer das
+        ///   directional Billboard-Roll. Nur gueltig wenn <see cref="m_Directional"/>.</summary>
+        private Vector3 m_FlightDir;
 
         /// <summary>Aktuelle Phase (fuer Debug/Tests).</summary>
         public Phase CurrentPhase => m_Phase;
@@ -70,16 +83,20 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
         /// <param name="source">Caster-Transform (Anker fuer Casting/Travel-Start).</param>
         /// <param name="target">Ziel-Transform (Anker fuer Travel-Ende/Impact). Bei <c>null</c>
         ///   wird das Visual am Caster gespielt (Self-Target).</param>
+        /// <param name="particles">Optionaler Partikel-Katalog fuer die Travel-/Impact-
+        ///   Phasen-Partikelsysteme. <c>null</c> = nur Sprites + Sound.</param>
         public void Play(
             SpellVisualDefinition kit,
             SpellAnimationCatalog anims,
             Transform source,
-            Transform target)
+            Transform target,
+            ParticleSystemCatalog particles = null)
         {
             m_Kit = kit;
             m_Anims = anims;
             m_Source = source;
             m_Target = target != null ? target : source;
+            m_Particles = particles;
             m_TravelSpeed = kit != null ? kit.TravelSpeed : 0f;
 
             EnsureCamera();
@@ -87,6 +104,41 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             AnchorTo(m_Source);
             SpawnAuraLoop();
             StartNextPhase(Phase.Casting);
+        }
+
+        /// <summary>
+        /// Startet die Visual-Sequenz fuer einen gerichteten Skillshot. Das
+        /// Projektil fliegt geradlinig vom <paramref name="source"/> zum festen
+        /// Welt-Zielpunkt <paramref name="worldTarget"/> (Cursor-Richtung), nicht
+        /// zu einem Unit-Transform. Intern wird ein kurzlebiger Endpoint-Anker
+        /// erzeugt, damit die bestehende Travel-/Impact-Logik unveraendert greift;
+        /// der Anker wird in <see cref="OnDestroy"/> mit aufgeraeumt.
+        /// </summary>
+        /// <param name="kit">Per-Spell-Visual-Plan (Phasen + Travel-Speed).</param>
+        /// <param name="anims">Animations-Katalog zur Aufloesung der Namen.</param>
+        /// <param name="source">Caster-Transform (Travel-Start).</param>
+        /// <param name="worldTarget">Fester Welt-Zielpunkt (Travel-Ende/Impact).</param>
+        /// <param name="particles">Optionaler Partikel-Katalog fuer die Travel-/Impact-
+        ///   Phasen-Partikelsysteme. <c>null</c> = nur Sprites + Sound.</param>
+        public void PlayDirectional(
+            SpellVisualDefinition kit,
+            SpellAnimationCatalog anims,
+            Transform source,
+            Vector3 worldTarget,
+            ParticleSystemCatalog particles = null)
+        {
+            GameObject endpoint = new("SpellTravelEndpoint");
+            endpoint.transform.position = worldTarget;
+            m_OwnedEndpoint = endpoint;
+
+            // Flugrichtung (horizontal) fuer die directional Sprite-Ausrichtung
+            // merken; bei degeneriertem Vektor faellt LateUpdate auf Kamera-Up zurueck.
+            Vector3 flightDir = source != null ? worldTarget - source.position : Vector3.zero;
+            flightDir.y = 0f;
+            m_Directional = flightDir.sqrMagnitude > 0.0001f;
+            m_FlightDir = m_Directional ? flightDir.normalized : Vector3.zero;
+
+            Play(kit, anims, source, endpoint.transform, particles);
         }
 
         void Awake()
@@ -115,10 +167,22 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             }
             // Topdown-Billboard: zur Kamera ausrichten.
             Vector3 fwd = transform.position - m_Camera.transform.position;
-            if (fwd.sqrMagnitude > 0.0001f)
+            if (fwd.sqrMagnitude <= 0.0001f)
             {
-                transform.rotation = Quaternion.LookRotation(fwd, m_Camera.transform.up);
+                return;
             }
+            // Directional Skillshot: Sprite-Oberkante (+Y) entlang der Flugrichtung
+            // rollen (auf die Kamera-Ebene projiziert), sonst Standard-Kamera-Up.
+            Vector3 up = m_Camera.transform.up;
+            if (m_Directional && m_Phase == Phase.Travel)
+            {
+                Vector3 projected = Vector3.ProjectOnPlane(m_FlightDir, fwd);
+                if (projected.sqrMagnitude > 0.0001f)
+                {
+                    up = projected.normalized;
+                }
+            }
+            transform.rotation = Quaternion.LookRotation(fwd, up);
         }
 
         // ---- Setup ----------------------------------------------------
@@ -167,7 +231,7 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             switch (phase)
             {
                 case Phase.Casting:
-                    if (TryPlayPhase(m_Kit?.Casting, m_Source, loopPrimary: false, OnCastingFinished))
+                    if (TryPlayPhase(m_Kit?.Casting, m_Source, loopPrimary: false, OnCastingFinished, spawnParticles: false))
                     {
                         m_Phase = Phase.Casting;
                         return;
@@ -178,7 +242,7 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
                     if (m_Source != null && m_Target != null && m_Source != m_Target
                         && m_Kit?.Travel != null && m_Kit.Travel.HasPrimary)
                     {
-                        if (TryPlayPhase(m_Kit.Travel, m_Source, loopPrimary: true, onPrimaryFinished: null))
+                        if (TryPlayPhase(m_Kit.Travel, m_Source, loopPrimary: true, onPrimaryFinished: null, spawnParticles: true))
                         {
                             m_Phase = Phase.Travel;
                             m_TravelFrom = m_Source.position;
@@ -190,7 +254,7 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
                     goto case Phase.Impact;
 
                 case Phase.Impact:
-                    if (TryPlayPhase(m_Kit?.Impact, m_Target, loopPrimary: false, OnImpactFinished))
+                    if (TryPlayPhase(m_Kit?.Impact, m_Target, loopPrimary: false, OnImpactFinished, spawnParticles: true))
                     {
                         m_Phase = Phase.Impact;
                         return;
@@ -213,7 +277,8 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             SpellVisualPhase phase,
             Transform anchor,
             bool loopPrimary,
-            System.Action onPrimaryFinished)
+            System.Action onPrimaryFinished,
+            bool spawnParticles)
         {
             if (phase == null || !phase.HasAny)
             {
@@ -227,6 +292,13 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             SpellVisualSpawner.PlayPhaseSound(
                 phase,
                 anchor != null ? anchor.position : transform.position);
+            // Phasen-Partikel an den bewegten Visual-Root haengen (folgt dem
+            // Projektil in Travel, sitzt am Ziel in Impact). Casting ist
+            // ausgenommen &#8212; das Caster-Partikelsystem deckt diese Phase ab.
+            if (spawnParticles)
+            {
+                SpellVisualSpawner.TrySpawnPhaseParticles(phase, transform, m_Particles);
+            }
 
             return primaryStarted || secondaryStarted;
         }
@@ -438,6 +510,11 @@ namespace Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime
             {
                 Destroy(m_AuraRoot);
                 m_AuraRoot = null;
+            }
+            if (m_OwnedEndpoint != null)
+            {
+                Destroy(m_OwnedEndpoint);
+                m_OwnedEndpoint = null;
             }
         }
     }

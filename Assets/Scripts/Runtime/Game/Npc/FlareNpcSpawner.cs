@@ -223,6 +223,22 @@ namespace Riftstorm.Game.Npc
                 displayName: tpl.Name,
                 factionId: faction,
                 agility: agility);
+
+            // Level aus dem Template in UnitStats spiegeln: ApplyBaseStats nimmt kein
+            // Level entgegen (UnitStats.m_Level bliebe sonst auf Prefab-Default 1), das
+            // Target-Frame liest aber stats.Level. Auf jedem Peer gesetzt, analog zum
+            // displayName-Pfad. Health/Mana skalieren bereits ueber denselben level-Wert.
+            unitStats.SetLevel(level);
+
+            // Waffenschaden aus dem Template in UnitStats spiegeln: NPC-Auto-
+            // Attacks laufen ueber die WeaponDamage-Spell-Pipeline (Spell 81/82),
+            // die WeaponDamage/RangedWeaponDamage liest. Ohne dieses Setzen
+            // bleiben beide 0 und NPCs wuerden mit Auto-Attacks keinen Schaden
+            // machen. weapon_value faellt wie im NpcController auf 10 zurueck,
+            // wenn das Template keinen Wert liefert.
+            unitStats.SetWeaponDamage(
+                tpl.WeaponValue > 0 ? tpl.WeaponValue : 10,
+                Mathf.Max(0, tpl.RangedWeaponValue));
         }
 
         private async Task BuildAsync()
@@ -272,6 +288,7 @@ namespace Riftstorm.Game.Npc
             if (controller != null && controller.enabled)
             {
                 controller.BindTemplate(m_Template);
+                controller.BindModelName(m_Model != null ? m_Model.Name : null);
                 controller.BindCharacter(character);
             }
             else

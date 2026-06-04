@@ -54,6 +54,16 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>Maximale Level-Differenz, die Hit/Crit/Resist beeinflusst.</summary>
         public const int MaxLevelDiff = 10;
 
+        /// <summary>
+        /// Skill-Punkte pro 1 % Trefferchance-Bonus (Riftstorm-Erweiterung). Die
+        /// NPC-Templates fuehren <c>melee_skill</c>/<c>ranged_skill</c> (5..125), die
+        /// im Original-Server zwar geladen, aber nie in die Hit-Formel verrechnet
+        /// wurden (<c>// TODO: Add hit rating</c>). Mit Faktor 25 ergibt sich ein
+        /// moderater Bonus von 0..5 %, der exakt in den Headroom bis zum 100 %-Cap
+        /// passt und vor allem den Level-Malus gegen hoehere Ziele abfedert.
+        /// </summary>
+        public const int SkillPerHitPercent = 25;
+
         /// <summary>Schadens-Untergrenze (C++: <c>MIN_DAMAGE</c>).</summary>
         public const int MinDamage = 1;
 
@@ -66,12 +76,21 @@ namespace Riftstorm.Gameplay.Combat
         /// Miss → Dodge → Parry → Block → Crit → Hit. Spiegelt die Source-
         /// Pipeline aus <c>CombatFormulas.cpp</c> (<c>getHitResult</c>) wider.
         /// </summary>
-        public static HitResult RollMeleeHit(IUnitStats attacker, IUnitStats victim)
+        /// <param name="attacker">Angreifer.</param>
+        /// <param name="victim">Verteidiger.</param>
+        /// <param name="attackerHitBonus">
+        /// Zusaetzlicher Trefferchance-Bonus in Prozent (Riftstorm-Erweiterung,
+        /// z. B. aus NPC-<c>melee_skill</c>/<c>ranged_skill</c> via
+        /// <see cref="SkillPerHitPercent"/>). Spieler-Pfad uebergibt 0.
+        /// </param>
+        public static HitResult RollMeleeHit(IUnitStats attacker, IUnitStats victim, int attackerHitBonus = 0)
         {
             int levelDiff = Mathf.Clamp(attacker.Level - victim.Level, -MaxLevelDiff, MaxLevelDiff);
 
-            // Angreifer mit höherem Level trifft häufiger (Cap ±10).
-            int hitChance = Mathf.Clamp(BaseHitChance + levelDiff, 5, 100);
+            // Angreifer mit höherem Level trifft häufiger (Cap ±10). Skill-Bonus
+            // (NPC) erhoeht die Trefferchance additiv, bleibt aber durch den
+            // 100 %-Cap begrenzt.
+            int hitChance = Mathf.Clamp(BaseHitChance + levelDiff + Mathf.Max(0, attackerHitBonus), 5, 100);
             if (Roll100() >= hitChance)
             {
                 return HitResult.Miss;
@@ -176,9 +195,16 @@ namespace Riftstorm.Gameplay.Combat
         /// Berechnet kompletten Melee-Schaden inkl. Hit-Roll, Strength-Skalierung,
         /// Variance, Armor-Reduktion und Crit-Bonus.
         /// </summary>
-        public static DamageInfo CalculateMeleeDamage(IUnitStats attacker, IUnitStats victim, Riftstorm.Gameplay.Combat.WeaponDefinition weapon)
+        /// <param name="attacker">Angreifer.</param>
+        /// <param name="victim">Verteidiger.</param>
+        /// <param name="weapon">Transiente Waffen-Definition (Base-Damage/Range).</param>
+        /// <param name="attackerHitBonus">
+        /// Trefferchance-Bonus in Prozent (NPC-Skill, Riftstorm-Erweiterung).
+        /// Spieler-Pfad uebergibt 0.
+        /// </param>
+        public static DamageInfo CalculateMeleeDamage(IUnitStats attacker, IUnitStats victim, Riftstorm.Gameplay.Combat.WeaponDefinition weapon, int attackerHitBonus = 0)
         {
-            HitResult hit = RollMeleeHit(attacker, victim);
+            HitResult hit = RollMeleeHit(attacker, victim, attackerHitBonus);
 
             // Bei Miss/Dodge/Parry/Resist/Immune → kein Schaden.
             if (hit is HitResult.Miss or HitResult.Dodge or HitResult.Parry or HitResult.Resist or HitResult.Immune)
@@ -336,6 +362,15 @@ namespace Riftstorm.Gameplay.Combat
         /// (Bow/Crossbow/Gun) oder die Melee-Waffe zur Skalierung herangezogen
         /// wird (Aimed Shot vs. Sinister Strike); der Caller setzt das anhand
         /// der equippten Waffe des Casters.
+        /// <paramref name="useMeleeAvoidance"/> schaltet die physische
+        /// Ausweich-Mechanik (Dodge/Parry/Block, <see cref="RollMeleeHit"/>)
+        /// statt des reinen Spell-Rolls (<see cref="RollSpellHit"/>) ein. Wird
+        /// von Auto-Attack-Effekten (<see cref="SpellEffect.MeleeAtk"/>/
+        /// <see cref="SpellEffect.RangedAtk"/>, Spell 81/82) gesetzt, damit
+        /// sowohl Spieler- als auch NPC-Auto-Attacks ausweichbar sind — exakt
+        /// wie der direkte Waffenschlag im Source (<c>getHitResult</c>).
+        /// <paramref name="attackerHitBonus"/> ist der Skill-/Treffer-Bonus, der
+        /// nur im Avoidance-Pfad an <see cref="RollMeleeHit"/> durchgereicht wird.
         /// </summary>
         public static DamageInfo CalculateSpellDamage(
             IUnitStats attacker,
@@ -344,11 +379,16 @@ namespace Riftstorm.Gameplay.Combat
             bool isMagical,
             int resistValue,
             bool weaponPercent = false,
-            bool useRangedWeapon = false)
+            bool useRangedWeapon = false,
+            bool useMeleeAvoidance = false,
+            int attackerHitBonus = 0)
         {
-            HitResult hit = RollSpellHit(attacker, victim);
+            HitResult hit = useMeleeAvoidance
+                ? RollMeleeHit(attacker, victim, attackerHitBonus)
+                : RollSpellHit(attacker, victim);
 
-            if (hit is HitResult.Miss or HitResult.Resist or HitResult.Immune)
+            if (hit is HitResult.Miss or HitResult.Resist or HitResult.Immune
+                or HitResult.Dodge or HitResult.Parry)
             {
                 return new DamageInfo
                 {

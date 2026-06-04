@@ -54,6 +54,18 @@ namespace Riftstorm.Game.Combat
         private string m_AppliedRangedId = string.Empty;
 
         /// <summary>
+        /// <c>true</c>, sobald der Spieler dauerhaft im Ranged-Auto-Attack-Modus
+        /// steht (Toggle ueber Taste 'T', server-autoritativ via
+        /// <see cref="PlayerCombat.WeaponModeChanged"/>). In diesem Zustand zeigt
+        /// der Renderer dauerhaft den Bogen (Ranged-Schicht) statt MainHand/OffHand;
+        /// die Cast-getriggerten <see cref="ShowRangedForCast"/> /
+        /// <see cref="HideRangedAfterCast"/> werden dann zu No-Ops, damit ein
+        /// Shoot-Cast die Bogen-Stance nicht versehentlich auf Schwert/Schild
+        /// zuruecksetzt.
+        /// </summary>
+        private bool m_RangedStanceActive;
+
+        /// <summary>
         /// Verdrahtet die Komponente nach dem Visual-Aufbau. Muss vom
         /// <see cref="Bootstrap.GamePlayerBootstrap"/> aufgerufen werden, sobald
         /// FLARE-Character + Loader existieren und <see cref="PlayerCombat"/> auf
@@ -79,17 +91,19 @@ namespace Riftstorm.Game.Combat
 
             m_Combat.WeaponChanged += OnWeaponChanged;
             m_Combat.OffhandChanged += OnOffhandChanged;
-            // RangedChanged wird bewusst NICHT mehr abonniert: der Bogen ist
-            // ein Cast-getriggertes Visual (siehe ShowRangedForCast/
-            // HideRangedAfterCast), keine Dauer-Stance. MainHand + OffHand
-            // bleiben in jeder Frame sichtbar; der Bogen erscheint nur fuer
-            // die Dauer eines Shoot-Casts und verschwindet wieder.
+            m_Combat.WeaponModeChanged += OnWeaponModeChanged;
+            // RangedChanged wird bewusst NICHT abonniert: der Ranged-Slot wird
+            // entweder ueber die dauerhafte Ranged-Stance (WeaponModeChanged) oder
+            // ueber ein Cast-getriggertes Visual (ShowRangedForCast/
+            // HideRangedAfterCast) sichtbar gemacht. Welche Hand-Waffe pro Frame
+            // sichtbar ist, entscheidet der aktuelle Stance (siehe ApplyStance).
 
-            // Aktuellen Stand sofort anwenden \u2014 die NetworkVariable haelt zum
-            // Spawn-Zeitpunkt bereits den Server-Default (z. B. "longsword" /
-            // "buckler"), und OnValueChanged feuert nur bei spaeteren Aenderungen.
-            ApplyAsync(MainHandLayerName, m_Combat.CurrentWeaponId, AppliedSlot.Main);
-            ApplyAsync(OffHandLayerName, m_Combat.CurrentOffhandId, AppliedSlot.Off);
+            // Initiale Stance aus dem server-autoritativen Modus ableiten und sofort
+            // anwenden — die NetworkVariables halten zum Spawn-Zeitpunkt bereits den
+            // Server-Default (z. B. "longsword" / "buckler"), OnValueChanged feuert
+            // nur bei spaeteren Aenderungen.
+            m_RangedStanceActive = m_Combat.IsRangedModeActive;
+            ApplyStance();
         }
 
         private void OnDestroy()
@@ -103,6 +117,7 @@ namespace Riftstorm.Game.Combat
             {
                 m_Combat.WeaponChanged -= OnWeaponChanged;
                 m_Combat.OffhandChanged -= OnOffhandChanged;
+                m_Combat.WeaponModeChanged -= OnWeaponModeChanged;
             }
             if (m_Cts != null)
             {
@@ -112,9 +127,59 @@ namespace Riftstorm.Game.Combat
             }
         }
 
-        private void OnWeaponChanged(string _, string newId) => ApplyAsync(MainHandLayerName, newId, AppliedSlot.Main);
+        private void OnWeaponChanged(string _, string newId)
+        {
+            // In der Ranged-Stance bleibt die MainHand ausgeblendet; die neue Id
+            // wird beim Zurueckschalten auf Melee frisch aus CurrentWeaponId
+            // gelesen (siehe ApplyStance), daher hier kein sofortiges Einblenden.
+            if (m_RangedStanceActive) { return; }
+            ApplyAsync(MainHandLayerName, newId, AppliedSlot.Main);
+        }
 
-        private void OnOffhandChanged(string _, string newId) => ApplyAsync(OffHandLayerName, newId, AppliedSlot.Off);
+        private void OnOffhandChanged(string _, string newId)
+        {
+            if (m_RangedStanceActive) { return; }
+            ApplyAsync(OffHandLayerName, newId, AppliedSlot.Off);
+        }
+
+        /// <summary>
+        /// Reagiert auf den server-autoritativen Wechsel des Auto-Attack-Modus
+        /// (Melee &lt;-&gt; Ranged). Im Ranged-Modus wird dauerhaft der Bogen gezeigt
+        /// (MainHand/OffHand leer, Ranged-Schicht = <see cref="PlayerCombat.CurrentRangedId"/>),
+        /// im Melee-Modus wieder Haupt-/Nebenhand aus den Equip-NetVars.
+        /// </summary>
+        private void OnWeaponModeChanged(bool rangedActive)
+        {
+            m_RangedStanceActive = rangedActive;
+            ApplyStance();
+        }
+
+        /// <summary>
+        /// Wendet die aktuell gueltige Waffen-Stance auf die FLARE-Schichten an.
+        /// Ranged-Stance: nur der Bogen ist sichtbar. Melee-Stance: MainHand +
+        /// OffHand aus den server-autoritativen <see cref="PlayerCombat"/>-NetVars,
+        /// Ranged-Schicht leer. Idempotent ueber den Slot-Cache in
+        /// <see cref="ApplyAsync"/>.
+        /// </summary>
+        private void ApplyStance()
+        {
+            if (m_Combat == null)
+            {
+                return;
+            }
+            if (m_RangedStanceActive)
+            {
+                ApplyAsync(MainHandLayerName, string.Empty, AppliedSlot.Main);
+                ApplyAsync(OffHandLayerName, string.Empty, AppliedSlot.Off);
+                ApplyAsync(RangedLayerName, m_Combat.CurrentRangedId, AppliedSlot.Ranged);
+            }
+            else
+            {
+                ApplyAsync(RangedLayerName, string.Empty, AppliedSlot.Ranged);
+                ApplyAsync(MainHandLayerName, m_Combat.CurrentWeaponId, AppliedSlot.Main);
+                ApplyAsync(OffHandLayerName, m_Combat.CurrentOffhandId, AppliedSlot.Off);
+            }
+        }
 
         /// <summary>
         /// Wechselt die Visuals fuer einen Shoot-Cast: MainHand + OffHand werden
@@ -127,6 +192,13 @@ namespace Riftstorm.Game.Combat
         /// </summary>
         public void ShowRangedForCast(string rangedId)
         {
+            // In dauerhafter Ranged-Stance ist der Bogen bereits sichtbar — der
+            // Cast-Trigger ist dann ein No-Op und darf MainHand/OffHand nicht
+            // anfassen.
+            if (m_RangedStanceActive)
+            {
+                return;
+            }
             // Main/Offhand kurzzeitig ausblenden — der Bogen ist die einzige
             // sichtbare Hand-Waffe waehrend des Schuss-Casts.
             ApplyAsync(MainHandLayerName, string.Empty, AppliedSlot.Main);
@@ -143,6 +215,12 @@ namespace Riftstorm.Game.Combat
         /// </summary>
         public void HideRangedAfterCast()
         {
+            // In dauerhafter Ranged-Stance bleibt der Bogen stehen — ein endender
+            // Shoot-Cast darf nicht auf Schwert/Schild zuruecksetzen.
+            if (m_RangedStanceActive)
+            {
+                return;
+            }
             ApplyAsync(RangedLayerName, string.Empty, AppliedSlot.Ranged);
             if (m_Combat != null)
             {

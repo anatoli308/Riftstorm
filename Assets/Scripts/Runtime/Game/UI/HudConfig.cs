@@ -71,6 +71,10 @@ namespace Riftstorm.Game.UI
 
         public string frameTexture = "interface/unit_frame";
         public string frameTextureReverse = "interface/unit_frame_reverse";
+        /// <summary>Optionaler Boss-Rahmen fuer das Target-Frame (NPC mit <c>bool_boss</c>). Leer ⇒ Default-Rahmen.</summary>
+        public string frameTextureBoss = "interface/unit_frame_boss";
+        /// <summary>Optionaler Elite-Rahmen fuer das Target-Frame (NPC mit <c>bool_elite</c>). Leer ⇒ Default-Rahmen.</summary>
+        public string frameTextureElite = "interface/unit_frame_elite";
         public string hpFillTexture = "interface/unit_frame_hp";
         public string hpFillTextureReverse = "interface/unit_frame_hp_reverse";
         public string manaFillTexture = "interface/unit_frame_mp";

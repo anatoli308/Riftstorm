@@ -134,6 +134,44 @@ namespace Riftstorm.Game.Spells
     }
 
     /// <summary>
+    /// Trigger-Bedingungen einer <see cref="AuraType.Proc"/>-Aura (steckt in
+    /// <c>effectN_data2</c> = <see cref="AuraEffect.MiscValue"/>). 1:1 aus
+    /// <c>source_server/Shared/SpellDefines.h</c> (<c>enum ProcFlags : uint32_t</c>).
+    /// Bitfeld — eine Proc-Aura kann auf mehrere Ereignisse reagieren.
+    /// </summary>
+    [Flags]
+    public enum ProcFlags
+    {
+        /// <summary>Kein Trigger.</summary>
+        None = 0,
+        /// <summary>Der Aura-Traeger hat Schaden erlitten.</summary>
+        HolderTookDamage = 1 << 0,
+        /// <summary>Der Aura-Traeger hat Schaden ausgeteilt.</summary>
+        HolderDealtDamage = 1 << 1,
+        /// <summary>
+        /// Der Aura-Traeger war gegen einen Angriff immun (School-/Mechanic-
+        /// Immunity hat den Treffer geschluckt). Treiber von Focused Evasion:
+        /// der naechste physische Angriff wird geblockt und verbraucht die Ladung.
+        /// </summary>
+        HolderWasImmune = 1 << 2,
+        /// <summary>Der Aura-Traeger ist einem Angriff ausgewichen (Dodge).</summary>
+        HolderDodged = 1 << 3,
+    }
+
+    /// <summary>
+    /// Aktion, die beim Ausloesen einer <see cref="AuraType.Proc"/>-Aura
+    /// ausgefuehrt wird (steckt in <c>effectN_data3</c>). 1:1 aus
+    /// <c>source_server/Shared/SpellDefines.h</c> (<c>enum ProcType : uint8_t</c>).
+    /// </summary>
+    public enum ProcType
+    {
+        /// <summary>Keine Aktion.</summary>
+        None = 0,
+        /// <summary>Verbraucht eine Ladung der Aura (entfernt sie bei 0 Ladungen).</summary>
+        RemoveCharge = 1,
+    }
+
+    /// <summary>
     /// Konkreter Mechanic-Subtyp einer <see cref="AuraType.InflictMechanic"/>-Aura.
     /// Steckt in <c>effectN_data2</c> (= <see cref="AuraEffect.MiscValue"/>).
     /// 1:1 aus <c>source_server/Shared/SpellDefines.h</c> (<c>enum class Mechanics</c>).
@@ -266,5 +304,14 @@ namespace Riftstorm.Game.Spells
         /// um nicht mit zukuenftigen Source-Flags zu kollidieren.
         /// </summary>
         CanMoveWhileCasting = 1L << 50,
+
+        /// <summary>
+        /// Gerichteter Skillshot (FLARE-Stil): das Projektil fliegt geradlinig
+        /// in Cursor-/Blickrichtung und trifft das erste valide Ziel auf seiner
+        /// Bahn, statt ein vorab gewaehltes Unit-Ziel zu verfolgen (Homing).
+        /// Erfordert <see cref="SpellTemplate.Speed"/> &gt; 0. Bewusst hoch
+        /// gelegt, um nicht mit zukuenftigen Source-Flags zu kollidieren.
+        /// </summary>
+        Skillshot = 1L << 51,
     }
 }

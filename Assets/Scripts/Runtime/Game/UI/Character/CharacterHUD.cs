@@ -329,6 +329,9 @@ namespace Riftstorm.Game.UI.Character
             m_StatsLabel.style.fontSize = m_Config.statsFontSize;
             m_StatsLabel.style.color = Color.white;
             m_StatsLabel.style.whiteSpace = WhiteSpace.Normal;
+            // Rich-Text fuer die WoW-artige Stat-Faerbung (rot/gruen via
+            // <color=#RRGGBB>) — Default ist true, hier explizit zur Absicherung.
+            m_StatsLabel.enableRichText = true;
             m_StatsLabel.style.unityTextAlign = TextAnchor.UpperLeft;
             // Picking aktiviert, damit der UIToolkit-Tooltip mit der
             // DMG-Aufschluesselung (siehe AppendMeleeDamageLine) auf Hover
@@ -390,6 +393,7 @@ namespace Riftstorm.Game.UI.Character
             {
                 m_BoundStats.HpChanged += OnHpOrManaChanged;
                 m_BoundStats.ManaChanged += OnHpOrManaChanged;
+                m_BoundStats.ClientAurasChanged += OnAurasChanged;
             }
 
             // PlayerCombat bindet die aktuell ausgerüstete Waffe; über WeaponChanged
@@ -470,6 +474,7 @@ namespace Riftstorm.Game.UI.Character
             {
                 m_BoundStats.HpChanged -= OnHpOrManaChanged;
                 m_BoundStats.ManaChanged -= OnHpOrManaChanged;
+                m_BoundStats.ClientAurasChanged -= OnAurasChanged;
                 m_BoundStats = null;
             }
             if (m_BoundCombat != null)
@@ -508,6 +513,7 @@ namespace Riftstorm.Game.UI.Character
             m_BoundStats = stats;
             m_BoundStats.HpChanged += OnHpOrManaChanged;
             m_BoundStats.ManaChanged += OnHpOrManaChanged;
+            m_BoundStats.ClientAurasChanged += OnAurasChanged;
             RefreshStats();
             Debug.Log($"[CharacterHUD] UnitStats late-bound on '{playerObj.name}'.");
         }
@@ -554,6 +560,12 @@ namespace Riftstorm.Game.UI.Character
         // ---------------------------------------------------------------------
 
         private void OnHpOrManaChanged(int previous, int current) => RefreshStats();
+
+        /// <summary>Refresh-Trigger sobald die replizierten Auren des lokalen
+        /// Spielers wechseln (Buff/Debuff startet, stackt oder laeuft ab). Event-
+        /// getrieben \u2014 kein Polling \u2014 damit die WoW-artige Stat-Faerbung live
+        /// mitlaeuft, solange ein Debuff wie Infected Wound aktiv ist.</summary>
+        private void OnAurasChanged() => RefreshStats();
 
         /// <summary>Refresh-Trigger fuer den DMG-Block bei Waffen-/Offhand-Wechsel.
         /// Payload (oldId/newId) wird hier nicht gebraucht — die Zeile liest die
@@ -673,10 +685,10 @@ namespace Riftstorm.Game.UI.Character
             // Primary Attributes (Original-Stat-Enum-Reihenfolge: STR=4, AGI=5, WIL=6, INT=7;
             // FRT/CRG sind die Riftstorm-Erweiterung). AGI skaliert Ranged-Damage,
             // Ranged-Crit und Dodge — Details siehe UnitStats.Agility / CombatFormulas.
-            sb.Append("STR  ").Append(m_BoundStats.Strength).Append('\n');
-            sb.Append("AGI  ").Append(m_BoundStats.Agility).Append('\n');
-            sb.Append("INT  ").Append(m_BoundStats.Intelligence).Append('\n');
-            sb.Append("WIL  ").Append(m_BoundStats.Willpower).Append('\n');
+            sb.Append("STR  "); AppendModifiedStat(sb, StatId.Strength); sb.Append('\n');
+            sb.Append("AGI  "); AppendModifiedStat(sb, StatId.Agility); sb.Append('\n');
+            sb.Append("INT  "); AppendModifiedStat(sb, StatId.Intelligence); sb.Append('\n');
+            sb.Append("WIL  "); AppendModifiedStat(sb, StatId.Willpower); sb.Append('\n');
             sb.Append("FRT  ").Append(m_BoundStats.Fortitude).Append('\n');
             sb.Append("CRG  ").Append(m_BoundStats.Courage).Append('\n');
             sb.Append('\n');
@@ -755,6 +767,35 @@ namespace Riftstorm.Game.UI.Character
             }
 
             m_StatsLabel.text = sb.ToString();
+        }
+
+        /// <summary>
+        /// Haengt einen Primaerattribut-Wert WoW-artig eingefaerbt an den
+        /// StringBuilder: rot (<c>#FF5050</c>) wenn ein Debuff den Wert senkt
+        /// (z. B. Infected Wound minus 2 %), gruen (<c>#50FF50</c>) wenn ein
+        /// Selbst-Buff ihn anhebt, sonst neutral-weiss. Bei Abweichung wird das
+        /// vorzeichenbehaftete Delta in Klammern angezeigt (z. B.
+        /// <c>98 (-2)</c>), damit die Skalierung detailliert ablesbar ist. Nutzt
+        /// das Rich-Text-Markup des Labels (<see cref="Label.enableRichText"/>).
+        /// </summary>
+        /// <param name="sb">Ziel-StringBuilder der Stats-Zeile.</param>
+        /// <param name="stat">Anzuzeigendes Primaerattribut.</param>
+        private void AppendModifiedStat(StringBuilder sb, StatId stat)
+        {
+            m_BoundStats.GetDisplayStat(stat, out int baseValue, out int effective);
+            if (effective == baseValue)
+            {
+                sb.Append(effective);
+                return;
+            }
+            int delta = effective - baseValue;
+            string hex = delta < 0 ? "#FF5050" : "#50FF50";
+            sb.Append("<color=").Append(hex).Append('>').Append(effective).Append(" (");
+            if (delta > 0)
+            {
+                sb.Append('+');
+            }
+            sb.Append(delta).Append(')').Append("</color>");
         }
 
         // ---------------------------------------------------------------------

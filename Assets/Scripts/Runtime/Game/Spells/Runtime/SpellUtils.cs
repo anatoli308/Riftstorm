@@ -125,7 +125,7 @@ namespace Riftstorm.Game.Spells
             }
             if (spell.ManaPct > 0f && caster != null)
             {
-                flat += Mathf.RoundToInt(caster.MaxMana * spell.ManaPct);
+                flat += Mathf.RoundToInt(caster.MaxMana * (spell.ManaPct / 100f));
             }
             return Mathf.Max(0, flat);
         }
@@ -173,6 +173,24 @@ namespace Riftstorm.Game.Spells
         }
 
         /// <summary>
+        /// Liefert fuer Aura-Effekte den semantischen Misc-Wert (z. B.
+        /// School/Mechanic/Stat-Maske). Periodische Payload-Auren lesen ihren
+        /// Betrag aus <c>data2</c> und schieben das optionale Misc-Feld nach
+        /// <c>data3</c>; klassische Modifier-Auren bleiben bei
+        /// <c>data2=misc</c>, <c>data3=value</c>.
+        /// </summary>
+        public static long GetAuraMiscValue(SpellTemplateEffect eff)
+        {
+            if (!IsApplyAura(eff.Effect))
+            {
+                return eff.Data2;
+            }
+
+            AuraType auraType = (AuraType)eff.Data1;
+            return AuraValueLivesInData2(auraType) ? eff.Data3 : eff.Data2;
+        }
+
+        /// <summary>
         /// Einheitliche Effekt-Wert-Berechnung: Formel ersetzt, sonst
         /// <c>data1 + data2 * clvl</c>. FLARE-kanonische Semantik (volle
         /// Formel-Unterstuetzung mit allen Tokens, nicht die abgespeckte
@@ -193,22 +211,31 @@ namespace Riftstorm.Game.Spells
         /// </description></item>
         /// <item><description>
         ///   Aura-Effekte (<see cref="SpellEffect.ApplyAura"/>,
-        ///   <see cref="SpellEffect.ApplyAreaAura"/>): <c>value = data3</c>
-        ///   (Aura-Magnitude, z.B. Arrow Flurry data3=-50 = -50% Cooldown).
-        ///   data1=AuraType, data2=MiscValue/School-Bitmask &#8212; <i>nicht</i>
-        ///   der Skalar.
+        ///   <see cref="SpellEffect.ApplyAreaAura"/>): die Magnitude liegt je
+        ///   nach <see cref="AuraType"/> entweder in <c>data2</c>
+        ///   (Periodic Damage/Heal/Mana) oder in <c>data3</c>
+        ///   (Modifier/Stat/Mechanic-Auren). Die Zuordnung wird zentral in
+        ///   <see cref="GetAuraBaseValueSeed(SpellTemplateEffect)"/> gekapselt.
         /// </description></item>
         /// </list>
         /// </remarks>
         static int EvaluateEffectFormula(SpellTemplateEffect eff, ICombatUnit caster)
         {
+            int baseValueSeed = IsApplyAura(eff.Effect)
+                ? GetAuraBaseValueSeed(eff)
+                : (int)eff.Data2;
+
             if (!string.IsNullOrEmpty(eff.ScaleFormula))
             {
-                int valueSeed = IsApplyAura(eff.Effect)
-                    ? (int)eff.Data3
-                    : (int)eff.Data2;
-                return SpellFormulaEvaluator.Evaluate(eff.ScaleFormula, BuildContext(caster, valueSeed));
+                int evaluated = SpellFormulaEvaluator.Evaluate(eff.ScaleFormula, BuildContext(caster, baseValueSeed));
+                return ClampPeriodicAuraMagnitude(eff, evaluated, baseValueSeed);
             }
+
+            if (IsApplyAura(eff.Effect))
+            {
+                return ClampPeriodicAuraMagnitude(eff, baseValueSeed, baseValueSeed);
+            }
+
             int clvl = caster?.Level ?? 1;
             return (int)eff.Data1 + (int)eff.Data2 * clvl;
         }
@@ -261,10 +288,58 @@ namespace Riftstorm.Game.Spells
         static bool IsApplyAura(SpellEffect e)
             => e == SpellEffect.ApplyAura || e == SpellEffect.ApplyAreaAura;
 
+        /// <summary>
+        /// Liefert das semantische Betragsfeld fuer einen Aura-Effekt-Slot.
+        /// Periodische Payload-Auren tragen ihren Tick-Wert in <c>data2</c>,
+        /// klassische Modifier/Mechanics in <c>data3</c>.
+        /// </summary>
+        static int GetAuraBaseValueSeed(SpellTemplateEffect eff)
+        {
+            AuraType auraType = (AuraType)eff.Data1;
+            return AuraValueLivesInData2(auraType) ? (int)eff.Data2 : (int)eff.Data3;
+        }
+
+        /// <summary>
+        /// Verhindert stumme 0-Ticks bei periodischen Payload-Auren, wenn die
+        /// DB einen positiven Basiswert liefert, die Formel aber durch
+        /// Integer-Division auf 0 faellt.
+        /// </summary>
+        static int ClampPeriodicAuraMagnitude(SpellTemplateEffect eff, int evaluated, int baseValueSeed)
+        {
+            if (evaluated != 0 || baseValueSeed <= 0 || !IsApplyAura(eff.Effect))
+            {
+                return evaluated;
+            }
+
+            AuraType auraType = (AuraType)eff.Data1;
+            return IsPeriodicPayloadAura(auraType) ? 1 : evaluated;
+        }
+
+        /// <summary>
+        /// True, wenn die Aura-Konvention den eigentlichen Payload-Wert in
+        /// <c>data2</c> und ein optionales Misc-Feld in <c>data3</c> speichert.
+        /// </summary>
+        static bool AuraValueLivesInData2(AuraType auraType)
+            => IsPeriodicPayloadAura(auraType);
+
+        /// <summary>
+        /// True fuer periodische Aura-Typen, die einen numerischen Tick-Wert
+        /// transportieren (DoT/HoT/Mana-over-time).
+        /// </summary>
+        static bool IsPeriodicPayloadAura(AuraType auraType)
+            => auraType == AuraType.PeriodicDamage
+                || auraType == AuraType.PeriodicHeal
+                || auraType == AuraType.PeriodicMeleeDamage
+                || auraType == AuraType.PeriodicHealPct
+                || auraType == AuraType.PeriodicRestoreMana
+                || auraType == AuraType.PeriodicBurnMana
+                || auraType == AuraType.PeriodicRestoreManaPct;
+
         static bool AllActiveTargetsAre(SpellTemplate spell, SpellTargetType type)
         {
             bool anyActive = false;
-            for (int slot = 1; slot <= 3; slot++)
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
             {
                 SpellTemplateEffect e = spell.GetEffect(slot);
                 if (!e.IsActive) { continue; }
@@ -278,7 +353,8 @@ namespace Riftstorm.Game.Spells
 
         static bool AnyActiveTargetMatches(SpellTemplate spell, TargetTypePredicate predicate)
         {
-            for (int slot = 1; slot <= 3; slot++)
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
             {
                 SpellTemplateEffect e = spell.GetEffect(slot);
                 if (!e.IsActive) { continue; }

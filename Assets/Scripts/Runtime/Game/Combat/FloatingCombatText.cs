@@ -55,6 +55,7 @@ namespace Riftstorm.Game.Combat
         [SerializeField] private Color m_HitColor = new(1f, 0.92f, 0.4f, 1f);
         [SerializeField] private Color m_CritColor = new(1f, 0.45f, 0.2f, 1f);
         [SerializeField] private Color m_MitigatedColor = new(0.8f, 0.8f, 0.85f, 1f);
+        [SerializeField] private Color m_HealColor = new(0.45f, 1f, 0.6f, 1f);
 
         // -------------------------------------------------------------------------
         // State
@@ -66,6 +67,7 @@ namespace Riftstorm.Game.Combat
             public int Amount;
             public HitResult Result;
             public float JitterX;
+            public bool IsHeal;
         }
 
         private readonly List<Entry> m_Active = new(16);
@@ -113,6 +115,7 @@ namespace Riftstorm.Game.Combat
             if (m_Stats != null)
             {
                 m_Stats.ClientDamageReceived += OnDamageReceived;
+                m_Stats.ClientHealReceived += OnHealReceived;
             }
         }
 
@@ -121,6 +124,7 @@ namespace Riftstorm.Game.Combat
             if (m_Stats != null)
             {
                 m_Stats.ClientDamageReceived -= OnDamageReceived;
+                m_Stats.ClientHealReceived -= OnHealReceived;
             }
             m_Active.Clear();
         }
@@ -141,6 +145,26 @@ namespace Riftstorm.Game.Combat
                 Amount = amount,
                 Result = result,
                 JitterX = ((float)m_Rng.NextDouble() * 2f - 1f) * m_HorizontalJitter,
+            });
+        }
+
+        private void OnHealReceived(int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+            if (m_Active.Count >= m_MaxActive)
+            {
+                m_Active.RemoveAt(0);
+            }
+            m_Active.Add(new()
+            {
+                SpawnTime = Time.time,
+                Amount = amount,
+                Result = HitResult.Hit,
+                JitterX = ((float)m_Rng.NextDouble() * 2f - 1f) * m_HorizontalJitter,
+                IsHeal = true,
             });
         }
 
@@ -229,10 +253,10 @@ namespace Riftstorm.Game.Combat
                 }
 
                 float alpha = 1f - t * t; // Quadratisches Fade-Out.
-                Color color = PickColor(e.Result);
+                Color color = PickColor(e.Result, e.IsHeal);
                 color.a *= alpha;
 
-                string label = FormatLabel(e.Amount, e.Result);
+                string label = FormatLabel(e.Amount, e.Result, e.IsHeal);
 
                 float guiY = Screen.height - screen.y - height;
                 Rect rect = new(screen.x - width * 0.5f + e.JitterX, guiY, width, height);
@@ -252,32 +276,48 @@ namespace Riftstorm.Game.Combat
         // Helpers
         // -------------------------------------------------------------------------
 
-        private Color PickColor(HitResult result) => result switch
+        private Color PickColor(HitResult result, bool isHeal)
         {
-            HitResult.Crit => m_CritColor,
-            HitResult.Miss
-                or HitResult.Dodge
-                or HitResult.Parry
-                or HitResult.Block
-                or HitResult.GlancingBlow
-                or HitResult.Resist
-                or HitResult.Immune
-                or HitResult.Absorb => m_MitigatedColor,
-            _ => m_HitColor,
-        };
+            if (isHeal)
+            {
+                return m_HealColor;
+            }
 
-        private static string FormatLabel(int amount, HitResult result) => result switch
+            return result switch
+            {
+                HitResult.Crit => m_CritColor,
+                HitResult.Miss
+                    or HitResult.Dodge
+                    or HitResult.Parry
+                    or HitResult.Block
+                    or HitResult.GlancingBlow
+                    or HitResult.Resist
+                    or HitResult.Immune
+                    or HitResult.Absorb => m_MitigatedColor,
+                _ => m_HitColor,
+            };
+        }
+
+        private static string FormatLabel(int amount, HitResult result, bool isHeal)
         {
-            HitResult.Miss => "Miss",
-            HitResult.Dodge => "Dodge",
-            HitResult.Parry => "Parry",
-            HitResult.Block => amount > 0 ? $"Block {amount}" : "Block",
-            HitResult.Resist => "Resist",
-            HitResult.Immune => "Immune",
-            HitResult.Absorb => amount > 0 ? $"Absorb {amount}" : "Absorb",
-            HitResult.Crit => $"{amount}!",
-            HitResult.GlancingBlow => $"~{amount}",
-            _ => amount.ToString(),
-        };
+            if (isHeal)
+            {
+                return $"+{amount}";
+            }
+
+            return result switch
+            {
+                HitResult.Miss => "Miss",
+                HitResult.Dodge => "Dodge",
+                HitResult.Parry => "Parry",
+                HitResult.Block => amount > 0 ? $"Block {amount}" : "Block",
+                HitResult.Resist => "Resist",
+                HitResult.Immune => "Immune",
+                HitResult.Absorb => amount > 0 ? $"Absorb {amount}" : "Absorb",
+                HitResult.Crit => $"{amount}!",
+                HitResult.GlancingBlow => $"~{amount}",
+                _ => amount.ToString(),
+            };
+        }
     }
 }

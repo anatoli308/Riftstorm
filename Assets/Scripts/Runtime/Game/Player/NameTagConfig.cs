@@ -36,5 +36,39 @@ namespace Riftstorm.Game.Player
 
         /// <summary>Vertikales Padding (GUI-Pixel) zwischen Text-Rect und Plate-Rand.</summary>
         public float platePaddingY = 3f;
+
+        // ---- Nameplate-HP-Bar (Overhead, Player + NPC) --------------------------
+
+        /// <summary>Master-Toggle f&#252;r die Overhead-HP-Bar unter dem Nametag. Aus = nie zeichnen.</summary>
+        public bool healthBarEnabled = true;
+
+        /// <summary>
+        /// Ob die HP-Bar auch &#252;ber dem EIGENEN Spieler gezeichnet wird. Default
+        /// <c>false</c>, weil der lokale Spieler bereits sein <c>PlayerFrameUI</c> hat
+        /// und ein zweiter Balken &#252;ber dem Kopf nur visueller L&#228;rm w&#228;re.
+        /// </summary>
+        public bool healthBarShowSelf = false;
+
+        /// <summary>
+        /// Hintergrund-Plate-Textur der HP-Bar (leerer Rahmen). Key relativ zu
+        /// <c>Application.dataPath/Art</c> ohne Extension. Leer = kein Hintergrund.
+        /// </summary>
+        public string nameplateBackgroundTexture = "interface/nameplate_bg";
+
+        /// <summary>
+        /// Fill-Textur der HP-Bar (progressiv von links nach rechts, skaliert mit
+        /// dem HP-Anteil). Key relativ zu <c>Application.dataPath/Art</c> ohne
+        /// Extension. Leer = kein Fill.
+        /// </summary>
+        public string nameplateHpTexture = "interface/nameplate_hp";
+
+        /// <summary>Breite der HP-Bar in GUI-Pixeln.</summary>
+        public float healthBarWidth = 120f;
+
+        /// <summary>H&#246;he der HP-Bar in GUI-Pixeln.</summary>
+        public float healthBarHeight = 9f;
+
+        /// <summary>Vertikaler Abstand (GUI-Pixel) zwischen Nametag-Unterkante und HP-Bar.</summary>
+        public float healthBarOffsetY = 2f;
     }
 }

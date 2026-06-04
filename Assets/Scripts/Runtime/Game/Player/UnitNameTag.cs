@@ -1,5 +1,6 @@
 using Riftstorm.ApplicationLifecycle.UI;
 using Riftstorm.Game.Combat;
+using Riftstorm.Game.Npc;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -66,9 +67,31 @@ namespace Riftstorm.Game.Player
         private Texture2D m_IdlePlateTexture;
         private bool m_HoverPlateResolved;
 
+        // HP-Bar (Overhead, Player + NPC). HP-Quelle ist die geteilte
+        // UnitStats-Komponente (NetworkVariable-repliziert), die auf jedem Peer
+        // HpChanged feuert. Texturen kommen wie das Hover-Plate datengetrieben
+        // aus nametag_config.json und werden einmalig beim ersten OnGUI-Pass
+        // aufgeloest. Kein Polling: m_HpCurrent/m_HpMax werden ausschliesslich
+        // ueber das HpChanged-Event aktualisiert.
+        private UnitStats m_Stats;
+        private int m_HpCurrent;
+        private int m_HpMax;
+        private Texture2D m_NameplateBgTexture;
+        private Texture2D m_NameplateHpTexture;
+        private bool m_NameplateResolved;
+
+        /// <summary>Vertikaler Abstand (GUI-Pixel) zwischen HP-Bar-Unterkante und Cast-Bar.</summary>
+        private const float k_CastBarGap = 4f;
+
+        // Co-lokale NPC-Cast-Bar (nur an NPCs vorhanden, zur Laufzeit per
+        // AddComponent ergaenzt). Wird in OnGUI lazy aufgeloest; Spieler-Nametags
+        // haben keine und ueberspringen die Cast-Bar dauerhaft.
+        private NpcCastBarView m_CastBarView;
+
         private void Awake()
         {
             ResolveNameSource();
+            ResolveStats();
 
             // Wenn kein expliziter Anker zugewiesen ist, leiten wir die Kopf-H\u00f6he aus den
             // Renderer-Bounds ab. Das funktioniert sowohl f\u00fcr 2D-Sprites (FLARE) als auch
@@ -85,6 +108,21 @@ namespace Riftstorm.Game.Player
             }
             // Auto-Resolve: irgendeine Komponente am selben GameObject, die INameSource implementiert.
             m_NameSource = GetComponent<INameSource>();
+        }
+
+        /// <summary>
+        /// L&#246;st die geteilte <see cref="UnitStats"/>-Komponente auf (Player wie NPC
+        /// besitzen genau eine). Liefert die HP-Quelle f&#252;r die Overhead-HP-Bar.
+        /// Zuerst am selben GameObject, dann im Parent (Skin-Roots h&#228;ngen UnitStats
+        /// teils eine Ebene h&#246;her).
+        /// </summary>
+        private void ResolveStats()
+        {
+            m_Stats = GetComponent<UnitStats>();
+            if (m_Stats == null)
+            {
+                m_Stats = GetComponentInParent<UnitStats>();
+            }
         }
 
         /// <summary>
@@ -141,6 +179,18 @@ namespace Riftstorm.Game.Player
                 m_NameSource.DisplayNameChanged += OnNameChanged;
                 m_CachedName = m_NameSource.DisplayName;
             }
+            if (m_Stats == null)
+            {
+                ResolveStats();
+            }
+            if (m_Stats != null)
+            {
+                m_Stats.HpChanged += OnHpChanged;
+                // Initialwerte ziehen, falls das Spawn-HpChanged bereits gefeuert
+                // hat, bevor wir abonniert haben.
+                m_HpCurrent = m_Stats.CurrentHp;
+                m_HpMax = m_Stats.MaxHp;
+            }
         }
 
         private void OnDisable()
@@ -149,9 +199,23 @@ namespace Riftstorm.Game.Player
             {
                 m_NameSource.DisplayNameChanged -= OnNameChanged;
             }
+            if (m_Stats != null)
+            {
+                m_Stats.HpChanged -= OnHpChanged;
+            }
         }
 
         private void OnNameChanged(string newName) => m_CachedName = newName;
+
+        /// <summary>
+        /// Cacht die aktuellen HP-Werte f&#252;r die Overhead-HP-Bar. Wird auf jedem
+        /// Peer vom <see cref="UnitStats.HpChanged"/>-Event getrieben &#8212; kein Polling.
+        /// </summary>
+        private void OnHpChanged(int current, int max)
+        {
+            m_HpCurrent = current;
+            m_HpMax = max;
+        }
 
         /// <summary>
         /// Liefert die Welt-Position des Renderer-Bounds-Eckpunkts, der unter der
@@ -359,6 +423,15 @@ namespace Riftstorm.Game.Player
             }
             GUI.Label(rect, m_CachedName, m_Style);
 
+            // Overhead-HP-Bar (nameplate_bg + nameplate_hp) unter dem Nametag.
+            // Datengetrieben via nametag_config.json, fuer Player wie NPC. Das
+            // eigene Nametag bleibt per Default ohne Bar (eigenes PlayerFrameUI).
+            DrawHealthBar(rect, isLocalPlayer);
+
+            // NPC-Cast-Bar direkt UNTER der HP-Bar. Teilt sich dasselbe nameRect,
+            // damit sie nie gegenueber Name + HP-Bar verrutscht.
+            DrawCastBar(rect, isLocalPlayer);
+
             // Klick auf das Label selektiert die Einheit (source-aequivalent zum
             // Overhead-Klick im SoF-Client). Manueller MouseDown-Hit-Test \u2014 kein
             // GUI.Button, das einen Hover-Repaint-Pass mit Bold-Strokes erzeugen
@@ -390,6 +463,121 @@ namespace Riftstorm.Game.Player
                     }
                     GUI.Label(new Rect(rect.x + dx, rect.y + dy, rect.width, rect.height), text, style);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Zeichnet die Overhead-HP-Bar unter dem Nametag mittels der
+        /// datengetriebenen Texturen <c>nameplate_bg</c> (Hintergrund) und
+        /// <c>nameplate_hp</c> (Fill). Der Fill wird horizontal auf den HP-Anteil
+        /// (<see cref="m_HpCurrent"/> / <see cref="m_HpMax"/>) skaliert. Reiner
+        /// Zeichen-Pass &#8212; die HP-Werte kommen ausschlie&#223;lich aus dem
+        /// <see cref="UnitStats.HpChanged"/>-Event (kein Polling).
+        /// </summary>
+        /// <param name="nameRect">Das bereits berechnete Rect des Nametag-Labels.</param>
+        /// <param name="isLocalPlayer">True, wenn dies das eigene Nametag ist.</param>
+        private void DrawHealthBar(Rect nameRect, bool isLocalPlayer)
+        {
+            NameTagConfig cfg = NameTagConfigLoader.Load();
+            if (!cfg.healthBarEnabled)
+            {
+                return;
+            }
+            if (isLocalPlayer && !cfg.healthBarShowSelf)
+            {
+                return;
+            }
+            if (m_HpMax <= 0)
+            {
+                return; // Keine gueltige HP-Quelle (Pre-Spawn) oder MaxHp noch 0.
+            }
+
+            if (!m_NameplateResolved)
+            {
+                m_NameplateBgTexture = NameTagConfigLoader.LoadTextureOrNull(cfg.nameplateBackgroundTexture);
+                m_NameplateHpTexture = NameTagConfigLoader.LoadTextureOrNull(cfg.nameplateHpTexture);
+                m_NameplateResolved = true;
+            }
+
+            float width = cfg.healthBarWidth;
+            float height = cfg.healthBarHeight;
+            float barX = nameRect.x + (nameRect.width - width) * 0.5f;
+            float barY = nameRect.yMax + cfg.healthBarOffsetY;
+            Rect bgRect = new(barX, barY, width, height);
+
+            if (m_NameplateBgTexture != null)
+            {
+                GUI.DrawTexture(bgRect, m_NameplateBgTexture, ScaleMode.StretchToFill, alphaBlend: true);
+            }
+
+            float fraction = Mathf.Clamp01((float)m_HpCurrent / m_HpMax);
+            if (m_NameplateHpTexture != null && fraction > 0f)
+            {
+                Rect fillRect = new(barX, barY, width * fraction, height);
+                GUI.DrawTexture(fillRect, m_NameplateHpTexture, ScaleMode.StretchToFill, alphaBlend: true);
+            }
+        }
+
+        /// <summary>
+        /// Zeichnet die NPC-Cast-Bar direkt UNTER der Overhead-HP-Bar. Die
+        /// Cast-Daten (Fortschritt, Spell-Name, Texturen, Style) kommen von der
+        /// co-lokalen <see cref="NpcCastBarView"/>; die Position wird aus demselben
+        /// <paramref name="nameRect"/> abgeleitet wie die HP-Bar, sodass die Bar nie
+        /// gegen&#252;ber Name und HP-Bar verrutscht. Spieler-Nametags besitzen keine
+        /// <see cref="NpcCastBarView"/> und &#252;berspringen den Pass. Reiner
+        /// Zeichen-Pass &#8212; kein Polling.
+        /// </summary>
+        /// <param name="nameRect">Das bereits berechnete Rect des Nametag-Labels.</param>
+        /// <param name="isLocalPlayer">True, wenn dies das eigene Nametag ist.</param>
+        private void DrawCastBar(Rect nameRect, bool isLocalPlayer)
+        {
+            if (m_CastBarView == null)
+            {
+                m_CastBarView = GetComponent<NpcCastBarView>();
+                if (m_CastBarView == null)
+                {
+                    return; // Keine NPC-Cast-Bar an dieser Einheit (z. B. Spieler).
+                }
+            }
+
+            if (!m_CastBarView.TryGetActiveCast(
+                    out float progress,
+                    out string spellName,
+                    out Texture2D bg,
+                    out Texture2D fill,
+                    out GUIStyle nameStyle))
+            {
+                return;
+            }
+
+            NameTagConfig cfg = NameTagConfigLoader.Load();
+            float width = cfg.healthBarWidth;
+            float height = cfg.healthBarHeight;
+            float barX = nameRect.x + (nameRect.width - width) * 0.5f;
+
+            // Direkt unter der HP-Bar stapeln. Ist die HP-Bar (de)aktiviert oder
+            // ohne gueltige HP-Quelle, sitzt die Cast-Bar entsprechend direkt unter
+            // dem Namen — identische Bedingungen wie DrawHealthBar.
+            bool hpShown = cfg.healthBarEnabled
+                           && !(isLocalPlayer && !cfg.healthBarShowSelf)
+                           && m_HpMax > 0;
+            float barTop = hpShown
+                ? nameRect.yMax + cfg.healthBarOffsetY + cfg.healthBarHeight + k_CastBarGap
+                : nameRect.yMax + k_CastBarGap;
+
+            Rect bgRect = new(barX, barTop, width, height);
+            if (bg != null)
+            {
+                GUI.DrawTexture(bgRect, bg, ScaleMode.StretchToFill, alphaBlend: true);
+            }
+            if (fill != null && progress > 0f)
+            {
+                Rect fillRect = new(barX, barTop, width * progress, height);
+                GUI.DrawTexture(fillRect, fill, ScaleMode.StretchToFill, alphaBlend: true);
+            }
+            if (nameStyle != null && !string.IsNullOrEmpty(spellName))
+            {
+                GUI.Label(bgRect, spellName, nameStyle);
             }
         }
 

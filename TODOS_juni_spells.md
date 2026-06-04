@@ -1,4 +1,99 @@
-## spells in _templates.jsos (1-10)
+# Audit-Stand 2026-06-01
+
+> 🔄 Update 2026-06-02: Viele der unten als "offen/fehlerhaft" gelisteten Punkte
+> sind inzwischen verifiziert behoben. Der aktuelle, gegen den Code gepruefte
+> Stand liegt in [referenzen/21-audit-2026-06-02-spells-combat.md](referenzen/21-audit-2026-06-02-spells-combat.md).
+> Die folgende Liste bleibt als historische Roh-Notiz erhalten; verbindlich ist
+> ab jetzt die "Statusabgleich"-Sektion direkt darunter.
+
+## Statusabgleich 2026-06-02 (verbindlich)
+
+### Behoben (im Code/Daten verifiziert)
+
+- `mana_pct` — korrekt aus `MaxMana` berechnet (`SpellUtils.cs:126-128`).
+- `Greater Heal` `mana_formula` — Daten korrigiert: `"2+((clvl*75)/10)"` (Klammer da), Entry 66.
+- `Resurrection` — voller Revive-Pfad fuer tote Ziele (`SpellExecutor.cs:711-726`).
+- `Reincarnation` — Self-Revive-Handler vorhanden (`UnitStats.cs:1033-1075`).
+- `Cleanse` / `Remove Curse` — Dispel nach `DispelType`-Bitmaske (`SpellExecutor.cs:662-671`).
+- `Arrow Flurry` — `RangedCooldown` wird konsumiert (`PlayerCombat.cs:891-897`).
+- `Multi-Shot` — `TriggerSpell` loest Folge-Spell korrekt aus (`SpellExecutor.cs:524-531`).
+- Heal-Floating-Text — `FloatingCombatText` subscribed `ClientHealReceived` (`:118`).
+- DoT/HoT letzter Tick + Combat-Formelpfad — gefixt (`AuraManager.cs:596-625`).
+- Damage-/Healing-Modifier-Auren — im Math-Pfad verdrahtet (`CombatFormulas.cs:340-420/459-475`).
+- CC-Immunitaet (`Wings of Freedom`, `Deep Freeze`) — `HasMechanicImmunity` greift.
+- Hold-to-move + Cast-Interrupt — implementiert.
+- Threat-Anzeige im Target-Portrait — erledigt.
+- NPC `spell_primary` (Notfall bei <=30% HP + Fallback) und dynamische N-Slots — implementiert.
+
+### Weiterhin offen (echte Luecke)
+
+- `Illusion Gate` / `SummonObject` — kein Handler im `SpellExecutor` (`SpellEnums.cs:50`).
+- `Focused Evasion` / `AuraType.Proc` — keine Laufzeit-Auswertung (`SpellEnums.cs:126`).
+- `Charge` — nur Impuls; kein Swing-Pose-Wechsel, kein Follow-up-Autoattack (`SpellExecutor.cs:597-614`).
+- Spell-ID `318` — fehlt weiterhin in `_templates.json` (317 @ Z.5992, 319 @ Z.6022).
+- Channeling-System, freie Skillshots/Directional-Projektile, Boden-Marker-AoE als Standard,
+  Cast-/Projektil-Visuals als durchgaengiges System, `equipment.json`, NPC-Move-Speed-Scaling — Backlog.
+
+### Nur Playmode-Test offen
+
+- Buff-Skalierung/Tooltip (`Blessing of Champions/Defense`, Modifier-Auren-Mapping),
+  konkrete DoT-Spells (`Radiance`, `Holy Wrath`, `Ignite`, `Plague`),
+  CC-Mechanics-Mapping (`Chains of Ice`, `Sleep Arrow`, `Satanic Madness`, `Vanish`),
+  `Lone Howler` HP/Aggro-Range (allg. TODO #5/#6).
+
+---
+
+Ja: Die Auswertung in den Referenzen und im Audit wurde primaer aus dieser Datei abgeleitet und danach gegen den aktuellen Codebestand gegengeprueft.
+
+## Bestaetigt offen oder fehlerhaft (historisch, Stand 2026-06-01 — s. Statusabgleich oben)
+
+- `Radiance`, `Holy Wrath`, `Ignite`, `Plague` und aehnliche DoT/HoT-Auren hatten einen Runtime-Fehler: der letzte Tick fiel weg, weil die Aura vor der Tick-Verarbeitung expired wurde; ausserdem liefen Periodic-Heal/Damage nicht ueber den normalen Combat-Formelpfad. Beides ist am 2026-06-01 im Runtime-Code gefixt und muss jetzt nur noch im Playmode nachgeprueft werden.
+- `mana_pct` wird aktuell wie ein Rohfaktor statt wie ein Prozentwert interpretiert. Das betrifft u. a. `Touch of Salvation` und `Resurrection`.
+- `Greater Heal` hat im Spell-Template eine kaputte `mana_formula` und faellt dadurch auf `0` Mana-Kosten zurueck.
+- `Resurrection` ist als Effekt vorhanden, belebt tote Ziele ueber den aktuellen Runtime-Pfad aber noch nicht wirklich wieder.
+- `Reincarnation` ist als Aura im Template vorhanden, der konkrete Runtime-Effekt ist derzeit nicht verdrahtet.
+- `Illusion Gate` nutzt `SummonObject`; dafuer fehlt aktuell noch ein Handler.
+- Freie LoL-artige Skillshots / Directional Projectiles sind weiterhin offen. Der aktuelle Projectile-Pfad deckt nur zielgebundene Flugzeit-Projektile ab.
+- Ein dediziertes Channeling-System ist weiterhin offen. Es gibt Cast-Time und Periodics, aber keinen echten Channel-State mit fortlaufendem Break-/Tick-/Lock-Verhalten.
+- `Cleanse` und `Remove Curse` sind nur teilweise korrekt: Dispel entfernt aktuell nach Buff/Debuff-Vorzeichen, nicht nach `DispelType`.
+- `Charge` ist technisch vorhanden, entspricht aber noch nicht dem gewuenschten Swing-/Follow-up-Autoattack-Feeling.
+- `Arrow Flurry` hat sehr wahrscheinlich noch keinen wirksamen Verbraucher fuer die Ranged-Cooldown-Reduktion.
+- `Focused Evasion` ist sehr wahrscheinlich offen, weil `AuraType.Proc` im aktuellen Build nicht sichtbar ausgewertet wird.
+- `Multi-Shot` ist sehr wahrscheinlich ein Datenfehler: der Trigger verweist nicht sauber auf `Multi-Shot Arrow`.
+- Heal-Floating-Text fehlt noch, obwohl das Heal-Event bereits vorhanden ist.
+- Threat-Anzeige im Target-Portrait ist inzwischen lokal eingebaut; im Playmode nur noch pruefen, ob der angezeigte Threat-Wert zum eigenen Spieler sauber mitlaeuft.
+
+## Systemisch vorhanden und nicht mehr als "fehlendes System" zaehlen
+
+- Friendly-only-Spells koennen ohne Friendly-Target auf Self fallen.
+- Ground-Targeting ist vorhanden.
+- Projectile-Travel fuer zielgebundene Projectiles ist vorhanden.
+- AoE-/Multi-Target-Resolve ist vorhanden.
+- Formula-Evaluator und Combat-Formeln sind vorhanden.
+- Periodic Aura-Ticks fuer DoT/HoT/Mana sind vorhanden.
+- Damage-/Healing-Modifier-Auren sind vorhanden.
+- NPC Threat-System und NPC Spell-Casting sind vorhanden.
+- Ranged-Cast-Visuals sind vorhanden.
+- Inventory-/Equipment-ItemInstances und Affixe sind weiter umgesetzt als mehrere alte Referenzen behaupten.
+
+## Noch im Playmode nachtesten
+
+- `Blessing of Champions`, `Blessing of Defense`
+- `Fortification Aura`, `Divine Protection`, `Vengeance Aura`, `Salvation Aura`, `Righteous Storm`, `Shield Block`, `Aegis of Valor`
+- `Radiance`, `Holy Wrath`, `Ignite`, `Plague`
+- `Wings of Freedom`, `Deep Freeze`, `Cleanse`, `Remove Curse`
+- `Hammer of Might`, `Touch of Salvation`, `Mighty Blow`, `Penance`, `Blessed Shield`, Threat-Readout
+- `Chains of Ice`, `Sleep Arrow`, `Satanic Madness`, `Vanish`
+
+## Datenstand Spell-IDs
+
+- Die Eintraege `300` bis `317` sowie `319` bis `324` existieren in `Assets/StreamingAssets/spells/_templates.json`.
+- `318` fehlt dort aktuell wirklich.
+- Der Block "was ist hier passiert wo sind die paar hin?" ist also nur fuer `318` noch offen.
+
+## Rohnotizen aus der Session
+
+## spells in _templates.jsons (1-10)
 
 1. buffs spells die eigentlich auf friendly targets gecastet werden können. können nur mit ziel gecastet werden sollen aber ohne ein friendly target auf sich selbst gecastet werden können. (z.b. heal buff, der eigentlich nur auf friendly targets gecastet werden soll, aber auch ohne target auf sich selbst gecastet werden kann)
 2. Buffs skalieren nicht korrekt viele haben 0% scaling  manche zeigen 4% oder so an aber es wird nicht korrekt übernommen bzw. für die stats skaliert in UI vermutlich auch nicht im gameplay? (Blessing of Champions, Blessing of Defense)
@@ -17,7 +112,7 @@ Noch zu testen:
 2. "Cleanse" vermutlich das gleiche Problem es soll poison oder diseases entfernen aber das passiert nicht, ich bekomme immernoch poison und diseases debuffs obwohl ich den skill benutze. 
 
 
-## spells in _templates.jsos (11-20)
+## spells in _templates.jsons (11-20)
 
 
 1. (11)"hammer of might" stunt das target für 2 sekunden und verursacht 0-0 holy damage. das damage ist als 0 angegeben? falsch skaliert?
@@ -32,7 +127,7 @@ dafür auch in der UI das Portrait von target anpassen für threat generation da
 3. Redemption soll jemand wiederbeleben noch nciht getestet ob das funktioniert, es soll auch mit 40% hp und 20% wiederbeleben, das soll auch getestet werden ob das funktioniert.
 4. 
 
-## spells in _templates.jsos (21-30)
+## spells in _templates.jsons (21-30)
 
 1. "Magical Amplification" soll 2% mehr magical damage(spell damage) geben für friendly targets für 5min. siehe oben generell damage increase buffs funktionieren nicht, ich bekomme immernoch den gleichen damage von allen sources obwohl ich buffs habe die eigentlich damage increase geben sollten. (z.b. Fortification Aura, Divine Protection, Vengeance Aura, Salvation Aura, Righteous Storm, Shield Block, Aegis of Valor). Magical Dampening
 2. "Vim of Wisdom". 
@@ -44,7 +139,7 @@ dafür auch in der UI das Portrait von target anpassen für threat generation da
 1. "Antimagic" interupt a target spell casting. das soll eigentlich funktionieren aber ich habe es noch nicht getestet, es soll auch 4 sekunden nicht casten können, das soll auch getestet werden ob das funktioniert.
 
 
-## spells in _templates.jsos (31-40)
+## spells in _templates.jsons (31-40)
 
 1. Chains of Ice verursacht -40% movement speed ich glaube das klappt korrekt. prüfe das gerne.
 2. Deep Freeze sollte für x sekunden target immun gegen alle damage sources machen eigentlich. und es kann für die zeit nicht angreifen. das nicht angreifen geht glaube ich aber immun gegen alle damage sources funktioniert nicht, ich bekomme immernoch schaden von allen sources obwohl ich den buff habe. vermutlich wegen siehe oben. 
@@ -55,24 +150,24 @@ dafür auch in der UI das Portrait von target anpassen für threat generation da
 -- noch zu testen:
 1. "Remove Curse" prüfen ob es funktioniert, es soll curses entfernen.
 
-## spells in _templates.jsos (41-50)
+## spells in _templates.jsons (41-50)
 
 1. "Arrow Flurry" soll cooldown von reduced attacks by x% for x seconds verringern das funktioniert vermutlich noch nicht.
 2. Devotion physical damage dealt increased by x% for x seconds. restores x% mana when it expires.
 3. Focused Evasion Allows you to evade one hostile attack for x seconds. das funktioniert noch nicht. generell buff probleme
 4. "multi-shot" fires three arrows at an enemy target in rapid succession. Das geht nicht das target bekommt garkein schaden.
 
-## spells in _templates.jsos (51-60)
+## spells in _templates.jsons (51-60)
 
 1. Sleep Arrow. das target soll für x sekunden schlafen und kann nicht angreifen oder sich bewegen. das funktioniert vermutlich noch nicht siehe oben generell buff probleme.
 2. Vanish.
 
 
-## spells in _templates.jsos (61-70)
+## spells in _templates.jsons (61-70)
 
 1. Greater Heal hat irgendwie keine maana costs ??
 
-## spells in _templates.jsos (71-80)
+## spells in _templates.jsons (71-80)
 
 1. Plague ist ein DoT. diese gehen noch nicht.
 2. Reincarnation soll target wiederbeleben mit 40% hp und 20% mana. das soll auch getestet werden ob das funktioniert. (soulstone wie bei warlock in wow 5minuten buff)
@@ -225,8 +320,7 @@ dafür auch in der UI das Portrait von target anpassen für threat generation da
 # scrolls spells
 - 282: Scroll of Returning
 
-
-was ist hier passiert wo sind die paar hin?
+nix hier zwischen
 
 - 300: Greater Fireball Volley
 - 301: Bellowing Roar
@@ -249,7 +343,7 @@ was ist hier passiert wo sind die paar hin?
 - 316: Vortex
 - 317: Apocalypse
 
-- MISSING 318
+- nix in 318
 
 - 319: duke's mind blast
 - 320: duke's fury
@@ -292,7 +386,7 @@ was ist hier passiert wo sind die paar hin?
 - 347: Draconic Sapphire
 - 348: Draconic Amethyst
 
-Missing dazwischen.
+nix dazwischen.
 
 - 400 : Remove Magic
 - 401: Netherverse
@@ -324,35 +418,4 @@ läuft der character erst zum target versucht während des laufens zu casten mac
 12. Source NpcAI: NPC_MOVE_SPEED=100 px/s. Bei FLARE PPU=64 = 1.56 m/s. Wird in UnitStats.WalkSpeed geschrieben. Muss dann alles was es noch so gibt korrekt skaliert werden ?
 13. Buffs sind in v1 nicht enthalten — TODO Phase 17.
 
-
-# fehlt noch vermutlich:
-
-
-- **Combo / AA-Queue**: zweite Anfrage während `AttackingState` wird
-  verworfen. Eingeplant für eine spätere Phase.
-- **Animation-hard-cancel auf Client-Visual**: nach `NotifyAttackCanceledClientRpc`
-  läuft die FLARE-Swing-Anim noch kurz aus. LoL macht das genauso.
-- **Coroutines / Update-Timer**: bewusst nicht — Awaitable + CTS +
-  State-Machine. Einzige Ausnahme bleibt `PlayerMovement.Update` für
-  Visuals (in 03 dokumentiert).
-
-  siehe 06-lol-auto-attack-parity.md für Details zu diesen Punkten.
-
-
-  ## eventuell noch fehlend:
-| Spell-Typ | Status | Was zu tun |
-| **Instant Self-Cast** (z. B. Buff auf sich selbst, Heal-on-Self) | ✅ funktioniert | – |
-| **Cast-Time Self-Cast** (Buff mit Wind-up) | ✅ funktioniert | – |
-| **Instant Single-Target** (Direct-Damage Snap, Heal-Other) | ✅ funktioniert | – |
-| **Cast-Time Single-Target** (Fireball-Stil mit Wind-up, Hitscan-Resolve) | ✅ funktioniert | – |
-  | **AoE (Source/Dest)** (Nova, Konsekration, Ground-Pulse) | ❌ trifft nur Primärziel | Phase 2.4: `Physics.OverlapSphereNonAlloc` in `ResolveTarget`, `MaxTargets`/`Radius` ehren, multi-Apply pro Effect-Slot. |
-| **Skillshot / Projectile** (Fireball mit Reisezeit, Lineshot) | ❌ kein Projektil-System | Phase 2.5: `Projectile : NetworkBehaviour` mit `spell.Speed`-Travel, On-Hit-Trigger → `SpellExecutor.Execute(caster, spell, hit)`. |
-| **Ground-Target** (Reticle, Welt-Klick als Cast-Parameter) | ❌ Flag nicht ausgewertet | Phase 2.6: Reticle-State im `PlayerSpellInput`, Welt-Position über `RequestCastGroundServerRpc(entry, worldPos)` mitschicken. |
-| **Channeled** (Tick-Spells über mehrere Sekunden) | ❌ kein Channel-State | Phase 2.7: Variante von `CastingState` mit Tick-Loop, `aura_interrupt_flags` ehren. |
-| **Charge / KnockBack / PullTo / Slide / Teleport** | ❌ default-Branch | Phase 3.x: Bewegungs-Effekte über `PlayerMovement.ServerApplyImpulse` o. ä. |
-| **Sound** | ❌ nicht verdrahtet | Phase 2.3: `SpellVisualKitDefinition.Sound` → `AudioSource.PlayClipAtPoint` oder pooled AudioSource am Caster. |
-
-- ❌ **Radial / Tangential Acceleration** — geparst (`def.RadialAccelMin/Max`, `def.TangentialAccelMin/Max`), aber im `ConfigureForce` nicht verdrahtet. Source-Semantik: pro Tick auf `Velocity` aufmultipliziert, `/PixelsPerUnit`. Lösung: Custom-Force-Module mit `ParticleSystem.CustomData` oder ein zweites `ParticleSystemForceField`. Auswirkung bisher: Partikel fallen nur unter Gravity, drift in Casting-Effekten fehlt.
-- ❌ **Echtes `particles.png`** — falls je gefunden, würde der prozedurale Atlas durch das Original ersetzt. Code-Pfad: `s_FallbackAtlas` durch geladene `Texture2D` aus `Art/spells/particles.png` ersetzen (ServiceLocator-Loader hinzufügen).
-
-- siehe 12-naechste-phasen-melee-spell-shoot-aura.md
+Weitere historische Analyse-Notizen wurden in [referenzen/20-audit-2026-06-01-spells-combat.md](referenzen/20-audit-2026-06-01-spells-combat.md) verschoben.

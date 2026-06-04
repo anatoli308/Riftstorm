@@ -22,10 +22,10 @@ namespace Riftstorm.Game.Combat.CombatStates
         /// aufgerufen, damit <see cref="Enter"/> weiß, wie lange er warten soll
         /// und welche Waffe für die Schadensberechnung relevant ist.
         /// </summary>
-        internal void ConfigureFromWeapon(WeaponDefinition weapon)
+        internal void ConfigureFromWeapon(WeaponDefinition weapon, float cooldown)
         {
             m_PendingWeapon = weapon;
-            m_PendingCooldown = Mathf.Max(0.05f, weapon.AttackCooldown);
+            m_PendingCooldown = Mathf.Max(0.05f, cooldown);
             m_PendingHitResolveProgress = Mathf.Clamp01(weapon.HitResolveProgress);
         }
 

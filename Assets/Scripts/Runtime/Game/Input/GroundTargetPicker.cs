@@ -171,6 +171,26 @@ namespace Riftstorm.Game.Input
             CancelInternal(notify: true);
         }
 
+        /// <summary>
+        /// Liefert den aktuellen Welt-Zielpunkt unter dem Mauscursor
+        /// (Boden-Raycast), ohne eine Reticle-Session zu starten. Fuer sofortige
+        /// Skillshots, die in Cursor-Richtung feuern. Liefert <c>false</c>, wenn
+        /// keine Kamera oder Maus verfuegbar ist.
+        /// </summary>
+        public bool TryGetAimPoint(out Vector3 worldPoint)
+        {
+            worldPoint = default;
+            if (m_Camera == null)
+            {
+                m_Camera = Camera.main;
+                if (m_Camera == null) { return false; }
+            }
+            Mouse mouse = Mouse.current;
+            if (mouse == null) { return false; }
+            worldPoint = ResolveGroundHit(mouse.position.ReadValue());
+            return true;
+        }
+
         // -------------------------------------------------------------------------
         // Update
         // -------------------------------------------------------------------------

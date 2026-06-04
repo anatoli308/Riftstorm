@@ -1,11 +1,14 @@
+using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Riftstorm.Game.Spells
 {
     /// <summary>
-    /// Wertstruktur fuer einen der bis zu drei Effekt-Slots eines
-    /// <see cref="SpellTemplate"/>. Wird per <see cref="SpellTemplate.GetEffect(int)"/>
-    /// gelesen.
+    /// Wertstruktur fuer einen Effekt-Slot eines <see cref="SpellTemplate"/>.
+    /// Wird per <see cref="SpellTemplate.GetEffect(int)"/> gelesen. Die Anzahl
+    /// der Slots ist nicht fix begrenzt (siehe <see cref="SpellTemplate.EffectCount"/>).
     /// </summary>
     /// <remarks>
     /// <para>
@@ -26,7 +29,7 @@ namespace Riftstorm.Game.Spells
     /// </remarks>
     public readonly struct SpellTemplateEffect
     {
-        /// <summary>1-basierter Slot-Index (1..3); <c>0</c> = leer/out-of-range.</summary>
+        /// <summary>1-basierter Slot-Index (&gt;= 1); <c>0</c> = leer/out-of-range.</summary>
         public int Index { get; }
 
         /// <summary>Effekt-Typ; <see cref="SpellEffect.None"/> wenn Slot leer.</summary>
@@ -97,9 +100,14 @@ namespace Riftstorm.Game.Spells
     /// wenn <c>&gt; 0</c>.
     /// </para>
     /// <para>
-    /// <b>Effekt-Slots:</b> bis zu drei Slots (Source <c>NumEffectIdx=3</c>), hier
-    /// 1:1 flach abgebildet. Aggregierter Zugriff per
-    /// <see cref="GetEffect(int)"/>; Slot ist aktiv, wenn
+    /// <b>Effekt-Slots:</b> die ersten drei Slots (<c>effect1</c>..<c>effect3</c>)
+    /// sind explizit gemappt (Source-Default <c>NumEffectIdx=3</c>); zusaetzliche
+    /// Slots (<c>effect4</c>, <c>effect5</c> …) werden dynamisch ueber das
+    /// <c>[JsonExtensionData]</c>-Becken aufgebaut — gleiches Muster wie die
+    /// Spell-Slots in <see cref="Riftstorm.Game.Npc.NpcTemplate"/>. Dadurch sind
+    /// <b>beliebig viele</b> Effekte moeglich, ohne das DTO zu aendern.
+    /// Aggregierter Zugriff per <see cref="GetEffect(int)"/>; Anzahl per
+    /// <see cref="EffectCount"/>; Slot ist aktiv, wenn
     /// <c>EffectN != SpellEffect.None</c>.
     /// </para>
     /// <para>
@@ -253,7 +261,7 @@ namespace Riftstorm.Game.Spells
         /// <summary>FLARE-Formel fuer sekundaeres Stat-Scaling.</summary>
         [JsonProperty("stat_scale_2")] public string StatScale2 { get; set; }
 
-        // ---- Effekt-Slots (flach 1:1 aus SQL, bis zu 3 Slots) ----------
+        // ---- Effekt-Slots (effect1..effect3 explizit; effect4+ dynamisch) ----
 
         [JsonProperty("effect1")] public SpellEffect Effect1 { get; set; }
         [JsonProperty("effect1_targetType")] public SpellTargetType Effect1TargetType { get; set; }
@@ -282,17 +290,49 @@ namespace Riftstorm.Game.Spells
         [JsonProperty("effect3_radius")] public int Effect3Radius { get; set; }
         [JsonProperty("effect3_scale_formula")] public string Effect3ScaleFormula { get; set; }
 
+        /// <summary>
+        /// Auffangbecken fuer alle nicht explizit gemappten JSON-Felder. Traegt
+        /// u. a. die flachen <c>effect{n}_*</c>-Keys fuer Slots ab Index 4, aus
+        /// denen <see cref="GetEffect(int)"/> / <see cref="EffectCount"/> die
+        /// zusaetzlichen Effekte dynamisch aufbauen. Ermoeglicht <b>beliebig
+        /// viele</b> Effekt-Slots ohne DTO-Aenderung.
+        /// </summary>
+        [JsonExtensionData] private IDictionary<string, JToken> m_ExtraData = new Dictionary<string, JToken>();
+
+        /// <summary>Lazy-Cache fuer <see cref="EffectCount"/> (-1 = noch nicht berechnet).</summary>
+        [JsonIgnore] private int m_EffectCountCache = -1;
+
+        /// <summary>
+        /// Anzahl der Effekt-Slots dieses Spells: der hoechste 1-basierte Index,
+        /// fuer den ein aktiver Effekt (<c>!= SpellEffect.None</c>) gesetzt ist.
+        /// Beruecksichtigt die expliziten Slots 1..3 ebenso wie dynamische
+        /// <c>effect4+</c> aus <see cref="m_ExtraData"/>. <c>0</c> = kein Effekt.
+        /// Iteration ueber <c>for (int i = 1; i &lt;= EffectCount; i++)</c> mit
+        /// <see cref="GetEffect(int)"/> deckt alle Slots ab (Luecken liefern
+        /// inaktive Strukturen).
+        /// </summary>
+        [JsonIgnore]
+        public int EffectCount
+            => m_EffectCountCache >= 0 ? m_EffectCountCache : (m_EffectCountCache = ComputeEffectCount());
+
         // ---- Helper -----------------------------------------------------
 
         /// <summary>True wenn ueberhaupt kein Slot gesetzt ist (leerer DB-Stub).</summary>
-        public bool HasAnyEffect
-            => Effect1 != SpellEffect.None
-               || Effect2 != SpellEffect.None
-               || Effect3 != SpellEffect.None;
+        public bool HasAnyEffect => EffectCount > 0;
 
         /// <summary>True wenn dieser Spell mindestens einen Schaden verursachenden Effekt hat.</summary>
         public bool IsOffensive
-            => IsDamageEffect(Effect1) || IsDamageEffect(Effect2) || IsDamageEffect(Effect3);
+        {
+            get
+            {
+                int count = EffectCount;
+                for (int i = 1; i <= count; i++)
+                {
+                    if (IsDamageEffect(GetEffect(i).Effect)) { return true; }
+                }
+                return false;
+            }
+        }
 
         /// <summary>
         /// True wenn der Spell vom Spieler einen Boden-Zielpunkt erwartet
@@ -307,6 +347,17 @@ namespace Riftstorm.Game.Spells
         public bool IsGroundTargeted
             => (Attributes & SpellAttributes.TargetsGround) != 0;
 
+        /// <summary>
+        /// True wenn der Spell ein gerichteter Skillshot ist (FLARE-Stil):
+        /// Projektil fliegt geradlinig in Cursor-/Blickrichtung und trifft das
+        /// erste valide Ziel auf der Bahn, statt ein Unit-Ziel zu verfolgen.
+        /// Erfordert zusaetzlich <see cref="Speed"/> &gt; 0. Quelle:
+        /// <see cref="SpellAttributes.Skillshot"/>-Bit aus dem JSON-Template.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsSkillshot
+            => (Attributes & SpellAttributes.Skillshot) != 0 && Speed > 0f;
+
         private static bool IsDamageEffect(SpellEffect e)
             => e == SpellEffect.SchoolDamage
                || e == SpellEffect.WeaponDamage
@@ -316,28 +367,120 @@ namespace Riftstorm.Game.Spells
                || e == SpellEffect.RangedAtk;
 
         /// <summary>
-        /// Liest Slot <paramref name="oneBasedIndex"/> (1..3) als value-type
-        /// zurueck. Out-of-range oder leerer Slot liefert eine inaktive
-        /// Struktur (<see cref="SpellTemplateEffect.IsActive"/> = false).
+        /// Liest Slot <paramref name="oneBasedIndex"/> (&gt;= 1) als value-type
+        /// zurueck. Slots 1..3 stammen aus den expliziten Properties, Slots ab 4
+        /// aus dem <c>[JsonExtensionData]</c>-Becken. Out-of-range oder leerer
+        /// Slot liefert eine inaktive Struktur
+        /// (<see cref="SpellTemplateEffect.IsActive"/> = false).
         /// </summary>
         public SpellTemplateEffect GetEffect(int oneBasedIndex)
         {
-            return oneBasedIndex switch
+            switch (oneBasedIndex)
             {
-                1 => new SpellTemplateEffect(
-                    1, Effect1, Effect1TargetType,
-                    Effect1Data1, Effect1Data2, Effect1Data3,
-                    Effect1Positive != 0, Effect1Radius, Effect1ScaleFormula),
-                2 => new SpellTemplateEffect(
-                    2, Effect2, Effect2TargetType,
-                    Effect2Data1, Effect2Data2, Effect2Data3,
-                    Effect2Positive != 0, Effect2Radius, Effect2ScaleFormula),
-                3 => new SpellTemplateEffect(
-                    3, Effect3, Effect3TargetType,
-                    Effect3Data1, Effect3Data2, Effect3Data3,
-                    Effect3Positive != 0, Effect3Radius, Effect3ScaleFormula),
-                _ => default,
-            };
+                case 1:
+                    return new SpellTemplateEffect(
+                        1, Effect1, Effect1TargetType,
+                        Effect1Data1, Effect1Data2, Effect1Data3,
+                        Effect1Positive != 0, Effect1Radius, Effect1ScaleFormula);
+                case 2:
+                    return new SpellTemplateEffect(
+                        2, Effect2, Effect2TargetType,
+                        Effect2Data1, Effect2Data2, Effect2Data3,
+                        Effect2Positive != 0, Effect2Radius, Effect2ScaleFormula);
+                case 3:
+                    return new SpellTemplateEffect(
+                        3, Effect3, Effect3TargetType,
+                        Effect3Data1, Effect3Data2, Effect3Data3,
+                        Effect3Positive != 0, Effect3Radius, Effect3ScaleFormula);
+                default:
+                    return oneBasedIndex >= 4 ? ReadExtraEffect(oneBasedIndex) : default;
+            }
         }
+
+        /// <summary>
+        /// Baut einen dynamischen Effekt-Slot (Index &gt;= 4) aus den flachen
+        /// <c>effect{n}_*</c> JSON-Feldern in <see cref="m_ExtraData"/> auf.
+        /// </summary>
+        private SpellTemplateEffect ReadExtraEffect(int index)
+        {
+            var effect = (SpellEffect)ReadExtraInt($"effect{index}");
+            if (effect == SpellEffect.None)
+            {
+                return default;
+            }
+            return new SpellTemplateEffect(
+                index,
+                effect,
+                (SpellTargetType)ReadExtraInt($"effect{index}_targetType"),
+                ReadExtraLong($"effect{index}_data1"),
+                ReadExtraLong($"effect{index}_data2"),
+                ReadExtraLong($"effect{index}_data3"),
+                ReadExtraInt($"effect{index}_positive") != 0,
+                ReadExtraInt($"effect{index}_radius"),
+                ReadExtraString($"effect{index}_scale_formula"));
+        }
+
+        /// <summary>
+        /// Ermittelt den hoechsten aktiven Slot-Index (siehe <see cref="EffectCount"/>).
+        /// Beruecksichtigt explizite Slots 1..3 und dynamische <c>effect{n}</c>-Keys.
+        /// </summary>
+        private int ComputeEffectCount()
+        {
+            int max = 0;
+            if (Effect1 != SpellEffect.None) { max = 1; }
+            if (Effect2 != SpellEffect.None) { max = 2; }
+            if (Effect3 != SpellEffect.None) { max = 3; }
+
+            if (m_ExtraData != null)
+            {
+                foreach (string key in m_ExtraData.Keys)
+                {
+                    if (!TryParseEffectIndex(key, out int idx) || idx <= max)
+                    {
+                        continue;
+                    }
+                    if ((SpellEffect)ReadExtraInt($"effect{idx}") != SpellEffect.None)
+                    {
+                        max = idx;
+                    }
+                }
+            }
+            return max;
+        }
+
+        /// <summary>
+        /// Parst den Slot-Index aus einem reinen <c>effect{n}</c> Key (ohne
+        /// <c>_data</c>/<c>_targetType</c>-Suffix). Liefert <c>false</c> fuer alle
+        /// anderen Keys.
+        /// </summary>
+        private static bool TryParseEffectIndex(string key, out int index)
+        {
+            index = 0;
+            const string prefix = "effect";
+            if (string.IsNullOrEmpty(key) || !key.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return false;
+            }
+            string middle = key.Substring(prefix.Length);
+            return int.TryParse(middle, out index) && index > 0;
+        }
+
+        /// <summary>Liest einen Int aus <see cref="m_ExtraData"/> (<c>0</c>, wenn fehlend).</summary>
+        private int ReadExtraInt(string key)
+            => m_ExtraData != null && m_ExtraData.TryGetValue(key, out JToken token) && token != null
+                ? token.Value<int>()
+                : 0;
+
+        /// <summary>Liest einen Long aus <see cref="m_ExtraData"/> (<c>0</c>, wenn fehlend).</summary>
+        private long ReadExtraLong(string key)
+            => m_ExtraData != null && m_ExtraData.TryGetValue(key, out JToken token) && token != null
+                ? token.Value<long>()
+                : 0L;
+
+        /// <summary>Liest einen String aus <see cref="m_ExtraData"/> (<c>null</c>, wenn fehlend).</summary>
+        private string ReadExtraString(string key)
+            => m_ExtraData != null && m_ExtraData.TryGetValue(key, out JToken token) && token != null
+                ? token.Value<string>()
+                : null;
     }
 }

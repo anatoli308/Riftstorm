@@ -54,6 +54,7 @@ namespace Riftstorm.Game.Input
         private InputAction m_ClearTarget;
         private InputAction m_AttackRangeIndicator;
         private InputAction m_MoveCommand;
+        private InputAction m_ToggleWeaponMode;
         private InputAction[] m_SpellSlots;
 
         /// <summary>
@@ -95,6 +96,13 @@ namespace Riftstorm.Game.Input
         public event Action MoveCommandPressed;
 
         /// <summary>
+        /// True, solange die MoveCommand-Action aktuell gedrueckt gehalten wird.
+        /// Wird vom <see cref="MobaCommandController"/> genutzt, um beim Halten
+        /// der RMB kontinuierlich Move-Commands nachzuschieben.
+        /// </summary>
+        public bool IsMoveCommandHeld => !IsSuppressedByChat() && m_MoveCommand != null && m_MoveCommand.IsPressed();
+
+        /// <summary>
         /// Wird einmal pro Tastendruck eines Spell-Hotkey-Slots (Tasten 1..9, 0)
         /// gefeuert. Der uebergebene Index ist 0-basiert (Taste '1' = 0, Taste '0' = 9)
         /// und entspricht dem Slot-Index im Loadout-Array von
@@ -104,6 +112,15 @@ namespace Riftstorm.Game.Input
         /// hier auf jeder PlayerInputController-Instanz (shared Keyboard-Device).
         /// </summary>
         public event Action<int> SpellSlotPressed;
+
+        /// <summary>
+        /// Wird einmal pro Tastendruck der Waffen-Modus-Toggle-Action
+        /// (Default: Taste 'T') gefeuert. Konsument ist <see cref="MobaCommandController"/>,
+        /// der serverseitig zwischen Melee- und Ranged-Auto-Attack umschaltet
+        /// (nur wirksam, wenn ein Bogen ausgeruestet ist). Code-erzeugte Action,
+        /// daher pro Controller-Instanz eigenstaendig.
+        /// </summary>
+        public event Action WeaponModeTogglePressed;
 
         private void OnEnable()
         {
@@ -166,6 +183,12 @@ namespace Riftstorm.Game.Input
                 action.Enable();
                 m_SpellSlots[i] = action;
             }
+
+            // Waffen-Modus-Toggle (Melee <-> Ranged): ebenfalls code-erzeugt und
+            // hartverdrahtet auf Taste 'T', damit kein .inputactions-Reimport noetig ist.
+            m_ToggleWeaponMode = new(name: "ToggleWeaponMode", binding: "<Keyboard>/t");
+            m_ToggleWeaponMode.performed += OnToggleWeaponModePerformed;
+            m_ToggleWeaponMode.Enable();
         }
 
         private void OnDisable()
@@ -199,6 +222,15 @@ namespace Riftstorm.Game.Input
             {
                 m_MoveCommand.performed -= OnMoveCommandPerformed;
                 m_MoveCommand = null;
+            }
+            if (m_ToggleWeaponMode != null)
+            {
+                // Code-erzeugte Action dieser Instanz — explizit disablen + disposen,
+                // damit beim Despawn / Owner-Wechsel keine Phantom-Listener weiterlaufen.
+                m_ToggleWeaponMode.performed -= OnToggleWeaponModePerformed;
+                m_ToggleWeaponMode.Disable();
+                m_ToggleWeaponMode.Dispose();
+                m_ToggleWeaponMode = null;
             }
             if (m_SpellSlots != null)
             {
@@ -263,6 +295,12 @@ namespace Riftstorm.Game.Input
         {
             if (IsSuppressedByChat()) { return; }
             SpellSlotPressed?.Invoke(slotIndex);
+        }
+
+        private void OnToggleWeaponModePerformed(InputAction.CallbackContext _)
+        {
+            if (IsSuppressedByChat()) { return; }
+            WeaponModeTogglePressed?.Invoke();
         }
     }
 }

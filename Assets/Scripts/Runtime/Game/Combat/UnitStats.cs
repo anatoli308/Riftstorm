@@ -29,7 +29,6 @@ namespace Riftstorm.Game.Combat
     /// Phase, das Server-Event <see cref="OnServerDied"/> ist bereits da).
     /// </para>
     /// </summary>
-    [RequireComponent(typeof(PlayerStats))]
     public sealed class UnitStats : NetworkBehaviour, IDamageable, IUnitStats, ICombatUnit
     {
         // -------------------------------------------------------------------------
@@ -102,6 +101,11 @@ namespace Riftstorm.Game.Combat
                  "Für NPCs Proxy-Signal 'hat Schild' (>0 ⇒ HasShield=true).")]
         [SerializeField, Min(0)] private int m_ShieldSkill = 0;
 
+        [Tooltip("Bitmaske der Crowd-Control-Mechaniken, gegen die diese Einheit immun ist " +
+                 "(Source 'mechanic_immune_mask'). Bit n = 1 << ((int)Mechanic - 1). Wird beim " +
+                 "Aura-Apply im AuraManager geprueft; gesetzte Bits verwerfen den Mechanik-Effekt.")]
+        [SerializeField, Min(0)] private int m_MechanicImmuneMask = 0;
+
         [Header("Resistenzen")]
         [SerializeField, Min(0)] private int m_ResistFire = 0;
         [SerializeField, Min(0)] private int m_ResistFrost = 0;
@@ -166,6 +170,23 @@ namespace Riftstorm.Game.Combat
         // -------------------------------------------------------------------------
 
         private readonly NetworkVariable<int> m_CurrentHp = new(
+            value: 0,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
+        /// <summary>
+        /// Server-autoritatives Max-HP-Cap fuer NPCs. Notwendig, weil
+        /// <see cref="m_MaxHp"/> im <see cref="FlareNpcSpawner"/> aus einem
+        /// <c>Random.Range</c>-Level-Roll berechnet wird, der pro Peer (Server UND
+        /// Client) unabhaengig in <c>Awake</c> laeuft. Bei Templates mit Level-Range
+        /// (z. B. Lone Howler min_level 6 / max_level 7) wuerfeln Server und Client
+        /// unterschiedliche Level → unterschiedliche m_MaxHp. Da <see cref="m_CurrentHp"/>
+        /// vom Server gespiegelt wird, das lokale m_MaxHp aber nicht, zeigte das HUD
+        /// z. B. 120/110. Der Server schreibt hier den real gerollten Cap, Clients
+        /// lesen ihn statt ihres eigenen Roll-Ergebnisses. 0 = noch nicht gesetzt
+        /// (Pre-Spawn / Spieler-Pfad) → Fallback auf <see cref="m_MaxHp"/>.
+        /// </summary>
+        private readonly NetworkVariable<int> m_NetMaxHp = new(
             value: 0,
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
@@ -238,10 +259,13 @@ namespace Riftstorm.Game.Combat
         /// <remarks>
         /// Aggregiert Item-Boni ueber <see cref="PlayerStats"/> (StatId.Health),
         /// damit Templates mit <c>stat_type=2</c> (z. B. Longsword +10 HP) das
-        /// HP-Cap tatsaechlich anheben. Faellt auf den Inspector-Wert zurueck,
-        /// solange kein PlayerStats gebunden ist (NPCs, Tests).
+        /// HP-Cap tatsaechlich anheben. NPCs (kein PlayerStats) nutzen das
+        /// server-autoritative <see cref="m_NetMaxHp"/>, sobald gesetzt — sonst
+        /// (Pre-Spawn / Tests) den lokalen Inspector-/Spawner-Wert.
         /// </remarks>
-        public int MaxHp => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Health) : m_MaxHp;
+        public int MaxHp => m_PlayerStats != null
+            ? m_PlayerStats.GetTotal(StatId.Health)
+            : (m_NetMaxHp.Value > 0 ? m_NetMaxHp.Value : m_MaxHp);
 
         /// <summary>Aktuelle Mana (0 falls die Einheit keine Mana hat).</summary>
         public int CurrentMana => m_CurrentMana.Value;
@@ -253,10 +277,10 @@ namespace Riftstorm.Game.Combat
         public bool HasMana => m_MaxMana > 0;
 
         /// <inheritdoc/>
-        public int Strength => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Strength) : m_Strength;
+        public int Strength => ApplyStatAuraModifiers(StatId.Strength, GetUnmodifiedStat(StatId.Strength));
 
         /// <inheritdoc/>
-        public int Agility => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Agility) : m_Agility;
+        public int Agility => ApplyStatAuraModifiers(StatId.Agility, GetUnmodifiedStat(StatId.Agility));
 
         /// <inheritdoc/>
         public int Armor => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ArmorValue) : m_Armor;
@@ -264,11 +288,62 @@ namespace Riftstorm.Game.Combat
         /// <inheritdoc/>
         public int Level => m_Level;
 
-        /// <inheritdoc/>
-        public int Intelligence => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Intelligence) : m_Intelligence;
+        /// <summary>
+        /// Setzt das Anzeige-/Skalierungs-Level VOR dem Netcode-Spawn. Wird vom
+        /// <see cref="FlareNpcSpawner"/> auf jedem Peer aus dem <c>npc_template</c>
+        /// gerufen, analog zum <c>displayName</c>-Pfad in <see cref="ApplyBaseStats"/> —
+        /// damit Target-Frame und HUD das echte Template-Level statt des
+        /// Prefab-Defaults (1) zeigen. Geclamped auf &gt;= 1.
+        /// </summary>
+        /// <param name="level">Aufgeloestes Template-Level (z. B. aus min_level/max_level).</param>
+        public void SetLevel(int level)
+        {
+            m_Level = Mathf.Max(1, level);
+        }
+
+        /// <summary>
+        /// Bitmaske der Crowd-Control-Mechaniken, gegen die diese Einheit immun ist.
+        /// Bit n entspricht <c>1 &lt;&lt; ((int)<see cref="Mechanic"/> - 1)</c> (Source-Konvention,
+        /// SQL <c>mechanic_immune_mask</c>). Wird vom <see cref="AuraManager"/> beim Apply
+        /// eines Mechanik-Effekts geprueft.
+        /// </summary>
+        public int MechanicImmuneMask => m_MechanicImmuneMask;
+
+        /// <summary>
+        /// Setzt die Mechanik-Immun-Maske VOR dem Netcode-Spawn. Wird vom
+        /// <see cref="FlareNpcSpawner"/> bzw. <see cref="NpcController"/> aus dem
+        /// <c>npc_template</c> gerufen, analog zum <see cref="SetLevel"/>-Pfad.
+        /// </summary>
+        /// <param name="mask">Roh-Bitmaske aus <c>mechanic_immune_mask</c>.</param>
+        public void SetMechanicImmuneMask(int mask)
+        {
+            m_MechanicImmuneMask = Mathf.Max(0, mask);
+        }
+
+        /// <summary>
+        /// Setzt Melee- und Ranged-Waffenschaden eines NPCs VOR dem Netcode-
+        /// Spawn. Notwendig, damit NPC-Auto-Attacks ueber die WeaponDamage-
+        /// Spell-Pipeline (Spell 81/82, 100%-Waffenschaden-Pfad) ueberhaupt
+        /// Schaden tragen — ohne diesen Wert bleiben <see cref="WeaponDamage"/>
+        /// und <see cref="RangedWeaponDamage"/> fuer NPCs 0. Wird vom
+        /// <see cref="FlareNpcSpawner"/> aus <c>npc_template.weapon_value</c> /
+        /// <c>ranged_weapon_value</c> gerufen, analog zu <see cref="SetLevel"/>.
+        /// Fuer Spieler ist der Setter wirkungslos, da deren Werte ueber
+        /// <see cref="PlayerStats"/> aggregiert werden.
+        /// </summary>
+        /// <param name="melee">Melee-Grundschaden aus <c>weapon_value</c>.</param>
+        /// <param name="ranged">Ranged-Grundschaden aus <c>ranged_weapon_value</c>.</param>
+        public void SetWeaponDamage(int melee, int ranged)
+        {
+            m_WeaponDamage = Mathf.Max(0, melee);
+            m_RangedWeaponDamage = Mathf.Max(0, ranged);
+        }
 
         /// <inheritdoc/>
-        public int Willpower => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.Willpower) : m_Willpower;
+        public int Intelligence => ApplyStatAuraModifiers(StatId.Intelligence, GetUnmodifiedStat(StatId.Intelligence));
+
+        /// <inheritdoc/>
+        public int Willpower => ApplyStatAuraModifiers(StatId.Willpower, GetUnmodifiedStat(StatId.Willpower));
 
         /// <inheritdoc/>
         public int WeaponDamage => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.WeaponValue) : m_WeaponDamage;
@@ -484,20 +559,183 @@ namespace Riftstorm.Game.Combat
         internal int RawResistHoly => m_ResistHoly;
 
         /// <inheritdoc/>
-        public int DamageDealtPctMod =>
-            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyDamageDealtPct) : 0;
+        public int DamageDealtPctMod => GetAuraPctMod(AuraType.ModifyDamageDealtPct);
 
         /// <inheritdoc/>
-        public int DamageReceivedPctMod =>
-            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyDamageReceivedPct) : 0;
+        public int DamageReceivedPctMod => GetAuraPctMod(AuraType.ModifyDamageReceivedPct);
 
         /// <inheritdoc/>
-        public int HealingDealtPctMod =>
-            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyHealingDealtPct) : 0;
+        public int HealingDealtPctMod => GetAuraPctMod(AuraType.ModifyHealingDealtPct);
 
         /// <inheritdoc/>
-        public int HealingReceivedPctMod =>
-            m_Auras != null ? m_Auras.GetAuraModifierTotal(AuraType.ModifyHealingRecvPct) : 0;
+        public int HealingReceivedPctMod => GetAuraPctMod(AuraType.ModifyHealingRecvPct);
+
+        /// <summary>
+        /// Liefert den unveraenderten Basiswert eines Primaerattributs OHNE
+        /// Aura-Modifikatoren. Fuer Spieler aus dem <see cref="PlayerStats"/>-
+        /// Aggregat (Basis + Item-Boni), fuer NPCs aus den Raw-Feldern. Dient
+        /// als Vergleichswert fuer die HUD-Faerbung (siehe
+        /// <see cref="GetDisplayStat"/>) und als Eingang fuer
+        /// <see cref="ApplyStatAuraModifiers"/>.
+        /// </summary>
+        /// <param name="stat">Abgefragtes Primaerattribut.</param>
+        /// <returns>Basiswert vor Aura-Modifikatoren.</returns>
+        private int GetUnmodifiedStat(StatId stat)
+        {
+            if (m_PlayerStats != null)
+            {
+                return m_PlayerStats.GetTotal(stat);
+            }
+            return stat switch
+            {
+                StatId.Strength => m_Strength,
+                StatId.Agility => m_Agility,
+                StatId.Intelligence => m_Intelligence,
+                StatId.Willpower => m_Willpower,
+                _ => 0,
+            };
+        }
+
+        /// <summary>
+        /// Wendet aktive <see cref="AuraType.ModifyStat"/>-/
+        /// <see cref="AuraType.ModifyStatPct"/>-Auren auf einen Primaerattribut-
+        /// Basiswert an. Reihenfolge nach Source-Konvention:
+        /// <c>(Basis + Flat) * (1 + Pct/100)</c>; das Ergebnis wird auf
+        /// <c>&gt;= 0</c> geclamped. Greift fuer Spieler (PlayerStats-Aggregat)
+        /// wie NPCs (Raw-Felder) gleichermassen, da nur der bereits aufgeloeste
+        /// <paramref name="baseValue"/> erweitert wird. Damit wirken z. B. die
+        /// Attribut-Reduktionen von <c>Infected Wound</c> (Maske 248 =
+        /// Strength|Agility|Willpower|Intelligence) tatsaechlich im Kampf.
+        /// </summary>
+        /// <param name="stat">Betroffenes Primaerattribut.</param>
+        /// <param name="baseValue">Bereits aggregierter Basiswert (Item-Boni
+        /// bzw. Raw-Stat), bevor Aura-Modifier angewandt werden.</param>
+        /// <returns>Effektiver Attributwert nach Aura-Modifikatoren.</returns>
+        private int ApplyStatAuraModifiers(StatId stat, int baseValue)
+        {
+            GetStatAuraModifiers(stat, out int flat, out int pct);
+            int withFlat = baseValue + flat;
+            int effective = withFlat + (withFlat * pct) / 100;
+            return effective < 0 ? 0 : effective;
+        }
+
+        /// <summary>
+        /// Ermittelt Flat- und Prozent-Aura-Modifikator fuer ein Attribut
+        /// peer-korrekt: Auf dem Server liefert die autoritative
+        /// <see cref="AuraManager"/>-Instanz (<see cref="m_Auras"/>) die exakten
+        /// Summen. Auf reinen Clients ist <see cref="m_Auras"/> leer (nicht
+        /// repliziert) — dort werden die Modifikatoren deterministisch aus den
+        /// replizierten <see cref="ClientAuras"/> und den lokal geladenen
+        /// Spell-Templates rekonstruiert (gleiche Daten, gleiche Formel).
+        /// </summary>
+        /// <param name="stat">Betroffenes Primaerattribut.</param>
+        /// <param name="flat">Summe der Flat-Modifikatoren (ModifyStat).</param>
+        /// <param name="pct">Summe der Prozent-Modifikatoren (ModifyStatPct).</param>
+        private void GetStatAuraModifiers(StatId stat, out int flat, out int pct)
+        {
+            int statMask = 1 << ((int)stat - 1);
+            if (IsServer && m_Auras != null)
+            {
+                flat = m_Auras.GetStatFlatModifierTotal(statMask);
+                pct = m_Auras.GetStatPctModifierTotal(statMask);
+                return;
+            }
+            flat = ComputeClientAuraModifier(AuraType.ModifyStat, statMask);
+            pct = ComputeClientAuraModifier(AuraType.ModifyStatPct, statMask);
+        }
+
+        /// <summary>
+        /// Liefert einen prozentualen Aura-Modifikator (Schaden/Heilung)
+        /// peer-korrekt: Server aus <see cref="m_Auras"/>, reine Clients aus der
+        /// Rekonstruktion ueber <see cref="ComputeClientAuraModifier"/>. Ohne
+        /// Stat-Maske, da diese Auren keine Attribut-Maske tragen.
+        /// </summary>
+        /// <param name="auraType">Gesuchter Modifikator-Aura-Typ.</param>
+        /// <returns>Summierter Prozentwert (Vorzeichen-erhaltend).</returns>
+        private int GetAuraPctMod(AuraType auraType)
+        {
+            if (IsServer && m_Auras != null)
+            {
+                return m_Auras.GetAuraModifierTotal(auraType);
+            }
+            return ComputeClientAuraModifier(auraType, 0);
+        }
+
+        /// <summary>
+        /// Rekonstruiert auf einem reinen Client die Summe eines Aura-
+        /// Modifikators aus den replizierten <see cref="ClientAuras"/> und den
+        /// lokal geladenen Spell-Templates. Spiegelt die Server-Logik aus
+        /// <see cref="AuraManager"/>: nur ApplyAura-Effekte des gesuchten
+        /// <paramref name="wantType"/>, optional gefiltert ueber die Stat-Maske
+        /// <paramref name="statMask"/> (0 = keine Masken-Pruefung). Der Wert je
+        /// Effekt stammt aus <see cref="SpellUtils.CalculateEffectValue"/> und
+        /// wird mit der Stack-Anzahl skaliert (Naeherung fuer Mehrfach-Stacks:
+        /// lineare Skalierung; fuer Einzel-Stack-Auren wie Infected Wound exakt).
+        /// </summary>
+        /// <param name="wantType">Gesuchter Aura-Typ (ModifyStat, ModifyStatPct, Schadens-/Heil-Modifikatoren).</param>
+        /// <param name="statMask">Stat-Bitmaske oder 0 fuer „keine Masken-Pruefung“.</param>
+        /// <returns>Summierter Modifikatorwert, vorzeichenerhaltend.</returns>
+        private int ComputeClientAuraModifier(AuraType wantType, int statMask)
+        {
+            if (m_ClientAuras == null || m_ClientAuras.Length == 0)
+            {
+                return 0;
+            }
+            long sum = 0;
+            for (int i = 0; i < m_ClientAuras.Length; i++)
+            {
+                AuraSnapshot snap = m_ClientAuras[i];
+                SpellTemplate tpl = SpellCatalogLoader.GetTemplateOrNull(snap.SpellEntry);
+                if (tpl == null)
+                {
+                    continue;
+                }
+                int stacks = snap.Stacks < 1 ? 1 : snap.Stacks;
+                int effectCount = tpl.EffectCount;
+                for (int e = 1; e <= effectCount; e++)
+                {
+                    SpellTemplateEffect eff = tpl.GetEffect(e);
+                    if (eff.Effect != SpellEffect.ApplyAura && eff.Effect != SpellEffect.ApplyAreaAura)
+                    {
+                        continue;
+                    }
+                    if ((AuraType)eff.Data1 != wantType)
+                    {
+                        continue;
+                    }
+                    if (statMask != 0 && (SpellUtils.GetAuraMiscValue(eff) & statMask) == 0)
+                    {
+                        continue;
+                    }
+                    sum += (long)SpellUtils.CalculateEffectValue(eff, null) * stacks;
+                }
+            }
+            if (sum > int.MaxValue)
+            {
+                return int.MaxValue;
+            }
+            if (sum < int.MinValue)
+            {
+                return int.MinValue;
+            }
+            return (int)sum;
+        }
+
+        /// <summary>
+        /// Liefert fuer die Character-Stats-UI den Basiswert und den effektiven
+        /// (Aura-modifizierten) Wert eines Primaerattributs in einem Aufruf —
+        /// peer-korrekt auf Server wie Client. Die UI faerbt damit WoW-artig:
+        /// rot wenn <paramref name="effectiveValue"/> &lt; <paramref name="baseValue"/>
+        /// (Debuff, z. B. Infected Wound), gruen wenn groesser (Selbst-Buff).
+        /// </summary>
+        /// <param name="stat">Abgefragtes Primaerattribut.</param>
+        /// <param name="baseValue">Basiswert ohne Aura-Modifikatoren.</param>
+        /// <param name="effectiveValue">Effektivwert nach Aura-Modifikatoren.</param>
+        public void GetDisplayStat(StatId stat, out int baseValue, out int effectiveValue)
+        {
+            baseValue = GetUnmodifiedStat(stat);
+            effectiveValue = ApplyStatAuraModifiers(stat, baseValue);
+        }
 
         /// <summary>
         /// Radius der Körper-Hitbox in Metern. Wird vom Server-Hit-Resolve als
@@ -654,6 +892,8 @@ namespace Riftstorm.Game.Combat
                 {
                     Debug.LogException(ex, this);
                 }
+
+                TryTriggerReincarnationRevive();
             }
         }
 
@@ -761,6 +1001,12 @@ namespace Riftstorm.Game.Combat
             base.OnNetworkSpawn();
             if (IsServer)
             {
+                // NPC-Cap server-autoritativ festschreiben, BEVOR MaxHp fuer den
+                // Initial-Fill gelesen wird. Spiegelt den real auf dem Server
+                // gerollten Level-/HP-Wert an die Clients (verhindert 120/110-
+                // Desync bei Templates mit Level-Range). Fuer Spieler ist der Wert
+                // belanglos — deren MaxHp kommt aus PlayerStats.
+                m_NetMaxHp.Value = m_MaxHp;
                 // Wichtig: MaxHp (aggregiert) statt m_MaxHp, damit Equipment-HP-Boni
                 // (z. B. Longsword +10 HP) das Cap bereits beim Initial-Fill anheben.
                 m_CurrentHp.Value = MaxHp;
@@ -915,6 +1161,39 @@ namespace Riftstorm.Game.Combat
             }
             m_CurrentMana.Value = m_MaxMana;
         }
+        
+        /// <summary>
+        /// Server-only: belebt eine tote Unit an Ort und Stelle wieder und
+        /// hebt den Dead-State der zugehoerigen Combat-/AI-Komponenten auf.
+        /// </summary>
+        /// <param name="health">Absolute HP nach dem Revive. Werte &lt;= 0 werden verworfen.</param>
+        /// <param name="mana">Absolute Mana nach dem Revive. Bei Einheiten ohne Mana ignoriert.</param>
+        /// <returns><c>true</c>, wenn ein Dead-Target erfolgreich revived wurde.</returns>
+        public bool ServerRevive(int health, int mana)
+        {
+            if (!IsServer || !IsDead || health <= 0 || MaxHp <= 0)
+            {
+                return false;
+            }
+
+            m_CurrentHp.Value = Mathf.Clamp(health, 1, MaxHp);
+            if (HasMana)
+            {
+                m_CurrentMana.Value = Mathf.Clamp(mana, 0, m_MaxMana);
+            }
+
+            if (m_PlayerCombat != null)
+            {
+                m_PlayerCombat.ServerHandleExternalRevive();
+            }
+
+            if (m_NpcController != null)
+            {
+                m_NpcController.ServerHandleExternalRevive();
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Server-only: Manaverbrauch fuer Spells. Gibt true zurueck, wenn genug Mana
@@ -963,6 +1242,59 @@ namespace Riftstorm.Game.Combat
             catch (Exception ex)
             {
                 Debug.LogException(ex, this);
+            }
+        }
+        
+        /// <summary>
+        /// Prueft, ob eine aktive Reincarnation-Aura den gerade eingetretenen
+        /// Tod konsumiert und die Unit an Ort und Stelle wiederbelebt.
+        /// </summary>
+        private void TryTriggerReincarnationRevive()
+        {
+            if (!IsServer || !IsDead || m_Auras == null || m_Auras.Count == 0 || MaxHp <= 0)
+            {
+                return;
+            }
+
+            IReadOnlyList<Aura> activeAuras = m_Auras.All;
+            for (int auraIndex = 0; auraIndex < activeAuras.Count; auraIndex++)
+            {
+                Aura aura = activeAuras[auraIndex];
+                if (aura == null)
+                {
+                    continue;
+                }
+
+                for (int effectIndex = 0; effectIndex < aura.Effects.Count; effectIndex++)
+                {
+                    AuraEffect effect = aura.Effects[effectIndex];
+                    if (effect == null || effect.AuraType != AuraType.RepopOntopOfSelf)
+                    {
+                        continue;
+                    }
+
+                    int reviveHealthPct = effect.BaseValue > 0 ? (int)effect.BaseValue : 40;
+                    int reviveManaPct = effect.MiscValue > 0 ? (int)effect.MiscValue : 20;
+                    int reviveHealth = (int)((long)MaxHp * reviveHealthPct / 100);
+                    if (reviveHealth <= 0)
+                    {
+                        reviveHealth = 1;
+                    }
+
+                    int reviveMana = 0;
+                    if (HasMana && m_MaxMana > 0)
+                    {
+                        reviveMana = (int)((long)m_MaxMana * reviveManaPct / 100);
+                    }
+
+                    if (!ServerRevive(reviveHealth, reviveMana))
+                    {
+                        return;
+                    }
+
+                    m_Auras.RemoveAura(aura.SourceSpellEntry, aura.CasterGuid);
+                    return;
+                }
             }
         }
 
@@ -1081,6 +1413,21 @@ namespace Riftstorm.Game.Combat
         }
 
         /// <inheritdoc/>
+        void ICombatUnit.ApplyDamageInfo(in DamageInfo info, ICombatUnit attacker)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            // Direkt in den autoritativen Schadenspfad: ApplyDamage broadcastet
+            // auch FinalDamage <= 0 (Miss/Dodge/Parry/Immune/Resist/Absorb) an
+            // alle Clients und erhaelt die HitResult-Klassifikation — damit der
+            // FloatingCombatText die Avoidance-Labels wieder anzeigt. Kein
+            // amount-Filter wie bei TakeDamage.
+            ApplyDamage(attacker as UnitStats, in info);
+        }
+
+        /// <inheritdoc/>
         void ICombatUnit.Heal(int amount, ICombatUnit source)
         {
             if (!IsServer || amount <= 0 || IsDead)
@@ -1166,12 +1513,16 @@ namespace Riftstorm.Game.Combat
         void ICombatUnit.ServerInterruptCast()
         {
             if (!IsServer) { return; }
-            // Spieler-Casts laufen ueber PlayerCombat &#8212; NPCs casten ohne
-            // diese Komponente und werden vom Interrupt-Effekt als No-op
-            // behandelt (Cast-Abort fuer NPCs kommt direkt aus deren AI).
+            // Spieler-Casts laufen ueber PlayerCombat; NPC-Casts ueber deren AI.
+            // Genau eine der beiden Komponenten ist pro Einheit gesetzt.
             if (m_PlayerCombat != null)
             {
                 m_PlayerCombat.ServerInterruptCast();
+                return;
+            }
+            if (m_NpcController != null)
+            {
+                m_NpcController.ServerInterruptCast();
             }
         }
 

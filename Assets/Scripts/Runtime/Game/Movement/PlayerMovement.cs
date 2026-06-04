@@ -1,6 +1,7 @@
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Sprites;
+using Riftstorm.Gameplay.Combat;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -309,14 +310,19 @@ namespace Riftstorm.Game.Movement
             Vector2 input = isMoving ? ClampInput(rawInput) : Vector2.zero;
 
             // Owner-seitiger Movement-Lock. Zwei Quellen:
-            //  1) PlayerCombatVisuals.IsBusy   — gesetzt, sobald die Attack-Anim
-            //     vom Server per ClientRpc eingespielt wurde (Swing/Shoot/Cast/Hit/Die).
+            //  1) PlayerCombatVisuals.IsBusy fuer nicht-Cast-Visuals. Cast-Posen
+            //     duerfen den Move-Input NICHT lokal wegfiltern, sonst erreicht
+            //     das serverseitige Move-cancels-Cast-Gate nie ein non-zero Input
+            //     und der Spieler fuehlt einen kuenstlichen Nachhaenger.
             //  2) PlayerCombat.IsOwnerPredictingAttack — gesetzt SOFORT beim lokalen
             //     Attack-Input, bevor das ClientRpc zurückkommt. Schließt das ~1 RTT
             //     große Fenster, in dem der Owner sonst weiterpredictet, während der
             //     Server bereits clampt → Reconciliation-Ruckler.
             // Server clampt zusätzlich autoritativ (siehe SubmitCommandServerRpc).
-            bool busy = (m_CombatVisuals != null && m_CombatVisuals.IsBusy)
+            bool visualLocksMovement = m_CombatVisuals != null
+                && m_CombatVisuals.IsBusy
+                && m_CombatVisuals.CurrentAnim != CombatAnim.Cast;
+            bool busy = visualLocksMovement
                         || (m_Combat != null && m_Combat.IsOwnerPredictingAttack);
             if (busy)
             {

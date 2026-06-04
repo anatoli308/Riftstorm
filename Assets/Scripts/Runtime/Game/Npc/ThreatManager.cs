@@ -82,6 +82,21 @@ namespace Riftstorm.Game.Npc
             return v;
         }
 
+        /// <summary>Kopiert alle aktuell verfolgten Unit-Ids in <paramref name="destination"/>.</summary>
+        public void CopyUnitIds(List<ulong> destination)
+        {
+            if (destination == null)
+            {
+                return;
+            }
+
+            destination.Clear();
+            foreach (KeyValuePair<ulong, int> kv in m_Table)
+            {
+                destination.Add(kv.Key);
+            }
+        }
+
         /// <summary>
         /// Leert die komplette Tabelle (z. B. bei Evade-Reset oder Match-End).
         /// </summary>

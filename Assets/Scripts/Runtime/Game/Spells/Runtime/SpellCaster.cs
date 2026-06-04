@@ -42,6 +42,35 @@ namespace Riftstorm.Game.Spells
             return CastResult.Success;
         }
 
+        /// <summary>
+        /// Validierung fuer intern ausgeloëste Triggered-Spells. Behaelt
+        /// Caster-/Equipment-/Target-/Range-Gates bei, skippt aber explizit
+        /// Resource-, Cooldown- und GCD-Pruefungen, weil diese bereits am
+        /// ausloesenden Wrapper-Spell haengen.
+        /// </summary>
+        public static CastResult ValidateTriggered(ICombatUnit caster, SpellTemplate spell, ICombatUnit target)
+        {
+            if (caster == null) { return CastResult.InternalError; }
+            if (spell == null) { return CastResult.UnknownSpell; }
+
+            CastResult r = CheckCasterState(caster, spell);
+            if (r != CastResult.Success) { return r; }
+
+            r = CheckEquipment(caster, spell);
+            if (r != CastResult.Success) { return r; }
+
+            r = CheckRangedAgainstDeadTarget(spell, target);
+            if (r != CastResult.Success) { return r; }
+
+            r = CheckTarget(caster, spell, target);
+            if (r != CastResult.Success) { return r; }
+
+            r = CheckRange(caster, spell, target);
+            if (r != CastResult.Success) { return r; }
+
+            return CastResult.Success;
+        }
+
         // ---------------------------------------------------------------------
 
         static CastResult CheckCasterState(ICombatUnit caster, SpellTemplate spell)
@@ -141,6 +170,11 @@ namespace Riftstorm.Game.Spells
 
         static CastResult CheckTarget(ICombatUnit caster, SpellTemplate spell, ICombatUnit target)
         {
+            // Skillshots zielen gerichtet (Cursor/Blickrichtung), nicht auf ein
+            // vorab gewaehltes Unit-Ziel. Die Faction-Pruefung erfolgt erst beim
+            // Treffer (ServerProjectile). Daher hier kein Unit-Ziel-Zwang.
+            if (spell.IsSkillshot) { return CastResult.Success; }
+
             bool selfOnly = SpellUtils.IsSelfOnly(spell);
             if (selfOnly)
             {
@@ -187,6 +221,10 @@ namespace Riftstorm.Game.Spells
 
         static CastResult CheckRange(ICombatUnit caster, SpellTemplate spell, ICombatUnit target)
         {
+            // Skillshots haben kein Unit-Ziel — die Reichweite begrenzt das
+            // Projektil ueber seine Flugbahn, nicht eine Distanz zum Ziel.
+            if (spell.IsSkillshot) { return CastResult.Success; }
+
             if (spell.Range <= 0f || target == null || ReferenceEquals(target, caster))
             {
                 return CastResult.Success;

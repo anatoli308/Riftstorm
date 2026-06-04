@@ -117,10 +117,28 @@ namespace Riftstorm.Game.Input
                 return;
             }
 
+            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+
+            // Skillshots feuern sofort gerichtet in Cursor-Richtung: aktuellen
+            // Boden-Zielpunkt unter der Maus greifen und als Destination senden.
+            // Faellt kein Aim-Punkt an (kein Picker/Kamera), feuert der Server in
+            // Blickrichtung des Casters (Forward-Fallback).
+            if (spell != null && spell.IsSkillshot)
+            {
+                if (m_GroundPicker != null && m_GroundPicker.TryGetAimPoint(out Vector3 aimPoint))
+                {
+                    m_Combat.TryRequestCastSpellAtGround(spellEntry, aimPoint);
+                }
+                else
+                {
+                    m_Combat.TryRequestCastSpell(spellEntry);
+                }
+                return;
+            }
+
             // Ground-Target-Spells gehen ueber den Picker: erst Reticle anzeigen, dann
             // bei LMB-Confirm die Welt-Position an PlayerCombat.TryRequestCastSpellAtGround
             // schicken. Spells ohne TargetsGround-Flag laufen weiterhin direkt.
-            SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
             if (spell != null && spell.IsGroundTargeted)
             {
                 if (m_GroundPicker == null)

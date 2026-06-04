@@ -1,10 +1,12 @@
 # 19 — Current State, Open Items & Legacy Cleanup
 
+> Status-Update 2026-06-02: Dieses Dokument bleibt als Detail-Referenz fuer die
+> juengsten Ranged-/NPC-/HUD-Aenderungen aktuell. Die uebergreifende Audit-
+> Uebersicht liegt jetzt in [21-audit-2026-06-02-spells-combat.md](21-audit-2026-06-02-spells-combat.md).
+
 > Konsolidierter Stand nach Round 7 + 8 (Ranged-Layer-Registration, HUD-Stats,
 > NPC-Facing-on-Attack). Dient als Startkontext für eine neue Chat-Session.
-> Ergänzt: [18-ranged-pipeline-und-visuals.md](18-ranged-pipeline-und-visuals.md),
-> [14-npc-ai-audit-roadmap.md](14-npc-ai-audit-roadmap.md),
-> [15-equipment-system-runtime-swap.md](15-equipment-system-runtime-swap.md).
+> Ergänzt: [15-equipment-system-runtime-swap.md](15-equipment-system-runtime-swap.md).
 
 ---
 
@@ -67,9 +69,23 @@
 
 ## 2. NPC-AI: wie wird wirklich gecastet?
 
+> Update 2026-06-02: Slots sind nicht mehr auf 4 fix verdrahtet, und es gibt
+> jetzt einen separaten **Notfall-/Primary-Spell** (`spell_primary`). Siehe
+> auch [21-audit-2026-06-02-spells-combat.md](21-audit-2026-06-02-spells-combat.md).
+
 `NpcController.SelectSpellSlotToCast` (Server-only, jeden Tick im `Combat`-
-State) iteriert die vier Template-Slots **in Reihenfolge 1→4** und nimmt den
-ersten Slot, der **alle** Gates passiert:
+State) entscheidet in **drei Stufen**:
+
+1. **Notfall-Primary (höchste Priorität):** Ist ein `spell_primary` gesetzt,
+   sein eigener Cooldown abgelaufen (`m_PrimaryNextReadyAt`), der Spell
+   castbar **und** die NPC-HP `<= k_EmergencyHealthPct` (30 %), wird sofort
+   der Primary gewählt — vor allen regulären Slots. Rückgabe
+   `k_PrimarySlotSentinel` (= `-2`).
+2. **Reguläre Slots:** Iteration über `m_SpellSlots` **in Template-Reihenfolge**
+   (dynamisch N Slots, nicht mehr fix 4). Erster Slot, der **alle** Gates
+   passiert, gewinnt.
+3. **Fallback-Primary:** Zog kein regulärer Slot in diesem Tick, wird der
+   Primary nochmals geprüft (ohne HP-Bedingung) und gewählt, falls bereit.
 
 | Gate            | Quelle (JSON)        | Wirkung                                              |
 |-----------------|----------------------|------------------------------------------------------|
@@ -85,17 +101,25 @@ Wichtige Konsequenzen:
   fälschlich runtertakten.
 - `chance=100 + interval=0 + cooldown=0` ⇒ NPC castet quasi jeden Tick.
   Praxiswerte: `chance=30..60`, `interval=2000..4000`.
-- Slot-Priorität ist linear, kein Scoring. Slot 1 dominiert Slot 2..4 → der
-  „interessanteste" Spell gehört nach **vorne**.
-- Beim Despawn/Death/Evade-Reset werden `NextAttemptAt` / `NextReadyAt` per
-  `ResetSpellRuntimeTimers` genullt.
+- Slot-Priorität ist linear, kein Scoring. Slot 1 dominiert die Folge-Slots →
+  der „interessanteste" Spell gehört nach **vorne**.
+- **Primary** ist die einzige Ausnahme von der linearen Priorität: er sticht
+  bei Notfall-HP alles, und dient sonst als letzter Fallback. Eigener
+  Cooldown-Gate (`m_PrimaryNextReadyAt`), unabhängig von den Slot-Timern.
+- `k_EmergencyHealthPct = 30f` (HP-Schwelle in Prozent),
+  `k_PrimarySlotSentinel = -2` (Sentinel-Slotindex für den Primary).
+- Beim Despawn/Death/Evade-Reset werden `NextAttemptAt` / `NextReadyAt` **und**
+  `m_PrimaryNextReadyAt` per `ResetSpellRuntimeTimers` genullt.
+- Unbekannte Primary-IDs werden beim Spawn (`SpellCatalogLoader.TryGetTemplate`)
+  verworfen und mit Warnung deaktiviert (`m_PrimarySpellId = 0`).
 
-Datenstruktur in `npc_templates.json`:
+Datenstruktur in `npc_templates.json` (Slots dynamisch, `spell_primary` optional):
 
 ```jsonc
 {
   "entry": 70001,
   "name": "Goblin Shaman",
+  "spell_primary": 20030,                                   // Notfall-Heilung bei <=30% HP
   "spell1": 20015, "chance1": 50, "interval1": 3000, "cooldown1": 8000,
   "spell2": 20007, "chance2": 35, "interval2": 4500, "cooldown2": 0,
   "spell3": 0,     "chance3": 0,  "interval3": 0,    "cooldown3": 0,
@@ -103,7 +127,11 @@ Datenstruktur in `npc_templates.json`:
 }
 ```
 
-`cooldown=0` ⇒ Fallback auf `spell_template.cooldown` aus dem Spell selbst.
+- `cooldown=0` ⇒ Fallback auf `spell_template.cooldown` aus dem Spell selbst.
+- `spell_primary` fehlt/`0` ⇒ kein Notfall-/Fallback-Spell, reines Slot-Verhalten
+  wie zuvor (rückwärtskompatibel).
+- Aktive Slot-Anzahl wird beim Spawn als `m_ActiveSpellSlotCount` gezählt;
+  leere Trailing-Slots (`spellN = 0`) kosten zur Laufzeit nichts.
 
 ---
 

@@ -53,6 +53,7 @@ namespace Riftstorm.Game.Combat
         [SerializeField] private TargetSelection m_TargetSelection;
         [SerializeField] private UnitStats m_Stats;
         [SerializeField] private PlayerMovement m_Movement;
+        [SerializeField] private MobaCommandController m_MoveCommands;
 
         [Tooltip("Default-Waffe, mit der der Server jeden neu gespawnten Spieler ausrüstet, " +
                  "solange das Loadout-System noch nicht greift.")]
@@ -98,6 +99,20 @@ namespace Riftstorm.Game.Combat
             readPerm: NetworkVariableReadPermission.Everyone,
             writePerm: NetworkVariableWritePermission.Server);
 
+        /// <summary>
+        /// Server-autoritativer Auto-Attack-Modus: <c>false</c> = Melee
+        /// (Main-Hand, Entry 81 "Melee Swing"), <c>true</c> = Ranged (Bogen-Slot,
+        /// Entry 82 "Ranged Attack"). Owner togglet per <see cref="RequestToggleWeaponMode"/>;
+        /// der Server gated den Wechsel darauf, dass tatsaechlich eine Ranged-Waffe
+        /// ausgeruestet ist (sonst bleibt der Modus zwingend Melee). Jeder Peer
+        /// liest den Wert, damit der Owner-lokale Follow-Stop-Radius
+        /// (<see cref="CurrentWeaponRange"/>) zur aktiven Waffe passt.
+        /// </summary>
+        private readonly NetworkVariable<bool> m_RangedModeActive = new(
+            false,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Server);
+
         // -------------------------------------------------------------------------
         // Equip-Lese-API (fuer PlayerEquipmentVisuals, HUD, Range-Indicator)
         // -------------------------------------------------------------------------
@@ -110,6 +125,14 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>Aktuell ausgeruestete Ranged-Waffe (Id aus <c>combat/weapons.json</c>). Leer = kein Bogen.</summary>
         public string CurrentRangedId => m_CurrentRangedId.Value.ToString();
+
+        /// <summary>
+        /// True, wenn der Ranged-Auto-Attack-Modus aktiv UND ein Bogen ausgeruestet
+        /// ist. Wird vom HUD genutzt, um Melee/Ranged-Indikator zu rendern. Ohne
+        /// ausgeruesteten Bogen ist das Ergebnis immer <c>false</c> (Auto-Fallback
+        /// auf Melee), auch wenn das NetworkVariable noch <c>true</c> stehen sollte.
+        /// </summary>
+        public bool IsRangedModeActive => m_RangedModeActive.Value && ResolveRangedWeapon() != null;
 
         /// <summary>
         /// Feuert auf jedem Peer (Server + alle Clients), sobald die
@@ -133,6 +156,13 @@ namespace Riftstorm.Game.Combat
         /// keine Ranged-Waffe ist).
         /// </summary>
         public event System.Action<string, string> RangedChanged;
+
+        /// <summary>
+        /// Feuert auf jedem Peer, sobald der Auto-Attack-Modus (Melee/Ranged)
+        /// sich aendert. Payload: <c>true</c> = Ranged aktiv. Wird vom HUD
+        /// abonniert, um den Melee/Ranged-Indikator umzuschalten.
+        /// </summary>
+        public event System.Action<bool> WeaponModeChanged;
 
         // -------------------------------------------------------------------------
         // States (öffentlich lesbar, damit States gegenseitig referenzieren können)
@@ -195,6 +225,10 @@ namespace Riftstorm.Game.Combat
             if (m_Movement == null)
             {
                 m_Movement = GetComponent<PlayerMovement>();
+            }
+            if (m_MoveCommands == null)
+            {
+                m_MoveCommands = GetComponent<MobaCommandController>();
             }
             if (m_Targeting == null)
             {
@@ -276,6 +310,7 @@ namespace Riftstorm.Game.Combat
             m_CurrentWeaponId.OnValueChanged += OnNetWeaponChanged;
             m_CurrentOffhandId.OnValueChanged += OnNetOffhandChanged;
             m_CurrentRangedId.OnValueChanged += OnNetRangedChanged;
+            m_RangedModeActive.OnValueChanged += OnNetWeaponModeChanged;
 
             // Server abonniert das Todes-Event, um State-Wechsel + Client-Fanout der
             // Death-Animation auszulösen (Source-treu: kein Polling, eventbasiert).
@@ -306,6 +341,7 @@ namespace Riftstorm.Game.Combat
             m_CurrentWeaponId.OnValueChanged -= OnNetWeaponChanged;
             m_CurrentOffhandId.OnValueChanged -= OnNetOffhandChanged;
             m_CurrentRangedId.OnValueChanged -= OnNetRangedChanged;
+            m_RangedModeActive.OnValueChanged -= OnNetWeaponModeChanged;
 
             if (IsServer && m_Stats != null)
             {
@@ -315,12 +351,7 @@ namespace Riftstorm.Game.Combat
             {
                 m_Stats.ClientDamageReceived -= OnClientDamageReceived;
             }
-            if (m_RespawnCts != null)
-            {
-                m_RespawnCts.Cancel();
-                m_RespawnCts.Dispose();
-                m_RespawnCts = null;
-            }
+            CancelRespawnTimer();
             base.OnNetworkDespawn();
         }
 
@@ -336,7 +367,19 @@ namespace Riftstorm.Game.Combat
 
         private void OnNetRangedChanged(FixedString64Bytes oldValue, FixedString64Bytes newValue)
         {
+            // Server-Safety: wird der Bogen-Slot geleert, faellt der Auto-Attack-
+            // Modus zwingend auf Melee zurueck — sonst stuende der Modus auf Ranged,
+            // waehrend ResolveAutoAttackWeapon mangels Bogen ohnehin Melee liefert.
+            if (IsServer && newValue.Length == 0 && m_RangedModeActive.Value)
+            {
+                m_RangedModeActive.Value = false;
+            }
             RangedChanged?.Invoke(oldValue.ToString(), newValue.ToString());
+        }
+
+        private void OnNetWeaponModeChanged(bool oldValue, bool newValue)
+        {
+            WeaponModeChanged?.Invoke(newValue);
         }
 
         // -------------------------------------------------------------------------
@@ -415,6 +458,30 @@ namespace Riftstorm.Game.Combat
         /// <summary>Maximales Vorhersagefenster (Sekunden), wenn keine Server-Antwort kommt.</summary>
         private const float k_OwnerAttackPredictionWindow = 0.5f;
 
+        /// <summary>
+        /// Spell-Entry der Basis-Melee-Auto-Attack (<c>Melee Swing</c>) aus
+        /// <c>spells/_templates.json</c>. Der Rechtsklick-Auto-Attack castet diesen
+        /// Spell statt einer eigenen Hitscan-Logik, damit GCD, Cast-Pose (Swing)
+        /// und Schadensaufloesung ueber die regulaere Spell-Pipeline laufen.
+        /// </summary>
+        private const int k_MeleeAutoAttackSpell = 81;
+
+        /// <summary>
+        /// Spell-Entry der Basis-Ranged-Auto-Attack (<c>Ranged Attack</c>) aus
+        /// <c>spells/_templates.json</c>. Wird im Ranged-Modus statt
+        /// <see cref="k_MeleeAutoAttackSpell"/> gecastet; loest GCD, Shoot-Pose und
+        /// die Bogen-Cast-Visuals (RequiredEquipment 12) ueber die Spell-Pipeline aus.
+        /// </summary>
+        private const int k_RangedAutoAttackSpell = 82;
+
+        /// <summary>
+        /// Fallback-Reichweite (Meter) fuer den Client-Flug-Endpunkt eines
+        /// Skillshots, wenn der Spell kein gueltiges Range-Feld traegt. Spiegelt
+        /// <c>ServerProjectile.k_FallbackSkillshotRangeMeters</c>, damit Visual
+        /// und server-seitiges Projektil dieselbe Distanz nutzen.
+        /// </summary>
+        private const float k_FallbackSkillshotVisualRangeMeters = 15f;
+
         // -------------------------------------------------------------------------
         // Server-Death-Pipeline
         // -------------------------------------------------------------------------
@@ -445,13 +512,25 @@ namespace Riftstorm.Game.Combat
 
             // 3) Respawn nach Verzögerung planen (Awaitable, kein Polling).
             //    Vorherigen Timer abbrechen, falls einer aktiv ist.
-            if (m_RespawnCts != null)
-            {
-                m_RespawnCts.Cancel();
-                m_RespawnCts.Dispose();
-            }
+            CancelRespawnTimer();
             m_RespawnCts = new CancellationTokenSource();
             _ = ScheduleRespawnAsync(m_RespawnCts.Token);
+        }
+
+        /// <summary>
+        /// Server-only: hebt einen bereits betretenen Dead-State ohne Teleport
+        /// oder Full-Reset auf. Wird von spellbasierten Wiederbelebungen genutzt.
+        /// </summary>
+        public void ServerHandleExternalRevive()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            CancelRespawnTimer();
+            m_CurrentState?.OnRespawn();
+            PlayRespawnClientRpc();
         }
 
         [ClientRpc]
@@ -546,6 +625,21 @@ namespace Riftstorm.Game.Combat
             PlayRespawnClientRpc();
         }
 
+        /// <summary>
+        /// Bricht einen laufenden Respawn-Timer sauber ab und gibt seine Ressourcen frei.
+        /// </summary>
+        private void CancelRespawnTimer()
+        {
+            if (m_RespawnCts == null)
+            {
+                return;
+            }
+
+            m_RespawnCts.Cancel();
+            m_RespawnCts.Dispose();
+            m_RespawnCts = null;
+        }
+
         [ClientRpc]
         private void PlayRespawnClientRpc(ClientRpcParams _ = default)
         {
@@ -582,8 +676,10 @@ namespace Riftstorm.Game.Combat
         /// Wird per Frame aus dem Follow-Update aufgerufen, sobald der Spieler in
         /// Waffenreichweite zum gelockten Ziel steht. Idempotent gegenueber dem
         /// Prediction-Window — solange der Owner einen Angriff vorhersagt, wird
-        /// kein weiterer RPC abgeschickt. Cooldown-Gating und Ziel-/Waffenvalidierung
-        /// laufen auf dem Server in <see cref="RequestAttackServerRpc"/> + State-Machine.
+        /// kein weiterer RPC abgeschickt. Statt einer eigenen Hitscan-Logik castet
+        /// der Auto-Attack jetzt den passenden Basis-Spell (Melee 81 / Ranged 82),
+        /// damit GCD, Cast-Pose und Schadensaufloesung serverseitig ueber die
+        /// regulaere Spell-Pipeline (<see cref="ServerBeginSpellCast"/>) laufen.
         /// </summary>
         public void TryRequestAutoAttack()
         {
@@ -601,7 +697,9 @@ namespace Riftstorm.Game.Combat
             }
             // Bereits ein Attack-RPC unterwegs? Dann nichts tun — das verhindert RPC-Spam
             // pro Frame im Follow-Update und ueberlaesst die naechste Anfrage dem Ablauf
-            // des Vorhersagefensters (deckt sich mit dem Waffen-Cooldown auf dem Server).
+            // des Vorhersagefensters. Der Server droppt zusaetzlich still alles, was
+            // waehrend GCD/Cast eintrifft (reportFailures=false), sodass kein
+            // Fehl-Toast pro Frame entsteht.
             if (IsOwnerPredictingAttack)
             {
                 return;
@@ -609,22 +707,67 @@ namespace Riftstorm.Game.Combat
 
             // Lokale Movement-Vorhersage aktivieren (siehe PlayerMovement.TickOwner).
             m_OwnerPredictedAttackUntil = Time.unscaledTime + k_OwnerAttackPredictionWindow;
-            RequestAttackServerRpc();
+            RequestAttackServerRpc(m_TargetSelection.CurrentTargetId);
         }
 
         [ServerRpc]
-        private void RequestAttackServerRpc(ServerRpcParams _ = default)
+        private void RequestAttackServerRpc(ulong targetNetworkObjectId, ServerRpcParams rpcParams = default)
         {
-            WeaponDefinition weapon = ResolveCurrentWeapon();
-            if (weapon == null)
+            // Auto-Attack = realer Spell-Cast: im Ranged-Modus (mit ausgeruestetem
+            // Bogen) Spell 82 (Ranged Attack), sonst Spell 81 (Melee Swing). Der
+            // Cast laeuft durch dieselbe Validate-/GCD-/State-Pipeline wie ein
+            // Hotbar-Spell. Fehler (GCD aktiv, Ziel ungueltig, bereits am Casten)
+            // werden hier bewusst NICHT an den Owner gemeldet (reportFailures=false),
+            // weil der Auto-Attack pro Frame nachfeuert und sonst Toast-Spam erzeugt.
+            int spellEntry = m_RangedModeActive.Value && ResolveRangedWeapon() != null
+                ? k_RangedAutoAttackSpell
+                : k_MeleeAutoAttackSpell;
+
+            ServerBeginSpellCast(
+                spellEntry,
+                targetNetworkObjectId,
+                Vector3.zero,
+                hasCastDestination: false,
+                rpcParams.Receive.SenderClientId,
+                reportFailures: false);
+        }
+
+        // -------------------------------------------------------------------------
+        // Auto-Attack-Modus-Toggle (Melee <-> Ranged)
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Owner-Einstieg zum Umschalten zwischen Melee- und Ranged-Auto-Attack.
+        /// Wird von der Toggle-InputAction (Default: Taste 'T') ueber den
+        /// <see cref="MobaCommandController"/> aufgerufen. Lokale Sanity-Checks
+        /// (Spawn + Owner); der autoritative Wechsel inkl. Gating auf einen
+        /// ausgeruesteten Bogen passiert serverseitig in
+        /// <see cref="RequestToggleWeaponModeServerRpc"/>.
+        /// </summary>
+        public void RequestToggleWeaponMode()
+        {
+            if (!IsSpawned || !IsOwner)
             {
                 return;
             }
+            RequestToggleWeaponModeServerRpc();
+        }
 
-            // Kein Auto-Set des Ziels mehr — der Server nutzt ausschliesslich das bereits
-            // per RequestSelectTargetServerRpc gelockte Ziel. Klick-zum-Selektieren laeuft
-            // jetzt ueber PlayerTargetingInput, nicht ueber den Attack-Pfad.
-            m_CurrentState.OnAttackRequested(weapon);
+        [ServerRpc]
+        private void RequestToggleWeaponModeServerRpc(ServerRpcParams _ = default)
+        {
+            // Auto-Verhalten: nur umschalten, wenn tatsaechlich eine Ranged-Waffe
+            // ausgeruestet ist. Ohne Bogen bleibt der Modus zwingend Melee
+            // ("sonst immer die vorhandene Waffe"), der Toggle ist dann ein No-Op.
+            if (ResolveRangedWeapon() == null)
+            {
+                if (m_RangedModeActive.Value)
+                {
+                    m_RangedModeActive.Value = false;
+                }
+                return;
+            }
+            m_RangedModeActive.Value = !m_RangedModeActive.Value;
         }
 
         // -------------------------------------------------------------------------
@@ -708,15 +851,51 @@ namespace Riftstorm.Game.Combat
             // FX-Spawner einen sinnvollen Forward-Vektor haben.
             FaceCurrentTarget();
 
+            float attackCooldown = GetEffectiveAttackCooldown(weapon);
+
             // 1) An alle Clients (inkl. Host) zum Visual-Trigger fan-out.
             //    Cooldown mitsenden, damit der Owner seinen Movement-Lock für
             //    exakt die gleiche Dauer wie der Server hält (kein Reconciliation-Snap,
             //    wenn die visuelle Anim kürzer ist als der Cooldown).
-            PlayAttackClientRpc(weapon.AttackAnim, weapon.AttackCooldown);
+            PlayAttackClientRpc(weapon.AttackAnim, attackCooldown);
 
             // 2) Cooldown-State konfigurieren und Transition.
-            AttackingState.ConfigureFromWeapon(weapon);
+            AttackingState.ConfigureFromWeapon(weapon, attackCooldown);
             ChangeState(AttackingState);
+        }
+
+        /// <summary>
+        /// Berechnet den server-autoritativ wirksamen Auto-Attack-Cooldown
+        /// inklusive Aura-/Stat-Modifikatoren fuer Melee- und Ranged-Angriffe.
+        /// </summary>
+        private float GetEffectiveAttackCooldown(WeaponDefinition weapon)
+        {
+            if (weapon == null)
+            {
+                return 0.05f;
+            }
+
+            float cooldown = Mathf.Max(0.05f, weapon.AttackCooldown);
+            if (m_Stats == null)
+            {
+                return cooldown;
+            }
+
+            AuraManager auras = ((ICombatUnit)m_Stats).Auras;
+            if (auras == null)
+            {
+                return cooldown;
+            }
+
+            int statMask = weapon.IsRanged
+                ? 1 << ((int)StatId.RangedCooldown - 1)
+                : 1 << ((int)StatId.MeleeCooldown - 1);
+            int speedPct = weapon.IsRanged
+                ? auras.GetAuraModifierTotal(AuraType.ModifyRangedSpeedPct)
+                : auras.GetAuraModifierTotal(AuraType.ModifyMeleeSpeedPct);
+            int statPct = auras.GetStatModifierTotal(statMask);
+            float multiplier = Mathf.Max(0.05f, 1f + (speedPct + statPct) / 100f);
+            return Mathf.Max(0.05f, cooldown * multiplier);
         }
 
         private void FaceCurrentTarget()
@@ -955,6 +1134,27 @@ namespace Riftstorm.Game.Combat
         public WeaponDefinition CurrentRangedWeapon => ResolveRangedWeapon();
 
         /// <summary>
+        /// Aufloesung der aktiven Auto-Attack-Waffe je nach Modus
+        /// (<see cref="m_RangedModeActive"/>): im Ranged-Modus die Bogen-Definition
+        /// aus dem Ranged-Slot, sonst die Main-Hand. Auto-Fallback: ist der
+        /// Ranged-Modus aktiv, aber kein Bogen ausgeruestet, wird die Main-Hand
+        /// (inkl. <c>unarmed</c>-Fallback) geliefert — so schlaegt der Rechtsklick
+        /// nie ins Leere. Wird sowohl von <see cref="RequestAttackServerRpc"/>
+        /// (Server, Damage) als auch von <see cref="CurrentWeaponRange"/>
+        /// (Owner, Follow-Stop-Radius) gelesen, damit beide Seiten dieselbe
+        /// Waffe annehmen.
+        /// </summary>
+        private WeaponDefinition ResolveAutoAttackWeapon()
+        {
+            if (m_RangedModeActive.Value)
+            {
+                WeaponDefinition ranged = ResolveRangedWeapon();
+                if (ranged != null) { return ranged; }
+            }
+            return ResolveCurrentWeapon();
+        }
+
+        /// <summary>
         /// Spell-aware Waffen-Aufloesung: Spells mit <c>required_equipment=12</c>
         /// (Ranged) bekommen die Bogen-Definition aus dem Ranged-Slot — falls
         /// keine vorhanden ist, <c>null</c> (kein <c>unarmed</c>-Fallback, weil
@@ -973,15 +1173,33 @@ namespace Riftstorm.Game.Combat
         }
 
         /// <summary>
-        /// Range (Unity-Worldunits) der aktuell ausgerüsteten Waffe; 0, wenn keine Waffe gesetzt
-        /// ist oder der Katalog noch nicht geladen wurde. Wird vom lokalen
-        /// <see cref="AttackRangeIndicator"/> für die Ground-Kreis-Darstellung gelesen.
+        /// Effektive Auto-Attack-Reichweite in Unity-Worldunits (Metern). Liefert
+        /// die Reichweite des aktiven Basis-Spells — Spell 82 (Ranged Attack) im
+        /// Ranged-Modus mit ausgeruestetem Bogen, sonst Spell 81 (Melee Swing) —,
+        /// umgerechnet ueber <see cref="SpellUtils.RangeToMeters"/>. Damit zeigen
+        /// der lokale <see cref="AttackRangeIndicator"/> (Ground-Kreis) UND der
+        /// Follow-Stop-Radius im <see cref="MobaCommandController"/> exakt die
+        /// Reichweite, gegen die der Cast serverseitig in
+        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/> validiert wird
+        /// (frueher faelschlich die — groessere — <c>WeaponDefinition.Range</c>,
+        /// wodurch der Spieler ausserhalb der Spell-Reichweite stoppte und der
+        /// Auto-Attack still verworfen wurde). Fallback auf die Waffen-Range nur,
+        /// solange der Spell-Katalog noch nicht geladen ist; 0, wenn auch keine
+        /// Waffe gesetzt ist.
         /// </summary>
         public float CurrentWeaponRange
         {
             get
             {
-                WeaponDefinition weapon = ResolveCurrentWeapon();
+                int spellEntry = m_RangedModeActive.Value && ResolveRangedWeapon() != null
+                    ? k_RangedAutoAttackSpell
+                    : k_MeleeAutoAttackSpell;
+                SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+                if (spell != null && spell.Range > 0f)
+                {
+                    return SpellUtils.RangeToMeters(spell.Range);
+                }
+                WeaponDefinition weapon = ResolveAutoAttackWeapon();
                 return weapon != null ? weapon.Range : 0f;
             }
         }
@@ -1308,6 +1526,8 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            m_MoveCommands?.InterruptMovementForCast();
+
             // Rohe TargetId weiterreichen — auch wenn das Ziel inzwischen tot ist.
             // TryGetCurrentTarget filtert tote Targets raus; das wuerde clientseitig
             // zu targetId=0 fuehren und serverseitig zur Selbst-Fallback-Logik
@@ -1341,6 +1561,8 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            m_MoveCommands?.InterruptMovementForCast();
+
             // Rohe TargetId weiterreichen — siehe Kommentar in TryRequestCastSpellAtSelection.
             ulong targetId = m_TargetSelection != null
                 ? m_TargetSelection.CurrentTargetId
@@ -1362,18 +1584,49 @@ namespace Riftstorm.Game.Combat
             bool hasCastDestination,
             ServerRpcParams rpcParams = default)
         {
+            ServerBeginSpellCast(
+                spellEntry,
+                targetNetworkObjectId,
+                castDestination,
+                hasCastDestination,
+                rpcParams.Receive.SenderClientId,
+                reportFailures: true);
+        }
+
+        /// <summary>
+        /// Gemeinsamer Server-Pfad zum Einleiten eines Casts. Resolvt Spell-Template
+        /// und Primaerziel, prueft Self-/Smart-Self-Cast, lehnt waehrend eines
+        /// laufenden Casts/Swings ab und fuehrt das Frueh-Validate
+        /// (Resourcen/Cooldown/GCD/Target/Range/Faction) aus, bevor an den
+        /// <see cref="PlayerCombatIdleState"/> delegiert wird. Wird sowohl vom
+        /// Hotbar-Cast (<see cref="RequestCastSpellServerRpc"/>, mit Fehler-Toasts)
+        /// als auch vom Auto-Attack (<see cref="RequestAttackServerRpc"/>, still)
+        /// genutzt. <paramref name="reportFailures"/> steuert, ob Ablehnungen per
+        /// <see cref="ServerNotifyCastFailed"/> an den Owner gemeldet werden — fuer
+        /// den pro-Frame nachfeuernden Auto-Attack ist das <c>false</c>, um
+        /// Toast-Spam waehrend GCD/Cast zu vermeiden.
+        /// </summary>
+        private void ServerBeginSpellCast(
+            int spellEntry,
+            ulong targetNetworkObjectId,
+            Vector3 castDestination,
+            bool hasCastDestination,
+            ulong senderClientId,
+            bool reportFailures)
+        {
             if (m_Stats == null || m_Stats.IsDead)
             {
                 return;
             }
 
-            ulong senderClientId = rpcParams.Receive.SenderClientId;
-
             SpellTemplate spell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
             if (spell == null)
             {
                 Debug.LogWarning($"[PlayerCombat] Unbekannter Spell-Entry '{spellEntry}'.");
-                ServerNotifyCastFailed(senderClientId, CastResult.UnknownSpell);
+                if (reportFailures)
+                {
+                    ServerNotifyCastFailed(senderClientId, CastResult.UnknownSpell);
+                }
                 return;
             }
 
@@ -1385,6 +1638,10 @@ namespace Riftstorm.Game.Combat
                 if (targetObj.TryGetComponent<UnitStats>(out var targetStats))
                 {
                     primaryTarget = targetStats;
+                }
+                else
+                {
+                    primaryTarget = targetObj.GetComponentInChildren<UnitStats>();
                 }
             }
 
@@ -1423,7 +1680,10 @@ namespace Riftstorm.Game.Combat
             // explizit reporten.
             if (m_CurrentState != IdleState)
             {
-                ServerNotifyCastFailed(senderClientId, CastResult.CasterCasting);
+                if (reportFailures)
+                {
+                    ServerNotifyCastFailed(senderClientId, CastResult.CasterCasting);
+                }
                 return;
             }
 
@@ -1436,7 +1696,10 @@ namespace Riftstorm.Game.Combat
             CastResult preValidate = SpellCaster.Validate(m_Stats, spell, primaryTarget);
             if (preValidate != CastResult.Success)
             {
-                ServerNotifyCastFailed(senderClientId, preValidate);
+                if (reportFailures)
+                {
+                    ServerNotifyCastFailed(senderClientId, preValidate);
+                }
                 return;
             }
 
@@ -1548,9 +1811,37 @@ namespace Riftstorm.Game.Combat
             // genau so lange am Boden liegt wie der Root-Aura. Wenn der Cast
             // keine Destination hat (Single-Target, Self), faellt der Spawner
             // auf One-Shot zurueck.
-            Vector3 groundPoint = destination.HasValue ? destination.Position : Vector3.zero;
-            int groundDurationMs = destination.HasValue ? SpellUtils.CalculateDuration(spell, caster) : 0;
-            PlaySpellCastClientRpc(spellEntry, sourceNetId, resolvedTargetNetId, groundPoint, destination.HasValue, groundDurationMs);
+            Vector3 groundPoint;
+            bool hasGroundPoint;
+            int groundDurationMs;
+            if (spell.IsSkillshot)
+            {
+                // Skillshots: dem Client IMMER einen konkreten Flug-Endpunkt
+                // mitgeben, damit das gerichtete Visual auch dann fliegt, wenn
+                // der Owner keinen Boden-Aim geliefert hat (Forward-Fallback,
+                // z. B. fehlender GroundTargetPicker am Prefab). Der Endpunkt
+                // wird identisch zum server-seitigen <see cref="Spells.Projectiles.ServerProjectile"/>
+                // berechnet (Cursor- bzw. Blickrichtung x Reichweite), damit
+                // Travel-Visual und Hitscan deckungsgleich laufen.
+                Vector3 origin = caster.Position;
+                Vector3 dir = destination.HasValue ? destination.Position - origin : caster.Forward;
+                dir.y = 0f;
+                if (dir.sqrMagnitude < 0.0001f) { dir = caster.Forward; dir.y = 0f; }
+                if (dir.sqrMagnitude < 0.0001f) { dir = Vector3.forward; }
+                dir.Normalize();
+                float rangeMeters = SpellUtils.RangeToMeters(spell.Range);
+                if (rangeMeters <= 0f) { rangeMeters = k_FallbackSkillshotVisualRangeMeters; }
+                groundPoint = origin + dir * rangeMeters;
+                hasGroundPoint = true;
+                groundDurationMs = 0;
+            }
+            else
+            {
+                groundPoint = destination.HasValue ? destination.Position : Vector3.zero;
+                hasGroundPoint = destination.HasValue;
+                groundDurationMs = destination.HasValue ? SpellUtils.CalculateDuration(spell, caster) : 0;
+            }
+            PlaySpellCastClientRpc(spellEntry, sourceNetId, resolvedTargetNetId, groundPoint, hasGroundPoint, groundDurationMs);
         }
 
         /// <summary>
@@ -1632,6 +1923,7 @@ namespace Riftstorm.Game.Combat
             {
                 return;
             }
+            m_MoveCommands?.ResumeHeldMovementAfterCast();
             OwnerCastEnded?.Invoke(completed);
         }
 
@@ -1788,20 +2080,50 @@ namespace Riftstorm.Game.Combat
                 return;
             }
 
+            // Quick-Fix: Travel-Speed des Visuals aus der Spell-Geschwindigkeit
+            // ableiten (Source-Pixel/Frame → m/s), statt der Resolver-Konstante
+            // DefaultTravelSpeed. Haelt Client-Travel-Phase und Server-Projektil
+            // zeitlich konsistent. Faellt auf die Konstante zurueck, falls der
+            // Spell kein Speed-Feld traegt (Hitscan/Instant).
+            SpellTemplate castSpell = SpellCatalogLoader.GetTemplateOrNull(spellEntry);
+            if (castSpell != null && castSpell.Speed > 0f)
+            {
+                float travelMps = SpellUtils.ProjectileSpeedToMps(castSpell.Speed);
+                if (travelMps > 0f) { kit.TravelSpeed = travelMps; }
+            }
+
             Transform targetTransform = targetNetId != 0UL && targetNetId != sourceNetId
                 ? ResolveNetworkTransform(targetNetId)
                 : null;
 
-            SpellVisualSpawner.Spawn(kit, anims, sourceTransform, targetTransform);
+            // Partikel-Katalog fuer die Phasen-Partikelsysteme (Travel/Impact/
+            // Ground) aufloesen. Bei fehlendem Loader bleibt es bei Sprites+Sound.
+            m_ParticleCatalogLoader ??= ServiceLocator.Get<ParticleSystemCatalogLoader>();
+            ParticleSystemCatalog phaseParticles = m_ParticleCatalogLoader?.GetCached();
+
+            // Skillshots haben kein Unit-Ziel: das Visual fliegt gerichtet zum
+            // uebergebenen Aim-Punkt (groundPoint) statt zu einem Target-Transform,
+            // spiegelt damit das server-seitige gerichtete ServerProjectile.
+            if (castSpell != null && castSpell.IsSkillshot && hasGroundPoint)
+            {
+                SpellVisualSpawner.SpawnDirectional(kit, anims, sourceTransform, groundPoint, phaseParticles);
+            }
+            else
+            {
+                SpellVisualSpawner.Spawn(kit, anims, sourceTransform, targetTransform, phaseParticles);
+            }
 
             // Ground-Visual (FLARE go_kit) — nur wenn der Server eine Cast-
             // Destination mitgeschickt hat UND das Visual-Kit eine Ground-Phase
             // aufgeloest hat. Beispiel: Spell 30 / Ice Blast hat go_kit=35
             // (nova_001.sa) und liefert eine TargetsGround-Destination.
-            if (hasGroundPoint && kit.Ground.HasAny)
+            // Skillshots sind ausgenommen: deren hasGroundPoint markiert nur den
+            // Flug-Endpunkt fuer das gerichtete Travel-Visual, nicht eine
+            // stationaere Boden-AoE.
+            if (hasGroundPoint && (castSpell == null || !castSpell.IsSkillshot) && kit.Ground.HasAny)
             {
                 float lifetime = groundDurationMs > 0 ? groundDurationMs * 0.001f : 0f;
-                SpellVisualSpawner.SpawnGround(kit.Ground, anims, groundPoint, lifetime);
+                SpellVisualSpawner.SpawnGround(kit.Ground, anims, groundPoint, lifetime, phaseParticles);
             }
         }
 
@@ -1863,12 +2185,56 @@ namespace Riftstorm.Game.Combat
         }
 
         /// <summary>True, sobald der Spell mindestens einen aktiven Effekt-Slot
-        /// vom Typ <see cref="SpellEffect.WeaponDamage"/> hat. Solche Spells
-        /// skalieren mit dem Waffenschaden und sollen die Attack-Pose der
-        /// equippten Waffe statt der generischen Cast-Pose spielen.</summary>
+        /// vom Typ <see cref="SpellEffect.WeaponDamage"/>, <see cref="SpellEffect.MeleeAtk"/>
+        /// oder <see cref="SpellEffect.RangedAtk"/> hat. Solche Spells skalieren
+        /// mit dem Waffenschaden (verstaerkte Spezial-Schlaege wie Aimed Shot
+        /// ebenso wie die Basis-Auto-Attacks <c>Melee Swing</c> (81) und
+        /// <c>Ranged Attack</c> (82)) und sollen die Attack-Pose der equippten
+        /// Waffe statt der generischen Magier-Cast-Pose spielen.</summary>
         private static bool SpellUsesWeaponAttack(SpellTemplate spell)
         {
-            for (int slot = 1; slot <= 3; slot++)
+            if (spell == null)
+            {
+                return false;
+            }
+
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
+            {
+                SpellTemplateEffect eff = spell.GetEffect(slot);
+                if (!eff.IsActive)
+                {
+                    continue;
+                }
+
+                if (eff.Effect == SpellEffect.WeaponDamage
+                    || eff.Effect == SpellEffect.MeleeAtk
+                    || eff.Effect == SpellEffect.RangedAtk)
+                {
+                    return true;
+                }
+
+                if (eff.Effect == SpellEffect.TriggerSpell)
+                {
+                    SpellTemplate triggeredSpell = SpellCatalogLoader.GetTemplateOrNull((int)eff.Data1);
+                    if (SpellHasDirectWeaponDamage(triggeredSpell))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static bool SpellHasDirectWeaponDamage(SpellTemplate spell)
+        {
+            if (spell == null)
+            {
+                return false;
+            }
+
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
             {
                 SpellTemplateEffect eff = spell.GetEffect(slot);
                 if (eff.IsActive && eff.Effect == SpellEffect.WeaponDamage)
@@ -1876,6 +2242,7 @@ namespace Riftstorm.Game.Combat
                     return true;
                 }
             }
+
             return false;
         }
 

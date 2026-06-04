@@ -76,10 +76,40 @@ namespace Riftstorm.Game.Combat
         /// Wendet Schaden an (mit Tod-Handling, Threat, Combat-Log).
         /// <paramref name="attacker"/> darf null sein bei DoT ohne Caster-Ref.
         /// </summary>
+        /// <remarks>
+        /// Bequemer Pfad fuer Quellen ohne Hit-Klassifikation (DoT, Environment,
+        /// Reflect): klassifiziert intern als <see cref="HitResult.Hit"/> und
+        /// verwirft Treffer mit <paramref name="amount"/> &lt;= 0. Wer die
+        /// Hit-Klasse (Crit/Block/Dodge/Parry/Miss/Immune) erhalten und auch
+        /// ausgewichene Treffer als Floating-Text fanouten will, nutzt
+        /// <see cref="ApplyDamageInfo"/>.
+        /// </remarks>
         void TakeDamage(int amount, ICombatUnit attacker);
+
+        /// <summary>
+        /// Wendet einen vollstaendig vom <see cref="Riftstorm.Gameplay.Combat.CombatFormulas"/>
+        /// klassifizierten Treffer an. Im Gegensatz zu <see cref="TakeDamage"/>
+        /// bleibt die <see cref="DamageInfo.HitResult"/>-Klassifikation erhalten
+        /// (Crit/Block) UND ausgewichene Treffer mit <c>FinalDamage == 0</c>
+        /// (Miss/Dodge/Parry/Immune/Resist/Absorb) werden weiterhin an alle
+        /// Clients fanout, damit der <c>FloatingCombatText</c> "Dodge"/"Parry"/
+        /// "Immune"/… anzeigen kann. Server-only; auf Clients ein No-Op.
+        /// </summary>
+        /// <param name="info">Vom <see cref="Riftstorm.Gameplay.Combat.CombatFormulas"/> vorbereiteter Treffer.</param>
+        /// <param name="attacker">Angreifer-Unit oder <c>null</c> (Environment/DoT).</param>
+        void ApplyDamageInfo(in DamageInfo info, ICombatUnit attacker);
 
         /// <summary>Heilt um <paramref name="amount"/> (gecappt auf <see cref="MaxHealth"/>).</summary>
         void Heal(int amount, ICombatUnit source);
+
+        /// <summary>
+        /// Server-only: belebt eine tote Unit an Ort und Stelle wieder und setzt
+        /// ihren Dead-State in den zugehoerigen Runtime-Komponenten zurueck.
+        /// </summary>
+        /// <param name="health">Absolute HP nach dem Revive.</param>
+        /// <param name="mana">Absolute Mana nach dem Revive.</param>
+        /// <returns><c>true</c>, wenn die Wiederbelebung erfolgreich war.</returns>
+        bool ServerRevive(int health, int mana);
 
         /// <summary>Setzt Mana direkt (für RestoreMana / BurnMana).</summary>
         void SetMana(int amount);

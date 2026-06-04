@@ -33,6 +33,9 @@ namespace Riftstorm.Game.Input
     [DisallowMultipleComponent]
     public sealed class MobaCommandController : MonoBehaviour
     {
+        private const float k_HeldMoveRepeatSeconds = 0.05f;
+        private const float k_HeldMoveMinCursorDeltaPixels = 6f;
+
         // -------------------------------------------------------------------------
         // Inspector
         // -------------------------------------------------------------------------
@@ -78,6 +81,10 @@ namespace Riftstorm.Game.Input
         private CommandIntent m_Intent = CommandIntent.Idle;
         private Vector3 m_DestinationXZ;
         private ulong m_FollowTargetId = TargetSelection.NoTarget;
+        private bool m_SuppressHeldMoveUntilRelease;
+        private bool m_WasMoveHeldLastFrame;
+        private float m_NextHeldMoveTime;
+        private Vector2 m_LastHeldMoveScreenPos;
 
         /// <summary>Vorallokierter Puffer fuer <see cref="Physics.RaycastNonAlloc"/>, damit der Klick-Handler keine Allokationen verursacht.</summary>
         private readonly RaycastHit[] m_HitBuffer = new RaycastHit[16];
@@ -94,6 +101,30 @@ namespace Riftstorm.Game.Input
 
         /// <summary>Aktuelles Klick-Ziel (0 = keins). Owner-lokal, nicht repliziert.</summary>
         public ulong FollowTargetId => m_FollowTargetId;
+
+        /// <summary>
+        /// Bricht den aktuellen Bewegungs-Intent sofort ab und unterdrueckt
+        /// weitere RMB-Hold-Updates, bis die Taste losgelassen wurde.
+        /// </summary>
+        public void InterruptMovementForCast()
+        {
+            ResetIntent();
+            MoveDirection = Vector2.zero;
+            IsMoving = false;
+            m_SuppressHeldMoveUntilRelease = true;
+        }
+
+        /// <summary>
+        /// Hebt die Cast-bedingte Hold-Sperre wieder auf. Wenn RMB weiterhin
+        /// gehalten wird, wird der Move-Intent im naechsten Update frisch
+        /// aufgebaut; wenn nicht, bleibt der Controller einfach idle.
+        /// </summary>
+        public void ResumeHeldMovementAfterCast()
+        {
+            m_SuppressHeldMoveUntilRelease = false;
+            m_WasMoveHeldLastFrame = false;
+            m_NextHeldMoveTime = 0f;
+        }
 
         // -------------------------------------------------------------------------
         // Lifecycle
@@ -133,6 +164,7 @@ namespace Riftstorm.Game.Input
             {
                 m_Input.MoveCommandPressed += OnMoveCommandPressed;
                 m_Input.ClearTargetPressed += OnClearTargetPressed;
+                m_Input.WeaponModeTogglePressed += OnWeaponModeTogglePressed;
             }
         }
 
@@ -142,6 +174,7 @@ namespace Riftstorm.Game.Input
             {
                 m_Input.MoveCommandPressed -= OnMoveCommandPressed;
                 m_Input.ClearTargetPressed -= OnClearTargetPressed;
+                m_Input.WeaponModeTogglePressed -= OnWeaponModeTogglePressed;
             }
             ResetIntent();
         }
@@ -271,6 +304,23 @@ namespace Riftstorm.Game.Input
             ResetIntent();
         }
 
+        /// <summary>
+        /// Taste 'T': schaltet serverseitig zwischen Melee- und Ranged-Auto-Attack
+        /// um. Wirksam nur, wenn ein Bogen ausgeruestet ist (Server-Gate in
+        /// <see cref="Combat.PlayerCombat.RequestToggleWeaponMode"/>); sonst No-Op.
+        /// </summary>
+        private void OnWeaponModeTogglePressed()
+        {
+            if (m_OwnerNetworkObject == null || !m_OwnerNetworkObject.IsOwner)
+            {
+                return;
+            }
+            if (m_Combat != null)
+            {
+                m_Combat.RequestToggleWeaponMode();
+            }
+        }
+
         // -------------------------------------------------------------------------
         // Per-Frame Move-Vektor
         // -------------------------------------------------------------------------
@@ -291,6 +341,8 @@ namespace Riftstorm.Game.Input
                 return;
             }
 
+            ProcessHeldMoveCommand();
+
             switch (m_Intent)
             {
                 case CommandIntent.MoveToPoint:
@@ -306,6 +358,43 @@ namespace Riftstorm.Game.Input
                     IsMoving = false;
                     return;
             }
+        }
+
+        private void ProcessHeldMoveCommand()
+        {
+            bool isHeld = m_Input != null && m_Input.IsMoveCommandHeld;
+            if (!isHeld)
+            {
+                m_WasMoveHeldLastFrame = false;
+                m_SuppressHeldMoveUntilRelease = false;
+                return;
+            }
+
+            if (m_SuppressHeldMoveUntilRelease)
+            {
+                m_WasMoveHeldLastFrame = true;
+                return;
+            }
+
+            Mouse mouse = Mouse.current;
+            if (mouse == null)
+            {
+                return;
+            }
+
+            Vector2 screenPos = mouse.position.ReadValue();
+            bool firstHeldFrame = !m_WasMoveHeldLastFrame;
+            bool movedEnough = (screenPos - m_LastHeldMoveScreenPos).sqrMagnitude
+                >= k_HeldMoveMinCursorDeltaPixels * k_HeldMoveMinCursorDeltaPixels;
+            bool repeatDue = Time.unscaledTime >= m_NextHeldMoveTime;
+            if (firstHeldFrame || movedEnough || repeatDue)
+            {
+                OnMoveCommandPressed();
+                m_LastHeldMoveScreenPos = screenPos;
+                m_NextHeldMoveTime = Time.unscaledTime + k_HeldMoveRepeatSeconds;
+            }
+
+            m_WasMoveHeldLastFrame = true;
         }
 
         private void UpdateMoveToPoint()
@@ -381,6 +470,8 @@ namespace Riftstorm.Game.Input
         {
             m_Intent = CommandIntent.Idle;
             m_FollowTargetId = TargetSelection.NoTarget;
+            m_WasMoveHeldLastFrame = false;
+            m_NextHeldMoveTime = 0f;
         }
     }
 }
