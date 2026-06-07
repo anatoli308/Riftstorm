@@ -271,8 +271,11 @@ namespace Riftstorm.Game.Spells
             int str = s?.Strength ?? 0;
             int intStat = s?.Intelligence ?? 0;
             int wil = s?.Willpower ?? 0;
-            // CUR (Cunning) ist im aktuellen Stat-Modell nicht vorgesehen —
-            // bleibt 0; Source-Formeln degradieren sauber (Variable wird zu 0).
+            // CUR (Source 'Cunning') wird auf das Riftstorm-Attribut Courage
+            // (CRG) abgebildet — das ist im Stat-Modell vorhanden und bereits
+            // kampfrelevant (z. B. Parry via CRG/30). Damit skalieren Source-
+            // Formeln wie Holy Wraths DoT '(CUR+INT)*…' korrekt statt auf 0.
+            int cur = s?.Courage ?? 0;
             return new SpellFormulaContext(
                 clvl: caster.Level,
                 splvl: 0,
@@ -280,7 +283,7 @@ namespace Riftstorm.Game.Spells
                 str: str,
                 intStat: intStat,
                 wil: wil,
-                cur: 0);
+                cur: cur);
         }
 
         // ---------------------------------------------------------------------
@@ -300,13 +303,15 @@ namespace Riftstorm.Game.Spells
         }
 
         /// <summary>
-        /// Verhindert stumme 0-Ticks bei periodischen Payload-Auren, wenn die
+        /// Verhindert stumme Nicht-Ticks bei periodischen Payload-Auren, wenn die
         /// DB einen positiven Basiswert liefert, die Formel aber durch
-        /// Integer-Division auf 0 faellt.
+        /// Integer-Division oder Offsets (z. B. Holy Wraths '…-3') auf 0 oder
+        /// negativ faellt. In diesem Fall wird der Tick-Wert auf den Minimalwert
+        /// 1 angehoben, damit der DoT/HoT garantiert tickt.
         /// </summary>
         static int ClampPeriodicAuraMagnitude(SpellTemplateEffect eff, int evaluated, int baseValueSeed)
         {
-            if (evaluated != 0 || baseValueSeed <= 0 || !IsApplyAura(eff.Effect))
+            if (evaluated > 0 || baseValueSeed <= 0 || !IsApplyAura(eff.Effect))
             {
                 return evaluated;
             }

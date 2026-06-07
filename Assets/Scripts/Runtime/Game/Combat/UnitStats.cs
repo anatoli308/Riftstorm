@@ -471,7 +471,15 @@ namespace Riftstorm.Game.Combat
         public int ParryRating => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ParryRating) : m_ParryChance;
 
         /// <inheritdoc/>
-        public int ParryChanceBonus => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ParryChanceBonus) : m_ParryChanceBonus;
+        /// <remarks>
+        /// Wendet Aura-Stat-Modifikatoren an (z. B. <c>Blessing of Defense</c>
+        /// = flat <c>ModifyStat</c> auf die ParryChanceBonus-Maske), damit der
+        /// Buff die finale Parry-% in <see cref="CombatFormulas.GetParryChance"/>
+        /// und damit die Character-UI tatsaechlich erhoeht.
+        /// </remarks>
+        public int ParryChanceBonus => ApplyStatAuraModifiers(
+            StatId.ParryChanceBonus,
+            m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ParryChanceBonus) : m_ParryChanceBonus);
 
         /// <inheritdoc/>
         /// <remarks>
@@ -487,7 +495,14 @@ namespace Riftstorm.Game.Combat
         public int BlockRating => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockRating) : m_BlockChance;
 
         /// <inheritdoc/>
-        public int BlockChanceBonus => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockChanceBonus) : m_BlockChanceBonus;
+        /// <remarks>
+        /// Wendet Aura-Stat-Modifikatoren an (flat/prozentual auf die
+        /// BlockChanceBonus-Maske), analog zu <see cref="ParryChanceBonus"/>,
+        /// damit defensive Buffs/Debuffs die finale Block-% beeinflussen.
+        /// </remarks>
+        public int BlockChanceBonus => ApplyStatAuraModifiers(
+            StatId.BlockChanceBonus,
+            m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.BlockChanceBonus) : m_BlockChanceBonus);
 
         /// <inheritdoc/>
         public int ShieldSkill => m_PlayerStats != null ? m_PlayerStats.GetTotal(StatId.ShieldSkill) : m_ShieldSkill;

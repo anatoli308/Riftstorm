@@ -227,6 +227,7 @@ MonoBehaviour:
   m_BlockChance: 0
   m_BlockChanceBonus: 0
   m_ShieldSkill: 0
+  m_MechanicImmuneMask: 0
   m_ResistFire: 0
   m_ResistFrost: 0
   m_ResistArcane: 0
@@ -403,7 +404,7 @@ MonoBehaviour:
   m_Input: {fileID: 3229784933833492351}
   m_Combat: {fileID: -525944449724255899}
   m_GroundPicker: {fileID: -758824109736128144}
-  m_SlotSpellEntries: 1d000000520000002e00000051000000050000000a0000000b0000001b000000300000004f000000
+  m_SlotSpellEntries: 1b000000350000003c0000003d0000003e0000004b00000050000000b9000000ec000000ed000000
 --- !u!114 &-758824109736128144
 MonoBehaviour:
   m_ObjectHideFlags: 0
