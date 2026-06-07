@@ -105,7 +105,7 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>
         /// Bitmaske der Crowd-Control-Mechaniken, gegen die dieser NPC immun ist.
-        /// Ein Bit entspricht einem <see cref="Riftstorm.Game.Spells.Mechanic"/>-Wert
+        /// Ein Bit entspricht einem <see cref="Spells.Mechanic"/>-Wert
         /// ueber die Source-Konvention <c>bit = 1 &lt;&lt; ((int)mechanic - 1)</c>
         /// (SQL <c>mechanic_immune_mask</c>, z. B. 1535 = mehrere CC-Typen). Wird beim
         /// Aura-Apply geprueft: traegt der einzuspielende Aura-Effekt eine Mechanik,

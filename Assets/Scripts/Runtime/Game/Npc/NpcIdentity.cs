@@ -6,10 +6,10 @@ namespace Riftstorm.Game.Npc
 {
 [DisallowMultipleComponent]
     /// <summary>
-    /// NPC-Pendant zu <see cref="Riftstorm.Game.Player.PlayerIdentity"/>: liefert einen
+    /// NPC-Pendant zu <see cref="Player.PlayerIdentity"/>: liefert einen
     /// <see cref="INameSource"/> f&#252;r Nametag / FloatingCombatText / Logger ohne
     /// Netcode-Synchronisation. Der Name ist deterministisch &#252;ber jeden Peer hinweg,
-    /// weil <see cref="Riftstorm.Game.Npc.MugenNpcSpawner"/> ihn auf jedem Peer aus
+    /// weil <see cref="MugenNpcSpawner"/> ihn auf jedem Peer aus
     /// derselben StreamingAssets-JSON-Stat-Sidecar in <see cref="UnitStats.DisplayName"/>
     /// schreibt &#8212; ein <c>NetworkVariable</c> w&#228;re reine Bandbreitenverschwendung.
     /// </summary>

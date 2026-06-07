@@ -5,7 +5,7 @@ namespace Riftstorm.Game.UI.Console
     /// <summary>
     /// Prozessweiter Gate-Flag, der signalisiert, ob der Spieler aktuell im
     /// <see cref="ConsoleHUD"/>-Eingabefeld tippt. Wird vom
-    /// <see cref="Riftstorm.Game.Input.PlayerInputController"/> abgefragt, damit
+    /// <see cref="Input.PlayerInputController"/> abgefragt, damit
     /// Spell-Hotkeys (Zahlentasten 1..0), Attack, NextTarget, ClearTarget und
     /// MoveCommand <b>nicht</b> feuern, waehrend der Chat-Input fokussiert ist
     /// (sonst loest jedes "1" im Chatfenster den Action-Bar-Slot 0 aus).

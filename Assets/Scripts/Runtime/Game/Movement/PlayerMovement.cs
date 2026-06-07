@@ -7,11 +7,12 @@ using UnityEngine;
 
 namespace Riftstorm.Game.Movement
 {
+[RequireComponent(typeof(MobaCommandController))]
     /// <summary>
     /// Server-authoritative Topdown-Bewegung mit Client Prediction und Reconciliation.
     /// Drei Rollen teilen sich eine Komponente:
     ///
-    /// - <b>Owner-Client</b>: liest LoL-Style RMB-Klick via <see cref="Riftstorm.Game.Input.MobaCommandController"/>, simuliert lokal sofort (Prediction), legt
+    /// - <b>Owner-Client</b>: liest LoL-Style RMB-Klick via <see cref="MobaCommandController"/>, simuliert lokal sofort (Prediction), legt
     ///   jeden Command in einen Ringbuffer und schickt ihn via
     ///   <see cref="SubmitCommandServerRpc"/> an den Server. Auf Ack vergleicht er die
     ///   gespeicherte Vorhersage mit der autoritativen Position und re-simuliert alle
@@ -24,7 +25,10 @@ namespace Riftstorm.Game.Movement
     ///
     /// FLARE-Animation/Richtung leitet jeder Peer aus der lokalen Transform-Bewegung ab.
     /// </summary>
-    [RequireComponent(typeof(MobaCommandController))]
+    [RequireComponent(typeof(PlayerCombat))]
+    [RequireComponent(typeof(PlayerCombatVisuals))]
+    [RequireComponent(typeof(TargetSelection))]
+    [RequireComponent(typeof(UnitStats))]
     public sealed class PlayerMovement : NetworkBehaviour
     {
         // -------------------------------------------------------------------------
@@ -467,7 +471,7 @@ namespace Riftstorm.Game.Movement
                 && m_Combat.IsServerCasting
                 && cmd.MoveInput.sqrMagnitude > 0f)
             {
-                Riftstorm.Game.Spells.SpellTemplate castSpell = m_Combat.CurrentCastSpell;
+                Spells.SpellTemplate castSpell = m_Combat.CurrentCastSpell;
                 bool canMoveWhileCasting = castSpell != null
                     && (castSpell.Attributes & Riftstorm.Game.Spells.SpellAttributes.CanMoveWhileCasting) != 0;
                 if (!canMoveWhileCasting)

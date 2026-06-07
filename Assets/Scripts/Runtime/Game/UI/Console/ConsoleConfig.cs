@@ -10,7 +10,7 @@ namespace Riftstorm.Game.UI.Console
     /// </summary>
     /// <remarks>
     /// Alle Texture-Keys sind extensionslose Pfade unter <c>Assets/Art</c>
-    /// (siehe <see cref="Riftstorm.Management.TextureManagement.TextureManager"/>).
+    /// (siehe <see cref="Management.TextureManagement.TextureManager"/>).
     /// Layoutwerte sind in Pixeln. Fehlt das JSON oder einzelne Keys, gelten
     /// die Defaults hier.
     /// </remarks>

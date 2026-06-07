@@ -11,7 +11,7 @@ namespace Riftstorm.Game.Items
     /// <para>
     /// Items sind in der Source eine eigene Tabelle, getrennt von <c>spell_template</c>.
     /// Consumables (Traenke, Scrolls, Manatraenke etc.) verlinken per <see cref="Spell1"/>
-    /// auf einen Spell-Effekt aus <see cref="Riftstorm.Game.Spells.SpellTemplate"/>.
+    /// auf einen Spell-Effekt aus <see cref="Spells.SpellTemplate"/>.
     /// Equipment (Helme/Brust/Waffen) hat <see cref="Spell1"/> = 0 und nutzt nur
     /// <see cref="StatType1"/>..<see cref="StatType4"/> als passive Stat-Boni.
     /// </para>

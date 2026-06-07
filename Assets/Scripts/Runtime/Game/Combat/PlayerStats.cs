@@ -57,6 +57,7 @@ namespace Riftstorm.Game.Combat
     /// </para>
     /// </summary>
     [RequireComponent(typeof(UnitStats))]
+    [RequireComponent(typeof(PlayerEquipment))]
     public sealed class PlayerStats : MonoBehaviour
     {
         [Tooltip("Quelle der Basis-Werte. Wird in Awake auf das eigene GameObject aufgeloest, wenn leer.")]

@@ -10,7 +10,7 @@ namespace Riftstorm.Game.UI.Inventory
     /// Synchrones Lade-Utility fuer <see cref="InventoryConfig"/> aus
     /// <c>StreamingAssets/interface/inventory_config.json</c>. Cached den
     /// Config prozessweit. Spiegelt das Pattern von
-    /// <see cref="Riftstorm.Game.UI.HudConfigLoader"/>.
+    /// <see cref="HudConfigLoader"/>.
     /// </summary>
     public static class InventoryConfigLoader
     {

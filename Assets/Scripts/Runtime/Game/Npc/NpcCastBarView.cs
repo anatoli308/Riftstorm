@@ -10,7 +10,7 @@ namespace Riftstorm.Game.Npc
     /// <see cref="NpcController"/> per ClientRpc gestartet/beendet und h&#228;lt
     /// w&#228;hrend eines laufenden Cast-Time-Spells Fortschritt, Spell-Namen und
     /// die Balken-Texturen bereit. Gezeichnet wird die Bar NICHT hier, sondern
-    /// vom co-lokalen <see cref="Riftstorm.Game.Player.UnitNameTag"/> direkt unter
+    /// vom co-lokalen <see cref="Player.UnitNameTag"/> direkt unter
     /// der Overhead-HP-Bar (gemeinsames <c>nameRect</c>), damit die Cast-Bar nie
     /// gegen&#252;ber Name und HP-Bar verrutscht.
     ///
@@ -68,7 +68,7 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>
         /// Liefert die aktuellen Cast-Zeichen-Daten, falls gerade ein Cast l&#228;uft.
-        /// Wird vom co-lokalen <see cref="Riftstorm.Game.Player.UnitNameTag"/> in
+        /// Wird vom co-lokalen <see cref="Player.UnitNameTag"/> in
         /// dessen <c>OnGUI</c>-Pass aufgerufen, damit die Cast-Bar exakt unter der
         /// HP-Bar gezeichnet wird und nicht durch eine separate
         /// World-to-Screen-Berechnung verrutscht. F&#252;hrt das Auto-Hide aus, sobald

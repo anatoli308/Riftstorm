@@ -24,7 +24,7 @@ namespace Riftstorm.Game.Sprites
         /// Nominale Spieldauer der aktuell laufenden Animation in Sekunden (Maximum
         /// über alle Schichten). Liefert <c>0</c>, wenn keine Schicht eine
         /// passende Animation hält — z. B. weil der Atlas die Animation nicht
-        /// kennt. Wird vom <see cref="Riftstorm.Game.Combat.UnitCombatVisuals"/>
+        /// kennt. Wird vom <see cref="Combat.UnitCombatVisuals"/>
         /// als Safety-Net-Deadline genutzt, falls die PlayOnce-Erkennung fehl-
         /// schlägt (MUGEN-Konverter ohne <c>duration=-1</c> am letzten Frame
         /// erzeugt Looped-Atttacken, bei denen <see cref="IsPlayOnceFinished"/>

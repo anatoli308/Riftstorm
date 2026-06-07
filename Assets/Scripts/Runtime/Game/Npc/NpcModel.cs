@@ -11,7 +11,7 @@ namespace Riftstorm.Game.Npc
     /// <b>Wichtig:</b> <see cref="Name"/> IST der Atlas-Dateiname (ohne
     /// <c>.json</c>/<c>.png</c>-Endung), z. B. <c>"antlion_small"</c>. Der
     /// <see cref="FlareNpcSpawner"/> uebergibt ihn direkt an
-    /// <see cref="Riftstorm.Game.Sprites.FlareAtlasLoader.LoadAsync"/>.
+    /// <see cref="Sprites.FlareAtlasLoader.LoadAsync"/>.
     /// </remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public sealed class NpcModel
@@ -24,7 +24,7 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>
         /// Hoehe des NPC-Modells in FLARE-Einheiten. Wird vom Spawner an
-        /// <see cref="Riftstorm.Game.Combat.UnitStats.ApplyBaseStats"/>
+        /// <see cref="Combat.UnitStats.ApplyBaseStats"/>
         /// (<c>hitRadius</c>/<c>selectionRadius</c>) weitergegeben.
         /// </summary>
         [JsonProperty("height")] public float Height { get; set; }

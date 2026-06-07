@@ -34,7 +34,7 @@ namespace Riftstorm.Game.Npc
         /// <summary>
         /// Anzeigename des Charakters (aus MUGEN <c>.def</c> <c>info.displayname</c>,
         /// per <c>char.json</c> in den Sidecar gespiegelt). Wird in
-        /// <see cref="Riftstorm.Game.Combat.UnitStats.DisplayName"/> übernommen
+        /// <see cref="Combat.UnitStats.DisplayName"/> übernommen
         /// und dient dort als Quelle für Name-Tags und Debug-Labels.
         /// </summary>
         [JsonProperty("displayName")] public string DisplayName { get; set; } = "";

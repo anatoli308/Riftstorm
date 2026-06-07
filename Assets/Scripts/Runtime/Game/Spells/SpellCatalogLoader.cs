@@ -11,7 +11,7 @@ namespace Riftstorm.Game.Spells
     /// (Lazy-Static-Cache), damit jeder Caster ohne IO arbeitet.
     /// </summary>
     /// <remarks>
-    /// Pattern identisch zu <see cref="Riftstorm.Game.Npc.NpcCatalogLoader"/>:
+    /// Pattern identisch zu <see cref="Npc.NpcCatalogLoader"/>:
     /// bewusst static und ohne ServiceLocator (KISS), Daten unveraenderlich
     /// pro Prozess. Bei fehlender Datei wird ein leeres Dictionary gecached
     /// und Lookups liefern <c>null</c>.

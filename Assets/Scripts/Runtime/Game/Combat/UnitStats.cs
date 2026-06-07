@@ -10,6 +10,10 @@ using UnityEngine;
 namespace Riftstorm.Game.Combat
 {
 [DisallowMultipleComponent]
+    [RequireComponent(typeof(PlayerStats))]
+    [RequireComponent(typeof(PlayerMovement))]
+    [RequireComponent(typeof(NpcController))]
+    [RequireComponent(typeof(PlayerCombat))]
     /// <summary>
     /// Server-autoritative HP- und Combat-Stats-Komponente. Hängt auf jeder
     /// Einheit (Spieler, NPC) und ist die einzige Stelle, an der HP-Werte
@@ -212,7 +216,7 @@ namespace Riftstorm.Game.Combat
         /// Aggregierter Move-Speed-Multiplikator &#215; 1000 (FixedPoint, damit als
         /// <c>short</c> ueber NGO geht). 1000 = 1.0x = neutral. 500 = 50% Slow,
         /// 1500 = 50% Haste. Wird vom Server aus <see cref="AuraManager.MoveSpeedMultiplier"/>
-        /// gespiegelt, sodass die <see cref="Riftstorm.Game.Movement.PlayerMovement"/>-
+        /// gespiegelt, sodass die <see cref="PlayerMovement"/>-
         /// Prediction auf dem Owner mit demselben Wert rechnet wie der Server.
         /// </summary>
         private readonly NetworkVariable<short> m_MoveSpeedMultiplierMilli = new(
@@ -801,8 +805,8 @@ namespace Riftstorm.Game.Combat
         /// <c>FinalDamage &gt; 0</c>. Liefert den Angreifer (kann <c>null</c>
         /// sein bei Environment-Damage oder DoT ohne Caster-Ref), den
         /// applizierten Schaden und das Hit-Ergebnis. Wird vom
-        /// <see cref="Riftstorm.Game.Npc.ThreatManager"/>-Hook im
-        /// <see cref="Riftstorm.Game.Npc.NpcController"/> konsumiert, um
+        /// <see cref="ThreatManager"/>-Hook im
+        /// <see cref="NpcController"/> konsumiert, um
         /// Threat aufzubauen und Retaliation auszulösen.
         /// </summary>
         public event Action<UnitStats, int, HitResult> OnServerDamaged;
@@ -832,7 +836,7 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Variante mit Attacker-Ref. Wird vom Caster-Pfad (Spell/Melee)
-        /// genutzt, damit der <see cref="Riftstorm.Game.Npc.ThreatManager"/>
+        /// genutzt, damit der <see cref="ThreatManager"/>
         /// die Quelle des Schadens zuordnen und Threat aufbauen kann.
         /// </summary>
         /// <param name="attacker">
@@ -1368,7 +1372,7 @@ namespace Riftstorm.Game.Combat
         /// Replizierte Sicht von <see cref="AuraManager.IsImmobilized"/> (Stun ODER Root).
         /// Auf jedem Peer lesbar &#8212; auf dem Server identisch mit dem Live-Aura-State,
         /// auf den Clients gespiegelt ueber <see cref="m_CcFlags"/>. Wird vom
-        /// <see cref="Riftstorm.Game.Movement.PlayerMovement"/> sowohl in der Owner-
+        /// <see cref="PlayerMovement"/> sowohl in der Owner-
         /// Prediction als auch im Server-Authority-Pfad konsultiert, sodass beide
         /// Seiten denselben Bewegungs-Block sehen (keine Reconciliation-Rucker).
         /// </summary>
@@ -1378,8 +1382,8 @@ namespace Riftstorm.Game.Combat
         /// <summary>
         /// Server-autoritative Sicht auf den Stun-Zustand. Wird ausschliesslich
         /// fuer server-seitige Action-Gates (Auto-Attack-Gate in
-        /// <see cref="Riftstorm.Game.Combat.PlayerCombat"/>, NPC-AI in
-        /// <see cref="Riftstorm.Game.Npc.NpcController"/>) genutzt. Auf Clients
+        /// <see cref="PlayerCombat"/>, NPC-AI in
+        /// <see cref="NpcController"/>) genutzt. Auf Clients
         /// stets <c>false</c> &#8212; Clients fragen
         /// <see cref="IsImmobilized"/> ab, das Stun ODER Root abdeckt.
         /// </summary>

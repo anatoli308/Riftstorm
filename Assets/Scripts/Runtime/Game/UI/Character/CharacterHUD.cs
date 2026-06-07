@@ -17,7 +17,7 @@ namespace Riftstorm.Game.UI.Character
     /// und <see cref="UnitStats"/> des lokalen Spielers; Toggle via C-Taste.
     /// </summary>
     /// <remarks>
-    /// Bindings spiegeln <see cref="Riftstorm.Game.UI.Inventory.InventoryHUD"/>:
+    /// Bindings spiegeln <see cref="Inventory.InventoryHUD"/>:
     /// das HUD lebt auf einem MonoBehaviour mit <c>UIDocument</c>; lokaler
     /// Spieler wird in <see cref="Update"/> nach-gebunden, sobald NGO ein
     /// <c>PlayerObject</c> geliefert hat. Linksklick auf belegten Slot
@@ -610,7 +610,7 @@ namespace Riftstorm.Game.UI.Character
         /// Anders als Melee gibt es <b>keinen Unarmed-Fallback</b> — ohne Bogen im
         /// Ranged-Slot zeigt die Zeile bewusst <c>"-"</c>, damit das Panel
         /// sichtbar macht, dass Ranged-Spells (Aimed Shot, Multi-Shot, ...)
-        /// gerade durch <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/>
+        /// gerade durch <see cref="Spells.Runtime.SpellCaster"/>
         /// mit <c>NoRangedWeapon</c> geblockt werden.
         /// </summary>
         private void AppendRangedDamageLine(StringBuilder sb)
@@ -630,7 +630,7 @@ namespace Riftstorm.Game.UI.Character
         /// <summary>
         /// Zeigt effektive Ranged-Crit-% an — analog zur Rng-Damage-Zeile mit
         /// "-" wenn keine Ranged-Waffe equipped ist, weil
-        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/> Ranged-Spells
+        /// <see cref="Spells.Runtime.SpellCaster"/> Ranged-Spells
         /// dann ohnehin via <c>NoRangedWeapon</c> blockt.
         /// Effektiver Wert: <c>BASE_CRIT(5) + RangedCritChance</c> (RangedCritChance
         /// liefert bereits Rating + <c>AGI/53</c>), Cap 0..95 wie in CombatFormulas.

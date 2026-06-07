@@ -54,7 +54,7 @@ namespace Riftstorm.Game.Spells
     }
 
     /// <summary>
-    /// Eine aktive Aura (Buff/Debuff) auf einer <see cref="Riftstorm.Gameplay.Combat.ICombatUnit"/>.
+    /// Eine aktive Aura (Buff/Debuff) auf einer <see cref="Gameplay.Combat.ICombatUnit"/>.
     /// </summary>
     public sealed class Aura
     {

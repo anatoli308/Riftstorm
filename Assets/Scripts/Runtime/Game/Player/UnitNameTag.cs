@@ -25,6 +25,9 @@ namespace Riftstorm.Game.Player
     /// </para>
     /// </summary>
     [RequireComponent(typeof(INameSource))]
+    [RequireComponent(typeof(UnitStats))]
+    [RequireComponent(typeof(NpcCastBarView))]
+    [RequireComponent(typeof(Unity.Netcode.NetworkObject))]
     public class UnitNameTag : MonoBehaviour
     {
         [Tooltip("Komponente, die INameSource implementiert (PlayerIdentity, NpcIdentity, ...). " +
@@ -582,12 +585,12 @@ namespace Riftstorm.Game.Player
         }
 
         /// <summary>
-        /// True, wenn die lokale <see cref="Riftstorm.Game.Combat.TargetSelection"/>
+        /// True, wenn die lokale <see cref="TargetSelection"/>
         /// genau diese Einheit anvisiert. Dauerhafter Outline f&#252;r das Target-Lock.
         /// </summary>
         private bool IsCurrentlyTargeted()
         {
-            Riftstorm.Game.Combat.TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
+            TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
             if (localTs == null || !localTs.HasTarget)
             {
                 return false;
@@ -616,7 +619,7 @@ namespace Riftstorm.Game.Player
 
         /// <summary>
         /// Sendet einen Lock-Wunsch fuer DIESE Einheit an den Server. Lookup des
-        /// lokalen <see cref="Riftstorm.Game.Combat.TargetSelection"/> erfolgt
+        /// lokalen <see cref="TargetSelection"/> erfolgt
         /// statisch (Owner registriert sich beim NetworkSpawn), kein FindObject.
         /// </summary>
         private void HandleNameTagClicked()
@@ -626,7 +629,7 @@ namespace Riftstorm.Game.Player
             {
                 return;
             }
-            Riftstorm.Game.Combat.TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
+            TargetSelection localTs = Riftstorm.Game.Combat.TargetSelection.Local;
             if (localTs == null)
             {
                 return;

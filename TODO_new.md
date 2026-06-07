@@ -37,3 +37,26 @@ So Buffs wie "Blessing of Champions", "Blessing of Defense", "Fortification Aura
 12. Vanish muss korrekt stealth implementieren. noch anschauen im original code wie vermutlich. loose threat etc... 
 13. Satanic Madness ist eine art fear muss bis zu 5 targets um dich herum zum fliehen bringen. das ist noch nicht korrekt implementiert.
 14. Tranquility Heals damage over time. das soll AOE heal sein.
+
+
+
+## ordner struktur todos:
+
+npc/ in enemies/ und npcs/ aufteilen.
+powers/ und loot/ 
+
+    /// <summary>
+        /// Skill-Punkte pro 1 % Trefferchance-Bonus (Riftstorm-Erweiterung). Die
+        /// NPC-Templates fuehren <c>melee_skill</c>/<c>ranged_skill</c> (5..125), die
+        /// im Original-Server zwar geladen, aber nie in die Hit-Formel verrechnet
+        /// wurden (<c>// TODO: Add hit rating</c>). Mit Faktor 25 ergibt sich ein
+        /// moderater Bonus von 0..5 %, der exakt in den Headroom bis zum 100 %-Cap
+        /// passt und vor allem den Level-Malus gegen hoehere Ziele abfedert.
+        /// </summary>
+
+        melee_skill und ranged_skill für unitstats einführen?!
+
+
+        // FLARE-Konvention: 0=W, 1=SW, 2=S, 3=SE, 4=E, 5=NE, 6=N, 7=NW.
+        private const int k_DefaultDirection = 2;
+        ist diese konvention korrekt übernommen? oder hab ich da was vertauscht? also reihenfolge korrekt?

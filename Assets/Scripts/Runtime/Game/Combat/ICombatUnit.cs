@@ -8,7 +8,7 @@ namespace Riftstorm.Game.Combat
     /// Abstraktion über jede kampffähige Einheit (Player, NPC, Pet). Wird von
     /// <c>SpellCaster</c>, <c>AuraManager</c>, <c>CooldownManager</c> konsumiert,
     /// damit diese Pure-Services keine direkte Abhängigkeit auf eine konkrete
-    /// <see cref="UnityEngine.MonoBehaviour"/>/NetworkBehaviour-Klasse haben.
+    /// <see cref="MonoBehaviour"/>/NetworkBehaviour-Klasse haben.
     /// </summary>
     /// <remarks>
     /// 1:1-Spiegel der lesenden + schreibenden Aufrufe, die im C++-Source auf
@@ -37,7 +37,7 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Server-authoritative Blickrichtung (XZ-Plane, normalisiert). Wird vom
-        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellExecutor"/> für richtungs-
+        /// <see cref="Spells.Runtime.SpellExecutor"/> für richtungs-
         /// abhängige Movement-Effekte konsumiert (<c>TeleportForward</c>, <c>Charge</c>,
         /// <c>SlideFrom</c>). Implementierungen liefern typischerweise eine projizierte
         /// Variante von <c>transform.forward</c>; fallen auf <c>Vector3.forward</c>
@@ -67,7 +67,7 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Lese-Schnittstelle auf die Stats der Unit. Wird von der Formel-Schicht
-        /// (<see cref="Riftstorm.Gameplay.Combat.CombatFormulas"/>) konsumiert, damit diese keinen direkten
+        /// (<see cref="CombatFormulas"/>) konsumiert, damit diese keinen direkten
         /// Zugriff auf eine konkrete NetworkBehaviour-Klasse braucht.
         /// </summary>
         IUnitStats Stats { get; }
@@ -87,7 +87,7 @@ namespace Riftstorm.Game.Combat
         void TakeDamage(int amount, ICombatUnit attacker);
 
         /// <summary>
-        /// Wendet einen vollstaendig vom <see cref="Riftstorm.Gameplay.Combat.CombatFormulas"/>
+        /// Wendet einen vollstaendig vom <see cref="CombatFormulas"/>
         /// klassifizierten Treffer an. Im Gegensatz zu <see cref="TakeDamage"/>
         /// bleibt die <see cref="DamageInfo.HitResult"/>-Klassifikation erhalten
         /// (Crit/Block) UND ausgewichene Treffer mit <c>FinalDamage == 0</c>
@@ -95,7 +95,7 @@ namespace Riftstorm.Game.Combat
         /// Clients fanout, damit der <c>FloatingCombatText</c> "Dodge"/"Parry"/
         /// "Immune"/… anzeigen kann. Server-only; auf Clients ein No-Op.
         /// </summary>
-        /// <param name="info">Vom <see cref="Riftstorm.Gameplay.Combat.CombatFormulas"/> vorbereiteter Treffer.</param>
+        /// <param name="info">Vom <see cref="CombatFormulas"/> vorbereiteter Treffer.</param>
         /// <param name="attacker">Angreifer-Unit oder <c>null</c> (Environment/DoT).</param>
         void ApplyDamageInfo(in DamageInfo info, ICombatUnit attacker);
 
@@ -119,7 +119,7 @@ namespace Riftstorm.Game.Combat
         /// Auf Clients ein No-Op. Implementierungen müssen die replizierte
         /// Server-Position aktualisieren und sicherstellen, dass die Owner-
         /// Prediction (falls vorhanden) auf die neue Pose snappt &#8212; siehe
-        /// <see cref="Riftstorm.Game.Movement.PlayerMovement.ServerTeleportTo"/>.
+        /// <see cref="Movement.PlayerMovement.ServerTeleportTo"/>.
         /// </summary>
         void ServerTeleportTo(Vector3 position);
 

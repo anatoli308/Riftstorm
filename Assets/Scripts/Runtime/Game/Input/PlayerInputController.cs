@@ -82,7 +82,7 @@ namespace Riftstorm.Game.Input
 
         /// <summary>
         /// Wird einmal pro Tastendruck der <c>AttackrangeIndicator</c>-Action gefeuert.
-        /// Konsument ist <see cref="Riftstorm.Game.Combat.AttackRangeIndicator"/>, der die
+        /// Konsument ist <see cref="Combat.AttackRangeIndicator"/>, der die
         /// Sichtbarkeit des Ground-Range-Kreises togglet (LoL-Style).
         /// </summary>
         public event Action AttackRangeIndicatorPressed;

@@ -13,7 +13,7 @@ namespace Riftstorm.Game.Combat
     /// </code>
     ///
     /// Wird vom Spieler (siehe <see cref="PlayerCombatVisuals"/>) und vom NPC
-    /// (siehe <see cref="Riftstorm.Game.Npc.NpcController"/>) gleicherma&#223;en benutzt.
+    /// (siehe <see cref="Npc.NpcController"/>) gleicherma&#223;en benutzt.
     /// Kein NetworkBehaviour &#8212; die Komponente l&#228;uft lokal pro Peer und wird
     /// vom autoritativen State (RPC oder UnitStats-Event) getriggert.
     /// </summary>

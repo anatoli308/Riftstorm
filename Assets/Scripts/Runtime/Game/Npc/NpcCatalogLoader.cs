@@ -16,7 +16,7 @@ namespace Riftstorm.Game.Npc
     /// Daten sind unveraenderlich pro Prozess und werden ausschliesslich
     /// per Template-ID / Model-ID gelesen. Bei fehlender Datei werden
     /// leere Dictionaries gecacht und alle Lookups liefern <c>null</c>.
-    /// Pattern entspricht <see cref="Riftstorm.Game.UI.HudConfigLoader"/>.
+    /// Pattern entspricht <see cref="UI.HudConfigLoader"/>.
     /// </remarks>
     public static class NpcCatalogLoader
     {

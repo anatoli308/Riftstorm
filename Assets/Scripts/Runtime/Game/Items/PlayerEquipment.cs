@@ -76,6 +76,7 @@ namespace Riftstorm.Game.Items
     /// </para>
     /// </summary>
     [RequireComponent(typeof(PlayerInventory))]
+    [RequireComponent(typeof(PlayerCombat))]
     public sealed class PlayerEquipment : NetworkBehaviour
     {
         /// <summary>Anzahl echter Equip-Slots (1..12). Index 0 ist <see cref="EquipSlot.None"/> und ungenutzt.</summary>

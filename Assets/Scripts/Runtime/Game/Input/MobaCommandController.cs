@@ -307,7 +307,7 @@ namespace Riftstorm.Game.Input
         /// <summary>
         /// Taste 'T': schaltet serverseitig zwischen Melee- und Ranged-Auto-Attack
         /// um. Wirksam nur, wenn ein Bogen ausgeruestet ist (Server-Gate in
-        /// <see cref="Combat.PlayerCombat.RequestToggleWeaponMode"/>); sonst No-Op.
+        /// <see cref="PlayerCombat.RequestToggleWeaponMode"/>); sonst No-Op.
         /// </summary>
         private void OnWeaponModeTogglePressed()
         {

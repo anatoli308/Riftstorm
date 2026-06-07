@@ -11,7 +11,7 @@ namespace Riftstorm.Game.UI.Character
     /// Synchrones Lade-Utility fuer <see cref="CharacterConfig"/> aus
     /// <c>StreamingAssets/interface/character_config.json</c>. Cached den
     /// Config prozessweit. Spiegelt das Pattern von
-    /// <see cref="Riftstorm.Game.UI.Inventory.InventoryConfigLoader"/>.
+    /// <see cref="Inventory.InventoryConfigLoader"/>.
     /// </summary>
     public static class CharacterConfigLoader
     {

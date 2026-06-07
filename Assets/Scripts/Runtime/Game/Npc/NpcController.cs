@@ -191,9 +191,9 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>
         /// Server-only: legt externen Threat auf diese NPC-Unit an. Wird von
-        /// <see cref="Riftstorm.Game.Combat.UnitStats"/> &uuml;ber das
-        /// <see cref="Riftstorm.Game.Combat.ICombatUnit.AddIncomingThreat"/>-
-        /// Bridging fuer den <see cref="Riftstorm.Game.Spells.SpellEffect.Threat"/>-
+        /// <see cref="UnitStats"/> &uuml;ber das
+        /// <see cref="ICombatUnit.AddIncomingThreat"/>-
+        /// Bridging fuer den <see cref="SpellEffect.Threat"/>-
         /// SpellEffect aufgerufen.
         /// </summary>
         public void AddIncomingThreat(ulong sourceGuid, int amount)
@@ -341,7 +341,7 @@ namespace Riftstorm.Game.Npc
         /// <summary>
         /// Fallback-Reichweite (Meter) fuer das gerichtete Skillshot-Visual,
         /// falls der Spell keine verwertbare Range traegt. Spiegelt die
-        /// Konstante aus <see cref="Combat.PlayerCombat"/>.
+        /// Konstante aus <see cref="PlayerCombat"/>.
         /// </summary>
         private const float k_FallbackSkillshotVisualRangeMeters = 12f;
 
@@ -1112,7 +1112,7 @@ namespace Riftstorm.Game.Npc
         /// <c>Lesser Heal</c>) wuerden gegen das feindliche Aggro-Ziel an
         /// <c>SpellCaster.CheckTarget</c> mit <c>TargetHostile</c> scheitern.
         /// Analog zum Smart-Self-Cast des Spielers
-        /// (<see cref="Combat.PlayerCombat"/>) zielt der NPC solche Spells auf
+        /// (<see cref="PlayerCombat"/>) zielt der NPC solche Spells auf
         /// sich selbst. Alle anderen Spells behalten das uebergebene
         /// (feindliche) Aggro-Ziel. Idempotent: ein bereits aufgeloestes
         /// Self-Ziel bleibt Self.
@@ -1236,7 +1236,7 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>
         /// Dispatcht einen ausgewaehlten Spell analog zu
-        /// <see cref="Combat.PlayerCombat.BeginCast"/>: Cast-Time-Spells
+        /// <see cref="PlayerCombat.BeginCast"/>: Cast-Time-Spells
         /// (<c>cast_time &gt; 0</c>) gehen in einen gehaltenen Cast (NPC steht
         /// still, channelt, loest erst nach Ablauf der Cast-Time auf),
         /// Instant-Spells (<c>cast_time &lt;= 0</c>) werden sofort aufgeloest.
@@ -1333,7 +1333,7 @@ namespace Riftstorm.Game.Npc
         /// <summary>
         /// Bricht einen laufenden Cast von au&#223;en ab (z. B. durch einen
         /// Spieler-Interrupt-Effekt). L&#228;uft server-autoritativ &#252;ber
-        /// <see cref="Riftstorm.Game.Combat.UnitStats"/>. Liefert <c>true</c>,
+        /// <see cref="UnitStats"/>. Liefert <c>true</c>,
         /// wenn tats&#228;chlich ein aktiver Cast abgebrochen wurde &#8212; ein
         /// abgebrochener Cast feuert weder Spell-Effekt noch GCD.
         /// </summary>

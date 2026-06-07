@@ -14,7 +14,7 @@ namespace Riftstorm.Game.Spells
     /// <para>
     /// Die Slots sind in <c>spell_template</c> flach abgelegt
     /// (<c>effect1</c>, <c>effect1_data1</c>, ...) — gleiche Konvention wie
-    /// die Spell-Slots in <see cref="Riftstorm.Game.Npc.NpcTemplate"/>. Diese
+    /// die Spell-Slots in <see cref="Npc.NpcTemplate"/>. Diese
     /// Struktur ist nur ein Lese-Accessor; sie wird nicht direkt aus JSON
     /// deserialisiert.
     /// </para>
@@ -94,7 +94,7 @@ namespace Riftstorm.Game.Spells
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>Sentinel-Konvention:</b> wie in <see cref="Riftstorm.Game.Npc.NpcTemplate"/>;
+    /// <b>Sentinel-Konvention:</b> wie in <see cref="Npc.NpcTemplate"/>;
     /// numerische Felder, die in der DB nicht gesetzt sind, kommen als <c>0</c>
     /// an. <c>Cooldown</c>, <c>Range</c> usw. sind nur dann zu interpretieren,
     /// wenn <c>&gt; 0</c>.
@@ -104,7 +104,7 @@ namespace Riftstorm.Game.Spells
     /// sind explizit gemappt (Source-Default <c>NumEffectIdx=3</c>); zusaetzliche
     /// Slots (<c>effect4</c>, <c>effect5</c> …) werden dynamisch ueber das
     /// <c>[JsonExtensionData]</c>-Becken aufgebaut — gleiches Muster wie die
-    /// Spell-Slots in <see cref="Riftstorm.Game.Npc.NpcTemplate"/>. Dadurch sind
+    /// Spell-Slots in <see cref="Npc.NpcTemplate"/>. Dadurch sind
     /// <b>beliebig viele</b> Effekte moeglich, ohne das DTO zu aendern.
     /// Aggregierter Zugriff per <see cref="GetEffect(int)"/>; Anzahl per
     /// <see cref="EffectCount"/>; Slot ist aktiv, wenn

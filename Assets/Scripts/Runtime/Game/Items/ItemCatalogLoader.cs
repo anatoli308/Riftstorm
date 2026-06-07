@@ -11,8 +11,8 @@ namespace Riftstorm.Game.Items
     /// (Lazy-Static-Cache), damit Inventory/Vendor/Loot ohne IO arbeiten.
     /// </summary>
     /// <remarks>
-    /// Pattern identisch zu <see cref="Riftstorm.Game.Spells.SpellCatalogLoader"/>
-    /// und <see cref="Riftstorm.Game.Npc.NpcCatalogLoader"/>: static, ohne
+    /// Pattern identisch zu <see cref="Spells.SpellCatalogLoader"/>
+    /// und <see cref="Npc.NpcCatalogLoader"/>: static, ohne
     /// ServiceLocator (KISS), Daten unveraenderlich pro Prozess. Bei fehlender
     /// Datei wird ein leeres Dictionary gecached und Lookups liefern <c>null</c>.
     /// </remarks>

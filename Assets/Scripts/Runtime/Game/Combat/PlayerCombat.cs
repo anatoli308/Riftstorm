@@ -41,6 +41,10 @@ namespace Riftstorm.Game.Combat
     /// </para>
     /// </summary>
     [RequireComponent(typeof(UnitStats))]
+    [RequireComponent(typeof(TargetSelection))]
+    [RequireComponent(typeof(PlayerMovement))]
+    [RequireComponent(typeof(MobaCommandController))]
+    [RequireComponent(typeof(UnitCombatVisuals))]
     public sealed class PlayerCombat : NetworkStateMachine<PlayerCombatState, PlayerCombat>
     {
         // -------------------------------------------------------------------------
@@ -389,7 +393,7 @@ namespace Riftstorm.Game.Combat
         /// <summary>
         /// Server-Sicht: <c>true</c>, sobald der Combat-State Bewegung verbietet
         /// (während eines Angriffs-Cooldowns oder nach dem Tod). Wird von
-        /// <see cref="Movement.PlayerMovement.SubmitCommandServerRpc"/> autoritativ
+        /// <see cref="PlayerMovement.SubmitCommandServerRpc"/> autoritativ
         /// genutzt, um Move-Inputs zu verwerfen — verhindert Move-while-Attacking-Cheats.
         /// </summary>
         public bool IsServerMovementLocked =>
@@ -397,7 +401,7 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Server-Sicht: <c>true</c>, wenn der Spieler aktuell im
-        /// <see cref="CastingState"/> ist. Wird vom <see cref="Movement.PlayerMovement"/>
+        /// <see cref="CastingState"/> ist. Wird vom <see cref="PlayerMovement"/>
         /// genutzt, um beim ersten Move-Command des Owners w&#228;hrend eines Casts
         /// den Cast autoritativ zu unterbrechen (Move-cancels-Cast, LoL-Style).
         /// </summary>
@@ -406,7 +410,7 @@ namespace Riftstorm.Game.Combat
         /// <summary>
         /// Server-Sicht: das aktuell gecastete <see cref="SpellTemplate"/>, oder
         /// <c>null</c>, wenn der Spieler nicht im <see cref="CastingState"/> ist.
-        /// Wird vom <see cref="Movement.PlayerMovement"/> konsultiert, um Spells
+        /// Wird vom <see cref="PlayerMovement"/> konsultiert, um Spells
         /// mit <see cref="SpellAttributes.CanMoveWhileCasting"/> vom Move-cancels-Cast
         /// auszunehmen.
         /// </summary>
@@ -446,7 +450,7 @@ namespace Riftstorm.Game.Combat
         /// Eintreffen des <see cref="PlayAttackClientRpc"/> vom Server. Verhindert das
         /// charakteristische Reconciliation-Ruckeln, wenn der Owner während des einen
         /// Roundtrips weiterpredictet, der Server aber bereits clampt. Wird vom
-        /// <see cref="Movement.PlayerMovement"/> zusätzlich zu
+        /// <see cref="PlayerMovement"/> zusätzlich zu
         /// <see cref="PlayerCombatVisuals.IsBusy"/> konsultiert. Hartes Sicherheits-Timeout
         /// für den Fall, dass der Server die Attack verwirft (kein Ziel/Waffe) und gar
         /// kein ClientRpc folgt.
@@ -1041,7 +1045,7 @@ namespace Riftstorm.Game.Combat
         /// <summary>
         /// Server-only: prüft, ob das aktuell gelockte Ziel noch ein
         /// reguläres Angriffsziel ist (existiert, lebt, in Range). Wird
-        /// vom <see cref="CombatStates.PlayerCombatAttackingState"/> vor
+        /// vom <see cref="PlayerCombatAttackingState"/> vor
         /// dem Hit-Resolve genutzt, um den Cooldown zu canceln, sobald das
         /// Ziel weg ist (Tod, ServerClearTarget, Despawn, Wegrennen).
         /// </summary>
@@ -1180,7 +1184,7 @@ namespace Riftstorm.Game.Combat
         /// der lokale <see cref="AttackRangeIndicator"/> (Ground-Kreis) UND der
         /// Follow-Stop-Radius im <see cref="MobaCommandController"/> exakt die
         /// Reichweite, gegen die der Cast serverseitig in
-        /// <see cref="Riftstorm.Game.Spells.Runtime.SpellCaster"/> validiert wird
+        /// <see cref="Spells.Runtime.SpellCaster"/> validiert wird
         /// (frueher faelschlich die — groessere — <c>WeaponDefinition.Range</c>,
         /// wodurch der Spieler ausserhalb der Spell-Reichweite stoppte und der
         /// Auto-Attack still verworfen wurde). Fallback auf die Waffen-Range nur,
@@ -1846,7 +1850,7 @@ namespace Riftstorm.Game.Combat
 
         /// <summary>
         /// Server-Pfad zum harten Abbrechen eines laufenden Casts. Wird vom
-        /// <see cref="Movement.PlayerMovement.SubmitCommandServerRpc"/> aufgerufen,
+        /// <see cref="PlayerMovement.SubmitCommandServerRpc"/> aufgerufen,
         /// sobald der Owner w&#228;hrend des Casts ein Move-Input absetzt
         /// (LoL/WoW-Style "Move-cancels-Cast"). Idempotent: au&#223;erhalb von
         /// <see cref="CastingState"/> ist es ein No-Op. Die State-Transition

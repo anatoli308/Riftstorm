@@ -1,7 +1,7 @@
 namespace Riftstorm.Gameplay.Combat
 {
     /// <summary>
-    /// Ergebnis einer Hit-Resolution. Spiegelt das C++-Vorbild (SoF/Steam-Server)
+    /// Ergebnis einer Hit-Resolution. Spiegelt das C++-Vorbild (Steam-Server)
     /// und entscheidet, wie der Folge-Schaden im <see cref="CombatFormulas"/>
     /// gewichtet wird (Crit-Multiplier, Glancing-Multiplier etc.).
     /// </summary>

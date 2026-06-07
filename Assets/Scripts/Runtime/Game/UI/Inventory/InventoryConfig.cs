@@ -10,7 +10,7 @@ namespace Riftstorm.Game.UI.Inventory
     /// <remarks>
     /// Textur-Keys sind relative Pfade unter <c>Application.dataPath/Art</c>
     /// ohne Extension (z. B. <c>"interface/inventory"</c>), aufgeloest ueber
-    /// den <see cref="Riftstorm.Management.TextureManagement.TextureManager"/>.
+    /// den <see cref="Management.TextureManagement.TextureManager"/>.
     /// </remarks>
     [Serializable]
     public sealed class InventoryConfig
@@ -102,7 +102,7 @@ namespace Riftstorm.Game.UI.Inventory
         // Item-Icon-Resolution
         // ---------------------------------------------------------------------
 
-        /// <summary>Praefix unter dem <see cref="Riftstorm.Game.Items.ItemTemplate.Icon"/> aufgeloest wird (z. B. <c>item_icons/icon_item_potion_hp02_1</c>).</summary>
+        /// <summary>Praefix unter dem <see cref="Items.ItemTemplate.Icon"/> aufgeloest wird (z. B. <c>item_icons/icon_item_potion_hp02_1</c>).</summary>
         public string itemIconKeyPrefix = "item_icons/";
     }
 }

@@ -12,7 +12,7 @@ namespace Riftstorm.Game.Input
     /// uebersetzt einen Hotkey-Druck in einen Cast-Request. Die Bridge ist bewusst
     /// duenn — sie kennt keine Cooldowns, kein Ziel-Resolving und keine Resource-
     /// Pruefung; das alles entscheidet der Server in
-    /// <see cref="PlayerCombat.BeginCast"/> / <see cref="Spells.SpellExecutor"/>.
+    /// <see cref="PlayerCombat.BeginCast"/> / <see cref="SpellExecutor"/>.
     /// <para>
     /// Loadout-Quelle ist aktuell ein Inspector-Array (Test-/Bootstrap-Loadout),
     /// bis der reguliere Loadout-Pipeline-Eintrag aus den character_actionbars
