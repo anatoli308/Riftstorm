@@ -1,4 +1,4 @@
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Gameplay.Combat;
 using Riftstorm.Gameplay.Combat.Spells.Visuals;
 using Riftstorm.Gameplay.Combat.Spells.Visuals.Runtime;
@@ -33,11 +33,6 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
         [SerializeField]
         ConnectionManager m_ConnectionManager;
         public ConnectionManager ConnectionManager => m_ConnectionManager;
-
-        [Header("UI Fonts")]
-        [Tooltip("Alle Font-Assets, die UI/HUD per Rolle nutzen darf. Die Zuordnung Rolle\u2192Name kommt aus StreamingAssets/interface/ui_fonts.json.")]
-        [SerializeField]
-        Font[] m_UIFonts;
 
         void Awake()
         {
@@ -142,12 +137,17 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
             SoundManager soundManager = new();
             ServiceLocator.Register(soundManager);
 
-            // UI-Fonts: Inspector-zugewiesene Font-Assets in eine Name->Font-Map packen.
-            // Die Rolle->Name-Zuordnung kommt zur Laufzeit aus
-            // StreamingAssets/interface/ui_fonts.json (UIFontConfigLoader).
-            FontRegistry fontRegistry = new(m_UIFonts);
-            ServiceLocator.Register(fontRegistry);
-            Debug.Log($"[ApplicationEntryPoint] FontRegistry mit {fontRegistry.Count} Font-Asset(s) registriert.");
+            // UI-Fonts: laedt alle Fonts aus Assets/Art/fonts. Das Font-Asset
+            // wird im Editor ueber die AssetDatabase geladen. Die Rolle->Name-
+            // Zuordnung kommt zur Laufzeit aus StreamingAssets/interface/ui_fonts.json
+            // (UIFontConfigLoader).
+            FontManager fontManager = new();
+            ServiceLocator.Register(fontManager);
+
+            // Resolver in den statischen UIFonts-Accessor injizieren. So bleibt
+            // Riftstorm.Management frei von ApplicationLifecycle-Refs (Asmdef-Zyklus).
+            UIFonts.FontResolver = fontManager.GetFont;
+            Debug.Log($"[ApplicationEntryPoint] FontManager mit {fontManager.Count} Font(s) geladen.");
         }
 
         /// <summary>
@@ -173,9 +173,8 @@ namespace Tolik.Riftstorm.Runtime.ApplicationLifecycle
                     break;
 
                 case MultiplayerRoleFlags.ClientAndServer:
-                    // Host mode not supported in dedicated-server setups; treat as client for editor convenience.
-                    Debug.LogWarning("[ApplicationEntryPoint] ClientAndServer role is not officially supported. Falling back to Client.");
-                    SceneManager.LoadScene(k_MetagameSceneName);
+                    // Host mode not supported in dedicated-server setups
+                    Debug.LogWarning("[ApplicationEntryPoint] ClientAndServer role is not officially supported.");
                     break;
             }
         }

@@ -1558,6 +1558,7 @@ namespace Riftstorm.Game.Npc
         /// ausser sich selbst, Neutral/Friendly nur Retaliation. NPC-NPC-
         /// Friendly-Fire ist vorerst aus (analog Source-Default).
         /// </summary>
+        /// TODO: Faction Enum usw. implementieren und hier nutzen, statt hardcoded.
         private bool IsHostileTo(UnitStats other)
         {
             if (other == null)
@@ -1574,6 +1575,7 @@ namespace Riftstorm.Game.Npc
         private static bool IsHostileFaction(int faction)
         {
             // Shared/UnitDefines.h: PlayerDefault=0, Friendly=1, Neutral=2, Hostile=3, PvP=4
+            // TODO: UnitFaction.cs implementieren und hier nutzen, statt hardcoded.
             return faction == 3;
         }
 

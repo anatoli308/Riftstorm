@@ -2,7 +2,7 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Riftstorm.ApplicationLifecycle.UI
+namespace Riftstorm.Management.FontManagement
 {
     /// <summary>
     /// Synchrones Lade-Utility fuer <see cref="UIFontConfig"/> aus

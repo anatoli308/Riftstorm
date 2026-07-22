@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Items;
 using Riftstorm.Game.Spells;

@@ -1,4 +1,4 @@
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Npc;
 using UnityEngine;

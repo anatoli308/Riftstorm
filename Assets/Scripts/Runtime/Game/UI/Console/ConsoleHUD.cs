@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Management.TextureManagement;
 using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
 using UnityEngine;

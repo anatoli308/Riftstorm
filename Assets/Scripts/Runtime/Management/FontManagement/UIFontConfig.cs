@@ -1,10 +1,10 @@
-namespace Riftstorm.ApplicationLifecycle.UI
+namespace Riftstorm.Management.FontManagement
 {
     /// <summary>
     /// Daten-Modell fuer die UI-Font-Zuordnung aus
     /// <c>StreamingAssets/interface/ui_fonts.json</c>. Reine POCO — wird per
     /// Newtonsoft.Json deserialisiert. Werte sind Font-Asset-Namen (ohne
-    /// Extension, ohne Pfad), die der <see cref="FontRegistry"/> matcht.
+    /// Extension, ohne Pfad), die der <see cref="FontManager"/> matcht.
     /// </summary>
     /// <remarks>
     /// Bewusst KEIN ScriptableObject: das Projekt bevorzugt JSON in

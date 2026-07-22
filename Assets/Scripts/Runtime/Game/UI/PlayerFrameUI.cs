@@ -1,5 +1,5 @@
 using System;
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Player;
 using Unity.Netcode;

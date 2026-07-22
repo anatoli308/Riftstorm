@@ -10,10 +10,10 @@ using UnityEngine;
 namespace Riftstorm.Game.Combat
 {
 [DisallowMultipleComponent]
-    [RequireComponent(typeof(PlayerStats))]
+    /*[RequireComponent(typeof(PlayerStats))]
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(NpcController))]
-    [RequireComponent(typeof(PlayerCombat))]
+    [RequireComponent(typeof(PlayerCombat))]*/
     /// <summary>
     /// Server-autoritative HP- und Combat-Stats-Komponente. Hängt auf jeder
     /// Einheit (Spieler, NPC) und ist die einzige Stelle, an der HP-Werte

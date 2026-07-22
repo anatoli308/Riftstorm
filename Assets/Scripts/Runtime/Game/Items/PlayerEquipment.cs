@@ -24,19 +24,20 @@ namespace Riftstorm.Game.Items
     /// ab Index 13 angehaengt — bestehende Indizes 1..12 bleiben stabil.
     /// </para>
     /// </summary>
+    /// TODO: es gibt EquipSlot und EquipType...
     public enum EquipSlot
     {
         /// <summary>Kein Slot — Consumable, Quest-Item, Reagent.</summary>
         None = 0,
         Helm = 1,
-        Amulet = 2,
+        Amulet = 2, //Necklace
         Chest = 3,
         Belt = 4,
-        Legs = 5,
-        Boots = 6,
-        Hands = 7,
+        Legs = 5, // Pants
+        Boots = 6, // Feet
+        Hands = 7, // Gloves
         Ring1 = 8,
-        MainHand = 9,
+        MainHand = 9, // Weapon1
         Offhand = 10,
         Ranged = 11,
         /// <summary>UI-/Gameplay-Extra ohne Source-Parity; gleicher EquipType=8 wie <see cref="Ring1"/>.</summary>

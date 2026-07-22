@@ -1,5 +1,5 @@
 using System;
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 

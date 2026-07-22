@@ -207,7 +207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Management::Tolik.Riftstorm.Runtime.ConnectionManagement.ConnectionManager
   m_NetworkManager: {fileID: 1780535647}
-  m_MaxPlayers: 15
+  m_MaxPlayers: 5000
 --- !u!4 &840653064
 Transform:
   m_ObjectHideFlags: 0

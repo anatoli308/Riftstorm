@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Riftstorm.ApplicationLifecycle.UI;
+using Riftstorm.Management.FontManagement;
 using Riftstorm.Gameplay.Combat;
 using UnityEngine;
 

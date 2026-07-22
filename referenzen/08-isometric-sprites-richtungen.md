@@ -116,7 +116,7 @@ Bewegt sich das Asset?
 
 ## 8. Quellen / Inspiration
 
-- **Flare Engine** (`https://github.com/flareteam/flare-engine`) — Open-Source-Iso-Engine,
+- **Flare Engine** (`https://github.com/flareteam/flare-engine`, `https://github.com/flareteam/flare-game`) — Open-Source-Iso-Engine,
   Asset-Konvention 1:1 übernommen
 - **Diablo II** — 8 Richtungen für Chars, 1–4 für Objekte
 

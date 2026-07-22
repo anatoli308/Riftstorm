@@ -10,6 +10,8 @@ namespace Riftstorm.Gameplay.Combat
     /// dort sind Stance=0, Run=1, Attack=2 etc. Hier nur die in Player-Atlanten vorhandenen
     /// Sektionen, plus <see cref="None"/> als Default.
     /// </remarks>
+    /// TODO: verwende UnitDefines::AnimId als Basis, dazu existier ein UnitAnimation Enum von mir. 
+    /// das ist 1:1 mit den FLARE-Animationen, und dann kann man das hier auf die Riftstorm-Player-Sprites abbilden/ersetzen.
     public enum CombatAnim
     {
         /// <summary>Kein Zustand gesetzt (Default vor Initialisierung).</summary>

@@ -1,7 +1,9 @@
 # Copilot Instructions for Riftstorm
 
 ## Background Information
-Riftstorm is a **Multiplayer Dark-Fantasy PvPvE Topdown Survivor-MOBA/MMO**. The game blends Vampire-Survivors/Megabonk-style horde combat and build evolution with LoL/WoW-style teamfights, objectives and pacing, plus ARPG-style synergy depth. Target session length is 15–25 minutes, ~15 players per match (scalable), 200–400 concurrent enemies, dedicated server and server-authoritative simulation. This file contains the coding standards, architectural principles, and design patterns for the project to ensure consistency, maintainability, and clarity across the codebase. The instructions cover decision-making principles, coding rules, clean coding standards, project architecture, scene architecture, application lifecycle, and patterns & conventions. Always use the latest stable version of Unity 6 and modern C# features where appropriate.
+Riftstorm MMORPG / ARPG using flare engine assets
+
+Der Unterschied ist: Der Service Locator sollte deine Engine zusammenhalten, nicht dein Gameplay. Dein Gameplay sollte möglichst über Zustandsobjekte, Komponenten, State Machines und Events interagieren. Genau dort liegt langfristig der größte Gewinn an Wartbarkeit.
 
 ## Decision-Making Principles
 - For background tasks or long decision tasks use Python and not PowerShell. PowerShell is only for short scripts and quick fixes, not for complex logic or data processing.
@@ -416,7 +418,3 @@ await connection.QueryAsync<Order>(sql, new { customerId });
 - Return safe client-facing messages
 - Log detailed exceptions with structured context server-side
 - Do not expose stack traces, SQL text, or filesystem paths in API responses
-
-## References
-
-See skill: `security-review` for broader application security review checklists.

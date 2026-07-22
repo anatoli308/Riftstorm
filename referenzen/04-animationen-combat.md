@@ -16,7 +16,7 @@ Jedes Player- und NPC-Sprite-Asset enthält maximal diese 8 States (im FLARE-Atl
 | `[swing]` | `Swing = 9` | Nahkampf-Schlag | **Aktion** (Attack mit Melee-Waffe) |
 | `[shoot]` | `Shoot = 11` | Fernkampf-Schuss | **Aktion** (Attack mit Ranged-Waffe) |
 | `[cast]` | `Cast = 3` | Zauberspruch | **Aktion** (Spell wirken) |
-| `[block]` | `Block = 10` | Schild-Block aktiv | **Zustand** (Schild oben) |
+| `[block]` | `Block = 10` | Schild-Block aktiv | **Zustand** (Schild equipped) |
 | `[hit]` | `Hit = 4` | Treffer empfangen | **Reaktion** (Damage-Event) |
 | `[die]` | `Die = 5` | Tod | **Zustand** (HP ≤ 0) |
 

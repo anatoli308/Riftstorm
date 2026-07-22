@@ -16,7 +16,7 @@ So Buffs wie "Blessing of Champions", "Blessing of Defense", "Fortification Aura
 
 8. Chains of Ice slowt das target by -40% ist das korrekt am funktionieren ja oder ich denke schon.
 9. Deep Freeze "encases the target in a block of ice" dafür bruache ich noch eine animation/sprite/particle?  um besser sichtbar zu sein. außerdem ist man währenddessen immun gegen alle angriffe das geht noch nicht korrekt.
-10. Illusion Gate ist nicht korrekt ein sprite/animation/particle am spawnen für ein Illusion gate.
+10. Illusion Gate ist nicht korrekt ein sprite/animation/particle am ort spawnen für ein Illusion gate.
 
 
 
@@ -35,7 +35,7 @@ So Buffs wie "Blessing of Champions", "Blessing of Defense", "Fortification Aura
 10. Wisdom of Lazarus hat noch irgendwie instantly restores 0% mana.
 11. Desparate Prayer instantly heals by 0% of their health and 0% of their mana. das ist noch nicht korrekt implementiert.
 12. Vanish muss korrekt stealth implementieren. noch anschauen im original code wie vermutlich. loose threat etc... 
-13. Satanic Madness ist eine art fear muss bis zu 5 targets um dich herum zum fliehen bringen. das ist noch nicht korrekt implementiert.
+13. Satanic Madness ist eine art fear muss bis zu 5 targets um dich herum zum fliehen bringen. das ist noch nicht korrekt implementiert. es passiert dann nichts.
 14. Tranquility Heals damage over time. das soll AOE heal sein.
 
 

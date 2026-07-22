@@ -1,22 +1,34 @@
-using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Riftstorm.ApplicationLifecycle.UI
+namespace Riftstorm.Management.FontManagement
 {
     /// <summary>
     /// Statischer Accessor fuer die UI-Fonts. Kombiniert die per JSON
     /// (<see cref="UIFontConfigLoader"/>) konfigurierte Rolle-zu-Name-Zuordnung
-    /// mit der vom <c>ApplicationEntryPoint</c> bereitgestellten
-    /// <see cref="FontRegistry"/> (Pure Service im <c>ServiceLocator</c>).
+    /// mit dem ueber <see cref="FontResolver"/> injizierten <see cref="FontManager"/>.
     /// </summary>
     /// <remarks>
-    /// Alle Getter sind null-safe: fehlt der Service oder das Font-Asset,
+    /// Alle Getter sind null-safe: fehlt der Resolver oder das Font-Asset,
     /// wird <c>null</c> zurueckgegeben und <see cref="Apply"/> macht einen
     /// No-Op — UI Toolkit faellt dann auf den Default-Font zurueck.
+    /// <para>
+    /// <see cref="FontResolver"/> wird vom <c>ApplicationEntryPoint</c> gesetzt
+    /// (<c>FontResolver = fontManager.GetFont</c>). Diese Injection vermeidet
+    /// einen Asmdef-Zyklus zwischen <c>Riftstorm.Management</c> und
+    /// <c>Riftstorm.ApplicationLifecycle</c> (analog <c>SpellSpriteCache.TextureResolver</c>).
+    /// </para>
     /// </remarks>
     public static class UIFonts
     {
+        /// <summary>
+        /// Auflöser von Font-Name (z. B. <c>"Friz Quadrata Bold"</c>) zu
+        /// <see cref="Font"/>. Muss vor dem ersten Getter-Zugriff gesetzt sein,
+        /// sonst liefern alle Getter <c>null</c>.
+        /// </summary>
+        public static Func<string, Font> FontResolver { get; set; }
+
         /// <summary>Display-/Titel-Font (z. B. Login-Screen Headline).</summary>
         public static Font Title => Resolve(UIFontConfigLoader.Load().title);
 
@@ -53,8 +65,8 @@ namespace Riftstorm.ApplicationLifecycle.UI
 
         static Font Resolve(string fontName)
         {
-            FontRegistry registry = ServiceLocator.Get<FontRegistry>();
-            return registry?.Get(fontName);
+            Func<string, Font> resolver = FontResolver;
+            return resolver?.Invoke(fontName);
         }
     }
 }

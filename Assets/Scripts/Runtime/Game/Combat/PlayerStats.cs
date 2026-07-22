@@ -14,6 +14,9 @@ namespace Riftstorm.Game.Combat
     /// <c>source_server/Shared/CombatStats.h</c>, damit JSON-Templates ohne
     /// Mapping konsumiert werden koennen.
     /// </summary>
+    /// 
+    /// TODO: es fehlen noch einige aus UnitDefines.h wie mana usw...
+    /// [UnitDefines.h](file:///c%3A/Users/anato/Downloads/steam-main/source_server/Shared/UnitDefines.h)
     public enum StatId
     {
         None = 0,
