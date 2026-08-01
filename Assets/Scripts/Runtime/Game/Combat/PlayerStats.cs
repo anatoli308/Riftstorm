@@ -7,28 +7,35 @@ using UnityEngine;
 namespace Riftstorm.Game.Combat
 {
     /// <summary>
-    /// Quellseitig nummerierte Stat-Ids — Subset aus
-    /// <c>Combat::Stat</c> der Source, der in Phase 16B von ItemTemplate
-    /// <c>StatType1..4</c>/<c>StatValue1..4</c> wirklich genutzt wird. Werte
-    /// matchen 1:1 die C++-Enum-Werte aus
-    /// <c>source_server/Shared/CombatStats.h</c>, damit JSON-Templates ohne
-    /// Mapping konsumiert werden koennen.
+    /// Stat-Ids — 1:1 aus <c>source_server/Shared/UnitDefines.h</c>
+    /// (<c>UnitDefines::Stat</c>). Werte matchen exakt die C++-Enum-Werte, damit
+    /// JSON-Item-/Spell-Templates (<c>StatType1..4</c>, <c>equip_type</c>-Boni)
+    /// ohne Mapping konsumiert werden koennen. <see cref="NumStats"/> ist der
+    /// Zaehl-Sentinel und keine echte Stat. Nicht jede Stat hat (noch) ein
+    /// Base-Mapping in <see cref="UnitStats"/> — fehlende geben ueber
+    /// <see cref="GetBase"/> 0 zurueck und fallen implizit auf Equipment-Boni.
     /// </summary>
-    /// 
-    /// TODO: es fehlen noch einige aus UnitDefines.h wie mana usw...
-    /// [UnitDefines.h](file:///c%3A/Users/anato/Downloads/steam-main/source_server/Shared/UnitDefines.h)
     public enum StatId
     {
+        /// <summary>Kein Stat / DB-Sentinel.</summary>
         None = 0,
+        Mana = 1,
         Health = 2,
         ArmorValue = 3,
         Strength = 4,
         Agility = 5,
         Willpower = 6,
         Intelligence = 7,
+        Courage = 8,
+        Regeneration = 9,
+        Meditate = 10,
         WeaponValue = 11,
+        /// <summary>Alias auf <see cref="WeaponValue"/> (Source <c>MeleeValue</c>).</summary>
+        MeleeValue = WeaponValue,
         MeleeCooldown = 12,
         RangedWeaponValue = 13,
+        /// <summary>Alias auf <see cref="RangedWeaponValue"/> (Source <c>RangedValue</c>).</summary>
+        RangedValue = RangedWeaponValue,
         RangedCooldown = 14,
         MeleeCritical = 15,
         RangedCritical = 16,
@@ -39,10 +46,26 @@ namespace Riftstorm.Game.Combat
         ResistFire = 21,
         ResistShadow = 22,
         ResistHoly = 23,
+        Bartering = 24,
+        Lockpicking = 25,
+        Perception = 26,
+        StaffSkill = 27,
+        MaceSkill = 28,
+        AxesSkill = 29,
+        SwordSkill = 30,
+        RangedSkill = 31,
+        DaggerSkill = 32,
+        WandSkill = 33,
         ShieldSkill = 34,
+        NpcMeleeSkill = 35,
+        NpcRangedSkill = 36,
         ParryChanceBonus = 37,
         BlockChanceBonus = 38,
+        DodgeChanceBonus = 39,
         ParryRating = 40,
+        Fortitude = 41,
+        /// <summary>Anzahl echter Stats (Zaehl-Sentinel, keine Stat).</summary>
+        NumStats = 42,
     }
 [DisallowMultipleComponent]
 

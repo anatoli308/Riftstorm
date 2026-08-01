@@ -8,23 +8,70 @@ using UnityEngine;
 namespace Riftstorm.Game.Items
 {
     /// <summary>
-    /// Equip-Slots. Die Zahlen 1..11 sind 1:1 Source-Parity zu
-    /// <c>ItemDefines::EquipType</c> (Item-JSON-Feld <c>equip_type</c>) und
-    /// duerfen nicht renumeriert werden. Die Namen folgen der UI-Sprache:
+    /// Item-<b>Kategorie</b> aus dem JSON-Feld <c>equip_type</c>. 1:1-Port von
+    /// <c>ItemDefines::EquipType</c> aus der Source. Beschreibt, <i>welche Art</i>
+    /// von Ausruestung ein Item ist (Helm, Waffe, Ring, ...) — NICHT den
+    /// physischen Paperdoll-Slot. Die Abbildung auf den tragenden Slot leistet
+    /// <see cref="EquipTypeExtensions.ToEquipSlot"/>.
+    /// <para>
+    /// Bewusst getrennt vom <see cref="EquipSlot"/>: EquipType ist die
+    /// Item-Eigenschaft (aus den Item-Daten), EquipSlot die Slot-Position am
+    /// Charakter. Die Zahlenwerte 1..11 sind absichtlich deckungsgleich mit
+    /// <see cref="EquipSlot"/> (Source-Parity), was das Mapping zu einem
+    /// direkten Cast macht.
+    /// </para>
+    /// </summary>
+    public enum EquipType
+    {
+        /// <summary>Kein Equipment — Consumable, Quest-Item, Reagent.</summary>
+        None = 0,
+        Helm = 1,
+        Necklace = 2,
+        Chest = 3,
+        Belt = 4,
+        Legs = 5,
+        Feet = 6,
+        Hands = 7,
+        Ring = 8,
+        Weapon = 9,
+        Shield = 10,
+        Ranged = 11,
+    }
+
+    /// <summary>Hilfsmethoden zur Abbildung von <see cref="EquipType"/> auf <see cref="EquipSlot"/>.</summary>
+    public static class EquipTypeExtensions
+    {
+        /// <summary>
+        /// Bildet die Item-Kategorie <see cref="EquipType"/> auf den physischen
+        /// <see cref="EquipSlot"/> ab. Die Werte 1..11 sind per Source-Parity
+        /// deckungsgleich, daher ein direkter Cast. Das Ring-Routing
+        /// (<see cref="EquipSlot.Ring1"/>/<see cref="EquipSlot.Ring2"/>) bleibt
+        /// bewusst im Equip-Pfad, weil es vom Belegungszustand abhaengt und
+        /// nicht rein aus dem EquipType ableitbar ist. <see cref="EquipType.None"/>
+        /// ergibt <see cref="EquipSlot.None"/>.
+        /// </summary>
+        public static EquipSlot ToEquipSlot(this EquipType type) => (EquipSlot)(int)type;
+    }
+
+    /// <summary>
+    /// Physische Equip-<b>Slots</b> am Charakter (Paperdoll-Position). Die Zahlen
+    /// 1..11 sind 1:1 deckungsgleich mit <see cref="EquipType"/> (Source-Parity)
+    /// und duerfen nicht renumeriert werden — sie indexieren die
+    /// server-replizierte <see cref="NetworkList{T}"/> und wuerden sonst
+    /// serialisierte Equip-Daten invalidieren. Die Namen folgen der UI-Sprache:
     /// <c>Amulet</c> statt <c>Necklace</c>, <c>Boots</c> statt <c>Feet</c>,
     /// <c>MainHand/Offhand</c> statt <c>Weapon/Shield</c>.
     /// <para>
     /// <see cref="Ring2"/> ist ein UI-/Gameplay-Extra ohne Source-Parity:
-    /// Source kennt nur eine Ring-EquipType (8); Items mit
-    /// <c>equip_type=8</c> werden vom Equip-Pfad zuerst in <see cref="Ring1"/>
-    /// und dann in <see cref="Ring2"/> einsortiert.
+    /// Source kennt nur eine Ring-Kategorie (<see cref="EquipType.Ring"/> = 8);
+    /// Items mit <c>equip_type=8</c> werden vom Equip-Pfad zuerst in
+    /// <see cref="Ring1"/> und dann in <see cref="Ring2"/> einsortiert.
     /// </para>
     /// <para>
     /// Geplante Erweiterungen (Trinket1/2, Bracers, Shoulders, Back) wuerden
     /// ab Index 13 angehaengt — bestehende Indizes 1..12 bleiben stabil.
     /// </para>
     /// </summary>
-    /// TODO: es gibt EquipSlot und EquipType...
     public enum EquipSlot
     {
         /// <summary>Kein Slot — Consumable, Quest-Item, Reagent.</summary>
@@ -317,7 +364,7 @@ namespace Riftstorm.Game.Items
                 return false;
             }
 
-            EquipSlot target = (EquipSlot)template.EquipType;
+            EquipSlot target = template.EquipType.ToEquipSlot();
             if (target == EquipSlot.None || (int)target > SlotCount)
             {
                 Debug.LogWarning($"[PlayerEquipment] Equip: Template {invItem.TemplateId} hat ungueltigen EquipType={template.EquipType}.");
@@ -500,7 +547,7 @@ namespace Riftstorm.Game.Items
                 Debug.LogWarning($"[PlayerEquipment] Default-Loadout: Template {templateId} ist nicht equippable.");
                 return false;
             }
-            if ((EquipSlot)template.EquipType != expected)
+            if (template.EquipType.ToEquipSlot() != expected)
             {
                 Debug.LogWarning($"[PlayerEquipment] Default-Loadout: Template {templateId} EquipType={template.EquipType}, erwartet {expected}.");
                 return false;

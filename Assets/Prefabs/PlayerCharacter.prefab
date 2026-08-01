@@ -30,6 +30,7 @@ GameObject:
   - component: {fileID: -2832614196279754095}
   - component: {fileID: 8196984269171002894}
   - component: {fileID: -6804158110703384957}
+  - component: {fileID: 2328077880605191063}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -384,8 +385,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Player.PlayerNameTag
   m_IdentitySource: {fileID: 1186222734823470071}
   m_Anchor: {fileID: 5634081016197058092}
-  m_HeadHeight: 1.2
-  m_WorldOffset: {x: 0, y: -2, z: 0.8}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FontSize: 14
   m_MaxDistance: 50
@@ -404,7 +403,7 @@ MonoBehaviour:
   m_Input: {fileID: 3229784933833492351}
   m_Combat: {fileID: -525944449724255899}
   m_GroundPicker: {fileID: -758824109736128144}
-  m_SlotSpellEntries: 1b000000350000003c0000003d0000003e0000004b00000050000000b9000000ec000000ed000000
+  m_SlotSpellEntries: 0100000002000000030000000400000005000000060000000700000008000000090000000a000000
 --- !u!114 &-758824109736128144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,6 +485,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Items.PlayerInventory
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &2328077880605191063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550141141547264444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51de23169024f548b8e4daf781c4275, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.NpcCastBarView
 --- !u!1 &2863245749116129191
 GameObject:
   m_ObjectHideFlags: 0

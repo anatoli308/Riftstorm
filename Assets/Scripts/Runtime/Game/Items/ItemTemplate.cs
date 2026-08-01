@@ -72,9 +72,12 @@ namespace Riftstorm.Game.Items
         [JsonProperty("item_level")]
         public int ItemLevel { get; set; }
 
-        /// <summary>Slot-Typ; siehe <c>ItemDefines::EquipType</c> (1=Helm, 3=Chest, 9=Weapon, 10=Shield, ...). 0 = nicht anlegbar (Consumable / Quest-Item).</summary>
+        /// <summary>Item-Kategorie; 1:1-Port von <c>ItemDefines::EquipType</c>
+        /// (Helm, Chest, Weapon, Shield, ...). <see cref="EquipType.None"/> = nicht
+        /// anlegbar (Consumable / Quest-Item). Die Abbildung auf den physischen
+        /// Slot leistet <see cref="EquipTypeExtensions.ToEquipSlot"/>.</summary>
         [JsonProperty("equip_type")]
-        public int EquipType { get; set; }
+        public EquipType EquipType { get; set; }
 
         /// <summary>Armor-Material (1=Cloth, 2=Leather, 3=Mail, 4=Plate). 0 = keine Ruestung.</summary>
         [JsonProperty("armor_type")]
@@ -165,7 +168,7 @@ namespace Riftstorm.Game.Items
 
         /// <summary>True wenn das Item in einem Equipment-Slot getragen werden kann.</summary>
         [JsonIgnore]
-        public bool IsEquippable => EquipType > 0;
+        public bool IsEquippable => EquipType != EquipType.None;
 
         /// <summary>True wenn das Item gestapelt werden kann.</summary>
         [JsonIgnore]

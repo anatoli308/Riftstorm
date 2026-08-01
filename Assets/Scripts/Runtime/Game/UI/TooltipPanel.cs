@@ -391,14 +391,14 @@ namespace Riftstorm.Game.UI
 
         private static string GetItemSlotLabel(ItemTemplate tpl)
         {
-            if (tpl.EquipType <= 0)
+            if (tpl.EquipType == EquipType.None)
             {
                 return string.Empty;
             }
-            // EquipSlot-Enum spiegelt 1:1 Source-EquipType (Helm=1..Ranged=11),
-            // plus Ring2=12 als UI-Extra. Cast ist sicher fuer alle Werte
-            // > 0 — unbekannte Werte landen auf der int-Repraesentation.
-            EquipSlot slot = (EquipSlot)tpl.EquipType;
+            // EquipSlot-Werte 1..11 sind deckungsgleich mit EquipType (Source-Parity),
+            // plus Ring2=12 als UI-Extra. Das Mapping ist ein direkter Cast; unbekannte
+            // Werte landen auf der EquipType-Repraesentation.
+            EquipSlot slot = tpl.EquipType.ToEquipSlot();
             return System.Enum.IsDefined(typeof(EquipSlot), slot)
                 ? slot.ToString()
                 : $"Equip #{tpl.EquipType}";

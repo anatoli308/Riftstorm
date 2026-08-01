@@ -81,6 +81,7 @@ namespace Riftstorm.Game.Input
         private CommandIntent m_Intent = CommandIntent.Idle;
         private Vector3 m_DestinationXZ;
         private ulong m_FollowTargetId = TargetSelection.NoTarget;
+
         private bool m_SuppressHeldMoveUntilRelease;
         private bool m_WasMoveHeldLastFrame;
         private float m_NextHeldMoveTime;
@@ -124,6 +125,27 @@ namespace Riftstorm.Game.Input
             m_SuppressHeldMoveUntilRelease = false;
             m_WasMoveHeldLastFrame = false;
             m_NextHeldMoveTime = 0f;
+        }
+
+        /// <summary>
+        /// Engagiert nach einem Melee-Lunge-Spell (z. B. Charge) den
+        /// <see cref="CommandIntent.FollowTarget"/> auf das gechargte Ziel. Damit
+        /// laeuft nach dem Dash automatisch der bestehende Follow-/Auto-Attack-Pfad
+        /// an: sobald der Spieler (post-Impuls) in Waffenreichweite steht, feuert
+        /// <see cref="UpdateFollowTarget"/> den ersten Auto-Attack — GCD-gegated
+        /// durch <see cref="PlayerCombat"/>, sodass der Schlag exakt dann kommt,
+        /// wenn er erlaubt ist. Reiner Owner-Intent; der autoritative Angriff
+        /// laeuft weiterhin server-seitig ueber die regulaere Spell-Pipeline.
+        /// </summary>
+        /// <param name="targetNetworkObjectId">NetworkObjectId des Charge-Ziels.</param>
+        public void EngageFollowTarget(ulong targetNetworkObjectId)
+        {
+            if (targetNetworkObjectId == TargetSelection.NoTarget)
+            {
+                return;
+            }
+            m_Intent = CommandIntent.FollowTarget;
+            m_FollowTargetId = targetNetworkObjectId;
         }
 
         // -------------------------------------------------------------------------
@@ -192,6 +214,9 @@ namespace Riftstorm.Game.Input
             {
                 return;
             }
+            // Ein frischer RMB-Befehl (Bewegen oder Ziel-Wechsel) hebt einen
+            // laufenden Auto-Attack-Follow auf — der Spieler will jetzt
+            // laufen/normal angreifen.
             // LoL-Style Attack-Cancel wird unten ZIELABHAENGIG gefeuert:
             //  - RMB auf Boden / neues Ziel  -> Cancel (Spieler will weg/wechseln)
             //  - RMB auf bereits gelocktes Ziel -> KEIN Cancel (Auto-Attack laeuft
@@ -453,6 +478,7 @@ namespace Riftstorm.Game.Input
                 // damit der Spieler bei Ziel-Bewegung wieder nachzieht.
                 MoveDirection = Vector2.zero;
                 IsMoving = false;
+
                 // Auto-Attack triggern. PlayerCombat selbst gated gegen RPC-Spam
                 // (Prediction-Window) und gegen den Waffen-Cooldown (State-Machine).
                 if (m_Combat != null)

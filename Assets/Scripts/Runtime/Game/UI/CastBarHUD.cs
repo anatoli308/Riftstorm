@@ -114,9 +114,9 @@ namespace Riftstorm.Game.UI
             }
 
             // Default value-Label (HP-Style "0 / 0") als Prozent-Anzeige rechts
-            // umfunktionieren — zeigt die verbleibenden Prozent bis zum Cast-Ende.
+            // umfunktionieren — zeigt den aufsteigenden Cast-Fortschritt (0% -> 100%).
             m_PercentLabel = valueLabel;
-            m_PercentLabel.text = "100%";
+            m_PercentLabel.text = "0%";
             m_PercentLabel.style.left = StyleKeyword.Auto;
             m_PercentLabel.style.right = 6f;
             m_PercentLabel.style.unityTextAlign = TextAnchor.MiddleRight;
@@ -224,7 +224,7 @@ namespace Riftstorm.Game.UI
             m_Fill.style.width = new StyleLength(new Length(0f, LengthUnit.Percent));
             if (m_PercentLabel != null)
             {
-                m_PercentLabel.text = "100%";
+                m_PercentLabel.text = "0%";
             }
             m_Container.style.display = DisplayStyle.Flex;
 
@@ -266,8 +266,8 @@ namespace Riftstorm.Game.UI
             m_Fill.style.width = new StyleLength(new Length(t * 100f, LengthUnit.Percent));
             if (m_PercentLabel != null)
             {
-                int remaining = Mathf.CeilToInt((1f - t) * 100f);
-                m_PercentLabel.text = remaining + "%";
+                int progress = Mathf.RoundToInt(t * 100f);
+                m_PercentLabel.text = progress + "%";
             }
         }
 

@@ -1,21 +1,14 @@
-using System.IO;
-using Newtonsoft.Json;
-using Riftstorm.Management.TextureManagement;
-using Tolik.Riftstorm.Runtime.ApplicationLifecycle;
+using Riftstorm.Core.Configuration;
 using UnityEngine;
 
 namespace Riftstorm.Game.UI
 {
     /// <summary>
     /// Synchrones Lade-Utility fuer <see cref="HudConfig"/> aus
-    /// <c>StreamingAssets/interface/hud_config.json</c>. Cached den Config
-    /// prozessweit, sodass mehrere HUD-Views (Player + Target) nur einmal IO machen.
+    /// <c>StreamingAssets/interface/hud_config.json</c>. Caching delegiert an
+    /// <see cref="JsonConfigFile{T}"/>, Textur-Lookups an
+    /// <see cref="ConfigTextureResolver"/>.
     /// </summary>
-    /// <remarks>
-    /// Textur-Loading delegiert an den <see cref="TextureManager"/>-Pure-Service.
-    /// Die JSON-Keys sind relative Pfade unter <c>Application.dataPath/Art</c>
-    /// ohne Extension (z. B. <c>"interface/unit_frame"</c>).
-    /// </remarks>
     public static class HudConfigLoader
     {
         /// <summary>Default-Unterordner in <c>StreamingAssets</c>.</summary>
@@ -23,82 +16,17 @@ namespace Riftstorm.Game.UI
         /// <summary>Default-Dateiname.</summary>
         public const string DefaultFileName = "hud_config.json";
 
-        private static HudConfig s_Cached;
-        private static bool s_LoadAttempted;
+        private static readonly JsonConfigFile<HudConfig> s_Config =
+            new("HudConfigLoader", DefaultFileName, DefaultSubFolder);
 
-        /// <summary>
-        /// Liefert den geladenen Config, oder einen frischen <see cref="HudConfig"/>
-        /// mit Default-Werten, falls die Datei fehlt oder das JSON kaputt ist.
-        /// Der Rueckgabewert ist nie <c>null</c> — Komponenten muessen keinen
-        /// Fallback-Pfad mehr halten.
-        /// </summary>
-        public static HudConfig Load()
-        {
-            if (s_LoadAttempted)
-            {
-                return s_Cached;
-            }
-            s_LoadAttempted = true;
+        /// <summary>Liefert den geladenen Config (nie <c>null</c>, Default-Fallback).</summary>
+        public static HudConfig Load() => s_Config.Load();
 
-            string path = Path.Combine(Application.streamingAssetsPath, DefaultSubFolder, DefaultFileName);
-            if (!File.Exists(path))
-            {
-                Debug.Log($"[HudConfigLoader] Kein HUD-Config gefunden ({path}) - HudConfig-Defaults aktiv.");
-                s_Cached = new();
-                return s_Cached;
-            }
+        /// <summary>Resolved einen HUD-Textur-Key ueber den TextureManager.</summary>
+        public static Texture2D LoadTextureOrNull(string textureKey) =>
+            ConfigTextureResolver.LoadTextureOrNull("HudConfigLoader", textureKey);
 
-            try
-            {
-                string json = File.ReadAllText(path);
-                s_Cached = JsonConvert.DeserializeObject<HudConfig>(json) ?? new HudConfig();
-                Debug.Log($"[HudConfigLoader] HUD-Config geladen: {path}");
-                return s_Cached;
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"[HudConfigLoader] Fehler beim Laden von {path}: {ex.Message}");
-                s_Cached = new();
-                return s_Cached;
-            }
-        }
-
-        /// <summary>
-        /// Resolved einen Textur-Key (z. B. <c>"interface/unit_frame"</c>) via
-        /// <see cref="TextureManager"/>. Liefert <c>null</c>, wenn der Key leer
-        /// ist, der TextureManager nicht registriert ist oder die Datei fehlt.
-        /// </summary>
-        public static Texture2D LoadTextureOrNull(string textureKey)
-        {
-            if (string.IsNullOrWhiteSpace(textureKey))
-            {
-                return null;
-            }
-
-            TextureManager manager = ServiceLocator.Get<TextureManager>();
-            if (manager == null)
-            {
-                Debug.LogWarning($"[HudConfigLoader] TextureManager nicht im ServiceLocator (Key '{textureKey}').");
-                return null;
-            }
-
-            Texture2D tex = manager.GetTexture(textureKey);
-            if (tex == null)
-            {
-                Debug.LogWarning($"[HudConfigLoader] HUD-Textur nicht gefunden: '{textureKey}'");
-            }
-            return tex;
-        }
-
-        /// <summary>
-        /// Setzt den Config-Cache + Load-Attempt zurueck. Fuer Tests oder ein
-        /// "Reload-Button"-Feature im Editor. Texturen werden vom
-        /// <see cref="TextureManager"/> verwaltet und hier nicht beruehrt.
-        /// </summary>
-        public static void ResetCacheForTesting()
-        {
-            s_Cached = null;
-            s_LoadAttempted = false;
-        }
+        /// <summary>Setzt den Config-Cache zurueck (Tests / Editor-Reload).</summary>
+        public static void ResetCacheForTesting() => s_Config.ResetCache();
     }
 }

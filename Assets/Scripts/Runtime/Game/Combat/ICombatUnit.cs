@@ -1,3 +1,4 @@
+using System;
 using Riftstorm.Game.Spells;
 using Riftstorm.Gameplay.Combat;
 using UnityEngine;
@@ -130,6 +131,25 @@ namespace Riftstorm.Game.Combat
         /// der Dauer wird Eigen-Input ignoriert. Auf Clients ein No-Op.
         /// </summary>
         void ServerApplyImpulse(Vector3 direction, float meters, float durationSec);
+
+        /// <summary>
+        /// True, solange eine externe Bewegung (<see cref="ServerApplyImpulse"/>)
+        /// laeuft. Wird vom <see cref="Spells.Runtime.SpellExecutor"/> genutzt,
+        /// um Charge-Debuffs (Stun) erst bei der Landung statt beim Cast-Start
+        /// zu applizieren. Auf Clients typischerweise <c>false</c> (server-only
+        /// State fuer Effekt-Timing).
+        /// </summary>
+        bool IsImpulseActive { get; }
+
+        /// <summary>
+        /// Server-only: registriert einen einmaligen Callback, der feuert, sobald
+        /// die aktuell laufende externe Bewegung (<see cref="ServerApplyImpulse"/>)
+        /// endet (Impact/Landung). Mehrfach-Registrierungen werden verkettet und
+        /// nach dem Feuern verworfen. Ohne aktiven Impuls ist der Aufruf ein
+        /// No-Op (der Callback wird verworfen).
+        /// </summary>
+        /// <param name="onComplete">Beim Impuls-Ende ausgefuehrte Aktion.</param>
+        void RegisterImpulseCompletion(Action onComplete);
 
         /// <summary>
         /// Server-only: bricht einen aktiven Cast hart ab (Kick/Counterspell).

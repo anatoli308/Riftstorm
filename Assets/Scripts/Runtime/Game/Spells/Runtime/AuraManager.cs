@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Riftstorm.Game.Combat;
+using Riftstorm.Gameplay.Combat;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -98,6 +99,7 @@ namespace Riftstorm.Game.Spells
                 SourceSpellEntry = spell.Entry,
                 CasterGuid = caster != null ? caster.Guid : 0UL,
                 CachedCaster = caster as UnitStats,
+                School = spell.MagicRollSchool,
                 EffectIndex = oneBasedEffectIndex,
                 MaxDurationMs = SpellUtils.CalculateDuration(spell, caster),
                 MaxStacks = spell.StackAmount > 0 ? spell.StackAmount : 1,
@@ -127,7 +129,13 @@ namespace Riftstorm.Game.Spells
                 AuraType = auraType,
                 BaseValue = baseValue,
                 MiscValue = SpellUtils.GetAuraMiscValue(eff),
-                PerStackValue = 0,
+                // Jeder Stack addiert den vollen Effekt-Wert: die Aggregation
+                // rechnet BaseValue + PerStackValue * (Stacks - 1), also ergibt
+                // PerStackValue == baseValue eine lineare Skalierung
+                // (z. B. Divine Strike: +1% Schaden erlitten pro Stack, +10% bei
+                // 10 Stacks). Nicht-stackbare Auren (MaxStacks == 1) bleiben
+                // unveraendert, da Stacks stets 1 ist und der Term entfaellt.
+                PerStackValue = baseValue,
                 PeriodicIntervalMs = spell.Interval,
             });
 
@@ -465,6 +473,45 @@ namespace Riftstorm.Game.Spells
         public bool IsImmobilized => IsStunned || IsRooted;
 
         /// <summary>
+        /// True, wenn eine <see cref="AuraType.InflictMechanic"/>-Aura mit
+        /// <see cref="Mechanic.Fear"/> aktiv ist. Server-seitig von der NPC-AI
+        /// (<c>NpcController</c>) konsumiert, um vom Fear-Verursacher wegzulaufen
+        /// ("Fleeing in terror"). Ein zusaetzlicher Stun/Root hat Vorrang und
+        /// friert die Flucht ein (Bewegungs-Gate greift dort separat).
+        /// </summary>
+        public bool IsFeared => HasMechanic(Mechanic.Fear);
+
+        /// <summary>
+        /// Liefert die Weltposition des Verursachers der aktuell aktiven
+        /// <see cref="Mechanic.Fear"/>-Aura ueber den gecachten Caster. Gibt
+        /// <c>false</c>, wenn keine Fear-Aura aktiv ist oder ihr Caster nicht
+        /// mehr existiert &#8212; die AI behaelt dann ihre letzte Fluchtrichtung.
+        /// </summary>
+        /// <param name="position">Ausgabe: Weltposition des Fear-Casters.</param>
+        public bool TryGetFearSourcePosition(out Vector3 position)
+        {
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType != AuraType.InflictMechanic
+                        || e.MiscValue != (long)Mechanic.Fear)
+                    {
+                        continue;
+                    }
+                    UnitStats caster = a.CachedCaster;
+                    if (caster != null)
+                    {
+                        position = caster.transform.position;
+                        return true;
+                    }
+                }
+            }
+            position = Vector3.zero;
+            return false;
+        }
+
+        /// <summary>
         /// Aggregierter Move-Speed-Multiplikator aus allen aktiven
         /// <see cref="AuraType.ModifyMoveSpeedPct"/>-Effekten sowie
         /// <see cref="AuraType.InflictMechanic"/>-Auren mit
@@ -538,6 +585,40 @@ namespace Riftstorm.Game.Spells
         }
 
         /// <summary>
+        /// Summiert alle <see cref="AuraType.ModifyDamageReceivedPct"/>-Auren,
+        /// deren Schul-Maske (<see cref="AuraEffect.MiscValue"/>) die
+        /// eingehende <paramref name="school"/> abdeckt. Maske <c>0</c> = gilt
+        /// fuer alle Schulen (klassischer "Damage Taken"-Buff); sonst greift der
+        /// Modifier nur bei passendem Masken-Bit (z. B. Fortification Aura mit
+        /// Maske <c>1</c> = ausschliesslich Physical). Wird vom Damage-Pfad
+        /// (<see cref="Gameplay.Combat.CombatFormulas.ApplyDamageAuraModifiers"/>)
+        /// schul-gefiltert konsumiert.
+        /// </summary>
+        public int GetDamageReceivedPctMod(SpellSchool school)
+        {
+            long schoolMask = 1L << (int)school;
+            long sum = 0;
+            foreach (Aura a in m_Auras)
+            {
+                foreach (AuraEffect e in a.Effects)
+                {
+                    if (e.AuraType != AuraType.ModifyDamageReceivedPct)
+                    {
+                        continue;
+                    }
+                    if (e.MiscValue != 0 && (e.MiscValue & schoolMask) == 0)
+                    {
+                        continue;
+                    }
+                    sum += e.BaseValue + e.PerStackValue * (a.Stacks - 1);
+                }
+            }
+            if (sum > int.MaxValue) { return int.MaxValue; }
+            if (sum < int.MinValue) { return int.MinValue; }
+            return (int)sum;
+        }
+
+        /// <summary>
         /// Summiert <see cref="AuraType.ModifyStat"/>-/
         /// <see cref="AuraType.ModifyStatPct"/>-Effekte, deren
         /// <see cref="AuraEffect.MiscValue"/> die angefragte
@@ -550,7 +631,7 @@ namespace Riftstorm.Game.Spells
         /// Source-Aequivalent: <c>AuraSystem::getStatModifier</c>
         /// (<c>source_server/Server/src/Combat/AuraSystem.cpp</c>).
         /// </remarks>
-        public int GetStatModifierTotal(int statMask)
+        public int GetStatModifierTotal(long statMask)
         {
             return SumStatModifier(statMask, includeFlat: true, includePct: true);
         }
@@ -564,7 +645,7 @@ namespace Riftstorm.Game.Spells
         /// den prozentualen Modifikatoren konsumiert, damit die Reihenfolge
         /// <c>(Basis + Flat) * (1 + Pct/100)</c> sauber eingehalten wird.
         /// </summary>
-        public int GetStatFlatModifierTotal(int statMask)
+        public int GetStatFlatModifierTotal(long statMask)
         {
             return SumStatModifier(statMask, includeFlat: true, includePct: false);
         }
@@ -576,7 +657,7 @@ namespace Riftstorm.Game.Spells
         /// angefragte <paramref name="statMask"/> abdeckt. Gegenstueck zu
         /// <see cref="GetStatFlatModifierTotal"/>.
         /// </summary>
-        public int GetStatPctModifierTotal(int statMask)
+        public int GetStatPctModifierTotal(long statMask)
         {
             return SumStatModifier(statMask, includeFlat: false, includePct: true);
         }
@@ -589,14 +670,16 @@ namespace Riftstorm.Game.Spells
         /// stack-skalierten Wert.
         /// </summary>
         /// <param name="statMask">Stat-Bitmaske nach Source-Konvention
-        /// (<c>1 &lt;&lt; (StatId - 1)</c>).</param>
+        /// (<c>1L &lt;&lt; (StatId - 1)</c>). <c>long</c>, damit hohe StatIds
+        /// (z. B. <see cref="PlayerStats.StatId.ParryChanceBonus"/> = 37 &#8594;
+        /// Bit 2^36) nicht durch einen 32-Bit-Shift-Overflow verloren gehen.</param>
         /// <param name="includeFlat">True, um <see cref="AuraType.ModifyStat"/>
         /// (additive Punkte) einzurechnen.</param>
         /// <param name="includePct">True, um <see cref="AuraType.ModifyStatPct"/>
         /// (Prozentwerte) einzurechnen.</param>
-        private int SumStatModifier(int statMask, bool includeFlat, bool includePct)
+        private int SumStatModifier(long statMask, bool includeFlat, bool includePct)
         {
-            if (statMask == 0) { return 0; }
+            if (statMask == 0L) { return 0; }
             long sum = 0;
             foreach (Aura a in m_Auras)
             {
@@ -857,7 +940,18 @@ namespace Riftstorm.Game.Spells
             }
 
             ICombatUnit caster = ResolveAuraCaster(aura);
-            m_Owner.TakeDamage(baseValue, caster);
+            // Ueber den zentralen Schadenspfad (ApplyDamageInfo -> ApplyDamage)
+            // statt TakeDamage: so greift das SchoolImmunity-Gate in
+            // <see cref="UnitStats.ApplyDamage"/> auch fuer DoT-Ticks. Der
+            // Schul-Index kommt aus <see cref="Aura.School"/>.
+            DamageInfo info = new()
+            {
+                BaseDamage = baseValue,
+                FinalDamage = baseValue,
+                HitResult = HitResult.Hit,
+                School = (int)aura.School,
+            };
+            m_Owner.ApplyDamageInfo(in info, caster);
         }
 
         void ApplyPeriodicHeal(Aura aura, int baseValue)

@@ -1,3 +1,4 @@
+using System;
 using Riftstorm.Game.Combat;
 using Riftstorm.Game.Input;
 using Riftstorm.Game.Sprites;
@@ -67,9 +68,6 @@ namespace Riftstorm.Game.Movement
 
         private const int k_PredictionBufferSize = 64;
 
-        // FLARE-Konvention: 0=W, 1=SW, 2=S, 3=SE, 4=E, 5=NE, 6=N, 7=NW.
-        private const int k_DefaultDirection = 2;
-
         // -------------------------------------------------------------------------
         // Netzwerk-State
         // -------------------------------------------------------------------------
@@ -94,7 +92,7 @@ namespace Riftstorm.Game.Movement
         // Sonstiger State
         // -------------------------------------------------------------------------
 
-        private int m_LastDirection = k_DefaultDirection;
+        private UnitDirection m_LastDirection = UnitDirection.South;
         private Vector3 m_LastObservedPosition;
         // SmoothDamp-State fuer Remote-Interpolation. Wird auf 0 zurueckgesetzt nach
         // harten Teleports, damit kein "Schwung" aus dem alten Pfad uebrigbleibt.
@@ -111,12 +109,17 @@ namespace Riftstorm.Game.Movement
         private Vector3 m_ImpulseVelocity;
         private float m_ImpulseSecondsRemaining;
 
+        // Server-only: einmaliger Callback fuer das Impuls-Ende (Impact/Landung).
+        // Vom <see cref="SpellExecutor"/> registriert, um Charge-Debuffs (Stun)
+        // erst bei der Ankunft statt beim Cast-Start greifen zu lassen.
+        private Action m_OnImpulseComplete;
+
         /// <summary>
         /// Lesbar auf jedem Peer: wird waehrend eines aktiven Impulses true und
         /// vom <see cref="TickOwner"/>-Gate konsumiert, damit der Owner waehrend
         /// KnockBack/PullTo/Charge keine eigenen Move-Commands schickt.
         /// </summary>
-        private bool IsImpulseActive => m_ImpulseSecondsRemaining > 0f;
+        public bool IsImpulseActive => m_ImpulseSecondsRemaining > 0f;
 
         // -------------------------------------------------------------------------
         // Lifecycle
@@ -240,6 +243,14 @@ namespace Riftstorm.Game.Movement
                     // veralteten Pre-Impulse-Position und reisst den Spieler zurueck.
                     m_LastAcknowledgedSequence = m_NextSequenceNumber;
                 }
+                // Impact-Callback (server-only, einmalig): jetzt ist die Unit
+                // angekommen &#8212; Charge-Debuffs (Stun) greifen mit voller Dauer.
+                if (IsServer && m_OnImpulseComplete != null)
+                {
+                    Action onComplete = m_OnImpulseComplete;
+                    m_OnImpulseComplete = null;
+                    onComplete.Invoke();
+                }
             }
         }
 
@@ -274,6 +285,22 @@ namespace Riftstorm.Game.Movement
             m_ImpulseVelocity = velocity;
             m_ImpulseSecondsRemaining = durationSec;
             ApplyImpulseClientRpc(velocity, durationSec);
+        }
+
+        /// <summary>
+        /// Server-only: registriert einen einmaligen Callback fuer das Ende des
+        /// aktuell laufenden Impulses (Impact/Landung). Ohne aktiven Impuls ein
+        /// No-Op. Wird vom <see cref="SpellExecutor"/> fuer Impact-getimtes CC
+        /// (Charge-Stun) genutzt.
+        /// </summary>
+        /// <param name="onComplete">Beim Impuls-Ende ausgefuehrte Aktion.</param>
+        public void RegisterImpulseCompletion(Action onComplete)
+        {
+            if (!IsServer || onComplete == null || !IsImpulseActive)
+            {
+                return;
+            }
+            m_OnImpulseComplete += onComplete;
         }
 
         [ClientRpc]
@@ -632,7 +659,7 @@ namespace Riftstorm.Game.Movement
 
             if (moving)
             {
-                m_LastDirection = ComputeFlareDirection(visualDir.normalized);
+                m_LastDirection = UnitDirectionUtil.FromMovement(visualDir.normalized);
             }
 
             if (m_Character == null)
@@ -661,22 +688,12 @@ namespace Riftstorm.Game.Movement
                 Vector2 targetDir = new(toTarget.x, -toTarget.z);
                 if (targetDir.sqrMagnitude > 1e-6f)
                 {
-                    m_LastDirection = ComputeFlareDirection(targetDir.normalized);
+                    m_LastDirection = UnitDirectionUtil.FromMovement(targetDir.normalized);
                 }
             }
-            m_Character.SetDirection(m_LastDirection);
-        }
-
-        /// <summary>
-        /// Mappt einen 2D-Bewegungsvektor (x=rechts, y=oben) auf den FLARE-Direction-Index.
-        /// Reihenfolge: 0=W, 1=SW, 2=S, 3=SE, 4=E, 5=NE, 6=N, 7=NW.
-        /// </summary>
-        private static int ComputeFlareDirection(Vector2 dir)
-        {
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // E=0°, N=+90°
-            int octant = Mathf.RoundToInt(angle / 45f);
-            octant = ((octant % 8) + 8) % 8; // 0..7 mit 0=E, 2=N, 4=W, 6=S
-            return (octant + 4) & 7;          // shift auf 0=W, 2=S, 4=E, 6=N
+            // Einzige Konvertierstelle Gameplay -> Sprite: kanonische UnitDirection
+            // auf den FLARE-Atlas-Zeilenindex mappen (siehe UnitDirectionUtil).
+            m_Character.SetDirection(UnitDirectionUtil.ToFlareIndex(m_LastDirection));
         }
     }
 }

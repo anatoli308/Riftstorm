@@ -176,6 +176,15 @@ namespace Riftstorm.Gameplay.Combat
         /// <summary>Summe aller <c>ModifyDamageReceivedPct</c>-Auren auf dem Opfer.</summary>
         int DamageReceivedPctMod => 0;
 
+        /// <summary>
+        /// Wie <see cref="DamageReceivedPctMod"/>, aber gefiltert auf die
+        /// Schadens-Schule (<paramref name="schoolIndex"/>: 0 = Physical, 1 =
+        /// Fire, …). Auren mit Schul-Maske 0 gelten fuer alle Schulen, sonst
+        /// nur bei passendem Masken-Bit (z. B. Fortification Maske 1 = nur
+        /// Physical). Default reicht die schul-agnostische Summe durch.
+        /// </summary>
+        int GetDamageReceivedPctMod(int schoolIndex) => DamageReceivedPctMod;
+
         /// <summary>Summe aller <c>ModifyHealingDealtPct</c>-Auren auf dem Heiler.</summary>
         int HealingDealtPctMod => 0;
 

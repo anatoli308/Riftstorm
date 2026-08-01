@@ -204,10 +204,16 @@ namespace Riftstorm.Game.Spells
         /// </para>
         /// <list type="bullet">
         /// <item><description>
-        ///   Damage / Heal / Mana / Movement-Effekte (z.B.
-        ///   <see cref="SpellEffect.WeaponDamage"/>, <see cref="SpellEffect.SchoolDamage"/>,
-        ///   <see cref="SpellEffect.Heal"/>): <c>value = data2</c> (Basisbetrag,
-        ///   z.B. Aimed Shot data2=115 = 115% Waffenschaden).
+        ///   Damage- / Movement-Effekte (z.B.
+        ///   <see cref="SpellEffect.WeaponDamage"/>, <see cref="SpellEffect.SchoolDamage"/>):
+        ///   <c>value = data2</c> (Basisbetrag, z.B. Aimed Shot data2=115 =
+        ///   115% Waffenschaden).
+        /// </description></item>
+        /// <item><description>
+        ///   Prozentuale Heal-/Mana-Effekte (<see cref="SpellEffect.HealPct"/>,
+        ///   <see cref="SpellEffect.RestoreManaPct"/>): <c>value = data1</c>
+        ///   (z.B. Desperate Prayer data1=38 = 38% Leben) — abweichend von den
+        ///   Damage-Effekten, konsistent mit dem data1-Fallback.
         /// </description></item>
         /// <item><description>
         ///   Aura-Effekte (<see cref="SpellEffect.ApplyAura"/>,
@@ -221,9 +227,25 @@ namespace Riftstorm.Game.Spells
         /// </remarks>
         static int EvaluateEffectFormula(SpellTemplateEffect eff, ICombatUnit caster)
         {
-            int baseValueSeed = IsApplyAura(eff.Effect)
-                ? GetAuraBaseValueSeed(eff)
-                : (int)eff.Data2;
+            int baseValueSeed;
+            if (IsApplyAura(eff.Effect))
+            {
+                baseValueSeed = GetAuraBaseValueSeed(eff);
+            }
+            else if (eff.Effect == SpellEffect.HealPct || eff.Effect == SpellEffect.RestoreManaPct)
+            {
+                // Prozentuale Heal-/Mana-Restore-Effekte tragen ihren Basisbetrag
+                // in data1 (z. B. Desperate Prayer data1=38 = 38% Leben,
+                // Touch of Salvation data1=100 = 100%), NICHT in data2 wie die
+                // Damage-Effekte. Ohne scale_formula liefert der data1-Fallback
+                // unten denselben Wert; mit Formel (z. B. "value+(splvl*2)")
+                // muss der value-Token daher ebenfalls aus data1 geseedet werden.
+                baseValueSeed = (int)eff.Data1;
+            }
+            else
+            {
+                baseValueSeed = (int)eff.Data2;
+            }
 
             if (!string.IsNullOrEmpty(eff.ScaleFormula))
             {

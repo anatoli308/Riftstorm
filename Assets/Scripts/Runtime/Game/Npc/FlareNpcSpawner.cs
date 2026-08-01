@@ -281,6 +281,19 @@ namespace Riftstorm.Game.Npc
             character.SetDirection(m_InitialFlareDirection);
             m_Character = character;
 
+            // Hover-Feedback (roter Sprite-Tint + Attack-Cursor) muss auf NPCs
+            // identisch zu Spielern funktionieren. PlayerTargetingInput sucht beim
+            // Hover per GetComponentInChildren<HoverHighlight>() — ohne die Komponente
+            // bliebe der NPC ungefaerbt UND der Cursor im Default-Zustand, weil beide
+            // Effekte am gefundenen HoverHighlight haengen. Auto-add hier (nicht am
+            // Prefab), weil die FLARE-SpriteRenderer erst in BuildAsync entstehen;
+            // RefreshRenderers() baut den Renderer-Cache nach dem Sprite-Aufbau neu auf.
+            if (!TryGetComponent<HoverHighlight>(out var hover))
+            {
+                hover = gameObject.AddComponent<HoverHighlight>();
+            }
+            hover.RefreshRenderers();
+
             // FLARE-Character wird async erzeugt. Controller/CombatVisuals haben den
             // beim Awake noch nicht gesehen — explizit wire-uppen, sonst bleiben sie
             // stumm.

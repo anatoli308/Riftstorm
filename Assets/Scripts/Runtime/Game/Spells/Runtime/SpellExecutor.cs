@@ -213,6 +213,27 @@ namespace Riftstorm.Game.Spells
             return IsSingleUnitTargetType(primary.TargetType);
         }
 
+        /// <summary>
+        /// True, wenn irgendein aktiver Effekt-Slot des Spells ein
+        /// <see cref="SpellEffect.Charge"/>-Dash ist. Wird genutzt, um
+        /// begleitende Debuff-Auren (z. B. Stun) auf die Charge-Landung zu
+        /// verschieben statt sie beim Cast-Start zu applizieren.
+        /// </summary>
+        static bool SpellHasChargeEffect(SpellTemplate spell)
+        {
+            if (spell == null) { return false; }
+            int effectCount = spell.EffectCount;
+            for (int slot = 1; slot <= effectCount; slot++)
+            {
+                SpellTemplateEffect e = spell.GetEffect(slot);
+                if (e.IsActive && e.Effect == SpellEffect.Charge)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         static bool IsSingleUnitTargetType(SpellTargetType t)
             => t == SpellTargetType.UnitFriendly
             || t == SpellTargetType.UnitHostile
@@ -257,7 +278,7 @@ namespace Riftstorm.Game.Spells
         /// <list type="bullet">
         ///   <item><description>Single-Target-Typen (UnitFriendly/UnitHostile/...): liefert <paramref name="primary"/>.</description></item>
         ///   <item><description>Self/None: liefert <paramref name="caster"/>.</description></item>
-        ///   <item><description>UnitAreaSrc*: OverlapSphere am Caster-Pos mit <see cref="SpellTemplateEffect.Radius"/> (Source-px → m).</description></item>
+        ///   <item><description>UnitAreaSrc*: OverlapSphere am Caster-Pos mit <see cref="SpellTemplateEffect.Radius"/> (Tiles → m).</description></item>
         ///   <item><description>UnitAreaDst*: OverlapSphere an primaerem Ziel; faellt auf Caster zurueck falls null.</description></item>
         /// </list>
         /// Faction-Filter (friendly/hostile) per <see cref="ICombatUnit.FactionId"/>.
@@ -306,7 +327,12 @@ namespace Riftstorm.Game.Spells
                 if (center == null) { return; }
                 centerPos = center.Position;
             }
-            float radiusM = SpellUtils.RangeToMeters(eff.Radius);
+            // Radius wird in den Templates als FLARE-Tile-Distanz gefuehrt
+            // (kleine Ganzzahlen, z. B. Satanic Madness radius=5 => 5 m, grosse
+            // Novas radius=30 => 30 m), NICHT in Pixel-Range wie <c>spell.Range</c>.
+            // Deshalb Tile->Meter (1:1) statt der Pixel/64-Umrechnung — sonst
+            // schrumpft z. B. radius=5 auf 0,08 m und die AoE trifft niemanden.
+            float radiusM = SpellUtils.TilesToMeters(eff.Radius);
 
             int hits = Physics.OverlapSphereNonAlloc(
                 centerPos,
@@ -470,7 +496,9 @@ namespace Riftstorm.Game.Spells
                     bool useRangedWeapon = weaponPercent && spell.RequiredEquipment == 12L;
 
                     DamageInfo info = CombatFormulas.CalculateSpellDamage(
-                        attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent, useRangedWeapon);
+                        attackerStats, victimStats, effValue, isMagical, resistValue, weaponPercent, useRangedWeapon,
+                        damageSchoolIndex: (int)damageSchool);
+                    info.School = (int)damageSchool;
                     // ApplyDamageInfo: erhaelt Crit/Resist-Klassifikation und
                     // fanoutet auch geschluckte/voll-resistete Treffer (0 Schaden)
                     // als Floating-Text. TakeDamage wuerde HitResult auf Hit
@@ -529,6 +557,27 @@ namespace Riftstorm.Game.Spells
                     if ((AuraType)eff.Data1 == AuraType.InflictMechanic
                         && target.Auras.HasMechanicImmunity((Mechanic)eff.Data2))
                     {
+                        return;
+                    }
+                    // Impact-Timing: Traegt der Spell einen Charge-Dash (der
+                    // Caster ist gerade im Impuls) und richtet sich dieser Debuff
+                    // gegen ein FREMDES Ziel, greift die Aura erst bei der Landung.
+                    // Sonst laeuft z. B. ein 800ms-Stun schon waehrend des ~0.35s
+                    // Anlaufs ab und ist bei der Ankunft fast verbraucht.
+                    if (caster != null && !ReferenceEquals(caster, target)
+                        && caster.IsImpulseActive && SpellHasChargeEffect(spell))
+                    {
+                        ICombatUnit deferredCaster = caster;
+                        ICombatUnit deferredTarget = target;
+                        SpellTemplate deferredSpell = spell;
+                        int deferredIndex = eff.Index;
+                        caster.RegisterImpulseCompletion(() =>
+                        {
+                            if (deferredTarget.Auras != null)
+                            {
+                                deferredTarget.Auras.ApplyAuraFromSpell(deferredCaster, deferredSpell, deferredIndex);
+                            }
+                        });
                         return;
                     }
                     target.Auras.ApplyAuraFromSpell(caster, spell, eff.Index);

@@ -30,5 +30,15 @@ namespace Riftstorm.Gameplay.Combat
 
         /// <summary>True, wenn dieser Hit das Opfer getötet hat (server-only ausgewertet).</summary>
         public bool KilledTarget;
+
+        /// <summary>
+        /// Schadens-Schule als Index (0 = Physical, 1 = Fire, …). Bewusst ein
+        /// plain <c>int</c>, damit die Gameplay-Assembly keine Referenz auf das
+        /// <c>SpellSchool</c>-Enum (Game-Assembly) braucht. Wird vom zentralen
+        /// Immunity-Gate in <c>UnitStats.ApplyDamage</c> gegen
+        /// <c>SchoolImmunity</c>-Auren geprueft — damit auch DoTs geblockt werden.
+        /// Default 0 (Physical) passt fuer Melee/Waffenschaden ohne Zusatzsetzen.
+        /// </summary>
+        public int School;
     }
 }

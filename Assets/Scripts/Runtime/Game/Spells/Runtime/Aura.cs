@@ -65,6 +65,14 @@ namespace Riftstorm.Game.Spells
         public ulong CasterGuid;
 
         /// <summary>
+        /// Schadens-Schule des Quell-Spells (fuer periodische Schadens-Auren/DoTs).
+        /// Wird beim Applizieren aus <see cref="SpellTemplate.MagicRollSchool"/>
+        /// uebernommen und beim Tick an den Schadenspfad weitergereicht, damit
+        /// <see cref="AuraType.SchoolImmunity"/> DoTs korrekt blockt.
+        /// </summary>
+        public SpellSchool School;
+
+        /// <summary>
         /// Laufzeit-Cache der gecasteten Unit fuer Periodic-Ticks. Vermeidet
         /// teure NetworkObject-/Component-Lookups bei jedem Tick.
         /// </summary>

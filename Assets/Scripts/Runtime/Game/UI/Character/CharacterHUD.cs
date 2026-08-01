@@ -690,7 +690,7 @@ namespace Riftstorm.Game.UI.Character
             sb.Append("INT  "); AppendModifiedStat(sb, StatId.Intelligence); sb.Append('\n');
             sb.Append("WIL  "); AppendModifiedStat(sb, StatId.Willpower); sb.Append('\n');
             sb.Append("FRT  ").Append(m_BoundStats.Fortitude).Append('\n');
-            sb.Append("CRG  ").Append(m_BoundStats.Courage).Append('\n');
+            sb.Append("CRG  "); AppendModifiedStat(sb, StatId.Courage); sb.Append('\n');
             sb.Append('\n');
 
             // Combat Stats: Armor + Waffenschaden (Melee + Ranged getrennt wie im Original).

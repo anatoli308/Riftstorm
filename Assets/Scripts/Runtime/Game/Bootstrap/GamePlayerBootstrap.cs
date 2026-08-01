@@ -124,7 +124,8 @@ namespace Riftstorm.Game.Bootstrap
             character.RegisterLayer(rangedLayer);
 
             character.Play(m_InitialAnimation, true);
-            character.SetDirection(2); // FLARE 2 = Süd, Standard-Blickrichtung Topdown.
+            // Kanonische Sued-Blickrichtung (Topdown-Default); zentrale Konvertierung nach FLARE.
+            character.SetDirection(UnitDirectionUtil.ToFlareIndex(UnitDirection.South));
 
             // PlayerMovement liegt direkt am Root (NetworkBehaviour-Host). Visuals injizieren.
             if (TryGetComponent<PlayerMovement>(out var movement))

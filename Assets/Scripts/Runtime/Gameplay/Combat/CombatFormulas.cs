@@ -127,6 +127,21 @@ namespace Riftstorm.Gameplay.Combat
                 return HitResult.Block;
             }
 
+            // Glancing Blow: gegen deutlich hoehere Ziele (levelDiff < -2, d.h. Ziel
+            // 3+ Level ueber dem Angreifer) streift der Schlag nur. Source-Parity zu
+            // CombatFormulas.cpp (rollMeleeHit): glanceChance = (-levelDiff - 2) * 10,
+            // also 10 % pro Level jenseits der ersten 2. Der Schaden wird in
+            // CalculateMeleeDamage auf GlancingMultiplier (0.7) reduziert — ohne
+            // diesen Roll war der Multiplier toter Code.
+            if (levelDiff < -2)
+            {
+                int glanceChance = (-levelDiff - 2) * 10;
+                if (Roll100() < glanceChance)
+                {
+                    return HitResult.GlancingBlow;
+                }
+            }
+
             // Angreifer mit höherem Level crittet häufiger; Melee-Schul-Crit additiv.
             int critChance = Mathf.Clamp(BaseCritChance + attacker.MeleeCritChance + levelDiff, 0, 95);
             if (Roll100() < critChance)
@@ -245,7 +260,8 @@ namespace Riftstorm.Gameplay.Combat
             };
 
             // 4b) Aura-Modifier (ModifyDamageDealtPct / ModifyDamageReceivedPct).
-            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim);
+            //     Melee ist immer physisch (Schul-Index 0).
+            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim, 0);
 
             // 5) Floor.
             finalDamage = Mathf.Max(MinDamage, finalDamage);
@@ -381,7 +397,8 @@ namespace Riftstorm.Gameplay.Combat
             bool weaponPercent = false,
             bool useRangedWeapon = false,
             bool useMeleeAvoidance = false,
-            int attackerHitBonus = 0)
+            int attackerHitBonus = 0,
+            int damageSchoolIndex = 0)
         {
             HitResult hit = useMeleeAvoidance
                 ? RollMeleeHit(attacker, victim, attackerHitBonus)
@@ -449,7 +466,7 @@ namespace Riftstorm.Gameplay.Combat
             };
 
             // 4b) Aura-Modifier (ModifyDamageDealtPct / ModifyDamageReceivedPct).
-            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim);
+            finalDamage = ApplyDamageAuraModifiers(finalDamage, attacker, victim, damageSchoolIndex);
 
             // 5) Floor.
             finalDamage = Mathf.Max(MinDamage, finalDamage);
@@ -500,14 +517,18 @@ namespace Riftstorm.Gameplay.Combat
         /// <c>ModifyDamageReceivedPct</c> (Opfer) multiplikativ an. Beide
         /// Modifier sind ganzzahlige Prozentwerte (z.B. <c>+25</c> = +25 %).
         /// Stacking ist <em>multiplikativ</em> (Caster-Mod × Opfer-Mod), wie
-        /// im C++-Vorbild (<c>AuraSystem::getAuraModifier</c>).
+        /// im C++-Vorbild (<c>AuraSystem::getAuraModifier</c>). Der
+        /// <paramref name="damageSchoolIndex"/> filtert die
+        /// <c>ModifyDamageReceivedPct</c>-Auren des Opfers schul-genau (0 =
+        /// Physical), damit z. B. Fortification (Maske 1) nur physischen Schaden
+        /// reduziert.
         /// </summary>
-        public static int ApplyDamageAuraModifiers(int damage, IUnitStats attacker, IUnitStats victim)
+        public static int ApplyDamageAuraModifiers(int damage, IUnitStats attacker, IUnitStats victim, int damageSchoolIndex)
         {
             if (damage <= 0) { return damage; }
             float mul = 1f;
             if (attacker != null) { mul *= 1f + (attacker.DamageDealtPctMod / 100f); }
-            if (victim != null) { mul *= 1f + (victim.DamageReceivedPctMod / 100f); }
+            if (victim != null) { mul *= 1f + (victim.GetDamageReceivedPctMod(damageSchoolIndex) / 100f); }
             if (mul < 0f) { mul = 0f; }
             return Mathf.RoundToInt(damage * mul);
         }

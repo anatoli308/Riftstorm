@@ -33,6 +33,9 @@ Der Unterschied ist: Der Service Locator sollte deine Engine zusammenhalten, nic
 - **Fail Fast**: Validierung früh durchführen; klare Error-Messages; Guard Clauses am Anfang von Methoden.
 - **Composition over Inheritance**: Bevorzuge Komposition (Service Decomposition) statt tiefe Vererbungshierarchien.
 - **Immutability where possible**: Readonly Fields/Properties wo sinnvoll; private Setter für interne State-Änderungen; keine unerwarteten Side Effects.
+- **Law of Demeter (kein Train-Wreck)**: Keine tiefen Zugriffsketten wie `Singleton.ManagerA.SubB.DoC()`. Objekte reden nur mit direkten "Freunden". Statt durch fremde Objektgraphen zu greifen, gezielte Accessor-/Delegations-Methoden bereitstellen (z. B. `entry.TryGetApprovedName(clientId, out name)` statt `entry.ConnectionManager.TryGetApprovedName(...)`).
+- **Naming Conventions**: Private Instanzfelder `m_PascalCase`, private statische Felder `s_PascalCase`, Konstanten `PascalCase` oder `SCREAMING_SNAKE` konsistent im jeweiligen Kontext; öffentliche Member/Typen `PascalCase`; lokale Variablen/Parameter `camelCase`; Interfaces mit `I`-Präfix. Keine Abkürzungen außer etablierte Domänenbegriffe. Methodennamen sind Verben, Properties Substantive.
+- **Deterministic Disposal**: `IDisposable`/`CancellationTokenSource`/Subscriptions haben einen klaren Owner und Lifecycle. `CancellationTokenSource` in `OnDisable`/`OnDestroy` canceln + disposen; Event-/NetworkVariable-Subscriptions symmetrisch zum Abo wieder abmelden. Kein Verlassen auf den GC für Cleanup von nativen/Netcode-Ressourcen.
 
 ## Project Architecture
 - **Core Movement**: Server-authoritative Topdown-Bewegung mit Client Prediction & Reconciliation; manuelle Physik bevorzugt für deterministisches Verhalten.
@@ -129,6 +132,9 @@ Der Unterschied ist: Der Service Locator sollte deine Engine zusammenhalten, nic
 - Classes exceeding a single responsibility must be decomposed.
 - Managers orchestrate systems but do not implement low-level logic directly.
 - Complex systems should be decomposed into focused services.
+- **Konkrete Größen-Heuristik**: Ziel < 400 Zeilen pro Klasse/Datei. Ab ~500 Zeilen ist Decomposition zu prüfen, ab ~800 Zeilen ist sie verpflichtend. Eine Klasse hat genau eine Verantwortung — sobald sich "und" in die Beschreibung schleicht (z. B. "AI *und* Movement *und* Threat"), aufteilen.
+- **Decomposition-Muster**: Große Manager/Controller via Service Decomposition zerlegen (Referenz: `PlayerSkinManager` → Loader + Applier). Beispiele im aktuellen Code, die aufzuteilen sind: `PlayerCombat` (Combat-FSM / Cast-Logik / VFX-Fanout / RPCs), `NpcController` (AI-FSM / Movement / SpellSelector / Threat / Visual-Replikation), `UnitStats` (reiner Daten-Container vs. Aura-Snapshots vs. Threat-Bridge).
+- MonoBehaviour-Komponenten bleiben dünn: State/Netcode-Glue in der Komponente, Business-Logik in Pure Services oder fokussierten Sub-Systemen.
 
 ## Memory & Garbage Collection
 

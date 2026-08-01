@@ -36,21 +36,20 @@ namespace Riftstorm.Game.Player
         [SerializeField] private MonoBehaviour m_IdentitySource;
         [Tooltip("Optional. Wenn gesetzt, wird die Position dieses Transforms direkt als Welt-Anker f\u00fcr " +
                  "das Nametag-Label verwendet (\u00fcblicherweise ein leeres Child 'NameTagAnchor' \u00fcber dem Kopf). " +
-                 "Wenn leer, wird der Anker fest aus Root-Transform + HeadHeight gebildet.")]
+                 "Wenn leer, wird die Root-Transform als Basis genutzt.")]
         [SerializeField] private Transform m_Anchor;
-        [Tooltip("Welt-H\u00f6he in Metern \u00fcber der Root-Transform, an der das Label sitzen soll, wenn kein " +
-                 "expliziter Anker gesetzt ist. Bewusst KEIN Renderer-Bounds-Lookup, weil FLARE-Sprite-Layer " +
-                 "flach auf der XZ-Ebene liegen und ihre Bounds pro Animationsframe wandern " +
-                 "(Waffe/Buckler ragen mal raus). Im Inspector pro Charaktergr\u00f6\u00dfe tunbar.")]
-        [SerializeField] private float m_HeadHeight = 1.2f;
-        [Tooltip("Zus\u00e4tzlicher Offset (Welt-Koordinaten) auf den Anker. " +
-                 "Wird zur Laufzeit IGNORIERT \u2014 wir nutzen \u00fcberall den festen Offset (0, -2, 0.8), " +
-                 "damit alte Prefab-Werte den Default nicht mehr \u00fcberschreiben k\u00f6nnen.")]
-        [SerializeField] private Vector3 m_WorldOffset = new(0f, -2f, 0.8f);
 
-        /// <summary>Fester Offset f&#252;r alle Nametags. Bewusst NICHT serialisiert, damit
-        /// Anpassungen in Code nicht von alten Prefab-Werten &#252;berschrieben werden.</summary>
-        private static readonly Vector3 s_FixedWorldOffset = new(0f, -2f, 0.8f);
+        /// <summary>
+        /// Versatz (in Metern) entlang der KAMERA-Screen-Up-Richtung, mit dem das
+        /// Label &#252;ber den Kopf gehoben wird. Bewusst KEIN fester Welt-Offset:
+        /// Ein Welt-Offset mit Y-Anteil projiziert unter der Perspektiv-Kamera nur
+        /// im Bildzentrum stabil (dort h&#228;lt die Follow-Cam den Spieler). Off-Center-
+        /// Einheiten wie NPCs w&#252;rden dadurch radial vom Kopf wegdriften. Der Wert
+        /// reproduziert den bisherigen Player-Look (Netto-Screen-Up war zuvor 0.8).
+        /// Bewusst NICHT serialisiert, damit alte Prefab-Werte den Default nicht
+        /// &#252;berschreiben k&#246;nnen.
+        /// </summary>
+        private const float k_ScreenUpWorldOffset = 0.8f;
         [SerializeField] private Color m_Color = Color.white;
         [SerializeField] private int m_FontSize = 14;
         [SerializeField] private float m_MaxDistance = 50f;
@@ -286,21 +285,18 @@ namespace Riftstorm.Game.Player
                 return;
             }
 
-            // Fester Offset \u2014 ignoriert serialisierte Prefab-Werte (siehe s_FixedWorldOffset).
-            Vector3 worldPos;
-            if (m_Anchor != null)
-            {
-                worldPos = m_Anchor.position + s_FixedWorldOffset;
-            }
-            else
-            {
-                // Fester Welt-Y-Offset \u00fcber der Root-Transform. Bewusst KEIN
-                // Renderer-Bounds-Lookup: FLARE-Layer liegen flach auf der XZ-Ebene
-                // und ihre Bounds wandern pro Animationsframe.
-                worldPos = transform.position
-                           + (Vector3.up * m_HeadHeight)
-                           + s_FixedWorldOffset;
-            }
+            // Welt-Anker: Basis-Punkt der Einheit + Versatz entlang der KAMERA-
+            // Screen-Up-Richtung (cam.transform.up). Bewusst KEIN fester Welt-Offset
+            // und KEIN Welt-Y-Offset: Ein fester Welt-Offset mit Y-Anteil projiziert
+            // unter der Perspektiv-Kamera nur im Bildzentrum stabil \u2014 dort h\u00e4lt die
+            // Follow-Cam den Spieler. Off-Center-Einheiten (NPCs) driften dadurch
+            // radial vom Kopf weg ("schwimmen"). cam.transform.up zeigt immer in
+            // Screen-Up-Richtung, sodass das Label f\u00fcr JEDE Einheit an gleicher
+            // Bildschirm-Position \u00fcber dem Kopf sitzt \u2014 unabh\u00e4ngig von ihrer Lage
+            // zur Kamera. Bewusst KEIN Renderer-Bounds-Lookup: FLARE-Layer liegen
+            // flach auf der XZ-Ebene und ihre Bounds wandern pro Animationsframe.
+            Vector3 basePos = m_Anchor != null ? m_Anchor.position : transform.position;
+            Vector3 worldPos = basePos + (cam.transform.up * k_ScreenUpWorldOffset);
             Vector3 screen = cam.WorldToScreenPoint(worldPos);
             if (screen.z <= 0f)
             {
