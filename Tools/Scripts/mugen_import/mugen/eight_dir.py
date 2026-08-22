@@ -154,8 +154,8 @@ def _build_direction(
                 skipped_before_loop += 1
             continue
 
-        key = f"{f.group}_{f.image}"
-        if key not in atlas_keys:
+        key = _resolve_sprite_key(f.group, f.image, atlas_keys)
+        if key is None:
             if idx < action.loop_start:
                 skipped_before_loop += 1
             continue
@@ -198,6 +198,30 @@ def _build_direction(
         frames=out_frames,
         loop_start=max(action.loop_start - skipped_before_loop, 0),
     )
+
+
+def _resolve_sprite_key(group: int, image: int, atlas_keys: set[str]) -> str | None:
+    """Sprite-Schluessel eines AIR-Frames, mit Korrektur fuer 16-Bit-Ueberlauf.
+
+    Gruppen- und Bildnummern werden je nach Editor mal vorzeichenbehaftet, mal
+    vorzeichenlos in 16 Bit abgelegt: Gruppe 36841 steht als -28695 in der .air,
+    Gruppe 40000 dagegen als -25536 in der .sff. Ohne beide Richtungen faellt der
+    Frame durch und die ganze Action verschwindet.
+    """
+    for candidate_group in _wrap_candidates(group):
+        for candidate_image in _wrap_candidates(image):
+            key = f"{candidate_group}_{candidate_image}"
+            if key in atlas_keys:
+                return key
+    return None
+
+
+def _wrap_candidates(value: int) -> tuple[int, ...]:
+    if value < 0:
+        return (value, value + 65536)
+    if value > 32767:
+        return (value, value - 65536)
+    return (value,)
 
 
 def save_animations_json(

@@ -2,7 +2,7 @@
 
 Usage:
     python mugen_import.py <char_folder> [--out <dir>] [--no-individual-pngs]
-                           [--max-width 4096] [--padding 2]
+                           [--max-width 8192] [--padding 2]
                            [--no-palettes] [--no-states] [--no-sounds]
 
 Example:
@@ -10,8 +10,8 @@ Example:
 
 Produces in <out>:
     char.json           - character metadata (from .def)
-    atlas.png           - packed sprite atlas
-    atlas.sprites.json  - per-sprite rects + pivots
+    atlas.png[, atlas_1.png ...] - packed sprite atlas page(s) (16384 px cap)
+    atlas.sprites.json  - per-sprite rects + pivots + page index
     animations.json     - 8-direction animation lists (incl. Clsn boxes)
     sprites/<g>_<i>.png - (optional) individual sprite PNGs for debugging
     palettes.json       - all Pal1..Pal12 .act color tables
@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from typing import Optional
 
@@ -35,9 +36,19 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _THIS_DIR not in sys.path:
     sys.path.insert(0, _THIS_DIR)
 
+# Char names/authors are frequently Japanese; cp1252 stdout would abort the import.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
 from mugen.def_parser import parse_def, CharDef
-from mugen.sff_v1 import read_sff_v1
-from mugen.air import parse_air
+from mugen.air import parse_air, _read_text
+from mugen.common_state import find_common_state
+
+# Steht dem Importer als Engine-Standard zur Verfuegung, wenn ein Charakter keine
+# eigene StCommon mitbringt — MUGEN laedt sie in diesem Fall aus seinem data/-Ordner.
+_DEFAULT_COMMON_STATE = os.path.join(_THIS_DIR, "mugen_common", "common1.cns")
+from mugen.sff import read_sff, sff_version
 from mugen.atlas import pack_sprites, save_atlas
 from mugen.eight_dir import build_8dir, save_animations_json
 from mugen.palette import discover_palettes, Palette
@@ -53,7 +64,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     parser.add_argument("char_folder", help="Path to a MUGEN character folder (containing the .def)")
     parser.add_argument("--out", default=None, help="Output directory (default: ./out/<char>)")
-    parser.add_argument("--max-width", type=int, default=4096, help="Atlas max width in pixels")
+    parser.add_argument("--max-width", type=int, default=8192,
+                        help="Atlas page max width in pixels (clamped to 16384). "
+                             "Rows fill this width, then stack; pages spill vertically.")
     parser.add_argument("--padding", type=int, default=2, help="Padding between sprites in atlas")
     parser.add_argument("--transparent-index", type=int, default=0,
                         help="Palette index treated as transparent (MUGEN default: 0)")
@@ -64,6 +77,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--no-sounds", action="store_true", help="Skip .snd extraction")
     parser.add_argument("--def-file", default=None,
                         help="Explicit .def filename (otherwise auto-detected in folder)")
+    parser.add_argument("--common-state", default=None,
+                        help="Path to a common1.cns to use when the char's StCommon is missing "
+                             "(MUGEN normally supplies it from the engine's data/ folder)")
     args = parser.parse_args(argv)
 
     char_folder = os.path.abspath(args.char_folder)
@@ -75,6 +91,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     if def_path is None:
         print(f"ERROR: no .def file found in {char_folder}", file=sys.stderr)
         return 2
+
+    _warn_other_defs(char_folder, def_path, args.def_file)
 
     print(f"[mugen-import] Reading {def_path}")
     cd: CharDef = parse_def(def_path)
@@ -96,8 +114,12 @@ def main(argv: Optional[list[str]] = None) -> int:
     os.makedirs(out_dir, exist_ok=True)
 
     # --- sprites + animations ------------------------------------------------
-    print(f"[mugen-import] Parsing SFF v1: {sff_path}")
-    sff = read_sff_v1(sff_path)
+    try:
+        print(f"[mugen-import] Parsing SFF v{sff_version(sff_path)}: {sff_path}")
+        sff = read_sff(sff_path)
+    except ValueError as ex:
+        print(f"[mugen-import] ERROR: {ex}", file=sys.stderr)
+        return 2
     print(f"[mugen-import]   sprites: {len(sff.sprites)} (groups={sff.num_groups}, images={sff.num_images})")
 
     print(f"[mugen-import] Parsing AIR: {air_path}")
@@ -116,16 +138,19 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(f"[mugen-import]   wrote {len(sff.sprites)} individual PNGs to {sprites_dir}")
 
     print("[mugen-import] Packing atlas...")
-    atlas = pack_sprites(
+    atlas_pages = pack_sprites(
         sff.sprites,
         max_width=args.max_width,
         padding=args.padding,
         transparent_index=args.transparent_index,
     )
-    png_path, sprites_json = save_atlas(atlas, out_dir)
-    print(f"[mugen-import]   atlas: {atlas.width}x{atlas.height} -> {png_path}")
+    png_paths, sprites_json = save_atlas(atlas_pages, out_dir)
+    total_sprites = sum(len(p.sprites) for p in atlas_pages)
+    dims = ", ".join(f"{p.width}x{p.height}" for p in atlas_pages)
+    print(f"[mugen-import]   atlas: {len(atlas_pages)} page(s) [{dims}], "
+          f"{total_sprites} sprites -> {os.path.dirname(png_paths[0]) if png_paths else out_dir}")
 
-    atlas_keys = {s.key for s in atlas.sprites}
+    atlas_keys = {s.key for page in atlas_pages for s in page.sprites}
     print("[mugen-import] Building 8-direction animations...")
     exported = build_8dir(actions, atlas_keys)
     anim_json = save_animations_json(exported, out_dir)
@@ -152,17 +177,18 @@ def main(argv: Optional[list[str]] = None) -> int:
     # --- state machine (multi-file) -----------------------------------------
     states_files: list[str] = []
     if not args.no_states:
-        # The main CNS may also contain Statedef blocks (old MUGEN style).
-        if cns_path:
-            states_files.append(cns_path)
-        for rel in cd.state_files:
-            p = _resolve_in_char(char_folder, rel)
-            if p:
+        # The main CNS may also contain Statedef blocks (old MUGEN style), and it
+        # is frequently also listed as St -- so collect uniquely, in load order.
+        candidates = [cns_path] if cns_path else []
+        candidates += [_resolve_in_char(char_folder, rel) for rel in cd.state_files]
+        candidates.append(_resolve_common_state(char_folder, cd.common_state_file, args.common_state))
+        seen: set[str] = set()
+        for p in candidates:
+            if p and os.path.normcase(p) not in seen:
+                seen.add(os.path.normcase(p))
                 states_files.append(p)
-        if cd.common_state_file:
-            p = _resolve_in_char(char_folder, cd.common_state_file)
-            if p:
-                states_files.append(p)
+        _warn_missing_refs(char_folder, cd)
+        _warn_unreferenced_states(char_folder, states_files)
 
     if states_files:
         print(f"[mugen-import] Parsing state machine across {len(states_files)} file(s)...")
@@ -277,6 +303,97 @@ def _locate_def(folder: str, explicit: Optional[str]) -> Optional[str]:
         if name.lower().endswith(".def"):
             return os.path.join(folder, name)
     return None
+
+
+def _warn_other_defs(folder: str, chosen: str, explicit: Optional[str]) -> None:
+    """Point out sibling .def variants; they can load far richer state sets."""
+    if explicit:
+        return
+    others = [
+        n for n in sorted(os.listdir(folder))
+        if n.lower().endswith(".def") and n != os.path.basename(chosen)
+    ]
+    if others:
+        print(f"[mugen-import]   NOTE: {len(others)} further .def variant(s) present: {', '.join(others)}")
+        print("[mugen-import]         Pick one with --def-file if this build should be imported instead.")
+
+
+_STATE_EXTS = (".st", ".cns", ".txt")
+_STATEDEF_RE = re.compile(r"(?im)^\s*\[\s*statedef")
+
+
+def _resolve_common_state(char_folder: str, rel: str, override: Optional[str]) -> Optional[str]:
+    """Findet die StCommon-Datei — auch wenn sie anders heisst als im .def angegeben.
+
+    Reihenfolge: der im ``.def`` genannte Pfad, dann eine Inhaltssuche im gesamten
+    Charakterordner (viele Charaktere benennen die Datei um oder verschieben sie in
+    einen Unterordner), dann ein per ``--common-state`` uebergebener Pfad und
+    zuletzt die mitgelieferte Standarddatei — genau wie MUGEN sie aus seinem
+    ``data/``-Ordner nachlaedt.
+    """
+    p = _resolve_in_char(char_folder, rel)
+    if p:
+        return p
+
+    found = find_common_state(char_folder)
+    if found:
+        print(f"[mugen-import]   StCommon '{rel or '(nicht angegeben)'}' nicht unter diesem Namen - "
+              f"per Inhalt gefunden: {os.path.relpath(found, char_folder)}")
+        return found
+
+    if override and os.path.isfile(override):
+        print(f"[mugen-import]   StCommon '{rel}' not in char folder - using {override}")
+        return override
+
+    if os.path.isfile(_DEFAULT_COMMON_STATE):
+        print(f"[mugen-import]   StCommon '{rel or '(nicht angegeben)'}' fehlt - "
+              f"Engine-Standard {os.path.basename(_DEFAULT_COMMON_STATE)} wird geladen "
+              f"(MUGEN holt sie ebenso aus data/).")
+        return _DEFAULT_COMMON_STATE
+
+    if rel:
+        print(f"[mugen-import]   WARNING: StCommon '{rel}' is missing (MUGEN would load it from the")
+        print("[mugen-import]            engine's data/ folder). Common states (walk, jump, hit")
+        print("[mugen-import]            reactions, get-up) will be absent. Pass --common-state to supply it.")
+    return None
+
+
+def _warn_missing_refs(char_folder: str, cd: CharDef) -> None:
+    """Report .def entries that point at files which do not exist."""
+    missing = [
+        rel for rel in cd.state_files
+        if rel and not _resolve_in_char(char_folder, rel)
+    ]
+    if missing:
+        print(f"[mugen-import]   WARNING: {len(missing)} state file(s) referenced but not found: {', '.join(missing)}")
+
+
+def _warn_unreferenced_states(char_folder: str, used: list[str]) -> None:
+    """Report state-bearing files the .def never loads (leftovers, backups, alt builds).
+
+    They are deliberately NOT imported -- MUGEN only reads what the .def lists --
+    but a silent skip would hide genuine .def mistakes.
+    """
+    used_norm = {os.path.normcase(p) for p in used}
+    stray: list[str] = []
+    for root, _dirs, names in os.walk(char_folder):
+        for name in names:
+            if not name.lower().endswith(_STATE_EXTS):
+                continue
+            path = os.path.join(root, name)
+            if os.path.normcase(path) in used_norm:
+                continue
+            try:
+                text = _read_text(path)
+            except Exception:
+                continue
+            count = len(_STATEDEF_RE.findall(text))
+            if count:
+                stray.append(f"{os.path.relpath(path, char_folder)} ({count})")
+    if stray:
+        print(f"[mugen-import]   NOTE: {len(stray)} unreferenced file(s) with Statedefs, not imported:")
+        for s in stray:
+            print(f"[mugen-import]         {s}")
 
 
 def _safe_name(s: str) -> str:

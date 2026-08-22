@@ -33,6 +33,9 @@ class StateDef:
 
     number: int
     label: str = ""
+    # Freitext-Ueberschrift direkt ueber dem Block (`;New victim anim states`).
+    # Charaktere mit eigenen Move-Saetzen benennen ihre Bloecke nur so.
+    section: str = ""
     header: dict[str, str] = field(default_factory=dict)
     controllers: list[StateController] = field(default_factory=list)
 
@@ -46,6 +49,26 @@ _STATE_RE = re.compile(
 _KV_RE = re.compile(r"^\s*([^=;]+?)\s*=\s*(.*?)\s*$")
 _TRIGGER_KEY_RE = re.compile(r"^(triggerall|trigger\d+)$", re.IGNORECASE)
 
+# Woerter, mit denen auskommentierter Code beginnt. Solche Zeilen sind keine
+# Ueberschrift, auch wenn sie unmittelbar ueber einem Statedef stehen.
+_CODE_COMMENT_RE = re.compile(
+    r"^(type|trigger\w*|value|state|statedef|ignorehitpause|persistent|anim|ctrl"
+    r"|pos|vel|id|time|sprpriority)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_heading(text: str) -> bool:
+    """Unterscheidet eine echte Abschnitts-Ueberschrift von auskommentiertem Code."""
+    if not 2 <= len(text) <= 60:
+        return False
+    if "=" in text or text.startswith("["):
+        return False
+    # Trennlinien wie ";++++++++" oder ";--------" sind keine Namen.
+    if not any(ch.isalpha() for ch in text):
+        return False
+    return _CODE_COMMENT_RE.match(text) is None
+
 
 def parse_states(path: str) -> list[StateDef]:
     """Parse all Statedef + State blocks in a CNS/ST/CMD file."""
@@ -53,8 +76,25 @@ def parse_states(path: str) -> list[StateDef]:
     states: list[StateDef] = []
     current_def: StateDef | None = None
     current_ctrl: StateController | None = None
+    pending_section = ""
+    in_comment_block = False
 
     for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        # Ein Kommentarblock ueber einem Statedef ist typischerweise
+        #   ;----------------------
+        #   ; Stand Light Punch      <- der Name
+        #   ; CNS difficulty: easy   <- Zusatzinfo
+        # Der Name ist die ERSTE brauchbare Zeile des Blocks, nicht die letzte.
+        if stripped.startswith(";"):
+            if not in_comment_block:
+                in_comment_block = True
+                pending_section = ""
+            heading = stripped.lstrip(";").strip(" -=*").strip()
+            if not pending_section and _is_heading(heading):
+                pending_section = heading
+            continue
+        in_comment_block = False
         line = raw_line.split(";", 1)[0].rstrip()
         if not line.strip():
             continue
@@ -64,27 +104,29 @@ def parse_states(path: str) -> list[StateDef]:
             current_def = StateDef(
                 number=int(m_def.group(1)),
                 label=(m_def.group(2) or "").strip(),
+                section=pending_section,
             )
             states.append(current_def)
             current_ctrl = None
+            pending_section = ""
             continue
 
         m_state = _STATE_RE.match(line)
         if m_state is not None:
             number = int(m_state.group(1))
             label = (m_state.group(2) or "").strip()
-            # `[State N, label]` blocks attach to the most recent statedef.
-            # If none exists yet (e.g. CMD's bare [State -1] outside Statedef),
-            # implicitly create a Statedef bucket for that number.
-            if current_def is None or current_def.number != number:
-                # find or create matching statedef bucket
-                bucket = next((s for s in states if s.number == number), None)
-                if bucket is None:
-                    bucket = StateDef(number=number)
-                    states.append(bucket)
-                current_def = bucket
+            # Die Nummer in `[State N, label]` ist reiner Kommentar: MUGEN und
+            # Ikemen pruefen nur das Schluesselwort (compiler.go: `line[1:7]`).
+            # Autoren kopieren Bloecke samt alter Nummer in andere Statedefs —
+            # danach zu sortieren verschiebt ganze Moves in den falschen State.
+            if current_def is None:
+                # CMD-Dateien tragen `[State -1]` ohne umschliessenden Statedef.
+                current_def = next((s for s in states if s.number == number), None)
+                if current_def is None:
+                    current_def = StateDef(number=number)
+                    states.append(current_def)
             current_ctrl = StateController(
-                label=label, parent_state=number,
+                label=label, parent_state=current_def.number,
             )
             current_def.controllers.append(current_ctrl)
             continue
@@ -121,6 +163,7 @@ def merge_states(*state_lists: list[StateDef]) -> list[StateDef]:
                 by_number[sd.number] = StateDef(
                     number=sd.number,
                     label=sd.label,
+                    section=sd.section,
                     header=dict(sd.header),
                     controllers=list(sd.controllers),
                 )
@@ -128,6 +171,8 @@ def merge_states(*state_lists: list[StateDef]) -> list[StateDef]:
                 continue
             if sd.label:
                 existing.label = sd.label
+            if sd.section:
+                existing.section = sd.section
             existing.header.update(sd.header)
             existing.controllers.extend(sd.controllers)
     return [by_number[n] for n in order]
@@ -140,6 +185,7 @@ def to_jsonable(states: list[StateDef]) -> list[dict]:
         out.append({
             "number": sd.number,
             "label": sd.label,
+            "section": sd.section,
             "header": sd.header,
             "controllers": [
                 {

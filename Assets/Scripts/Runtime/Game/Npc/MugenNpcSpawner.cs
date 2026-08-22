@@ -37,11 +37,14 @@ namespace Riftstorm.Game.Npc
     public sealed class MugenNpcSpawner : MonoBehaviour
     {
         [Header("Asset")]
-        [Tooltip("Unterordner unter Application.streamingAssetsPath, z. B. 'Custom_Characters/Mudpenis'.")]
-        [SerializeField] private string m_StreamingSubFolder = "Custom_Characters/Mudpenis";
+        [Tooltip("Unterordner unter Application.streamingAssetsPath mit den JSONs, z. B. 'Custom_Characters/Truffe'.")]
+        [SerializeField] private string m_StreamingSubFolder = "Custom_Characters/Truffe";
 
-        [Tooltip("Dateiname (ohne .json) des FLARE-Atlas, z. B. 'Mudpenis'.")]
-        [SerializeField] private string m_AtlasName = "Mudpenis";
+        [Tooltip("Unterordner unter Application.dataPath (= Assets/) mit Atlas-PNGs und sounds/, z. B. 'Art/Custom_Characters/Truffe'.")]
+        [SerializeField] private string m_ArtSubFolder = "Art/Custom_Characters/Truffe";
+
+        [Tooltip("Dateiname (ohne .json) des FLARE-Atlas, z. B. 'Truffe'.")]
+        [SerializeField] private string m_AtlasName = "Truffe";
 
         [Header("Wiedergabe")]
         [Tooltip("Animationsname, der beim Spawn gestartet wird. MUGEN-Action 0 -> 'stance'.")]
@@ -81,6 +84,9 @@ namespace Riftstorm.Game.Npc
 
         /// <summary>Liefert den erzeugten <see cref="FlareCharacter"/> oder <c>null</c>, solange noch geladen wird.</summary>
         public FlareCharacter Character => m_Character;
+
+        /// <summary>Ordner mit den extrahierten MUGEN-Samples dieses Charakters.</summary>
+        public string SoundFolder => Path.Combine(Application.dataPath, m_ArtSubFolder, "sounds");
 
         private void Awake()
         {
@@ -141,13 +147,14 @@ namespace Riftstorm.Game.Npc
                 return;
             }
 
-            string folder = Path.Combine(Application.streamingAssetsPath, m_StreamingSubFolder);
-            FlareAtlasLoader loader = new(folder, folder);
+            string jsonFolder = Path.Combine(Application.streamingAssetsPath, m_StreamingSubFolder);
+            string textureFolder = Path.Combine(Application.dataPath, m_ArtSubFolder);
+            FlareAtlasLoader loader = new(jsonFolder, textureFolder);
             FlareAtlas atlas = await loader.LoadAsync(m_AtlasName);
             if (atlas == null)
             {
                 // Loader hat bereits ein Warning geloggt. Hier nur den Kontext markieren.
-                Debug.LogWarning($"[MugenNpcSpawner] Atlas '{m_AtlasName}' konnte aus '{folder}' nicht geladen werden.", this);
+                Debug.LogWarning($"[MugenNpcSpawner] Atlas '{m_AtlasName}' konnte aus '{jsonFolder}' nicht geladen werden.", this);
                 return;
             }
 

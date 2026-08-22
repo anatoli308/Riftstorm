@@ -24,7 +24,7 @@ class CharDef:
     cmd_file: str = ""
     snd_file: str = ""
     cns_file: str = ""           # main CNS (constants)
-    state_files: list[str] = field(default_factory=list)  # St, St1..St9
+    state_files: list[str] = field(default_factory=list)  # St, St0, St1, ... StN
     common_state_file: str = ""  # StCommon (defaults to common1.cns)
     palettes: dict[int, str] = field(default_factory=dict)  # slot -> rel path
     raw: dict[str, dict[str, str]] = field(default_factory=dict)
@@ -32,6 +32,13 @@ class CharDef:
 
 _SECTION_RE = re.compile(r"^\s*\[([^\]]+)\]\s*$")
 _KV_RE = re.compile(r"^\s*([^=;]+?)\s*=\s*(.*?)\s*$")
+_ST_KEY_RE = re.compile(r"^st[0-9]*$")
+
+
+def _st_sort_key(key: str) -> tuple[int, int]:
+    """Natural order for state-file keys: st, st0, st1, ... st9, st10."""
+    digits = key[2:]
+    return (0, -1) if not digits else (0, int(digits))
 
 
 def parse_def(path: str) -> CharDef:
@@ -74,12 +81,10 @@ def parse_def(path: str) -> CharDef:
         raw=sections,
     )
 
-    # State files: St, St1..St9
-    if "st" in files and files["st"]:
-        cd.state_files.append(files["st"])
-    for i in range(1, 10):
-        key = f"st{i}"
-        if key in files and files[key]:
+    # State files: St plus any St<num> (Ikemen: regex ^st[0-9]*$, natural order).
+    # St0 is legal and used by real characters, so a fixed 1..9 range loses data.
+    for key in sorted((k for k in files if _ST_KEY_RE.match(k)), key=_st_sort_key):
+        if files[key]:
             cd.state_files.append(files[key])
 
     # Palettes: Pal1 .. Pal12 (sparse slots allowed)

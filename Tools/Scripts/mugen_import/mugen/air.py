@@ -214,13 +214,49 @@ def _parse_frame_line(line: str) -> Optional[AirFrame]:
 
 
 def _read_text(path: str) -> str:
-    """Read text robustly. MUGEN char files are typically Shift-JIS or CP1252;
-    we only need the structural ASCII parts, so fall back to latin-1."""
+    """Liest eine MUGEN-Textdatei mit der Kodierung, die der Inhalt nahelegt.
+
+    Japanische Charaktere liefern Shift-JIS. Ein einzelnes kaputtes Byte laesst
+    die strikte Dekodierung scheitern, danach greift cp1252 klaglos und macht aus
+    jedem Kommentar Buchstabensalat. Deshalb wird vorher geprueft, ob die hohen
+    Bytes ueberhaupt wie Shift-JIS-Paare aussehen.
+    """
     with open(path, "rb") as fh:
         raw = fh.read()
-    for enc in ("utf-8-sig", "shift_jis", "cp1252", "latin-1"):
+    try:
+        return raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        pass
+    if _looks_like_shift_jis(raw):
+        return raw.decode("shift_jis", errors="replace")
+    for enc in ("shift_jis", "cp1252", "latin-1"):
         try:
             return raw.decode(enc)
         except UnicodeDecodeError:
             continue
     return raw.decode("latin-1", errors="ignore")
+
+
+def _looks_like_shift_jis(raw: bytes) -> bool:
+    """True, wenn die hohen Bytes ueberwiegend gueltige Shift-JIS-Paare bilden."""
+    pairs = 0
+    singles = 0
+    i = 0
+    end = len(raw)
+    while i < end:
+        b = raw[i]
+        if b < 0x80:
+            i += 1
+            continue
+        is_lead = 0x81 <= b <= 0x9F or 0xE0 <= b <= 0xEF
+        if is_lead and i + 1 < end and (0x40 <= raw[i + 1] <= 0x7E or 0x80 <= raw[i + 1] <= 0xFC):
+            pairs += 1
+            i += 2
+            continue
+        # Halbbreite Katakana sind Einzelbytes und sprechen ebenfalls fuer Shift-JIS.
+        if 0xA1 <= b <= 0xDF:
+            pairs += 1
+        else:
+            singles += 1
+        i += 1
+    return pairs > 8 and pairs > singles * 2

@@ -12,6 +12,7 @@ namespace Riftstorm.Game.Sprites
     public sealed class FlareLayerAnimator : MonoBehaviour
     {
         private SpriteRenderer m_Renderer;
+        private MugenBlendMaterialCache m_BlendMaterials;
         private FlareAtlas m_Atlas;
         private FlareAnimation m_Current;
         private int m_Direction;
@@ -197,7 +198,37 @@ namespace Riftstorm.Game.Sprites
                 }
                 m_Renderer.flipX = flipX;
                 m_Renderer.flipY = flipY;
+                ApplyFrameBlend(frame);
             }
+        }
+
+        /// <summary>
+        /// Setzt den AIR-Blend des Frames auf den Renderer. MUGEN legt additive
+        /// Effekte als schwarze Sprites ab — ohne diesen Schritt würden sie als
+        /// schwarze Flächen statt als Leuchten erscheinen.
+        /// </summary>
+        private void ApplyFrameBlend(int frame)
+        {
+            FlareEffectBlend[] blends = m_Current.FrameBlends;
+            if (blends == null || m_BlendMaterials == null)
+            {
+                return;
+            }
+            FlareEffectBlend blend = blends[Mathf.Clamp(frame, 0, blends.Length - 1)];
+            Material material = m_BlendMaterials.Resolve(blend);
+            if (material != null && m_Renderer.sharedMaterial != material)
+            {
+                m_Renderer.sharedMaterial = material;
+            }
+        }
+
+        /// <summary>
+        /// Hängt den Materialcache ein, aus dem die AIR-Blends bedient werden.
+        /// Ohne ihn bleibt der Renderer bei seinem Standardmaterial.
+        /// </summary>
+        public void SetBlendMaterials(MugenBlendMaterialCache cache)
+        {
+            m_BlendMaterials = cache;
         }
 
         private int ComputeFrameIndex()
@@ -213,7 +244,20 @@ namespace Riftstorm.Game.Sprites
             {
                 case FlareAnimationType.Looped:
                 {
-                    float local = m_Elapsed - Mathf.Floor(m_Elapsed / total) * total;
+                    // MUGENs LoopStart: die Einleitung laeuft nur einmal, danach
+                    // wiederholt sich ausschliesslich der Teil dahinter.
+                    if (m_Elapsed < total)
+                    {
+                        return ResolveFrameByElapsed(m_Elapsed, perFrame, count, total);
+                    }
+                    float loopStart = m_Current.LoopStartSeconds;
+                    float tail = total - loopStart;
+                    if (tail <= 0f)
+                    {
+                        return count - 1;
+                    }
+                    float past = m_Elapsed - total;
+                    float local = loopStart + (past - Mathf.Floor(past / tail) * tail);
                     return ResolveFrameByElapsed(local, perFrame, count, total);
                 }
                 case FlareAnimationType.PlayOnce:

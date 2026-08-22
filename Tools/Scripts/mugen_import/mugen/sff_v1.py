@@ -48,7 +48,7 @@ _SUBFILE_HEADER_SIZE = 32
 
 @dataclass
 class SffSprite:
-    """Single decoded sprite from an SFF v1 file."""
+    """Single decoded sprite from an SFF file."""
 
     group: int
     image: int
@@ -60,22 +60,24 @@ class SffSprite:
     palette: bytes             # 256*3 RGB
     linked_index: int = -1     # -1 means standalone, otherwise index in sprites list
     transparent_index: int = 0 # MUGEN convention: palette index 0 is transparent
+    # SFF v2 kann Sprites in Echtfarbe speichern (PNG24/PNG32, coldepth 24/32).
+    # Dann gibt es keine Palette und `rgba` haelt die fertigen Pixel.
+    rgba: Optional[bytes] = None
 
     def to_pil(self, transparent_index: Optional[int] = None) -> Image.Image:
         """Convert to a PIL RGBA image with transparent index made fully alpha=0."""
+        if self.rgba is not None:
+            return Image.frombytes("RGBA", (self.width, self.height), self.rgba)
         idx = self.transparent_index if transparent_index is None else transparent_index
         img = Image.frombytes("P", (self.width, self.height), self.pixels)
         img.putpalette(self.palette)
         rgba = img.convert("RGBA")
         if idx is not None and 0 <= idx < 256:
-            # Make the chosen palette index fully transparent.
-            r, g, b = self.palette[idx * 3], self.palette[idx * 3 + 1], self.palette[idx * 3 + 2]
-            data = rgba.load()
-            for y in range(self.height):
-                for x in range(self.width):
-                    pr, pg, pb, _ = data[x, y]
-                    if pr == r and pg == g and pb == b:
-                        data[x, y] = (0, 0, 0, 0)
+            # Ueber den Index maskieren, nicht ueber die Farbe: MUGEN-Paletten
+            # enthalten regelmaessig weitere Eintraege mit demselben RGB-Wert
+            # (z. B. Schwarz auf 0 und 1), die sonst mit ausradiert wuerden.
+            mask = Image.frombytes("L", (self.width, self.height), self.pixels)
+            rgba.putalpha(mask.point(lambda v, t=idx: 0 if v == t else 255))
         return rgba
 
 

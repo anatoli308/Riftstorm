@@ -149,14 +149,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4ee50ad85f6350429daf5841bc0c610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.MugenAnimationShowcase
+  m_StartInMoveMode: 1
   m_HoldSecondsPerAnim: 1.5
   m_UseAtlasDurationIfLonger: 1
   m_PauseBetweenAnims: 0.15
   m_AutoAdvance: 1
-  m_StartDirection: 4
-  m_CycleDirectionPerAnim: 0
-  m_OnlyAnimations: []
   m_SkipAnimations: []
+  m_Categories:
+  - Normal
+  - Special
+  - Hyper
+  - Command
+  - Hit
+  - Custom
+  - System
+  - Helper
+  - Effect
+  - Global
+  m_ShowOrphanAnimations: 1
+  m_StartDirection: 4
+  m_StageFolder: Sewer
+  m_UseStageCamera: 1
+  m_ShowScreenEffects: 1
+  m_ShowDummy: 1
+  m_MinEffectVisibleSeconds: 0
+  m_PlaySounds: 1
+  m_SoundVolume: 0.106
   m_ShowGui: 1
 --- !u!114 &713905678
 MonoBehaviour:
@@ -170,8 +188,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbec907de02dfb4aaee84f7ddd01519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.MugenNpcSpawner
-  m_StreamingSubFolder: Custom_Characters/Minotaur
-  m_AtlasName: Minotaur
+  m_StreamingSubFolder: Custom_Characters/elasticgirl
+  m_ArtSubFolder: Art/Custom_Characters/elasticgirl
+  m_AtlasName: elasticgirl
   m_InitialAnimation: stance
   m_InitialFlareDirection: 4
   m_SortingOrder: 0

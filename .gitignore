@@ -116,8 +116,13 @@ venv
 .venv
 mugen_data
 Custom_Characters
+Custom_Stages
 out
 tmp
 backup_stuff
 
 good_assets
+
+mugen_stage_data
+mugen_common
+_*.py
