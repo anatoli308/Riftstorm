@@ -167,7 +167,7 @@ MonoBehaviour:
   - Effect
   - Global
   m_ShowOrphanAnimations: 1
-  m_StartDirection: 4
+  m_StartDirection: 2
   m_StageFolder: Sewer
   m_UseStageCamera: 1
   m_ShowScreenEffects: 1
@@ -188,11 +188,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbec907de02dfb4aaee84f7ddd01519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftstorm.Game::Riftstorm.Game.Npc.MugenNpcSpawner
-  m_StreamingSubFolder: Custom_Characters/elasticgirl
-  m_ArtSubFolder: Art/Custom_Characters/elasticgirl
-  m_AtlasName: elasticgirl
+  m_StreamingSubFolder: Custom_Characters/Bubblegum
+  m_ArtSubFolder: Art/Custom_Characters/Bubblegum
+  m_AtlasName: Bubblegum
   m_InitialAnimation: stance
-  m_InitialFlareDirection: 4
+  m_InitialFlareDirection: 2
   m_SortingOrder: 0
   m_VisualEulerAngles: {x: 90, y: 0, z: 0}
   m_ApplyStatsFromSidecar: 1

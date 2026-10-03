@@ -1,11 +1,19 @@
 """Convert MUGEN importer output to Riftstorm FLARE NPC JSON.
-
+From the project root:
+  python Tools\\Scripts\\mugen_import\\mugen_import.py Tools\\Scripts\\mugen_import\\mugen_data\\Taokaka --out Tools\\Scripts\\mugen_import\\out\\Taokaka
+  python Tools\\Scripts\\mugen_import\\mugen_to_flare.py Tools\\Scripts\\mugen_import\\out\\Taokaka
 Reads:
   <char_dir>/animations.json
   <char_dir>/atlas.sprites.json
 
 Writes:
   <char_dir>/<atlas_name>.json   (FLARE schema, image="atlas.png")
+  <char_dir>/<atlas_name>.stats.json   (when constants.json exists)
+
+The CLI also deploys runtime JSON to Assets/StreamingAssets/Custom_Characters/
+<char_dir.name>/ and atlas PNGs + sounds/*.wav to Assets/Art/Custom_Characters/
+<char_dir.name>/. Importer intermediates stay in char_dir. Use --no-deploy to
+convert only. Existing destination files and Unity .meta files are not removed.
 
 The FLARE schema (see FlareAtlasData.cs) is:
   {
@@ -204,6 +212,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from mugen_deploy import deploy_character
 
 # Upper bound for a single frame's on-screen duration. MUGEN's real "hold"
 # frame is -1 (handled separately); any positive value above this comes from a
@@ -2565,6 +2575,9 @@ def convert_character(
     atlas_name: str | None = None,
     directions_mode: int = 2,
 ) -> Path:
+    name = atlas_name or char_dir.name
+    if name in (".", "..") or any(separator in name for separator in ("/", "\\", ":")):
+        raise ValueError(f"atlas_name must be a filename without a path, got {name!r}")
     animations_path = char_dir / "animations.json"
     atlas_sprites_path = char_dir / "atlas.sprites.json"
     if not animations_path.is_file():
@@ -2692,7 +2705,6 @@ def convert_character(
         "sequences": sequences,
     }
 
-    name = atlas_name or char_dir.name
     out_path = char_dir / f"{name}.json"
     with out_path.open("w", encoding="utf-8") as fh:
         json.dump(flare_doc, fh, indent=2)
@@ -2785,9 +2797,22 @@ def convert_character(
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Convert MUGEN importer output to FLARE NPC JSON.")
+    parser = argparse.ArgumentParser(
+        description="Convert MUGEN importer output to FLARE NPC JSON and deploy runtime files to Unity."
+    )
     parser.add_argument("char_dirs", nargs="+", help="One or more MUGEN character directories.")
     parser.add_argument("--atlas-name", default=None, help="Override atlas/JSON name (default = folder name).")
+    parser.add_argument(
+        "--no-deploy",
+        action="store_true",
+        help="Only convert in char_dirs; do not copy runtime files into the Unity project.",
+    )
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=Path(__file__).resolve().parents[3],
+        help="Unity project root for deployment (default = this script's project, independent of cwd).",
+    )
     parser.add_argument(
         "--directions",
         type=int,
@@ -2797,18 +2822,32 @@ def main(argv: list[str]) -> int:
             "Directional sprite mode. 2 (default) = reine 2D-Side-View: nur "
             "E-Frames, linke Slots werden gespiegelt, kein Rotations-Artefakt. "
             "8 = Legacy, liest per-direction MUGEN-Daten (selten sinnvoll, da "
-            "99% aller MUGEN-Chars nur E haben)."
+            "99%% aller MUGEN-Chars nur E haben)."
         ),
     )
     args = parser.parse_args(argv)
 
+    failed = False
     for raw in args.char_dirs:
         path = Path(raw)
         if not path.is_dir():
-            print(f"[skip] not a directory: {path}", file=sys.stderr)
+            print(f"[error] not a directory: {path}", file=sys.stderr)
+            failed = True
             continue
-        convert_character(path, args.atlas_name, directions_mode=args.directions)
-    return 0
+        try:
+            manifest_path = convert_character(path, args.atlas_name, directions_mode=args.directions)
+            if not args.no_deploy:
+                streamed, arted = deploy_character(manifest_path, args.project_root)
+                print(
+                    f"[deploy] {streamed} JSON files -> "
+                    f"{args.project_root / 'Assets' / 'StreamingAssets' / 'Custom_Characters' / path.resolve().name}; "
+                    f"{arted} art assets -> "
+                    f"{args.project_root / 'Assets' / 'Art' / 'Custom_Characters' / path.resolve().name}"
+                )
+        except (OSError, ValueError, RuntimeError) as error:
+            print(f"[error] {path}: {error}", file=sys.stderr)
+            failed = True
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

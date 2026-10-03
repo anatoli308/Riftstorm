@@ -343,11 +343,20 @@ weil der Per-Cell `flipH` schon der kanonische Mechanismus ist.
 ```powershell
 & 'C:\Program Files\LibreOffice\program\python.exe' `
   'd:\Riftstorm\Tools\Scripts\mugen_import\mugen_to_flare.py' `
-  'd:\Riftstorm\Assets\StreamingAssets\Custom_Characters\Mudpenis' `
-  'd:\Riftstorm\Assets\StreamingAssets\Custom_Characters\Gallon'
+  'd:\Riftstorm\Tools\Scripts\mugen_import\out\Mudpenis' `
+  'd:\Riftstorm\Tools\Scripts\mugen_import\out\Gallon'
 ```
 
 (Default `--directions 2` greift automatisch.)
+
+Die CLI konvertiert im Eingabeordner und verteilt danach automatisch die
+Runtime-JSONs nach `Assets/StreamingAssets/Custom_Characters/<char>/` sowie
+referenzierte Atlas-PNGs und `sounds/*.wav` nach
+`Assets/Art/Custom_Characters/<char>/`. Zwischenprodukte bleiben in `out/`.
+`--no-deploy` deaktiviert das Kopieren; `--project-root` setzt ein anderes
+Unity-Projekt als Ziel. Bestehende `.meta`-Dateien und sonstige Zieldateien
+werden nicht geloescht. Details und Testaufruf siehe
+[Importer README](../Tools/Scripts/mugen_import/README.md).
 
 ### 11.6 Aktueller Stand der konvertierten Charaktere
 
@@ -388,4 +397,3 @@ Beide haben `"directions": 2` als Provenance-Marker.
   nicht mehr MUGEN-spezifisch).
 - Echte N/S-Diagonal-Frames für ausgewählte Chars manuell ergänzen, falls
   ein MUGEN-Char als richtiger Topdown-Mob eingesetzt werden soll.
-
